@@ -23,6 +23,7 @@ public:
 
     short placingStep;
     Planet placing;
+    float placingXrotation,placingZrotation;
 
     float simspeed;
     int delay;

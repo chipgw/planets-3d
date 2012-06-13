@@ -250,7 +250,10 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent *e){
     }
     else if(placingStep == 3){
         // set placing velocity
-        placing.velocity = glm::rotateX(glm::rotateZ(placing.velocity, (lastmousepos.x() - e->x())/10.0f), (lastmousepos.y() - e->y())/10.0f);
+        placingXrotation += (lastmousepos.y() - e->y())/10.0f;
+        placingZrotation += (lastmousepos.x() - e->x())/10.0f;
+        placing.velocity = glm::rotateZ(glm::rotateX(glm::vec3(0,1,0), placingXrotation), placingZrotation) * glm::length(placing.velocity);
+        QCursor::setPos(this->mapToGlobal(this->lastmousepos));
     }
     else if(e->buttons().testFlag(Qt::LeftButton)){
         this->lastmousepos = e->pos();
@@ -290,6 +293,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent *e){
     if(placingStep == 1){
         if(e->button() == Qt::LeftButton){
             placingStep = 2;
+            setCursor(QCursor(Qt::BlankCursor));
         }
     }
     else if(placingStep == 2){
