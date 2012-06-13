@@ -1,0 +1,92 @@
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
+    ui->setupUi(this);
+}
+
+MainWindow::~MainWindow(){
+    delete ui;
+}
+
+void MainWindow::on_actionExit_triggered(){
+    this->close();
+}
+
+void MainWindow::on_createPlanet_PushButton_clicked(){
+    ui->centralwidget->createPlanet(glm::vec3(ui->newPosX_SpinBox->value(),ui->newPosY_SpinBox->value(),ui->newPosZ_SpinBox->value()),
+                                    glm::vec3(ui->newVelocityX_SpinBox->value(),ui->newVelocityY_SpinBox->value(),ui->newVelocityZ_SpinBox->value()),
+                                    ui->newMass_SpinBox->value());
+}
+
+void MainWindow::on_speed_Dial_valueChanged(int value){
+    ui->centralwidget->simspeed = (value*5.0)/ui->speed_Dial->maximum();
+    ui->speedDisplay_lcdNumber->display(ui->centralwidget->simspeed);
+    if(ui->centralwidget->simspeed <= 0){
+        ui->PauseResume_Button->setText("Resume");
+    }
+    else{
+        ui->PauseResume_Button->setText("Pause");
+    }
+}
+
+void MainWindow::on_PauseResume_Button_clicked(){
+    if(ui->centralwidget->simspeed <= 0){
+        ui->centralwidget->simspeed = 1;
+        ui->PauseResume_Button->setText("Pause");
+    }
+    else{
+        ui->centralwidget->simspeed = 0;
+        ui->PauseResume_Button->setText("Resume");
+    }
+    ui->speedDisplay_lcdNumber->display(ui->centralwidget->simspeed);
+    ui->speed_Dial->setValue((ui->centralwidget->simspeed/5)*ui->speed_Dial->maximum());
+}
+
+void MainWindow::on_actionTake_Screenshot_triggered(){
+    ui->centralwidget->doScreenshot = true;
+}
+
+void MainWindow::on_actionDelete_triggered(){
+    if(ui->centralwidget->selected){
+        ui->centralwidget->planets.removeAll(ui->centralwidget->selected);
+        delete ui->centralwidget->selected;
+    }
+}
+
+void MainWindow::on_actionClear_Velocity_triggered(){
+    if(ui->centralwidget->selected){
+        ui->centralwidget->selected->velocity = glm::vec3(0,0,0);
+    }
+}
+
+void MainWindow::on_actionNew_Simulation_triggered(){
+    float tmpsimspeed = ui->centralwidget->simspeed;
+    ui->centralwidget->simspeed = 0;
+
+    QMessageBox areYouSureMsgbox(this);
+    areYouSureMsgbox.setText("Are you sure you wish to destroy the universe? (i.e delete all planets.)");
+    areYouSureMsgbox.setWindowTitle("Are You Sure?");
+    areYouSureMsgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    areYouSureMsgbox.setDefaultButton(QMessageBox::Yes);
+    areYouSureMsgbox.setIcon(QMessageBox::Warning);
+
+    int input = areYouSureMsgbox.exec();
+
+    if(input == QMessageBox::Yes){
+        ui->centralwidget->deleteAll();
+    }
+    ui->centralwidget->simspeed = tmpsimspeed;
+}
+
+void MainWindow::on_actionCenter_All_triggered(){
+    if(ui->centralwidget){
+        ui->centralwidget->centerAll();
+    }
+}
+
+void MainWindow::on_actionInteractive_Planet_Placement_triggered(){
+    if(ui->centralwidget){
+        ui->centralwidget->beginInteractiveCreation();
+    }
+}
