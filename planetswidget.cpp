@@ -24,7 +24,7 @@ PlanetsWidget::PlanetsWidget(QWidget *parent) : QGLWidget(parent) {
     selected = createPlanet(glm::vec3(-3, 3,0), glm::vec3(-3,-6, 9),100);
 
     placing.position = glm::vec3(0,0,0);
-    placing.velocity = glm::vec3(1,0,0);
+    placing.velocity = glm::vec3(0,1,0);
     placing.mass = 100;
 }
 
@@ -343,16 +343,17 @@ void PlanetsWidget::mousePressEvent(QMouseEvent *e){
 
 void PlanetsWidget::wheelEvent(QWheelEvent *e){
     if(placingStep == 1){
-        placing.mass += e->delta()/8.0;
+        placing.mass += e->delta()*(placing.mass*1.0e-3);
+        qMax(placing.mass, 0.1f);
     }
     else if(placingStep == 2){
-        placing.position.z += e->delta()/50.0;
+        placing.position.z += e->delta()*camera.distance/200.0;
     }
     else if(placingStep == 3){
         placing.velocity += glm::normalize(placing.velocity) * (e->delta()*0.01f);
     }
     else {
-        float dist = camera.distance - e->delta()/50.0;
+        float dist = camera.distance - e->delta()/20.0;
 
         dist = qMax(dist,5.0f);
         dist = qMin(dist,300.0f);
