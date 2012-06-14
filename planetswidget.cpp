@@ -219,10 +219,10 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent *e){
         camera.setup();
 
         glBegin(GL_QUADS);{
-            glVertex4f(1,1,0,0.01);
-            glVertex4f(1,-1,0,0.01);
-            glVertex4f(-1,-1,0,0.01);
-            glVertex4f(-1,1,0,0.01);
+            glVertex4f(10,10,0,1.0e-5);
+            glVertex4f(10,-10,0,1.0e-5);
+            glVertex4f(-10,-10,0,1.0e-5);
+            glVertex4f(-10,10,0,1.0e-5);
         }glEnd();
 
 
