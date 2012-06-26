@@ -14,30 +14,34 @@ void MainWindow::on_actionExit_triggered(){
 }
 
 void MainWindow::on_createPlanet_PushButton_clicked(){
-    ui->centralwidget->createPlanet(glm::vec3(ui->newPosX_SpinBox->value(),ui->newPosY_SpinBox->value(),ui->newPosZ_SpinBox->value()),
-                                    glm::vec3(ui->newVelocityX_SpinBox->value(),ui->newVelocityY_SpinBox->value(),ui->newVelocityZ_SpinBox->value()),
-                                    ui->newMass_SpinBox->value());
+    ui->centralwidget->selected = ui->centralwidget->createPlanet(glm::vec3(ui->newPosX_SpinBox->value(),ui->newPosY_SpinBox->value(),ui->newPosZ_SpinBox->value()),
+                                                                  glm::vec3(ui->newVelocityX_SpinBox->value(),ui->newVelocityY_SpinBox->value(),ui->newVelocityZ_SpinBox->value()),
+                                                                  ui->newMass_SpinBox->value());
 }
 
 void MainWindow::on_speed_Dial_valueChanged(int value){
     ui->centralwidget->simspeed = (value*5.0)/ui->speed_Dial->maximum();
     ui->speedDisplay_lcdNumber->display(ui->centralwidget->simspeed);
     if(ui->centralwidget->simspeed <= 0){
-        ui->PauseResume_Button->setText("Resume");
+        ui->PauseResume_Button->setText(tr("Resume"));
+        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/icons/silk/control_play_blue.png"));
     }
     else{
-        ui->PauseResume_Button->setText("Pause");
+        ui->PauseResume_Button->setText(tr("Pause"));
+        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/icons/silk/control_pause_blue.png"));
     }
 }
 
 void MainWindow::on_PauseResume_Button_clicked(){
     if(ui->centralwidget->simspeed <= 0){
         ui->centralwidget->simspeed = 1;
-        ui->PauseResume_Button->setText("Pause");
+        ui->PauseResume_Button->setText(tr("Pause"));
+        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/icons/silk/control_pause_blue.png"));
     }
     else{
         ui->centralwidget->simspeed = 0;
-        ui->PauseResume_Button->setText("Resume");
+        ui->PauseResume_Button->setText(tr("Resume"));
+        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/icons/silk/control_play_blue.png"));
     }
     ui->speedDisplay_lcdNumber->display(ui->centralwidget->simspeed);
     ui->speed_Dial->setValue((ui->centralwidget->simspeed/5)*ui->speed_Dial->maximum());
@@ -65,8 +69,8 @@ void MainWindow::on_actionNew_Simulation_triggered(){
     ui->centralwidget->simspeed = 0;
 
     QMessageBox areYouSureMsgbox(this);
-    areYouSureMsgbox.setText("Are you sure you wish to destroy the universe? (i.e delete all planets.)");
-    areYouSureMsgbox.setWindowTitle("Are You Sure?");
+    areYouSureMsgbox.setText(tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"));
+    areYouSureMsgbox.setWindowTitle(tr("Are You Sure?"));
     areYouSureMsgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     areYouSureMsgbox.setDefaultButton(QMessageBox::Yes);
     areYouSureMsgbox.setIcon(QMessageBox::Warning);

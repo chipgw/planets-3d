@@ -1,15 +1,14 @@
 #include "planetswidget.h"
 
 PlanetsWidget::PlanetsWidget(QWidget *parent) : QGLWidget(parent) {
-    setWindowTitle("Planets3D");
-
     this->setMouseTracking(true);
 
     this->doScreenshot = false;
     framerate = 60000;
 
     framecount = 0;
-    delay=0;
+    placingStep = 0;
+    delay = 0;
     simspeed = 1.0;
     totalTime = QTime::currentTime();
     frameTime = QTime::currentTime();
@@ -48,14 +47,8 @@ void PlanetsWidget::initializeGL() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_LINE_SMOOTH);
 
-    QFileInfo fileinfo("planet.png");
-    if(!fileinfo.exists()){
-        qDebug()<<"Image file "<<fileinfo.absoluteFilePath()<<" does not exist!";
-    }
-    else{
-        QImage img(fileinfo.absoluteFilePath());
-        texture = bindTexture(img);
-    }
+    QImage img(":/textures/planet.png");
+    texture = bindTexture(img);
 }
 void PlanetsWidget::resizeGL(int width, int height) {
     if (height == 0)
@@ -89,10 +82,13 @@ void PlanetsWidget::paintGL() {
     glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
 
-    float time = simspeed*(delay/5000.0);
+    float time = 0;
+    if(placingStep == 0){
+        time = simspeed*(delay/5000.0);
+    }
 
-    Planet *planet;
-    Planet *other;
+    Planet* planet;
+    Planet* other;
     QMutableListIterator<Planet *> i(planets);
     while (i.hasNext()) {
         planet = i.next();
@@ -408,8 +404,6 @@ void PlanetsWidget::centerAll(){
 }
 
 void PlanetsWidget::beginInteractiveCreation(){
-    simspeed = 0;
-
     placingStep = 1;
     selected = NULL;
 }

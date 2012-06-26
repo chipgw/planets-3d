@@ -1,0 +1,29 @@
+<RCC>
+    <qresource prefix="/textures">
+        <file>planet.png</file>
+    </qresource>
+    <qresource prefix="/icons/silk">
+        <file>icons/silk/information.png</file>
+        <file>icons/silk/accept.png</file>
+        <file>icons/silk/application.png</file>
+        <file>icons/silk/arrow_divide.png</file>
+        <file>icons/silk/arrow_join.png</file>
+        <file>icons/silk/arrow_redo.png</file>
+        <file>icons/silk/arrow_undo.png</file>
+        <file>icons/silk/asterisk_yellow.png</file>
+        <file>icons/silk/bomb.png</file>
+        <file>icons/silk/cross.png</file>
+        <file>icons/silk/delete.png</file>
+        <file>icons/silk/image.png</file>
+        <file>icons/silk/world.png</file>
+        <file>icons/silk/world_add.png</file>
+        <file>icons/silk/world_delete.png</file>
+        <file>icons/silk/world_edit.png</file>
+        <file>icons/silk/wrench.png</file>
+        <file>icons/silk/arrow_inout.png</file>
+        <file>icons/silk/control_equalizer_blue.png</file>
+        <file>icons/silk/control_fastforward_blue.png</file>
+        <file>icons/silk/control_pause_blue.png</file>
+        <file>icons/silk/control_play_blue.png</file>
+    </qresource>
+</RCC>
