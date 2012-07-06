@@ -10,8 +10,7 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     planetswidget.cpp
 
-HEADERS  +=
-    planet.h \
+HEADERS += planet.h \
     common.h \
     camera.h \
     mainwindow.h \
