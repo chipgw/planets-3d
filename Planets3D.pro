@@ -24,3 +24,6 @@ RESOURCES += resources.qrc
 
 
 
+linux-g++{
+    LIBS += -lGLU
+}
