@@ -25,11 +25,11 @@ void MainWindow::on_speed_Dial_valueChanged(int value){
     ui->speedDisplay_lcdNumber->display(ui->centralwidget->simspeed);
     if(ui->centralwidget->simspeed <= 0){
         ui->PauseResume_Button->setText(tr("Resume"));
-        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/icons/silk/control_play_blue.png"));
+        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
     }
     else{
         ui->PauseResume_Button->setText(tr("Pause"));
-        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/icons/silk/control_pause_blue.png"));
+        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_pause_blue.png"));
     }
 }
 
@@ -37,12 +37,12 @@ void MainWindow::on_PauseResume_Button_clicked(){
     if(ui->centralwidget->simspeed <= 0){
         ui->centralwidget->simspeed = 1;
         ui->PauseResume_Button->setText(tr("Pause"));
-        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/icons/silk/control_pause_blue.png"));
+        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_pause_blue.png"));
     }
     else{
         ui->centralwidget->simspeed = 0;
         ui->PauseResume_Button->setText(tr("Resume"));
-        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/icons/silk/control_play_blue.png"));
+        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
     }
     ui->speedDisplay_lcdNumber->display(ui->centralwidget->simspeed);
     ui->speed_Dial->setValue((ui->centralwidget->simspeed/5)*ui->speed_Dial->maximum());
