@@ -56,6 +56,9 @@ public:
 
     void beginInteractiveCreation();
 
+    bool save(const QString& filename);
+    bool load(const QString& filename);
+
 protected:
     void initializeGL();
     void resizeGL(int width, int height);

@@ -1,4 +1,6 @@
 #include "planetswidget.h"
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(parent) {
     this->setMouseTracking(true);
@@ -17,11 +19,6 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(parent) {
     timer->setSingleShot(true);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
-    createPlanet(glm::vec3( 3, 3,0), glm::vec3( 3,-6,-9),100);
-    createPlanet(glm::vec3( 3,-3,0), glm::vec3( 3, 6, 9),100);
-    createPlanet(glm::vec3(-3,-3,0), glm::vec3(-3, 6,-9),100);
-    selected = createPlanet(glm::vec3(-3, 3,0), glm::vec3(-3,-6, 9),100);
-
     placing.position = glm::vec3(0,0,0);
     placing.velocity = glm::vec3(0,10,0);
     placing.mass = 100;
@@ -31,6 +28,8 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(parent) {
     gridColor = glm::vec4(0.8,1.0,1.0,0.2);
 
     drawPaths = false;
+
+    load("default.xml");
 }
 
 PlanetsWidget::~PlanetsWidget() {
@@ -426,4 +425,101 @@ void PlanetsWidget::drawGrid(){
             glVertex3f(x,y+1,0);
         }
     }
+}
+
+bool PlanetsWidget::load(const QString &filename){
+    if(!QFile::exists(filename)){
+        qDebug(qPrintable("\"" + filename + "\" does not exist!"));
+        return false;
+    }
+    QFile file(filename);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+        return false;
+    }
+
+    QXmlStreamReader xml(&file);
+
+    if(xml.readNextStartElement()) {
+        if (xml.name() == "planets-3d-universe"){
+            while(xml.readNextStartElement()) {
+                if(xml.name() == "planet"){
+                    Planet* planet = new Planet();
+
+                    planet->mass = xml.attributes().value("mass").toString().toFloat();
+
+                    while(xml.readNextStartElement()){
+                        if(xml.name() == "position"){
+                            planet->position.x = xml.attributes().value("x").toString().toFloat();
+                            planet->position.y = xml.attributes().value("y").toString().toFloat();
+                            planet->position.z = xml.attributes().value("z").toString().toFloat();
+                            xml.readNext();
+                        }
+                        if(xml.name() == "velocity"){
+                            planet->velocity.x = xml.attributes().value("x").toString().toFloat();
+                            planet->velocity.y = xml.attributes().value("y").toString().toFloat();
+                            planet->velocity.z = xml.attributes().value("z").toString().toFloat();
+                            xml.readNext();
+                        }
+                    }
+                    planets.append(planet);
+                    xml.readNext();
+                }
+            }
+            if(xml.hasError()){
+                qDebug(qPrintable("\"" + filename + "\" had error: " + xml.errorString()));
+                return false;
+            }
+        }
+
+        else{
+            qDebug(qPrintable("\"" + filename + "\" is not a valid universe file!"));
+            return false;
+        }
+    }
+
+
+    return true;
+}
+
+bool PlanetsWidget::save(const QString &filename){
+    QFile file(filename);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        return false;
+    }
+
+    QXmlStreamWriter xml(&file);
+
+    xml.writeStartDocument();
+    xml.writeStartElement("planets-3d-universe");
+
+    QMutableListIterator<Planet* > i(planets);
+    Planet* planet;
+    while (i.hasNext()) {
+        planet = i.next();
+
+        xml.writeStartElement("planet");
+
+        xml.writeAttribute("mass", QString::number(planet->mass));
+
+        xml.writeStartElement("position"); {
+            xml.writeAttribute("x", QString::number(planet->position.x));
+            xml.writeAttribute("y", QString::number(planet->position.y));
+            xml.writeAttribute("z", QString::number(planet->position.z));
+        } xml.writeEndElement();
+
+        xml.writeStartElement("velocity"); {
+            xml.writeAttribute("x", QString::number(planet->velocity.x));
+            xml.writeAttribute("y", QString::number(planet->velocity.y));
+            xml.writeAttribute("z", QString::number(planet->velocity.z));
+        } xml.writeEndElement();
+
+        xml.writeEndElement();
+    }
+    xml.writeEndElement();
+
+    xml.writeEndDocument();
+
+    return true;
 }
