@@ -23,9 +23,7 @@ Planet::~Planet(){
 
 }
 
-void Planet::draw(float time){
-    lastpathrecorddelta += time;
-
+void Planet::draw(){
     glPushMatrix();
     glTranslatef(position.x,position.y,position.z);
 
@@ -35,6 +33,10 @@ void Planet::draw(float time){
     gluSphere(sphere,this->getRadius(),64,32);
 
     glPopMatrix();
+}
+
+void Planet::drawPath(float time){
+    lastpathrecorddelta += time;
 
     glDisable(GL_TEXTURE_2D);
 

@@ -43,6 +43,8 @@ private slots:
 
     void on_actionPoints_triggered();
 
+    void on_actionDraw_Paths_toggled(bool val);
+
 private:
     Ui::MainWindow *ui;
 };

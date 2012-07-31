@@ -1,6 +1,6 @@
 #include "planetswidget.h"
 
-PlanetsWidget::PlanetsWidget(QWidget *parent) : QGLWidget(parent) {
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(parent) {
     this->setMouseTracking(true);
 
     this->doScreenshot = false;
@@ -23,12 +23,14 @@ PlanetsWidget::PlanetsWidget(QWidget *parent) : QGLWidget(parent) {
     selected = createPlanet(glm::vec3(-3, 3,0), glm::vec3(-3,-6, 9),100);
 
     placing.position = glm::vec3(0,0,0);
-    placing.velocity = glm::vec3(0,1,0);
+    placing.velocity = glm::vec3(0,10,0);
     placing.mass = 100;
 
     gridMode = Off;
     gridRange = 50;
     gridColor = glm::vec4(0.8,1.0,1.0,0.2);
+
+    drawPaths = false;
 }
 
 PlanetsWidget::~PlanetsWidget() {
@@ -83,10 +85,10 @@ void PlanetsWidget::paintGL() {
 
     Planet* planet;
     Planet* other;
-    QMutableListIterator<Planet *> i(planets);
+    QMutableListIterator<Planet*> i(planets);
     while (i.hasNext()) {
         planet = i.next();
-        QMutableListIterator<Planet *> o(i);
+        QMutableListIterator<Planet*> o(i);
         while (o.hasNext()) {
             other = o.next();
 
@@ -120,7 +122,11 @@ void PlanetsWidget::paintGL() {
 
         planet->position += planet->velocity * time;
 
-        planet->draw(time);
+        planet->draw();
+
+        if(drawPaths){
+            planet->drawPath(time);
+        }
     }
 
     glDisable(GL_TEXTURE_2D);
@@ -136,7 +142,7 @@ void PlanetsWidget::paintGL() {
     if(placingStep == 3){
         glBegin(GL_LINES);{
             glVertex3f(placing.position.x,placing.position.y,placing.position.z);
-            glVertex3f(placing.position.x+placing.velocity.x,placing.position.y+placing.velocity.y,placing.position.z+placing.velocity.z);
+            glVertex3f(placing.position.x+placing.velocity.x/100,placing.position.y+placing.velocity.y/100,placing.position.z+placing.velocity.z/100);
         }glEnd();
     }
 
@@ -202,7 +208,7 @@ void PlanetsWidget::paintGL() {
     timer->start(qMax(0, (1000/framerate) - delay));
 }
 
-void PlanetsWidget::mouseMoveEvent(QMouseEvent *e){
+void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     if(placingStep == 1){
         // set placing XY position based on grid
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -275,7 +281,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent *e){
     }
 }
 
-void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent *e){
+void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
     if(e->button() == Qt::MiddleButton){
         camera.distance = 10;
         camera.xrotation = 45;
@@ -283,7 +289,7 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent *e){
     }
 }
 
-void PlanetsWidget::mousePressEvent(QMouseEvent *e){
+void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     if(placingStep == 1){
         if(e->button() == Qt::LeftButton){
             placingStep = 2;
@@ -309,7 +315,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent *e){
         glLoadIdentity();
         camera.setup();
 
-        Planet *planet;
+        Planet* planet;
         foreach(planet, planets){
             planet->drawBounds(GLU_FILL, true);
         }
@@ -335,7 +341,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent *e){
     }
 }
 
-void PlanetsWidget::wheelEvent(QWheelEvent *e){
+void PlanetsWidget::wheelEvent(QWheelEvent* e){
     if(placingStep == 1){
         placing.mass += e->delta()*(placing.mass*1.0e-3);
         qMax(placing.mass, 0.1f);
@@ -366,8 +372,8 @@ Planet* PlanetsWidget::createPlanet(glm::vec3 position, glm::vec3 velocity, floa
 }
 
 void PlanetsWidget::deleteAll(){
-    QMutableListIterator<Planet *> i(planets);
-    Planet *other;
+    QMutableListIterator<Planet*> i(planets);
+    Planet* other;
     while (i.hasNext()) {
         other = i.next();
         i.remove();
@@ -377,8 +383,8 @@ void PlanetsWidget::deleteAll(){
 }
 
 void PlanetsWidget::centerAll(){
-    QMutableListIterator<Planet *> i(planets);
-    Planet *planet;
+    QMutableListIterator<Planet* > i(planets);
+    Planet* planet;
     glm::vec3 averagePosition(0,0,0),averageVelocity(0,0,0);
     float totalmass = 0;
     while (i.hasNext()) {

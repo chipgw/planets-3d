@@ -35,13 +35,15 @@ public:
     int delay;
     int framecount;
 
-    QTimer *timer;
+    QTimer* timer;
     QTime frameTime;
     QTime totalTime;
 
     int framerate;
 
     QPoint lastmousepos;
+
+    bool drawPaths;
 
     GridDisplayMode gridMode;
     glm::vec4 gridColor;
@@ -58,10 +60,10 @@ protected:
     void initializeGL();
     void resizeGL(int width, int height);
     void paintGL();
-    void mouseMoveEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void mouseDoubleClickEvent(QMouseEvent *e);
-    void wheelEvent(QWheelEvent *e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void mouseDoubleClickEvent(QMouseEvent* e);
+    void wheelEvent(QWheelEvent* e);
 };
 
 #endif // PlanetsWidget_H

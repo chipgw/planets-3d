@@ -106,3 +106,14 @@ void MainWindow::on_actionLines_triggered(){
 void MainWindow::on_actionPoints_triggered(){
     ui->centralwidget->gridMode = PlanetsWidget::Points;
 }
+
+void MainWindow::on_actionDraw_Paths_toggled(bool val){
+    ui->centralwidget->drawPaths = val;
+
+    QMutableListIterator<Planet*> i(ui->centralwidget->planets);
+    Planet* planet;
+    while (i.hasNext()) {
+        planet = i.next();
+        planet->path.clear();
+    }
+}

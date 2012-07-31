@@ -48,6 +48,7 @@
      <addaction name="actionPoints"/>
     </widget>
     <addaction name="menuGrid"/>
+    <addaction name="actionDraw_Paths"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -377,6 +378,14 @@
   <action name="actionPoints">
    <property name="text">
     <string>Points</string>
+   </property>
+  </action>
+  <action name="actionDraw_Paths">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Draw Paths</string>
    </property>
   </action>
  </widget>

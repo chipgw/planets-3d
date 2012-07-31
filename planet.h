@@ -21,7 +21,8 @@ public:
 
     std::vector<glm::vec3> path;
 
-    void draw(float time);
+    void draw();
+    void drawPath(float time);
     void drawBounds(GLenum drawmode = GLU_LINE, bool selectioncolor = false);
     float getRadius();
 };
