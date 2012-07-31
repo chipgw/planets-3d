@@ -25,6 +25,10 @@ PlanetsWidget::PlanetsWidget(QWidget *parent) : QGLWidget(parent) {
     placing.position = glm::vec3(0,0,0);
     placing.velocity = glm::vec3(0,1,0);
     placing.mass = 100;
+
+    gridMode = Off;
+    gridRange = 50;
+    gridColor = glm::vec4(0.8,1.0,1.0,0.2);
 }
 
 PlanetsWidget::~PlanetsWidget() {
@@ -151,23 +155,28 @@ void PlanetsWidget::paintGL() {
 
     glScalef(scale,scale,scale);
 
-    glColor3f(0.4,0.6,0.6);
-    glBegin(GL_LINES);
-    for(int x = -20; x <= 20;x++){
-        for(int y = -20; y <= 20;y++){
-            glVertex3f(x,y,0);
-            glVertex3f(x+1,y,0);
-            glVertex3f(x,y,0);
-            glVertex3f(x,y+1,0);
-
-            glVertex3f(x+1,y+1,0);
-            glVertex3f(x+1,y,0);
-            glVertex3f(x+1,y+1,0);
-            glVertex3f(x,y+1,0);
-        }
+    switch(gridMode){
+    case SolidLine:{
+        glColor4fv(glm::value_ptr(gridColor));
+        glBegin(GL_LINES);
+        drawGrid();
+        glEnd();
+        glColor4f(1.0,1.0,1.0,1.0);
+        break;
     }
-    glEnd();
-    glColor3f(1.0,1.0,1.0);
+    case Points:{
+        glColor4fv(glm::value_ptr(gridColor));
+        glBegin(GL_POINTS);
+        drawGrid();
+        glEnd();
+        glColor4f(1.0,1.0,1.0,1.0);
+        break;
+    }
+    case Off:{
+        break;
+    }
+    }
+
 
     if(this->doScreenshot){
         QDir dir = QDir::homePath() + "/Pictures/Planets3D Screenshots/";
@@ -406,4 +415,20 @@ void PlanetsWidget::centerAll(){
 void PlanetsWidget::beginInteractiveCreation(){
     placingStep = 1;
     selected = NULL;
+}
+
+void PlanetsWidget::drawGrid(){
+    for(int x = -gridRange; x <= gridRange;x++){
+        for(int y = -gridRange; y <= gridRange;y++){
+            glVertex3f(x,y,0);
+            glVertex3f(x+1,y,0);
+            glVertex3f(x,y,0);
+            glVertex3f(x,y+1,0);
+
+            glVertex3f(x+1,y+1,0);
+            glVertex3f(x+1,y,0);
+            glVertex3f(x+1,y+1,0);
+            glVertex3f(x,y+1,0);
+        }
+    }
 }

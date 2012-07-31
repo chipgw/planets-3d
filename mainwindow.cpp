@@ -94,3 +94,15 @@ void MainWindow::on_actionInteractive_Planet_Placement_triggered(){
         ui->centralwidget->beginInteractiveCreation();
     }
 }
+
+void MainWindow::on_actionOff_triggered(){
+    ui->centralwidget->gridMode = PlanetsWidget::Off;
+}
+
+void MainWindow::on_actionLines_triggered(){
+    ui->centralwidget->gridMode = PlanetsWidget::SolidLine;
+}
+
+void MainWindow::on_actionPoints_triggered(){
+    ui->centralwidget->gridMode = PlanetsWidget::Points;
+}

@@ -11,6 +11,12 @@
 class PlanetsWidget : public QGLWidget {
     Q_OBJECT
 public:
+    enum GridDisplayMode{
+        Off,
+        SolidLine,
+        Points
+    };
+
     PlanetsWidget(QWidget *parent = 0);
     ~PlanetsWidget();
 
@@ -36,6 +42,11 @@ public:
     int framerate;
 
     QPoint lastmousepos;
+
+    GridDisplayMode gridMode;
+    glm::vec4 gridColor;
+    int gridRange;
+    void drawGrid();
 
     Planet* createPlanet(glm::vec3 position,glm::vec3 velocity,float mass);
     void deleteAll();

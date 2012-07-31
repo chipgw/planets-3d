@@ -35,7 +35,22 @@
     <addaction name="actionTake_Screenshot"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuGrid">
+     <property name="title">
+      <string>Grid</string>
+     </property>
+     <addaction name="actionOff"/>
+     <addaction name="actionLines"/>
+     <addaction name="actionPoints"/>
+    </widget>
+    <addaction name="menuGrid"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="newPlanet_DockWidget">
@@ -347,6 +362,21 @@
    </property>
    <property name="shortcut">
     <string>P</string>
+   </property>
+  </action>
+  <action name="actionOff">
+   <property name="text">
+    <string>Off</string>
+   </property>
+  </action>
+  <action name="actionLines">
+   <property name="text">
+    <string>Lines</string>
+   </property>
+  </action>
+  <action name="actionPoints">
+   <property name="text">
+    <string>Points</string>
    </property>
   </action>
  </widget>
