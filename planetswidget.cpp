@@ -44,8 +44,6 @@ void PlanetsWidget::initializeGL() {
     glDepthFunc(GL_LEQUAL);
 
     glEnable(GL_TEXTURE_2D);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -72,18 +70,10 @@ void PlanetsWidget::resizeGL(int width, int height) {
 void PlanetsWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float diffuse[] = {1.0,0.9,0.8,1.0};
-    float ambient[] = {0.3,0.4,0.5,1.0};
-    float position[] = {1.0,1.0,1.0,0.0};
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-    glLightfv(GL_LIGHT0, GL_POSITION, position);
-
     glMatrixMode(GL_MODELVIEW_MATRIX);
     glLoadIdentity();
     camera.setup();
 
-    glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
 
     float time = 0;
@@ -133,7 +123,6 @@ void PlanetsWidget::paintGL() {
         planet->draw(time);
     }
 
-    glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
 
     if(selected){

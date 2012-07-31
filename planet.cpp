@@ -32,12 +32,11 @@ void Planet::draw(float time){
     GLUquadric *sphere = gluNewQuadric();
     gluQuadricTexture(sphere, GL_TRUE);
     gluQuadricOrientation(sphere, GLU_OUTSIDE);
-    gluSphere(sphere,this->getRadius(),128,64);
+    gluSphere(sphere,this->getRadius(),64,32);
 
     glPopMatrix();
 
     glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
 
     if(lastpathrecorddelta > 0.02){
         path.push_back(this->position);
@@ -53,7 +52,6 @@ void Planet::draw(float time){
     glDrawArrays(GL_LINE_STRIP, 0, path.size());
 
     glEnable(GL_TEXTURE_2D);
-    glEnable(GL_LIGHTING);
 }
 
 float Planet::getRadius(){
