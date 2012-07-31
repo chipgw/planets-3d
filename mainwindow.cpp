@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
     ui->setupUi(this);
@@ -116,4 +117,24 @@ void MainWindow::on_actionDraw_Paths_toggled(bool val){
         planet = i.next();
         planet->path.clear();
     }
+}
+
+void MainWindow::on_actionOpen_Simulation_triggered(){
+    float tmpsimspeed = ui->centralwidget->simspeed;
+    ui->centralwidget->simspeed = 0;
+
+    QString filename = QFileDialog::getOpenFileName(this,tr("Open Simulation"), "", tr("Simulation files (*.uni *.xml)"));
+    ui->centralwidget->load(filename);
+
+    ui->centralwidget->simspeed = tmpsimspeed;
+}
+
+void MainWindow::on_actionSave_Simulation_triggered(){
+    float tmpsimspeed = ui->centralwidget->simspeed;
+    ui->centralwidget->simspeed = 0;
+
+    QString filename = QFileDialog::getSaveFileName(this,tr("Save Simulation"), "", tr("Simulation files (*.uni *.xml)"));
+    ui->centralwidget->save(filename);
+
+    ui->centralwidget->simspeed = tmpsimspeed;
 }

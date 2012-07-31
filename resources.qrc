@@ -2,7 +2,7 @@
     <qresource prefix="/textures">
         <file>planet.png</file>
     </qresource>
-    <qresource prefix="/icons/silk">
+    <qresource prefix="/">
         <file>icons/silk/information.png</file>
         <file>icons/silk/accept.png</file>
         <file>icons/silk/application.png</file>
@@ -25,5 +25,7 @@
         <file>icons/silk/control_fastforward_blue.png</file>
         <file>icons/silk/control_pause_blue.png</file>
         <file>icons/silk/control_play_blue.png</file>
+        <file>icons/silk/disk.png</file>
+        <file>icons/silk/folder.png</file>
     </qresource>
 </RCC>

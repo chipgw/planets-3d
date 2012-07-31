@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
-    <normaloff>:/icons/silk/icons/silk/world.png</normaloff>:/icons/silk/icons/silk/world.png</iconset>
+    <normaloff>:/icons/silk/world.png</normaloff>:/icons/silk/world.png</iconset>
   </property>
   <widget class="PlanetsWidget" name="centralwidget"/>
   <widget class="QMenuBar" name="menubar">
@@ -32,6 +32,9 @@
      <string>File</string>
     </property>
     <addaction name="actionNew_Simulation"/>
+    <addaction name="actionOpen_Simulation"/>
+    <addaction name="actionSave_Simulation"/>
+    <addaction name="separator"/>
     <addaction name="actionTake_Screenshot"/>
     <addaction name="actionExit"/>
    </widget>
@@ -201,7 +204,7 @@
        </property>
        <property name="icon">
         <iconset resource="resources.qrc">
-         <normaloff>:/icons/silk/icons/silk/world_add.png</normaloff>:/icons/silk/icons/silk/world_add.png</iconset>
+         <normaloff>:/icons/silk/world_add.png</normaloff>:/icons/silk/world_add.png</iconset>
        </property>
       </widget>
      </item>
@@ -253,7 +256,7 @@
        </property>
        <property name="icon">
         <iconset resource="resources.qrc">
-         <normaloff>:/icons/silk/icons/silk/control_pause_blue.png</normaloff>:/icons/silk/icons/silk/control_pause_blue.png</iconset>
+         <normaloff>:/icons/silk/control_pause_blue.png</normaloff>:/icons/silk/control_pause_blue.png</iconset>
        </property>
       </widget>
      </item>
@@ -282,7 +285,7 @@
   <action name="actionExit">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/silk/icons/silk/cross.png</normaloff>:/icons/silk/icons/silk/cross.png</iconset>
+     <normaloff>:/icons/silk/cross.png</normaloff>:/icons/silk/cross.png</iconset>
    </property>
    <property name="text">
     <string>Exit</string>
@@ -294,7 +297,7 @@
   <action name="actionTake_Screenshot">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/silk/icons/silk/image.png</normaloff>:/icons/silk/icons/silk/image.png</iconset>
+     <normaloff>:/icons/silk/image.png</normaloff>:/icons/silk/image.png</iconset>
    </property>
    <property name="text">
     <string>Take Screenshot</string>
@@ -306,7 +309,7 @@
   <action name="actionDelete">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/silk/icons/silk/world_delete.png</normaloff>:/icons/silk/icons/silk/world_delete.png</iconset>
+     <normaloff>:/icons/silk/world_delete.png</normaloff>:/icons/silk/world_delete.png</iconset>
    </property>
    <property name="text">
     <string>Delete</string>
@@ -329,7 +332,7 @@
   <action name="actionNew_Simulation">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/silk/icons/silk/asterisk_yellow.png</normaloff>:/icons/silk/icons/silk/asterisk_yellow.png</iconset>
+     <normaloff>:/icons/silk/asterisk_yellow.png</normaloff>:/icons/silk/asterisk_yellow.png</iconset>
    </property>
    <property name="text">
     <string>New Simulation</string>
@@ -344,7 +347,7 @@
   <action name="actionCenter_All">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/silk/icons/silk/arrow_inout.png</normaloff>:/icons/silk/icons/silk/arrow_inout.png</iconset>
+     <normaloff>:/icons/silk/arrow_inout.png</normaloff>:/icons/silk/arrow_inout.png</iconset>
    </property>
    <property name="text">
     <string>Center All</string>
@@ -356,7 +359,7 @@
   <action name="actionInteractive_Planet_Placement">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/silk/icons/silk/world_add.png</normaloff>:/icons/silk/icons/silk/world_add.png</iconset>
+     <normaloff>:/icons/silk/world_add.png</normaloff>:/icons/silk/world_add.png</iconset>
    </property>
    <property name="text">
     <string>Interactive Planet Placement</string>
@@ -386,6 +389,36 @@
    </property>
    <property name="text">
     <string>Draw Paths</string>
+   </property>
+  </action>
+  <action name="actionOpen_Simulation">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/silk/folder.png</normaloff>:/icons/silk/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open Simulation</string>
+   </property>
+   <property name="toolTip">
+    <string>Open Simulation</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionSave_Simulation">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/silk/disk.png</normaloff>:/icons/silk/disk.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save Simulation</string>
+   </property>
+   <property name="toolTip">
+    <string>Save Simulation</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

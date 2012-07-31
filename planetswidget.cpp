@@ -442,6 +442,7 @@ bool PlanetsWidget::load(const QString &filename){
 
     if(xml.readNextStartElement()) {
         if (xml.name() == "planets-3d-universe"){
+            deleteAll();
             while(xml.readNextStartElement()) {
                 if(xml.name() == "planet"){
                     Planet* planet = new Planet();

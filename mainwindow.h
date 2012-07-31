@@ -45,6 +45,10 @@ private slots:
 
     void on_actionDraw_Paths_toggled(bool val);
 
+    void on_actionOpen_Simulation_triggered();
+
+    void on_actionSave_Simulation_triggered();
+
 private:
     Ui::MainWindow *ui;
 };
