@@ -44,6 +44,7 @@ public:
     QPoint lastmousepos;
 
     bool drawPaths;
+    bool motionBlur;
 
     GridDisplayMode gridMode;
     glm::vec4 gridColor;

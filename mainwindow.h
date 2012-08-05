@@ -49,6 +49,8 @@ private slots:
 
     void on_actionSave_Simulation_triggered();
 
+    void on_actionMotiuon_Blur_toggled(bool arg1);
+
 private:
     Ui::MainWindow *ui;
 };

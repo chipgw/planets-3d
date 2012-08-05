@@ -2,7 +2,7 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(parent) {
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer), parent) {
     this->setMouseTracking(true);
 
     this->doScreenshot = false;
@@ -28,19 +28,24 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(parent) {
     gridColor = glm::vec4(0.8,1.0,1.0,0.2);
 
     drawPaths = false;
+    motionBlur = false;
 
+    selected = NULL;
     load("default.xml");
 }
 
 PlanetsWidget::~PlanetsWidget() {
+    this->deleteAll();
     qDebug()<<"average fps: "<< framecount/totalTime.secsTo(QTime::currentTime());
 }
 
 void PlanetsWidget::initializeGL() {
-    glShadeModel(GL_SMOOTH);
-    qglClearColor(Qt::black);
-
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearAccum(0.0f, 0.0f, 0.0f, 0.0f);
     glClearDepth(1.0f);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
@@ -71,8 +76,14 @@ void PlanetsWidget::resizeGL(int width, int height) {
 void PlanetsWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    if(motionBlur){
+        glAccum(GL_RETURN, 1.0f);
+        glClear(GL_ACCUM_BUFFER_BIT);
+    }
+
     glMatrixMode(GL_MODELVIEW_MATRIX);
     glLoadIdentity();
+
     camera.setup();
 
     glEnable(GL_TEXTURE_2D);
@@ -145,6 +156,11 @@ void PlanetsWidget::paintGL() {
         }glEnd();
     }
 
+    if(motionBlur){
+        glAccum(GL_ADD, -0.002f*delay);
+        glAccum(GL_ACCUM, 1.0f);
+    }
+
     float scale = pow(4,floor(log10(camera.distance)));
 
     glScalef(scale,scale,scale);
@@ -170,7 +186,6 @@ void PlanetsWidget::paintGL() {
         break;
     }
     }
-
 
     if(this->doScreenshot){
         QDir dir = QDir::homePath() + "/Pictures/Planets3D Screenshots/";

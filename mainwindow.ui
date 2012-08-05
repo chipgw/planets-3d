@@ -52,6 +52,7 @@
     </widget>
     <addaction name="menuGrid"/>
     <addaction name="actionDraw_Paths"/>
+    <addaction name="actionMotiuon_Blur"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -419,6 +420,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionMotiuon_Blur">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Motiuon Blur</string>
    </property>
   </action>
  </widget>
