@@ -52,7 +52,7 @@
     </widget>
     <addaction name="menuGrid"/>
     <addaction name="actionDraw_Paths"/>
-    <addaction name="actionMotiuon_Blur"/>
+    <addaction name="actionMotion_Blur"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -422,12 +422,15 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionMotiuon_Blur">
+  <action name="actionMotion_Blur">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Motiuon Blur</string>
+    <string>Motion Blur</string>
+   </property>
+   <property name="toolTip">
+    <string>Motion Blur</string>
    </property>
   </action>
  </widget>

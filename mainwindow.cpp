@@ -139,6 +139,6 @@ void MainWindow::on_actionSave_Simulation_triggered(){
     ui->centralwidget->simspeed = tmpsimspeed;
 }
 
-void MainWindow::on_actionMotiuon_Blur_toggled(bool val){
+void MainWindow::on_actionMotion_Blur_toggled(bool val){
     ui->centralwidget->motionBlur = val;
 }

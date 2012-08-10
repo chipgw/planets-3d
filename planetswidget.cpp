@@ -6,7 +6,12 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     this->setMouseTracking(true);
 
     this->doScreenshot = false;
+
+#ifdef QT_DEBUG
     framerate = 60000;
+#else
+    framerate = 60;
+#endif
 
     framecount = 0;
     placingStep = 0;
@@ -141,6 +146,11 @@ void PlanetsWidget::paintGL() {
 
     glDisable(GL_TEXTURE_2D);
 
+    if(motionBlur){
+        glAccum(GL_ADD, -0.001f*delay);
+        glAccum(GL_ACCUM, 0.999f);
+    }
+
     if(selected){
         selected->drawBounds();
     }
@@ -154,11 +164,6 @@ void PlanetsWidget::paintGL() {
             glVertex3f(placing.position.x,placing.position.y,placing.position.z);
             glVertex3f(placing.position.x+placing.velocity.x/100,placing.position.y+placing.velocity.y/100,placing.position.z+placing.velocity.z/100);
         }glEnd();
-    }
-
-    if(motionBlur){
-        glAccum(GL_ADD, -0.002f*delay);
-        glAccum(GL_ACCUM, 1.0f);
     }
 
     float scale = pow(4,floor(log10(camera.distance)));
@@ -387,11 +392,11 @@ Planet* PlanetsWidget::createPlanet(glm::vec3 position, glm::vec3 velocity, floa
 
 void PlanetsWidget::deleteAll(){
     QMutableListIterator<Planet*> i(planets);
-    Planet* other;
+    Planet* planet;
     while (i.hasNext()) {
-        other = i.next();
+        planet = i.next();
         i.remove();
-        delete other;
+        delete planet;
     }
     selected = NULL;
 }
