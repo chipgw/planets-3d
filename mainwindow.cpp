@@ -97,26 +97,24 @@ void MainWindow::on_actionInteractive_Planet_Placement_triggered(){
 }
 
 void MainWindow::on_actionOff_triggered(){
-    ui->centralwidget->gridMode = PlanetsWidget::Off;
+    ui->centralwidget->displaysettings &= ~PlanetsWidget::SolidLineGrid;
+    ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
+    ui->actionLines->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::SolidLineGrid);
+    ui->actionPoints->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PointGrid);
 }
 
 void MainWindow::on_actionLines_triggered(){
-    ui->centralwidget->gridMode = PlanetsWidget::SolidLine;
+    ui->centralwidget->displaysettings |= PlanetsWidget::SolidLineGrid;
+    ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
+    ui->actionLines->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::SolidLineGrid);
+    ui->actionPoints->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PointGrid);
 }
 
 void MainWindow::on_actionPoints_triggered(){
-    ui->centralwidget->gridMode = PlanetsWidget::Points;
-}
-
-void MainWindow::on_actionDraw_Paths_toggled(bool val){
-    ui->centralwidget->drawPaths = val;
-
-    QMutableListIterator<Planet*> i(ui->centralwidget->planets);
-    Planet* planet;
-    while (i.hasNext()) {
-        planet = i.next();
-        planet->path.clear();
-    }
+    ui->centralwidget->displaysettings &= ~PlanetsWidget::SolidLineGrid;
+    ui->centralwidget->displaysettings |= PlanetsWidget::PointGrid;
+    ui->actionLines->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::SolidLineGrid);
+    ui->actionPoints->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PointGrid);
 }
 
 void MainWindow::on_actionOpen_Simulation_triggered(){
@@ -139,6 +137,21 @@ void MainWindow::on_actionSave_Simulation_triggered(){
     ui->centralwidget->simspeed = tmpsimspeed;
 }
 
-void MainWindow::on_actionMotion_Blur_toggled(bool val){
-    ui->centralwidget->motionBlur = val;
+void MainWindow::on_actionDraw_Paths_triggered(){
+    ui->centralwidget->displaysettings ^= PlanetsWidget::PlanetTrails;
+
+    ui->actionDraw_Paths->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PlanetTrails);
+
+    QMutableListIterator<Planet*> i(ui->centralwidget->planets);
+    Planet* planet;
+    while (i.hasNext()) {
+        planet = i.next();
+        planet->path.clear();
+    }
+}
+
+void MainWindow::on_actionMotion_Blur_triggered(){
+    ui->centralwidget->displaysettings ^= PlanetsWidget::MotionBlur;
+
+    ui->actionMotion_Blur->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::MotionBlur);
 }

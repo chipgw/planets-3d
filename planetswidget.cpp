@@ -28,12 +28,10 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     placing.velocity = glm::vec3(0,10,0);
     placing.mass = 100;
 
-    gridMode = Off;
+    displaysettings = 000;
+
     gridRange = 50;
     gridColor = glm::vec4(0.8,1.0,1.0,0.2);
-
-    drawPaths = false;
-    motionBlur = false;
 
     selected = NULL;
     load("default.xml");
@@ -84,7 +82,7 @@ void PlanetsWidget::resizeGL(int width, int height) {
 void PlanetsWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if(motionBlur){
+    if(displaysettings & MotionBlur){
         glAccum(GL_RETURN, 1.0f);
         glClear(GL_ACCUM_BUFFER_BIT);
     }
@@ -142,14 +140,14 @@ void PlanetsWidget::paintGL() {
 
         planet->draw();
 
-        if(drawPaths){
+        if(displaysettings & PlanetTrails){
             planet->drawPath(time);
         }
     }
 
     glDisable(GL_TEXTURE_2D);
 
-    if(motionBlur){
+    if(displaysettings & MotionBlur){
         glAccum(GL_ADD, -0.002f*delay);
         glAccum(GL_ACCUM, 0.999f);
     }
@@ -173,26 +171,19 @@ void PlanetsWidget::paintGL() {
 
     glScalef(scale,scale,scale);
 
-    switch(gridMode){
-    case SolidLine:{
+    if(displaysettings & SolidLineGrid){
         glColor4fv(glm::value_ptr(gridColor));
         glBegin(GL_LINES);
         drawGrid();
         glEnd();
         glColor4f(1.0,1.0,1.0,1.0);
-        break;
     }
-    case Points:{
+    if(displaysettings & PointGrid){
         glColor4fv(glm::value_ptr(gridColor));
         glBegin(GL_POINTS);
         drawGrid();
         glEnd();
         glColor4f(1.0,1.0,1.0,1.0);
-        break;
-    }
-    case Off:{
-        break;
-    }
     }
 
     if(this->doScreenshot){

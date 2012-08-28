@@ -11,10 +11,11 @@
 class PlanetsWidget : public QGLWidget {
     Q_OBJECT
 public:
-    enum GridDisplayMode{
-        Off,
-        SolidLine,
-        Points
+    enum DisplaySettings{
+        PlanetTrails = (1<<0),
+        MotionBlur = (1<<1),
+        SolidLineGrid = (1<<2),
+        PointGrid = (1<<3)
     };
 
     PlanetsWidget(QWidget *parent = 0);
@@ -43,10 +44,8 @@ public:
 
     QPoint lastmousepos;
 
-    bool drawPaths;
-    bool motionBlur;
+    short displaysettings;
 
-    GridDisplayMode gridMode;
     glm::vec4 gridColor;
     int gridRange;
     void drawGrid();

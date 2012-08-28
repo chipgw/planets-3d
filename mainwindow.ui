@@ -370,16 +370,28 @@
    </property>
   </action>
   <action name="actionOff">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Off</string>
    </property>
   </action>
   <action name="actionLines">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Lines</string>
    </property>
   </action>
   <action name="actionPoints">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Points</string>
    </property>
