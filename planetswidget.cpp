@@ -54,6 +54,9 @@ void PlanetsWidget::initializeGL() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
     glEnable(GL_TEXTURE_2D);
 
     glEnable(GL_BLEND);
@@ -147,7 +150,7 @@ void PlanetsWidget::paintGL() {
     glDisable(GL_TEXTURE_2D);
 
     if(motionBlur){
-        glAccum(GL_ADD, -0.001f*delay);
+        glAccum(GL_ADD, -0.002f*delay);
         glAccum(GL_ACCUM, 0.999f);
     }
 
