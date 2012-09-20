@@ -90,6 +90,13 @@ void PlanetsWidget::paintGL() {
     glMatrixMode(GL_MODELVIEW_MATRIX);
     glLoadIdentity();
 
+    if(following != NULL){
+        camera.position = following->position;
+    }
+    else{
+        camera.position = glm::vec3(0,0,0);
+    }
+
     camera.setup();
 
     glEnable(GL_TEXTURE_2D);

@@ -155,3 +155,11 @@ void MainWindow::on_actionMotion_Blur_triggered(){
 
     ui->actionMotion_Blur->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::MotionBlur);
 }
+
+void MainWindow::on_followPlanetPushButton_clicked(){
+    ui->centralwidget->following = ui->centralwidget->selected;
+}
+
+void MainWindow::on_clearFollowPushButton_clicked(){
+    ui->centralwidget->following = NULL;
+}

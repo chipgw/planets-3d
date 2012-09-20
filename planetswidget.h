@@ -23,6 +23,7 @@ public:
 
     QList<Planet*> planets;
     Planet* selected;
+    Planet* following;
     GLuint texture;
 
     Camera camera;

@@ -65,7 +65,7 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
+   <widget class="QWidget" name="newPlanet_DockWidgetContents">
     <layout class="QFormLayout" name="formLayout">
      <property name="fieldGrowthPolicy">
       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
@@ -219,7 +219,7 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
+   <widget class="QWidget" name="speedControl_DockWidgetContents">
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QDial" name="speed_Dial">
@@ -282,6 +282,42 @@
    <addaction name="actionNew_Simulation"/>
    <addaction name="actionCenter_All"/>
    <addaction name="actionInteractive_Planet_Placement"/>
+  </widget>
+  <widget class="QDockWidget" name="camera_DockWidget">
+   <property name="windowTitle">
+    <string>Camera Location</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="camera_DockWidgetContents">
+    <layout class="QFormLayout" name="formLayout_2">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="followPlanetLabel">
+       <property name="text">
+        <string>Follow Planet</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="followPlanetPushButton">
+       <property name="text">
+        <string>Currently Selected</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QPushButton" name="clearFollowPushButton">
+       <property name="text">
+        <string>Follow None</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionExit">
    <property name="icon">

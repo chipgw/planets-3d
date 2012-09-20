@@ -51,6 +51,10 @@ private slots:
 
     void on_actionMotion_Blur_triggered();
 
+    void on_followPlanetPushButton_clicked();
+
+    void on_clearFollowPushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

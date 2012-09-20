@@ -7,7 +7,7 @@ class Camera {
 public:
     Camera();
 
-    glm::vec3 location;
+    glm::vec3 position;
     float distance,xrotation,zrotation;
 
     void setup();
