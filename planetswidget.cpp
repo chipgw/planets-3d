@@ -34,6 +34,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     gridColor = glm::vec4(0.8,1.0,1.0,0.2);
 
     selected = NULL;
+    following = NULL;
     load("default.xml");
 }
 
@@ -106,6 +107,10 @@ void PlanetsWidget::paintGL() {
         time = simspeed*(delay/5000.0);
     }
 
+    if(selected){
+        selected->drawBounds();
+    }
+
     Planet* planet;
     Planet* other;
     QMutableListIterator<Planet*> i(planets);
@@ -143,13 +148,13 @@ void PlanetsWidget::paintGL() {
             }
         }
 
-        planet->position += planet->velocity * time;
-
         planet->draw();
 
         if(displaysettings & PlanetTrails){
             planet->drawPath(time);
         }
+
+        planet->position += planet->velocity * time;
     }
 
     glDisable(GL_TEXTURE_2D);
@@ -158,11 +163,6 @@ void PlanetsWidget::paintGL() {
         glAccum(GL_ADD, -0.002f*delay);
         glAccum(GL_ACCUM, 0.999f);
     }
-
-    if(selected){
-        selected->drawBounds();
-    }
-
     if(placingStep != 0){
         placing.drawBounds();
     }
@@ -232,7 +232,9 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     if(placingStep == 1){
         // set placing XY position based on grid
         glClear(GL_DEPTH_BUFFER_BIT);
+
         glColorMask(0, 0, 0, 0);
+        glDisable(GL_CULL_FACE);
 
         glMatrixMode(GL_MODELVIEW_MATRIX);
         glLoadIdentity();
@@ -244,7 +246,6 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
             glVertex4f(-10,-10,0,1.0e-5);
             glVertex4f(-10,10,0,1.0e-5);
         }glEnd();
-
 
         glm::ivec4 viewport;
         glm::mat4 modelview,projection;
@@ -259,6 +260,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
         placing.position = glm::unProject(windowCoord,modelview,projection,viewport);
 
+        glEnable(GL_CULL_FACE);
         glColorMask(1, 1, 1, 1);
 
         this->lastmousepos = e->pos();
