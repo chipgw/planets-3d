@@ -14,7 +14,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
 #endif
 
     framecount = 0;
-    placingStep = 0;
+    placingStep = None;
     delay = 0;
     simspeed = 1.0;
     totalTime = QTime::currentTime();
@@ -103,7 +103,7 @@ void PlanetsWidget::paintGL() {
     glEnable(GL_TEXTURE_2D);
 
     float time = 0;
-    if(placingStep == 0){
+    if(placingStep == None){
         time = simspeed*(delay/5000.0);
     }
 
@@ -163,11 +163,11 @@ void PlanetsWidget::paintGL() {
         glAccum(GL_ADD, -0.002f*delay);
         glAccum(GL_ACCUM, 0.999f);
     }
-    if(placingStep != 0){
+    if(placingStep != None){
         placing.drawBounds();
     }
 
-    if(placingStep == 3){
+    if(placingStep == FreeVelocity){
         glBegin(GL_LINES);{
             glVertex3f(placing.position.x,placing.position.y,placing.position.z);
             glVertex3f(placing.position.x+placing.velocity.x/100,placing.position.y+placing.velocity.y/100,placing.position.z+placing.velocity.z/100);
@@ -229,7 +229,7 @@ void PlanetsWidget::paintGL() {
 }
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
-    if(placingStep == 1){
+    if(placingStep == FreePositionXY){
         // set placing XY position based on grid
         glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -265,12 +265,12 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
         this->lastmousepos = e->pos();
     }
-    else if(placingStep == 2){
+    else if(placingStep == FreePositionZ){
         // set placing Z position
         placing.position.z += (lastmousepos.y() - e->y())/10.0;
         this->lastmousepos = e->pos();
     }
-    else if(placingStep == 3){
+    else if(placingStep == FreeVelocity){
         // set placing velocity
         placingXrotation += (lastmousepos.y() - e->y())/10.0f;
         placingZrotation += (lastmousepos.x() - e->x())/10.0f;
@@ -312,22 +312,21 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
 }
 
 void PlanetsWidget::mousePressEvent(QMouseEvent* e){
-    if(placingStep == 1){
+    if(placingStep == FreePositionXY){
         if(e->button() == Qt::LeftButton){
-            placingStep = 2;
+            placingStep = FreePositionZ;
             setCursor(QCursor(Qt::BlankCursor));
         }
     }
-    else if(placingStep == 2){
+    else if(placingStep == FreePositionZ){
         if(e->button() == Qt::LeftButton){
-            placingStep = 3;
+            placingStep = FreeVelocity;
         }
     }
-    else if(placingStep == 3){
+    else if(placingStep == FreeVelocity){
         if(e->button() == Qt::LeftButton){
-            placingStep = 0;
+            placingStep = None;
             selected = createPlanet(placing.position, placing.velocity, placing.mass);
-            simspeed = 1;
         }
     }
     else if(e->button() == Qt::LeftButton){
@@ -430,7 +429,7 @@ void PlanetsWidget::centerAll(){
 }
 
 void PlanetsWidget::beginInteractiveCreation(){
-    placingStep = 1;
+    placingStep = FreePositionXY;
     selected = NULL;
 }
 

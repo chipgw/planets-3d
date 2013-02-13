@@ -17,6 +17,12 @@ public:
         SolidLineGrid = (1<<2),
         PointGrid = (1<<3)
     };
+    enum PlacingStep{
+        None = (0),
+        FreePositionXY = 1,
+        FreePositionZ = 2,
+        FreeVelocity = 3
+    };
 
     PlanetsWidget(QWidget *parent = 0);
     ~PlanetsWidget();
@@ -29,7 +35,7 @@ public:
     Camera camera;
     bool doScreenshot;
 
-    short placingStep;
+    PlacingStep placingStep;
     Planet placing;
     float placingXrotation,placingZrotation;
 
