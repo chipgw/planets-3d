@@ -2,7 +2,7 @@
 #define COMMON_H
 
 #include <Qt>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QDir>
 #include <QDebug>
 #include <QFile>

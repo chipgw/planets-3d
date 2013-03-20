@@ -37,7 +37,7 @@ public:
 
     PlacingStep placingStep;
     Planet placing;
-    float placingXrotation,placingZrotation;
+    glm::mat4 placingRotation;
 
     float simspeed;
     int delay;

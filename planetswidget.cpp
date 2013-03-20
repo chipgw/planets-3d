@@ -168,10 +168,27 @@ void PlanetsWidget::paintGL() {
     }
 
     if(placingStep == FreeVelocity){
-        glBegin(GL_LINES);{
-            glVertex3f(placing.position.x,placing.position.y,placing.position.z);
-            glVertex3f(placing.position.x+placing.velocity.x/100,placing.position.y+placing.velocity.y/100,placing.position.z+placing.velocity.z/100);
-        }glEnd();
+        float length = glm::length(placing.velocity)/20.0f;
+
+        if(length > 0.0f){
+            glPushMatrix();
+            glTranslatef(placing.position.x,placing.position.y,placing.position.z);
+            glMultMatrixf(glm::value_ptr(placingRotation));
+
+            GLUquadric *cylinder = gluNewQuadric();
+            gluQuadricOrientation(cylinder, GLU_OUTSIDE);
+            gluCylinder(cylinder,0.1f,0.1f,length,64,1);
+
+            GLUquadric *cap = gluNewQuadric();
+            gluQuadricOrientation(cap, GLU_INSIDE);
+            gluDisk(cap, 0.0f, 0.1f, 64, 1);
+            glTranslatef(0.0f,0.0f,length);
+            gluCylinder(cylinder,0.2f,0.0f,0.4f,64,1);
+
+            gluDisk(cap, 0.1f, 0.2f, 64, 1);
+            glPopMatrix();
+        }
+
     }
 
     float scale = pow(4,floor(log10(camera.distance)));
@@ -220,8 +237,10 @@ void PlanetsWidget::paintGL() {
 
     renderText(10,10,tr("simulation speed: %1").arg(simspeed));
 
-    if(totalTime.secsTo(QTime::currentTime()) > 0)
-        renderText(10,30,tr("fps: %1\taverage fps: %2").arg(fps).arg(framecount/(totalTime.msecsTo(QTime::currentTime()) * 0.001f)));
+    if(totalTime.msecsTo(QTime::currentTime()) > 0){
+        renderText(10,30,tr("fps: %1").arg(fps));
+        renderText(10,50,tr("average fps: %1").arg(framecount/(totalTime.msecsTo(QTime::currentTime()) * 0.001f)));
+    }
 
     timer->start(qMax(0, (1000/framerate) - delay));
 }
@@ -270,9 +289,11 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     }
     else if(placingStep == FreeVelocity){
         // set placing velocity
-        placingXrotation += (lastmousepos.y() - e->y())/10.0f;
-        placingZrotation += (lastmousepos.x() - e->x())/10.0f;
-        placing.velocity = glm::rotateZ(glm::rotateX(glm::vec3(0.0f,1.0f,0.0f), placingXrotation), placingZrotation) * glm::length(placing.velocity);
+        float xdelta = (lastmousepos.x() - e->x())/20.0f;
+        float ydelta = (lastmousepos.y() - e->y())/20.0f;
+        placingRotation *= glm::rotate(xdelta,1.0f,0.0f,0.0f);
+        placingRotation *= glm::rotate(ydelta,0.0f,1.0f,0.0f);
+        placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f,0.0f,1.0f, 1.0f) * glm::length(placing.velocity));
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
     }
     else if(e->buttons().testFlag(Qt::LeftButton)){
@@ -292,7 +313,6 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         this->setCursor(Qt::SizeAllCursor);
     }
     else if(e->buttons().testFlag(Qt::RightButton)){
-
         this->setCursor(Qt::ArrowCursor);
     }
     else{
@@ -369,7 +389,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
         placing.position.z += e->delta()*camera.distance/200.0f;
     }
     else if(placingStep == FreeVelocity){
-        placing.velocity += glm::normalize(placing.velocity) * (e->delta()*0.01f);
+        placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f,0.0f,1.0f, 1.0f) * glm::max(0.0f, glm::length(placing.velocity) + (e->delta()*0.01f)));
     }
     else {
         float dist = camera.distance - e->delta()/20.0f;
@@ -404,7 +424,7 @@ void PlanetsWidget::deleteAll(){
 void PlanetsWidget::centerAll(){
     QMutableListIterator<Planet* > i(planets);
     Planet* planet;
-    glm::vec3 averagePosition(0.0f,0.0f,0),averageVelocity(0.0f,0.0f,0.0f);
+    glm::vec3 averagePosition(0.0f,0.0f,0.0f),averageVelocity(0.0f,0.0f,0.0f);
     float totalmass = 0.0f;
     while (i.hasNext()) {
         planet = i.next();
@@ -449,7 +469,7 @@ void PlanetsWidget::drawGrid(){
 
 bool PlanetsWidget::load(const QString &filename){
     if(!QFile::exists(filename)){
-        qDebug(qPrintable("\"" + filename + "\" does not exist!"));
+        qDebug(qPrintable(tr("\"%1\" does not exist!").arg(filename)));
         return false;
     }
     QFile file(filename);
@@ -488,13 +508,13 @@ bool PlanetsWidget::load(const QString &filename){
                 }
             }
             if(xml.hasError()){
-                qDebug(qPrintable("\"" + filename + "\" had error: " + xml.errorString()));
+                qDebug(qPrintable(tr("\"%1\" had error: %2").arg(filename).arg(xml.errorString())));
                 return false;
             }
         }
 
         else{
-            qDebug(qPrintable("\"" + filename + "\" is not a valid universe file!"));
+            qDebug(qPrintable(tr("\"%1\" is not a valid universe file!").arg(filename)));
             return false;
         }
     }

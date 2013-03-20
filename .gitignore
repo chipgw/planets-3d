@@ -45,3 +45,7 @@ Thumbs.db
 # Kate backup files #
 #####################
 *~
+
+# build directories #
+#####################
+build*

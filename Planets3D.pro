@@ -22,8 +22,6 @@ OTHER_FILES += planet.png
 
 RESOURCES += resources.qrc
 
-
-
-linux-g++{
+linux{
     LIBS += -lGLU
 }
