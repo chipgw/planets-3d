@@ -24,14 +24,14 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     timer->setSingleShot(true);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
-    placing.position = glm::vec3(0,0,0);
-    placing.velocity = glm::vec3(0,10,0);
-    placing.mass = 100;
+    placing.position = glm::vec3(0.0f,0.0f,0.0f);
+    placing.velocity = glm::vec3(0.0f,10.0f,0.0f);
+    placing.mass = 100.0f;
 
     displaysettings = 000;
 
     gridRange = 50;
-    gridColor = glm::vec4(0.8,1.0,1.0,0.2);
+    gridColor = glm::vec4(0.8f,1.0f,1.0f,0.2f);
 
     selected = NULL;
     following = NULL;
@@ -40,7 +40,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
 
 PlanetsWidget::~PlanetsWidget() {
     this->deleteAll();
-    qDebug()<<"average fps: "<< framecount/totalTime.secsTo(QTime::currentTime());
+    qDebug()<< "average fps: " << framecount/(totalTime.msecsTo(QTime::currentTime())* 0.001f);
 }
 
 void PlanetsWidget::initializeGL() {
@@ -95,16 +95,16 @@ void PlanetsWidget::paintGL() {
         camera.position = following->position;
     }
     else{
-        camera.position = glm::vec3(0,0,0);
+        camera.position = glm::vec3(0.0f,0.0f,0.0f);
     }
 
     camera.setup();
 
     glEnable(GL_TEXTURE_2D);
 
-    float time = 0;
+    float time = 0.0f;
     if(placingStep == None){
-        time = simspeed*(delay/5000.0);
+        time = simspeed*delay*0.001f;
     }
 
     if(selected){
@@ -134,7 +134,7 @@ void PlanetsWidget::paintGL() {
 
                 distance = sqrt(distance);
 
-                if(distance < planet->getRadius()+other->getRadius()/2){
+                if(distance < planet->getRadius()+other->getRadius()/2.0f){
                     planet->position = (other->position*other->mass + planet->position*planet->mass)/(other->mass+planet->mass);
                     planet->velocity = (other->velocity*other->mass + planet->velocity*planet->mass)/(other->mass+planet->mass);
                     planet->mass += other->mass;
@@ -183,14 +183,14 @@ void PlanetsWidget::paintGL() {
         glBegin(GL_LINES);
         drawGrid();
         glEnd();
-        glColor4f(1.0,1.0,1.0,1.0);
+        glColor4f(1.0f,1.0f,1.0f,1.0f);
     }
     if(displaysettings & PointGrid){
         glColor4fv(glm::value_ptr(gridColor));
         glBegin(GL_POINTS);
         drawGrid();
         glEnd();
-        glColor4f(1.0,1.0,1.0,1.0);
+        glColor4f(1.0f,1.0f,1.0f,1.0f);
     }
 
     if(this->doScreenshot){
@@ -212,18 +212,16 @@ void PlanetsWidget::paintGL() {
         this->doScreenshot = false;
     }
 
-    delay = frameTime.msecsTo(QTime::currentTime());
-    float fps = 1000/qMax(delay+0.0,1000.0/framerate);
+    delay = qMax(frameTime.msecsTo(QTime::currentTime()), 1);
+    frameTime = QTime::currentTime();
+
+    float fps = 1000.0f/delay;
     framecount++;
 
-    renderText(10,10,"simulation speed: "+QString::number(simspeed));
+    renderText(10,10,tr("simulation speed: %1").arg(simspeed));
 
     if(totalTime.secsTo(QTime::currentTime()) > 0)
-        renderText(10,30,"fps: "+QString::number(fps)+"\taverage fps: "+QString::number(framecount/totalTime.secsTo(QTime::currentTime())));
-
-    if (delay == 0)
-        delay = 1;
-    frameTime = QTime::currentTime();
+        renderText(10,30,tr("fps: %1\taverage fps: %2").arg(fps).arg(framecount/(totalTime.msecsTo(QTime::currentTime()) * 0.001f)));
 
     timer->start(qMax(0, (1000/framerate) - delay));
 }
@@ -241,10 +239,10 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         camera.setup();
 
         glBegin(GL_QUADS);{
-            glVertex4f(10,10,0,1.0e-5);
-            glVertex4f(10,-10,0,1.0e-5);
-            glVertex4f(-10,-10,0,1.0e-5);
-            glVertex4f(-10,10,0,1.0e-5);
+            glVertex4f( 10.0f, 10.0f, 0.0f,1.0e-5f);
+            glVertex4f( 10.0f,-10.0f, 0.0f,1.0e-5f);
+            glVertex4f(-10.0f,-10.0f, 0.0f,1.0e-5f);
+            glVertex4f(-10.0f, 10.0f, 0.0f,1.0e-5f);
         }glEnd();
 
         glm::ivec4 viewport;
@@ -267,14 +265,14 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     }
     else if(placingStep == FreePositionZ){
         // set placing Z position
-        placing.position.z += (lastmousepos.y() - e->y())/10.0;
+        placing.position.z += (lastmousepos.y() - e->y())/10.0f;
         this->lastmousepos = e->pos();
     }
     else if(placingStep == FreeVelocity){
         // set placing velocity
         placingXrotation += (lastmousepos.y() - e->y())/10.0f;
         placingZrotation += (lastmousepos.x() - e->x())/10.0f;
-        placing.velocity = glm::rotateZ(glm::rotateX(glm::vec3(0,1,0), placingXrotation), placingZrotation) * glm::length(placing.velocity);
+        placing.velocity = glm::rotateZ(glm::rotateX(glm::vec3(0.0f,1.0f,0.0f), placingXrotation), placingZrotation) * glm::length(placing.velocity);
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
     }
     else if(e->buttons().testFlag(Qt::LeftButton)){
@@ -305,9 +303,9 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
 void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
     if(e->button() == Qt::MiddleButton){
-        camera.distance = 10;
-        camera.xrotation = 45;
-        camera.zrotation = 0;
+        camera.distance = 10.0f;
+        camera.xrotation = 45.0f;
+        camera.zrotation = 0.0f;
     }
 }
 
@@ -363,18 +361,18 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 }
 
 void PlanetsWidget::wheelEvent(QWheelEvent* e){
-    if(placingStep == 1){
-        placing.mass += e->delta()*(placing.mass*1.0e-3);
+    if(placingStep == FreePositionXY){
+        placing.mass += e->delta()*(placing.mass*1.0e-3f);
         qMax(placing.mass, 0.1f);
     }
-    else if(placingStep == 2){
-        placing.position.z += e->delta()*camera.distance/200.0;
+    else if(placingStep == FreePositionZ){
+        placing.position.z += e->delta()*camera.distance/200.0f;
     }
-    else if(placingStep == 3){
+    else if(placingStep == FreeVelocity){
         placing.velocity += glm::normalize(placing.velocity) * (e->delta()*0.01f);
     }
     else {
-        float dist = camera.distance - e->delta()/20.0;
+        float dist = camera.distance - e->delta()/20.0f;
 
         dist = qMax(dist,5.0f);
         dist = qMin(dist,300.0f);
@@ -406,8 +404,8 @@ void PlanetsWidget::deleteAll(){
 void PlanetsWidget::centerAll(){
     QMutableListIterator<Planet* > i(planets);
     Planet* planet;
-    glm::vec3 averagePosition(0,0,0),averageVelocity(0,0,0);
-    float totalmass = 0;
+    glm::vec3 averagePosition(0.0f,0.0f,0),averageVelocity(0.0f,0.0f,0.0f);
+    float totalmass = 0.0f;
     while (i.hasNext()) {
         planet = i.next();
 
@@ -436,15 +434,15 @@ void PlanetsWidget::beginInteractiveCreation(){
 void PlanetsWidget::drawGrid(){
     for(int x = -gridRange; x <= gridRange;x++){
         for(int y = -gridRange; y <= gridRange;y++){
-            glVertex3f(x,y,0);
-            glVertex3f(x+1,y,0);
-            glVertex3f(x,y,0);
-            glVertex3f(x,y+1,0);
+            glVertex3f(x,     y,     0.0f);
+            glVertex3f(x+1.0f,y,     0.0f);
+            glVertex3f(x,     y,     0.0f);
+            glVertex3f(x,     y+1.0f,0.0f);
 
-            glVertex3f(x+1,y+1,0);
-            glVertex3f(x+1,y,0);
-            glVertex3f(x+1,y+1,0);
-            glVertex3f(x,y+1,0);
+            glVertex3f(x+1.0f,y+1.0f,0.0f);
+            glVertex3f(x+1.0f,y,     0.0f);
+            glVertex3f(x+1.0f,y+1.0f,0.0f);
+            glVertex3f(x,     y+1.0f,0.0f);
         }
     }
 }

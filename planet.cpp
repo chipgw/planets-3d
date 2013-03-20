@@ -2,18 +2,18 @@
 
 QColor Planet::nextSelectionColor = QColor(1,1,1);
 
-Planet::Planet() : position(0,0,0) {
-    mass = 1000;
+Planet::Planet() : position(0.0f,0.0f,0.0f) {
+    mass = 1000.0f;
 
     selectionColor = nextSelectionColor;
 
-    nextSelectionColor.setRed(nextSelectionColor.red()+10);
+    nextSelectionColor.setRed(nextSelectionColor.red()+1);
     if(nextSelectionColor.red() == 0) {
         nextSelectionColor.setRed(1);
-        nextSelectionColor.setGreen(nextSelectionColor.green()+10);
+        nextSelectionColor.setGreen(nextSelectionColor.green()+1);
         if(nextSelectionColor.green() == 0){
             nextSelectionColor.setGreen(1);
-            nextSelectionColor.setBlue(nextSelectionColor.blue()+10);
+            nextSelectionColor.setBlue(nextSelectionColor.blue()+1);
         }
     }
     lastpathrecorddelta = 0;
@@ -40,7 +40,7 @@ void Planet::drawPath(float time){
 
     glDisable(GL_TEXTURE_2D);
 
-    if(lastpathrecorddelta > 0.02){
+    if(lastpathrecorddelta > 0.02f){
         path.push_back(this->position);
 
         if(path.size() > 100){
@@ -57,22 +57,20 @@ void Planet::drawPath(float time){
 }
 
 float Planet::getRadius(){
-    return pow(3*mass/4*M_PI, 1.0/3.0)/10;
+    return pow(3.0f*mass/4.0f*M_PI, 1.0f/3.0f)/10.0f;
 }
 
 void Planet::drawBounds(GLenum drawmode, bool selectioncolor){
-    bool lighting = glIsEnabled(GL_LIGHTING);
     bool texturing = glIsEnabled(GL_TEXTURE_2D);
-    if(lighting)
-        glDisable(GL_LIGHTING);
-    if(texturing)
+    if(texturing){
         glDisable(GL_TEXTURE_2D);
+    }
 
     if(selectioncolor){
         glColor3f(selectionColor.redF(),selectionColor.greenF(),selectionColor.blueF());
     }
     else{
-        glColor3f(0.0,1.0,0.0);
+        glColor3f(0.0f,1.0f,0.0f);
     }
 
     glPushMatrix();
@@ -81,14 +79,13 @@ void Planet::drawBounds(GLenum drawmode, bool selectioncolor){
     GLUquadric *sphere = gluNewQuadric();
     gluQuadricOrientation(sphere, GLU_OUTSIDE);
     gluQuadricDrawStyle(sphere, drawmode);
-    gluSphere(sphere,this->getRadius()*1.02,32,16);
+    gluSphere(sphere,this->getRadius()*1.02f,32,16);
 
-    glColor3f(1.0,1.0,1.0);
+    glColor3f(1.0f,1.0f,1.0f);
 
-    if(lighting)
-        glEnable(GL_LIGHTING);
-    if(texturing)
+    if(texturing){
         glEnable(GL_TEXTURE_2D);
+    }
 
     glPopMatrix();
 }

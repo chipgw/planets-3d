@@ -23,6 +23,6 @@
 #define M_PI 3.141592654
 #endif
 
-const float gravityconst = 6.67e-1;
+const float gravityconst = 6.67e-1f;
 
 #endif // COMMON_H
