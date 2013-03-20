@@ -163,3 +163,15 @@ void MainWindow::on_followPlanetPushButton_clicked(){
 void MainWindow::on_clearFollowPushButton_clicked(){
     ui->centralwidget->following = NULL;
 }
+
+void MainWindow::on_actionAbout_triggered(){
+    QMessageBox::about(this, "About Planets3D",
+                       "<html><head/><body>"
+                       "<p>Planets3D is a 3D gravitational simulator, inspired by <a href=\"http://planets.homedns.org/\">Planets</a></p>"
+                       "<p>Website: <a href=\"https://github.com/chipgw/planets-3d\">github.com/chipgw/planets-3d</a></p>"
+                       "</body></html>");
+}
+
+void MainWindow::on_actionAbout_Qt_triggered(){
+    QMessageBox::aboutQt(this);
+}
