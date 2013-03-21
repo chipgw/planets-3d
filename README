@@ -1,0 +1,5 @@
+Planets3D is a 3D gravitational simulator inspired by Planets (planets.homedns.org)
+demo video: http://youtu.be/4ihB0k1ME10
+
+Binary releases: sourceforge.net/projects/planets-3d/files/
+Build using Qt SDK: qt-project.org
