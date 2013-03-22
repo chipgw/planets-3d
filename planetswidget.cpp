@@ -296,10 +296,6 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f,0.0f,1.0f, 1.0f) * glm::length(placing.velocity));
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
     }
-    else if(e->buttons().testFlag(Qt::LeftButton)){
-        this->lastmousepos = e->pos();
-        this->setCursor(Qt::ArrowCursor);
-    }
     else if(e->buttons().testFlag(Qt::MiddleButton)){
         float xrot = camera.xrotation + ((150.0f * (lastmousepos.y() - e->y()))/this->height());
         float zrot = camera.zrotation + ((300.0f * (lastmousepos.x() - e->x()))/this->width());
@@ -312,11 +308,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
         this->setCursor(Qt::SizeAllCursor);
     }
-    else if(e->buttons().testFlag(Qt::RightButton)){
-        this->setCursor(Qt::ArrowCursor);
-    }
     else{
-        this->setCursor(Qt::ArrowCursor);
         this->lastmousepos = e->pos();
     }
 }
@@ -345,6 +337,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
         if(e->button() == Qt::LeftButton){
             placingStep = None;
             selected = createPlanet(placing.position, placing.velocity, placing.mass);
+            this->setCursor(Qt::ArrowCursor);
         }
     }
     else if(e->button() == Qt::LeftButton){
@@ -380,13 +373,16 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     }
 }
 
+void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
+    if(e->button() == Qt::MiddleButton){
+        this->setCursor(Qt::ArrowCursor);
+    }
+}
+
 void PlanetsWidget::wheelEvent(QWheelEvent* e){
-    if(placingStep == FreePositionXY){
+    if(placingStep == FreePositionXY || placingStep == FreePositionZ){
         placing.mass += e->delta()*(placing.mass*1.0e-3f);
         qMax(placing.mass, 0.1f);
-    }
-    else if(placingStep == FreePositionZ){
-        placing.position.z += e->delta()*camera.distance/200.0f;
     }
     else if(placingStep == FreeVelocity){
         placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f,0.0f,1.0f, 1.0f) * glm::max(0.0f, glm::length(placing.velocity) + (e->delta()*0.01f)));
