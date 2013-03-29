@@ -21,8 +21,8 @@ file(GLOB SOURCES "src/*.cpp")
 file(GLOB FORMS "forms/*.ui")
 set(RESOURCES "resources.qrc")
 
-# configure_file("${CMAKE_CURRENT_SOURCE_DIR}/DepthView.rc.in" "${CMAKE_CURRENT_SOURCE_DIR}/DepthView.rc" @ONLY)
-# set(WINDRES "DepthView.rc")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Planets3D.rc.in" "${CMAKE_CURRENT_SOURCE_DIR}/Planets3D.rc" @ONLY)
+set(WINDRES "Planets3D.rc")
 
 find_package(Qt5Widgets)
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
