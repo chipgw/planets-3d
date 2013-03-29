@@ -6,7 +6,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QFile>
-#include <QGLWidget>
+#include <QtOpenGL/QGLWidget>
 #include <QMap>
 #include <QMessageBox>
 #include <math.h>
@@ -24,5 +24,13 @@
 #endif
 
 const float gravityconst = 6.67e-1f;
+
+namespace version{
+    extern const int major;
+    extern const int minor;
+    extern const QString git_revision;
+    QString getVersionString();
+    extern const QString build_type;
+}
 
 #endif // COMMON_H

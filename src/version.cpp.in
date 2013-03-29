@@ -1,0 +1,13 @@
+#include "common.h"
+
+namespace version{
+    const int major = @Planets3D_VERSION_MAJOR@;
+    const int minor = @Planets3D_VERSION_MINOR@;
+    const QString git_revision = "@GIT_SHA1@";
+
+    QString getVersionString(){
+        QString val = "%1.%2";
+        return val.arg(major).arg(minor, 2, 10, QLatin1Char('0'));
+    }
+    const QString build_type = "@CMAKE_BUILD_TYPE@";
+}

@@ -166,10 +166,12 @@ void MainWindow::on_clearFollowPushButton_clicked(){
 
 void MainWindow::on_actionAbout_triggered(){
     QMessageBox::about(this, "About Planets3D",
-                       "<html><head/><body>"
+                       tr("<html><head/><body>"
                        "<p>Planets3D is a 3D gravitational simulator, inspired by <a href=\"http://planets.homedns.org/\">Planets</a></p>"
                        "<p>Website: <a href=\"https://github.com/chipgw/planets-3d\">github.com/chipgw/planets-3d</a></p>"
-                       "</body></html>");
+                       "<p>Git sha1: %1</p>"
+                       "<p>Build type: %2</p>"
+                       "</body></html>").arg(version::git_revision).arg(version::build_type));
 }
 
 void MainWindow::on_actionAbout_Qt_triggered(){

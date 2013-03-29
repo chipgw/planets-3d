@@ -2,12 +2,12 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer), parent) {
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent) {
     this->setMouseTracking(true);
 
     this->doScreenshot = false;
 
-#ifdef QT_DEBUG
+#ifndef NDEBUG
     framerate = 60000;
 #else
     framerate = 60;
@@ -65,6 +65,7 @@ void PlanetsWidget::initializeGL() {
     QImage img(":/textures/planet.png");
     texture = bindTexture(img);
 }
+
 void PlanetsWidget::resizeGL(int width, int height) {
     if (height == 0)
         height = 1;
