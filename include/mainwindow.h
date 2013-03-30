@@ -59,6 +59,10 @@ private slots:
 
     void on_actionAbout_Qt_triggered();
 
+    void on_followPlainAveragePushButton_clicked();
+
+    void on_followWeightedAveragePushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

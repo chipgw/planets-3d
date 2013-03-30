@@ -92,8 +92,24 @@ void PlanetsWidget::paintGL() {
     glMatrixMode(GL_MODELVIEW_MATRIX);
     glLoadIdentity();
 
-    if(following != NULL){
+    if(followState == Single && following != NULL){
         camera.position = following->position;
+    }else if(followState == WeightedAverage){
+        camera.position = glm::vec3(0.0f,0.0f,0.0f);
+        float totalmass = 0.0f;
+
+        foreach(Planet *planet ,planets){
+            camera.position += planet->position * planet->mass;
+            totalmass += planet->mass;
+        }
+        camera.position /= totalmass;
+    }else if(followState == PlainAverage){
+        camera.position = glm::vec3(0.0f,0.0f,0.0f);
+
+        foreach(Planet *planet ,planets){
+            camera.position += planet->position;
+        }
+        camera.position /= planets.size();
     }
     else{
         camera.position = glm::vec3(0.0f,0.0f,0.0f);

@@ -23,6 +23,12 @@ public:
         FreePositionZ = 2,
         FreeVelocity = 3
     };
+    enum FollowingState{
+        FollowNone,
+        Single,
+        PlainAverage,
+        WeightedAverage
+    };
 
     PlanetsWidget(QWidget *parent = 0);
     ~PlanetsWidget();
@@ -30,6 +36,7 @@ public:
     QList<Planet*> planets;
     Planet* selected;
     Planet* following;
+    FollowingState followState;
     GLuint texture;
 
     Camera camera;

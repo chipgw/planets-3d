@@ -14,7 +14,7 @@
    <string>Planets3D</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset resource="../resources.qrc">
     <normaloff>:/icons/silk/world.png</normaloff>:/icons/silk/world.png</iconset>
   </property>
   <widget class="PlanetsWidget" name="centralwidget"/>
@@ -24,7 +24,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>18</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -212,7 +212,7 @@
         <string>Create</string>
        </property>
        <property name="icon">
-        <iconset resource="resources.qrc">
+        <iconset resource="../resources.qrc">
          <normaloff>:/icons/silk/world_add.png</normaloff>:/icons/silk/world_add.png</iconset>
        </property>
       </widget>
@@ -264,7 +264,7 @@
         <string>Pause</string>
        </property>
        <property name="icon">
-        <iconset resource="resources.qrc">
+        <iconset resource="../resources.qrc">
          <normaloff>:/icons/silk/control_pause_blue.png</normaloff>:/icons/silk/control_pause_blue.png</iconset>
        </property>
       </widget>
@@ -317,10 +317,31 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0" colspan="2">
+     <item row="1" column="0">
+      <widget class="QLabel" name="followCenterLabel">
+       <property name="text">
+        <string>Follow Center</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="followPlainAveragePushButton">
+       <property name="text">
+        <string>Plain Average</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0" colspan="2">
       <widget class="QPushButton" name="clearFollowPushButton">
        <property name="text">
         <string>Follow None</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QPushButton" name="followWeightedAveragePushButton">
+       <property name="text">
+        <string>Weighted Average</string>
        </property>
       </widget>
      </item>
@@ -329,7 +350,7 @@
   </widget>
   <action name="actionExit">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../resources.qrc">
      <normaloff>:/icons/silk/cross.png</normaloff>:/icons/silk/cross.png</iconset>
    </property>
    <property name="text">
@@ -341,7 +362,7 @@
   </action>
   <action name="actionTake_Screenshot">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../resources.qrc">
      <normaloff>:/icons/silk/image.png</normaloff>:/icons/silk/image.png</iconset>
    </property>
    <property name="text">
@@ -353,7 +374,7 @@
   </action>
   <action name="actionDelete">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../resources.qrc">
      <normaloff>:/icons/silk/world_delete.png</normaloff>:/icons/silk/world_delete.png</iconset>
    </property>
    <property name="text">
@@ -376,7 +397,7 @@
   </action>
   <action name="actionNew_Simulation">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../resources.qrc">
      <normaloff>:/icons/silk/asterisk_yellow.png</normaloff>:/icons/silk/asterisk_yellow.png</iconset>
    </property>
    <property name="text">
@@ -391,7 +412,7 @@
   </action>
   <action name="actionCenter_All">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../resources.qrc">
      <normaloff>:/icons/silk/arrow_inout.png</normaloff>:/icons/silk/arrow_inout.png</iconset>
    </property>
    <property name="text">
@@ -403,7 +424,7 @@
   </action>
   <action name="actionInteractive_Planet_Placement">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../resources.qrc">
      <normaloff>:/icons/silk/world_add.png</normaloff>:/icons/silk/world_add.png</iconset>
    </property>
    <property name="text">
@@ -450,7 +471,7 @@
   </action>
   <action name="actionOpen_Simulation">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../resources.qrc">
      <normaloff>:/icons/silk/folder.png</normaloff>:/icons/silk/folder.png</iconset>
    </property>
    <property name="text">
@@ -465,7 +486,7 @@
   </action>
   <action name="actionSave_Simulation">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../resources.qrc">
      <normaloff>:/icons/silk/disk.png</normaloff>:/icons/silk/disk.png</iconset>
    </property>
    <property name="text">
@@ -491,7 +512,7 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../resources.qrc">
      <normaloff>:/icons/silk/information.png</normaloff>:/icons/silk/information.png</iconset>
    </property>
    <property name="text">
@@ -513,7 +534,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../resources.qrc"/>
  </resources>
  <connections/>
 </ui>

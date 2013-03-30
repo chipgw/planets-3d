@@ -158,10 +158,13 @@ void MainWindow::on_actionMotion_Blur_triggered(){
 
 void MainWindow::on_followPlanetPushButton_clicked(){
     ui->centralwidget->following = ui->centralwidget->selected;
+    ui->centralwidget->followState = PlanetsWidget::Single;
+
 }
 
 void MainWindow::on_clearFollowPushButton_clicked(){
     ui->centralwidget->following = NULL;
+    ui->centralwidget->followState = PlanetsWidget::FollowNone;
 }
 
 void MainWindow::on_actionAbout_triggered(){
@@ -176,4 +179,12 @@ void MainWindow::on_actionAbout_triggered(){
 
 void MainWindow::on_actionAbout_Qt_triggered(){
     QMessageBox::aboutQt(this);
+}
+
+void MainWindow::on_followPlainAveragePushButton_clicked(){
+    ui->centralwidget->followState = PlanetsWidget::PlainAverage;
+}
+
+void MainWindow::on_followWeightedAveragePushButton_clicked(){
+    ui->centralwidget->followState = PlanetsWidget::WeightedAverage;
 }
