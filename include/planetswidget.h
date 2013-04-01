@@ -18,10 +18,10 @@ public:
         PointGrid = (1<<3)
     };
     enum PlacingStep{
-        None = (0),
-        FreePositionXY = 1,
-        FreePositionZ = 2,
-        FreeVelocity = 3
+        None,
+        FreePositionXY,
+        FreePositionZ,
+        FreeVelocity,
     };
     enum FollowingState{
         FollowNone,

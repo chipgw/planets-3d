@@ -1,6 +1,7 @@
 #include "planetswidget.h"
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+#include <glm/gtx/norm.hpp>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent) {
     this->setMouseTracking(true);
@@ -141,17 +142,15 @@ void PlanetsWidget::paintGL() {
                 continue;
             else{
                 glm::vec3 direction = other->position-planet->position;
-                float distance = direction.x*direction.x
-                        + direction.y*direction.y
-                        + direction.z*direction.z;
-                float frc = gravityconst*(other->mass*planet->mass/distance);
+                float distance = glm::length2(direction);
+                float frc = gravityconst * ((other->mass * planet->mass) / distance);
 
                 planet->velocity += direction * frc * time / planet->mass;
                 other->velocity -= direction * frc * time / other->mass;
 
                 distance = sqrt(distance);
 
-                if(distance < planet->getRadius()+other->getRadius()/2.0f){
+                if(distance < planet->getRadius()+other->getRadius() / 2.0f){
                     planet->position = (other->position*other->mass + planet->position*planet->mass)/(other->mass+planet->mass);
                     planet->velocity = (other->velocity*other->mass + planet->velocity*planet->mass)/(other->mass+planet->mass);
                     planet->mass += other->mass;
@@ -301,16 +300,16 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     }
     else if(placingStep == FreePositionZ){
         // set placing Z position
-        placing.position.z += (lastmousepos.y() - e->y())/10.0f;
+        placing.position.z += (lastmousepos.y() - e->y()) / 10.0f;
         this->lastmousepos = e->pos();
     }
     else if(placingStep == FreeVelocity){
         // set placing velocity
-        float xdelta = (lastmousepos.x() - e->x())/20.0f;
-        float ydelta = (lastmousepos.y() - e->y())/20.0f;
-        placingRotation *= glm::rotate(xdelta,1.0f,0.0f,0.0f);
-        placingRotation *= glm::rotate(ydelta,0.0f,1.0f,0.0f);
-        placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f,0.0f,1.0f, 1.0f) * glm::length(placing.velocity));
+        float xdelta = (lastmousepos.x() - e->x()) / 20.0f;
+        float ydelta = (lastmousepos.y() - e->y()) / 20.0f;
+        placingRotation *= glm::rotate(xdelta, 1.0f, 0.0f, 0.0f);
+        placingRotation *= glm::rotate(ydelta, 0.0f, 1.0f, 0.0f);
+        placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f, 0.0f, 1.0f, 1.0f) * glm::length(placing.velocity));
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
     }
     else if(e->buttons().testFlag(Qt::MiddleButton)){
@@ -318,7 +317,8 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         float zrot = camera.zrotation + ((300.0f * (lastmousepos.x() - e->x()))/this->width());
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
 
-        xrot = qMin(qMax(xrot,-90.0f),90.0f);
+        xrot = glm::max(xrot,-90.0f);
+        xrot = glm::min(xrot, 90.0f);
 
         camera.xrotation = xrot;
         camera.zrotation = fmod(zrot, 360.0f);
@@ -399,18 +399,16 @@ void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
 void PlanetsWidget::wheelEvent(QWheelEvent* e){
     if(placingStep == FreePositionXY || placingStep == FreePositionZ){
         placing.mass += e->delta()*(placing.mass*1.0e-3f);
-        qMax(placing.mass, 0.1f);
+        glm::max(placing.mass, 0.1f);
     }
     else if(placingStep == FreeVelocity){
         placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f,0.0f,1.0f, 1.0f) * glm::max(0.0f, glm::length(placing.velocity) + (e->delta()*0.01f)));
     }
     else {
-        float dist = camera.distance - e->delta()/20.0f;
+        camera.distance -= e->delta() * camera.distance * 0.0005f;
 
-        dist = qMax(dist,5.0f);
-        dist = qMin(dist,300.0f);
-
-        camera.distance = dist;
+        camera.distance = glm::max(camera.distance, 5.0f);
+        camera.distance = glm::min(camera.distance, 1000.0f);
     }
 }
 
