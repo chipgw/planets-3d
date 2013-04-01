@@ -18,6 +18,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     placingStep = None;
     delay = 0;
     simspeed = 1.0;
+    stepsPerFrame = 100;
     totalTime = QTime::currentTime();
     frameTime = QTime::currentTime();
 
@@ -83,6 +84,51 @@ void PlanetsWidget::resizeGL(int width, int height) {
 }
 
 void PlanetsWidget::paintGL() {
+    float time = 0.0f;
+    if(placingStep == None){
+        time = simspeed * delay * 0.001f / stepsPerFrame;
+
+        for(int s = 0; s < stepsPerFrame; s++){
+            Planet* planet;
+            Planet* other;
+            QMutableListIterator<Planet*> i(planets);
+            while (i.hasNext()) {
+                planet = i.next();
+                QMutableListIterator<Planet*> o(i);
+                while (o.hasNext()) {
+                    other = o.next();
+
+                    if(other == planet)
+                        continue;
+                    else{
+                        glm::vec3 direction = other->position-planet->position;
+                        float distance = glm::length2(direction);
+                        float frc = gravityconst * ((other->mass * planet->mass) / distance);
+
+                        planet->velocity += direction * frc * time / planet->mass;
+                        other->velocity -= direction * frc * time / other->mass;
+
+                        distance = sqrt(distance);
+
+                        if(distance < planet->getRadius()+other->getRadius() / 2.0f){
+                            planet->position = (other->position*other->mass + planet->position*planet->mass)/(other->mass+planet->mass);
+                            planet->velocity = (other->velocity*other->mass + planet->velocity*planet->mass)/(other->mass+planet->mass);
+                            planet->mass += other->mass;
+                            o.remove();
+                            if(other == selected){
+                                selected = planet;
+                            }
+                            delete other;
+                            planet->path.clear();
+                        }
+                    }
+                }
+
+                planet->position += planet->velocity * time;
+            }
+        }
+    }
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if(displaysettings & MotionBlur){
@@ -120,63 +166,23 @@ void PlanetsWidget::paintGL() {
 
     glEnable(GL_TEXTURE_2D);
 
-    float time = 0.0f;
-    if(placingStep == None){
-        time = simspeed*delay*0.001f;
-    }
-
     if(selected){
         selected->drawBounds();
     }
 
-    Planet* planet;
-    Planet* other;
-    QMutableListIterator<Planet*> i(planets);
-    while (i.hasNext()) {
-        planet = i.next();
-        QMutableListIterator<Planet*> o(i);
-        while (o.hasNext()) {
-            other = o.next();
-
-            if(other == planet)
-                continue;
-            else{
-                glm::vec3 direction = other->position-planet->position;
-                float distance = glm::length2(direction);
-                float frc = gravityconst * ((other->mass * planet->mass) / distance);
-
-                planet->velocity += direction * frc * time / planet->mass;
-                other->velocity -= direction * frc * time / other->mass;
-
-                distance = sqrt(distance);
-
-                if(distance < planet->getRadius()+other->getRadius() / 2.0f){
-                    planet->position = (other->position*other->mass + planet->position*planet->mass)/(other->mass+planet->mass);
-                    planet->velocity = (other->velocity*other->mass + planet->velocity*planet->mass)/(other->mass+planet->mass);
-                    planet->mass += other->mass;
-                    o.remove();
-                    if(other == selected){
-                        selected = planet;
-                    }
-                    delete other;
-                    planet->path.clear();
-                }
-            }
-        }
-
+    time *= stepsPerFrame;
+    foreach(Planet *planet, planets){
         planet->draw();
 
         if(displaysettings & PlanetTrails){
             planet->drawPath(time);
         }
-
-        planet->position += planet->velocity * time;
     }
 
     glDisable(GL_TEXTURE_2D);
 
     if(displaysettings & MotionBlur){
-        glAccum(GL_ADD, -0.002f*delay);
+        glAccum(GL_ADD, -0.002f * delay);
         glAccum(GL_ACCUM, 0.999f);
     }
     if(placingStep != None){
@@ -184,22 +190,22 @@ void PlanetsWidget::paintGL() {
     }
 
     if(placingStep == FreeVelocity){
-        float length = glm::length(placing.velocity)/20.0f;
+        float length = glm::length(placing.velocity) / 20.0f;
 
         if(length > 0.0f){
             glPushMatrix();
-            glTranslatef(placing.position.x,placing.position.y,placing.position.z);
+            glTranslatef(placing.position.x, placing.position.y, placing.position.z);
             glMultMatrixf(glm::value_ptr(placingRotation));
 
             GLUquadric *cylinder = gluNewQuadric();
             gluQuadricOrientation(cylinder, GLU_OUTSIDE);
-            gluCylinder(cylinder,0.1f,0.1f,length,64,1);
+            gluCylinder(cylinder, 0.1f, 0.1f, length, 64, 1);
 
             GLUquadric *cap = gluNewQuadric();
             gluQuadricOrientation(cap, GLU_INSIDE);
             gluDisk(cap, 0.0f, 0.1f, 64, 1);
-            glTranslatef(0.0f,0.0f,length);
-            gluCylinder(cylinder,0.2f,0.0f,0.4f,64,1);
+            glTranslatef(0.0f, 0.0f, length);
+            gluCylinder(cylinder, 0.2f, 0.0f, 0.4f, 64, 1);
 
             gluDisk(cap, 0.1f, 0.2f, 64, 1);
             glPopMatrix();

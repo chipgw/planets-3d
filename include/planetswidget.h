@@ -47,6 +47,7 @@ public:
     glm::mat4 placingRotation;
 
     float simspeed;
+    int stepsPerFrame;
     int delay;
     int framecount;
 
