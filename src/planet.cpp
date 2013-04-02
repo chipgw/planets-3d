@@ -38,8 +38,6 @@ void Planet::draw(){
 void Planet::drawPath(float time){
     lastpathrecorddelta += time;
 
-    glDisable(GL_TEXTURE_2D);
-
     if(lastpathrecorddelta > 0.02f){
         path.push_back(this->position);
 
@@ -52,8 +50,6 @@ void Planet::drawPath(float time){
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, &path[0]);
     glDrawArrays(GL_LINE_STRIP, 0, path.size());
-
-    glEnable(GL_TEXTURE_2D);
 }
 
 float Planet::getRadius(){

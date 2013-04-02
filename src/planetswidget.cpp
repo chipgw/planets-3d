@@ -166,17 +166,8 @@ void PlanetsWidget::paintGL() {
 
     glEnable(GL_TEXTURE_2D);
 
-    if(selected){
-        selected->drawBounds();
-    }
-
-    time *= stepsPerFrame;
     foreach(Planet *planet, planets){
         planet->draw();
-
-        if(displaysettings & PlanetTrails){
-            planet->drawPath(time);
-        }
     }
 
     glDisable(GL_TEXTURE_2D);
@@ -185,6 +176,18 @@ void PlanetsWidget::paintGL() {
         glAccum(GL_ADD, -0.002f * delay);
         glAccum(GL_ACCUM, 0.999f);
     }
+
+    if(selected){
+        selected->drawBounds();
+    }
+
+    time *= stepsPerFrame;
+    if(displaysettings & PlanetTrails){
+        foreach(Planet *planet, planets){
+            planet->drawPath(time);
+        }
+    }
+
     if(placingStep != None){
         placing.drawBounds();
     }
