@@ -35,12 +35,9 @@ void Planet::draw(){
     glPopMatrix();
 }
 
-void Planet::drawPath(float time){
-    lastpathrecorddelta += time;
-
-    if(lastpathrecorddelta > 0.02f){
+void Planet::drawPath(){
+    if(path.size() < 1 || glm::distance(path.back(), this->position) > 0.05f){
         path.push_back(this->position);
-        lastpathrecorddelta = 0;
     }
 
     // doing this even if it hasn't been recorded allows it to get shorter.
@@ -54,7 +51,7 @@ void Planet::drawPath(float time){
 }
 
 float Planet::getRadius(){
-    return pow(3.0f*mass/4.0f*M_PI, 1.0f/3.0f)/10.0f;
+    return pow(3.0f * mass / 4.0f * M_PI, 1.0f / 3.0f) / 10.0f;
 }
 
 void Planet::drawBounds(GLenum drawmode, bool selectioncolor){
@@ -64,10 +61,10 @@ void Planet::drawBounds(GLenum drawmode, bool selectioncolor){
     }
 
     if(selectioncolor){
-        glColor3f(selectionColor.redF(),selectionColor.greenF(),selectionColor.blueF());
+        glColor3f(selectionColor.redF(), selectionColor.greenF(), selectionColor.blueF());
     }
     else{
-        glColor3f(0.0f,1.0f,0.0f);
+        glColor3f(0.0f, 1.0f, 0.0f);
     }
 
     glPushMatrix();

@@ -17,13 +17,11 @@ public:
     QColor selectionColor;
     static QColor nextSelectionColor;
 
-    float lastpathrecorddelta;
-
     std::vector<glm::vec3> path;
     static unsigned int pathLength;
 
     void draw();
-    void drawPath(float time);
+    void drawPath();
     void drawBounds(GLenum drawmode = GLU_LINE, bool selectioncolor = false);
     float getRadius();
 };

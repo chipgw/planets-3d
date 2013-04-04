@@ -181,10 +181,9 @@ void PlanetsWidget::paintGL() {
         selected->drawBounds();
     }
 
-    time *= stepsPerFrame;
     if(displaysettings & PlanetTrails){
         foreach(Planet *planet, planets){
-            planet->drawPath(time);
+            planet->drawPath();
         }
     }
 

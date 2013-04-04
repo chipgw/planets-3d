@@ -410,7 +410,7 @@
         <number>3</number>
        </property>
        <property name="maximum">
-        <number>1000</number>
+        <number>400</number>
        </property>
        <property name="singleStep">
         <number>2</number>
