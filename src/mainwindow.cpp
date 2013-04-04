@@ -188,3 +188,15 @@ void MainWindow::on_followPlainAveragePushButton_clicked(){
 void MainWindow::on_followWeightedAveragePushButton_clicked(){
     ui->centralwidget->followState = PlanetsWidget::WeightedAverage;
 }
+
+void MainWindow::on_stepsPerFrameSpinBox_valueChanged(int value){
+    ui->centralwidget->stepsPerFrame = value;
+}
+
+void MainWindow::on_trailLengthSpinBox_valueChanged(int value){
+    Planet::pathLength = value;
+}
+
+void MainWindow::on_gridRangeSpinBox_valueChanged(int value){
+    ui->centralwidget->gridRange = (value - 1) / 2;
+}

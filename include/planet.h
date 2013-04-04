@@ -20,6 +20,7 @@ public:
     float lastpathrecorddelta;
 
     std::vector<glm::vec3> path;
+    static unsigned int pathLength;
 
     void draw();
     void drawPath(float time);

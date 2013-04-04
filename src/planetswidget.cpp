@@ -77,7 +77,7 @@ void PlanetsWidget::resizeGL(int width, int height) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    gluPerspective(45.0f, static_cast<GLfloat>(width)/height, 0.1f, 2000.0f);
+    gluPerspective(45.0f, static_cast<GLfloat>(width)/height, 0.1f, 10000.0f);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();

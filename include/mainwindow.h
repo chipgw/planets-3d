@@ -63,6 +63,12 @@ private slots:
 
     void on_followWeightedAveragePushButton_clicked();
 
+    void on_stepsPerFrameSpinBox_valueChanged(int value);
+
+    void on_trailLengthSpinBox_valueChanged(int value);
+
+    void on_gridRangeSpinBox_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
 };

@@ -40,11 +40,12 @@ void Planet::drawPath(float time){
 
     if(lastpathrecorddelta > 0.02f){
         path.push_back(this->position);
-
-        if(path.size() > 100){
-            path.erase(path.begin());
-        }
         lastpathrecorddelta = 0;
+    }
+
+    // doing this even if it hasn't been recorded allows it to get shorter.
+    if(path.size() > pathLength){
+        path.erase(path.begin());
     }
 
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -85,3 +86,5 @@ void Planet::drawBounds(GLenum drawmode, bool selectioncolor){
 
     glPopMatrix();
 }
+
+unsigned int Planet::pathLength = 200;
