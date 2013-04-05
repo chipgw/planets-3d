@@ -16,7 +16,6 @@ Planet::Planet() : position(0.0f,0.0f,0.0f) {
             nextSelectionColor.setBlue(nextSelectionColor.blue()+1);
         }
     }
-    lastpathrecorddelta = 0;
 }
 
 Planet::~Planet(){
