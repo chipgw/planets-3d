@@ -26,8 +26,8 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     timer->setSingleShot(true);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
-    placing.position = glm::vec3(0.0f,0.0f,0.0f);
-    placing.velocity = glm::vec3(0.0f,10.0f,0.0f);
+    placing.position = glm::vec3(0.0f, 0.0f, 0.0f);
+    placing.velocity = glm::vec3(0.0f, velocityfac, 0.0f);
     placing.mass = 100.0f;
 
     displaysettings = 000;
@@ -86,7 +86,7 @@ void PlanetsWidget::resizeGL(int width, int height) {
 void PlanetsWidget::paintGL() {
     float time = 0.0f;
     if(placingStep == None){
-        time = simspeed * delay * 0.001f / stepsPerFrame;
+        time = simspeed * delay * 20.0f / stepsPerFrame;
 
         for(int s = 0; s < stepsPerFrame; s++){
             Planet* planet;
@@ -192,7 +192,7 @@ void PlanetsWidget::paintGL() {
     }
 
     if(placingStep == FreeVelocity){
-        float length = glm::length(placing.velocity) / 20.0f;
+        float length = glm::length(placing.velocity) / velocityfac;
 
         if(length > 0.0f){
             glPushMatrix();
@@ -406,11 +406,11 @@ void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
 
 void PlanetsWidget::wheelEvent(QWheelEvent* e){
     if(placingStep == FreePositionXY || placingStep == FreePositionZ){
-        placing.mass += e->delta()*(placing.mass*1.0e-3f);
+        placing.mass += e->delta()*(placing.mass * 1.0e-3f);
         glm::max(placing.mass, 0.1f);
     }
     else if(placingStep == FreeVelocity){
-        placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f,0.0f,1.0f, 1.0f) * glm::max(0.0f, glm::length(placing.velocity) + (e->delta()*0.01f)));
+        placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f, 0.0f, 1.0f, 1.0f) * glm::max(0.0f, glm::length(placing.velocity) + (e->delta() * velocityfac * 1.0e-3f)));
     }
     else {
         camera.distance -= e->delta() * camera.distance * 0.0005f;
@@ -516,9 +516,9 @@ bool PlanetsWidget::load(const QString &filename){
                             xml.readNext();
                         }
                         if(xml.name() == "velocity"){
-                            planet->velocity.x = xml.attributes().value("x").toString().toFloat();
-                            planet->velocity.y = xml.attributes().value("y").toString().toFloat();
-                            planet->velocity.z = xml.attributes().value("z").toString().toFloat();
+                            planet->velocity.x = xml.attributes().value("x").toString().toFloat() * velocityfac;
+                            planet->velocity.y = xml.attributes().value("y").toString().toFloat() * velocityfac;
+                            planet->velocity.z = xml.attributes().value("z").toString().toFloat() * velocityfac;
                             xml.readNext();
                         }
                     }
@@ -570,9 +570,9 @@ bool PlanetsWidget::save(const QString &filename){
         } xml.writeEndElement();
 
         xml.writeStartElement("velocity"); {
-            xml.writeAttribute("x", QString::number(planet->velocity.x));
-            xml.writeAttribute("y", QString::number(planet->velocity.y));
-            xml.writeAttribute("z", QString::number(planet->velocity.z));
+            xml.writeAttribute("x", QString::number(planet->velocity.x / velocityfac));
+            xml.writeAttribute("y", QString::number(planet->velocity.y / velocityfac));
+            xml.writeAttribute("z", QString::number(planet->velocity.z / velocityfac));
         } xml.writeEndElement();
 
         xml.writeEndElement();

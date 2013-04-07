@@ -16,12 +16,12 @@ void MainWindow::on_actionExit_triggered(){
 
 void MainWindow::on_createPlanet_PushButton_clicked(){
     ui->centralwidget->selected = ui->centralwidget->createPlanet(glm::vec3(ui->newPosX_SpinBox->value(),ui->newPosY_SpinBox->value(),ui->newPosZ_SpinBox->value()),
-                                                                  glm::vec3(ui->newVelocityX_SpinBox->value(),ui->newVelocityY_SpinBox->value(),ui->newVelocityZ_SpinBox->value()),
+                                                                  glm::vec3(ui->newVelocityX_SpinBox->value(),ui->newVelocityY_SpinBox->value(),ui->newVelocityZ_SpinBox->value()) * velocityfac,
                                                                   ui->newMass_SpinBox->value());
 }
 
 void MainWindow::on_speed_Dial_valueChanged(int value){
-    ui->centralwidget->simspeed = (value*5.0)/ui->speed_Dial->maximum();
+    ui->centralwidget->simspeed = (value*speeddialmax)/ui->speed_Dial->maximum();
     ui->speedDisplay_lcdNumber->display(ui->centralwidget->simspeed);
     if(ui->centralwidget->simspeed <= 0){
         ui->PauseResume_Button->setText(tr("Resume"));
@@ -45,7 +45,7 @@ void MainWindow::on_PauseResume_Button_clicked(){
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
     }
     ui->speedDisplay_lcdNumber->display(ui->centralwidget->simspeed);
-    ui->speed_Dial->setValue((ui->centralwidget->simspeed/5)*ui->speed_Dial->maximum());
+    ui->speed_Dial->setValue((ui->centralwidget->simspeed/speeddialmax)*ui->speed_Dial->maximum());
 }
 
 void MainWindow::on_actionTake_Screenshot_triggered(){
