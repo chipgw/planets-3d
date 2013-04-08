@@ -416,7 +416,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     else {
         camera.distance -= e->delta() * camera.distance * 0.0005f;
 
-        camera.distance = glm::max(camera.distance, 5.0f);
+        camera.distance = glm::max(camera.distance, 0.1f);
         camera.distance = glm::min(camera.distance, 1000.0f);
     }
 }
@@ -551,6 +551,8 @@ bool PlanetsWidget::save(const QString &filename){
     }
 
     QXmlStreamWriter xml(&file);
+
+    xml.setAutoFormatting(true);
 
     xml.writeStartDocument();
     xml.writeStartElement("planets-3d-universe");
