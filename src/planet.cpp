@@ -34,7 +34,7 @@ void Planet::draw(){
     glPopMatrix();
 }
 
-void Planet::drawPath(){
+void Planet::updatePath(){
     if(path.size() < 1 || glm::distance(path.back(), this->position) > 0.05f){
         path.push_back(this->position);
     }
@@ -43,7 +43,9 @@ void Planet::drawPath(){
     if(path.size() > pathLength){
         path.erase(path.begin());
     }
+}
 
+void Planet::drawPath(){
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, &path[0]);
     glDrawArrays(GL_LINE_STRIP, 0, path.size());

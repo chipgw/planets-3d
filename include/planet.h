@@ -22,6 +22,7 @@ public:
 
     void draw();
     void drawPath();
+    void updatePath();
     void drawBounds(GLenum drawmode = GLU_LINE, bool selectioncolor = false);
     float getRadius();
 };

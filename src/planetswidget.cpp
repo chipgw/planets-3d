@@ -125,6 +125,7 @@ void PlanetsWidget::paintGL() {
                 }
 
                 planet->position += planet->velocity * time;
+                planet->updatePath();
             }
         }
     }
