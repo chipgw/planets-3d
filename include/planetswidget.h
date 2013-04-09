@@ -33,7 +33,7 @@ public:
     PlanetsWidget(QWidget *parent = 0);
     ~PlanetsWidget();
 
-    QList<Planet*> planets;
+    QList<Planet> planets;
     Planet* selected;
     Planet* following;
     FollowingState followState;
@@ -65,7 +65,7 @@ public:
     int gridRange;
     void drawGrid();
 
-    Planet* createPlanet(glm::vec3 position,glm::vec3 velocity,float mass);
+    Planet &createPlanet(glm::vec3 position, glm::vec3 velocity, float mass);
     void deleteAll();
     void centerAll();
 

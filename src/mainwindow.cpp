@@ -15,7 +15,7 @@ void MainWindow::on_actionExit_triggered(){
 }
 
 void MainWindow::on_createPlanet_PushButton_clicked(){
-    ui->centralwidget->selected = ui->centralwidget->createPlanet(glm::vec3(ui->newPosX_SpinBox->value(),ui->newPosY_SpinBox->value(),ui->newPosZ_SpinBox->value()),
+    ui->centralwidget->selected = &ui->centralwidget->createPlanet(glm::vec3(ui->newPosX_SpinBox->value(),ui->newPosY_SpinBox->value(),ui->newPosZ_SpinBox->value()),
                                                                   glm::vec3(ui->newVelocityX_SpinBox->value(),ui->newVelocityY_SpinBox->value(),ui->newVelocityZ_SpinBox->value()) * velocityfac,
                                                                   ui->newMass_SpinBox->value());
 }
@@ -54,8 +54,7 @@ void MainWindow::on_actionTake_Screenshot_triggered(){
 
 void MainWindow::on_actionDelete_triggered(){
     if(ui->centralwidget->selected){
-        ui->centralwidget->planets.removeAll(ui->centralwidget->selected);
-        delete ui->centralwidget->selected;
+        ui->centralwidget->planets.removeAll(*ui->centralwidget->selected);
     }
 }
 
@@ -141,13 +140,6 @@ void MainWindow::on_actionDraw_Paths_triggered(){
     ui->centralwidget->displaysettings ^= PlanetsWidget::PlanetTrails;
 
     ui->actionDraw_Paths->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PlanetTrails);
-
-    QMutableListIterator<Planet*> i(ui->centralwidget->planets);
-    Planet* planet;
-    while (i.hasNext()) {
-        planet = i.next();
-        planet->path.clear();
-    }
 }
 
 void MainWindow::on_actionMotion_Blur_triggered(){

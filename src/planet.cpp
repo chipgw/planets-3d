@@ -85,4 +85,8 @@ void Planet::drawBounds(GLenum drawmode, bool selectioncolor){
     glPopMatrix();
 }
 
+bool Planet::operator ==(const Planet &p2){
+    return this == &p2;
+}
+
 unsigned int Planet::pathLength = 200;
