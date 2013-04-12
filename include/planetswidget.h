@@ -66,12 +66,14 @@ public:
 
     Planet &createPlanet(glm::vec3 position, glm::vec3 velocity, float mass);
     void deleteAll();
-    void centerAll();
-
-    void beginInteractiveCreation();
 
     bool save(const QString& filename);
     bool load(const QString& filename);
+
+public slots:
+    void centerAll();
+
+    void beginInteractiveCreation();
 
 protected:
     void initializeGL();

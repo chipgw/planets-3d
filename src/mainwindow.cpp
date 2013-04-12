@@ -4,6 +4,9 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
     ui->setupUi(this);
+
+    connect(ui->actionCenter_All, SIGNAL(triggered()), ui->centralwidget, SLOT(centerAll()));
+    connect(ui->actionInteractive_Planet_Placement, SIGNAL(triggered()), ui->centralwidget, SLOT(beginInteractiveCreation()));
 }
 
 MainWindow::~MainWindow(){
@@ -11,6 +14,7 @@ MainWindow::~MainWindow(){
 }
 
 void MainWindow::on_actionExit_triggered(){
+    // TODO - either make confirmation dialog or connect triggered() signal directly to close() slot.
     this->close();
 }
 
@@ -60,7 +64,7 @@ void MainWindow::on_actionDelete_triggered(){
 
 void MainWindow::on_actionClear_Velocity_triggered(){
     if(ui->centralwidget->selected){
-        ui->centralwidget->selected->velocity = glm::vec3(0,0,0);
+        ui->centralwidget->selected->velocity = glm::vec3(0.0f);
     }
 }
 
@@ -81,18 +85,6 @@ void MainWindow::on_actionNew_Simulation_triggered(){
         ui->centralwidget->deleteAll();
     }
     ui->centralwidget->simspeed = tmpsimspeed;
-}
-
-void MainWindow::on_actionCenter_All_triggered(){
-    if(ui->centralwidget){
-        ui->centralwidget->centerAll();
-    }
-}
-
-void MainWindow::on_actionInteractive_Planet_Placement_triggered(){
-    if(ui->centralwidget){
-        ui->centralwidget->beginInteractiveCreation();
-    }
 }
 
 void MainWindow::on_actionOff_triggered(){

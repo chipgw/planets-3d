@@ -33,10 +33,6 @@ private slots:
 
     void on_actionNew_Simulation_triggered();
 
-    void on_actionCenter_All_triggered();
-
-    void on_actionInteractive_Planet_Placement_triggered();
-
     void on_actionOff_triggered();
 
     void on_actionLines_triggered();
