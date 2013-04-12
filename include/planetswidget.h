@@ -63,7 +63,6 @@ public:
 
     glm::vec4 gridColor;
     int gridRange;
-    void drawGrid();
 
     Planet &createPlanet(glm::vec3 position, glm::vec3 velocity, float mass);
     void deleteAll();

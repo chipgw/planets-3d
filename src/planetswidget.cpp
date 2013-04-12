@@ -26,14 +26,14 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     timer->setSingleShot(true);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
-    placing.position = glm::vec3(0.0f, 0.0f, 0.0f);
+    placing.position = glm::vec3(0.0f);
     placing.velocity = glm::vec3(0.0f, velocityfac, 0.0f);
     placing.mass = 100.0f;
 
     displaysettings = 000;
 
     gridRange = 50;
-    gridColor = glm::vec4(0.8f,1.0f,1.0f,0.2f);
+    gridColor = glm::vec4(0.8f, 1.0f, 1.0f, 0.4f);
 
     selected = NULL;
     following = NULL;
@@ -42,7 +42,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
 
 PlanetsWidget::~PlanetsWidget() {
     this->deleteAll();
-    qDebug()<< "average fps: " << framecount/(totalTime.msecsTo(QTime::currentTime())* 0.001f);
+    qDebug()<< "average fps: " << framecount/(totalTime.msecsTo(QTime::currentTime()) * 0.001f);
 }
 
 void PlanetsWidget::initializeGL() {
@@ -141,7 +141,7 @@ void PlanetsWidget::paintGL() {
     if(followState == Single && following != NULL){
         camera.position = following->position;
     }else if(followState == WeightedAverage){
-        camera.position = glm::vec3(0.0f,0.0f,0.0f);
+        camera.position = glm::vec3(0.0f);
         float totalmass = 0.0f;
 
         for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
@@ -151,7 +151,7 @@ void PlanetsWidget::paintGL() {
         }
         camera.position /= totalmass;
     }else if(followState == PlainAverage){
-        camera.position = glm::vec3(0.0f,0.0f,0.0f);
+        camera.position = glm::vec3(0.0f);
 
         for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
             camera.position += i.next().position;
@@ -159,7 +159,7 @@ void PlanetsWidget::paintGL() {
         camera.position /= planets.size();
     }
     else{
-        camera.position = glm::vec3(0.0f,0.0f,0.0f);
+        camera.position = glm::vec3(0.0f);
     }
 
     camera.setup();
@@ -215,23 +215,33 @@ void PlanetsWidget::paintGL() {
 
     }
 
-    float scale = pow(4,floor(log10(camera.distance)));
+    float scale = pow(4, floor(log10(camera.distance)));
 
-    glScalef(scale,scale,scale);
+    glScalef(scale, scale, scale);
 
     if(displaysettings & SolidLineGrid){
         glColor4fv(glm::value_ptr(gridColor));
         glBegin(GL_LINES);
-        drawGrid();
+        for(int i = -gridRange; i <= gridRange; i++){
+            glVertex3f(i,-gridRange, 0.0f);
+            glVertex3f(i, gridRange, 0.0f);
+
+            glVertex3f(-gridRange, i, 0.0f);
+            glVertex3f( gridRange, i, 0.0f);
+        }
         glEnd();
-        glColor4f(1.0f,1.0f,1.0f,1.0f);
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
     if(displaysettings & PointGrid){
         glColor4fv(glm::value_ptr(gridColor));
         glBegin(GL_POINTS);
-        drawGrid();
+        for(int x = -gridRange; x <= gridRange; x++){
+            for(int y = -gridRange; y <= gridRange; y++){
+                glVertex3f(x, y, 0.0f);
+            }
+        }
         glEnd();
-        glColor4f(1.0f,1.0f,1.0f,1.0f);
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     if(this->doScreenshot){
@@ -241,10 +251,10 @@ void PlanetsWidget::paintGL() {
         }
         QString filename = dir.path() + "/shot%1.png";
         int i = 1;
-        while(QFile::exists(filename.arg(i,4,10,QChar('0')))){
+        while(QFile::exists(filename.arg(i, 4, 10, QChar('0')))){
             i++;
         }
-        filename = filename.arg(i,4,10,QChar('0'));
+        filename = filename.arg(i, 4, 10, QChar('0'));
         qDebug() << "Screenshot saved to: "<< filename;
 
         QImage img = this->grabFrameBuffer();
@@ -256,17 +266,17 @@ void PlanetsWidget::paintGL() {
     delay = qMax(frameTime.msecsTo(QTime::currentTime()), 1);
     frameTime = QTime::currentTime();
 
-    float fps = 1000.0f/delay;
+    float fps = 1000.0f / delay;
     framecount++;
 
-    renderText(10,10,tr("simulation speed: %1").arg(simspeed));
+    renderText(10, 10, tr("simulation speed: %1").arg(simspeed));
 
     if(totalTime.msecsTo(QTime::currentTime()) > 0){
-        renderText(10,30,tr("fps: %1").arg(fps));
-        renderText(10,50,tr("average fps: %1").arg(framecount/(totalTime.msecsTo(QTime::currentTime()) * 0.001f)));
+        renderText(10, 30, tr("fps: %1").arg(fps));
+        renderText(10, 50, tr("average fps: %1").arg(framecount/(totalTime.msecsTo(QTime::currentTime()) * 0.001f)));
     }
 
-    timer->start(qMax(0, (1000/framerate) - delay));
+    timer->start(qMax(0, (1000 / framerate) - delay));
 }
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
@@ -282,10 +292,10 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         camera.setup();
 
         glBegin(GL_QUADS);{
-            glVertex4f( 10.0f, 10.0f, 0.0f,1.0e-5f);
-            glVertex4f( 10.0f,-10.0f, 0.0f,1.0e-5f);
-            glVertex4f(-10.0f,-10.0f, 0.0f,1.0e-5f);
-            glVertex4f(-10.0f, 10.0f, 0.0f,1.0e-5f);
+            glVertex4f( 10.0f, 10.0f, 0.0f, 1.0e-5f);
+            glVertex4f( 10.0f,-10.0f, 0.0f, 1.0e-5f);
+            glVertex4f(-10.0f,-10.0f, 0.0f, 1.0e-5f);
+            glVertex4f(-10.0f, 10.0f, 0.0f, 1.0e-5f);
         }glEnd();
 
         glm::ivec4 viewport;
@@ -440,7 +450,7 @@ void PlanetsWidget::deleteAll(){
 
 void PlanetsWidget::centerAll(){
     QMutableListIterator<Planet> i(planets);
-    glm::vec3 averagePosition(0.0f,0.0f,0.0f),averageVelocity(0.0f,0.0f,0.0f);
+    glm::vec3 averagePosition(0.0f),averageVelocity(0.0f);
     float totalmass = 0.0f;
     while (i.hasNext()) {
         Planet &planet = i.next();
@@ -465,22 +475,6 @@ void PlanetsWidget::centerAll(){
 void PlanetsWidget::beginInteractiveCreation(){
     placingStep = FreePositionXY;
     selected = NULL;
-}
-
-void PlanetsWidget::drawGrid(){
-    for(int x = -gridRange; x <= gridRange;x++){
-        for(int y = -gridRange; y <= gridRange;y++){
-            glVertex3f(x,     y,     0.0f);
-            glVertex3f(x+1.0f,y,     0.0f);
-            glVertex3f(x,     y,     0.0f);
-            glVertex3f(x,     y+1.0f,0.0f);
-
-            glVertex3f(x+1.0f,y+1.0f,0.0f);
-            glVertex3f(x+1.0f,y,     0.0f);
-            glVertex3f(x+1.0f,y+1.0f,0.0f);
-            glVertex3f(x,     y+1.0f,0.0f);
-        }
-    }
 }
 
 bool PlanetsWidget::load(const QString &filename){
