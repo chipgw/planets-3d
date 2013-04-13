@@ -4,6 +4,6 @@ demo video: http://youtu.be/4ihB0k1ME10
 Binary releases: http://sourceforge.net/projects/planets-3d/files/
 Build using CMake (http://www.cmake.org)
 
-Dependancies:
-Qt 5 (http://qt-project.org) NOTE: at the moment the pre-built libraries on windows are built against OpenGL ES 2.0 which is NOT compatible. you must either build Qt yourself or find one built with desktop OpenGL.
+Dependencies:
+Qt 5 (http://qt-project.org) NOTE: must be a desktop OpenGL build of Qt, this is NOT compatible with OpenGL ES 2.0 only builds.
 GLM: (http://glm.g-truc.net)
