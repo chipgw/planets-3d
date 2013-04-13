@@ -5,12 +5,29 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
     ui->setupUi(this);
 
-    connect(ui->actionCenter_All, SIGNAL(triggered()), ui->centralwidget, SLOT(centerAll()));
+    simspeedLabel = new QLabel(ui->statusbar);
+    simspeedLabel->setFixedWidth(160);
+    ui->statusbar->addPermanentWidget(simspeedLabel);
+    fpsLabel = new QLabel(ui->statusbar);
+    fpsLabel->setFixedWidth(120);
+    ui->statusbar->addPermanentWidget(fpsLabel);
+    averagefpsLabel = new QLabel(ui->statusbar);
+    averagefpsLabel->setFixedWidth(160);
+    ui->statusbar->addPermanentWidget(averagefpsLabel);
+
+    connect(ui->actionCenter_All,                   SIGNAL(triggered()), ui->centralwidget, SLOT(centerAll()));
     connect(ui->actionInteractive_Planet_Placement, SIGNAL(triggered()), ui->centralwidget, SLOT(beginInteractiveCreation()));
+
+    connect(ui->centralwidget, SIGNAL(updateSimspeedStatusMessage(QString)),   simspeedLabel,   SLOT(setText(QString)));
+    connect(ui->centralwidget, SIGNAL(updateFPSStatusMessage(QString)),        fpsLabel,        SLOT(setText(QString)));
+    connect(ui->centralwidget, SIGNAL(updateAverageFPSStatusMessage(QString)), averagefpsLabel, SLOT(setText(QString)));
 }
 
 MainWindow::~MainWindow(){
     delete ui;
+    delete simspeedLabel;
+    delete averagefpsLabel;
+    delete fpsLabel;
 }
 
 void MainWindow::on_actionExit_triggered(){

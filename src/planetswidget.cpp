@@ -266,15 +266,12 @@ void PlanetsWidget::paintGL() {
     delay = qMax(frameTime.msecsTo(QTime::currentTime()), 1);
     frameTime = QTime::currentTime();
 
-    float fps = 1000.0f / delay;
     framecount++;
 
-    renderText(10, 10, tr("simulation speed: %1").arg(simspeed));
-
-    if(totalTime.msecsTo(QTime::currentTime()) > 0){
-        renderText(10, 30, tr("fps: %1").arg(fps));
-        renderText(10, 50, tr("average fps: %1").arg(framecount/(totalTime.msecsTo(QTime::currentTime()) * 0.001f)));
-    }
+    // TODO - only update the simspeed label when simspeed has changed.
+    emit updateSimspeedStatusMessage(tr("simulation speed: %1").arg(simspeed));
+    emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount / (totalTime.msecsTo(QTime::currentTime()) * 0.001f)));
+    emit updateFPSStatusMessage(tr("fps: %1").arg(1000.0f / delay));
 
     timer->start(qMax(0, (1000 / framerate) - delay));
 }

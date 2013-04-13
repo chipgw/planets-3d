@@ -70,6 +70,11 @@ public:
     bool save(const QString& filename);
     bool load(const QString& filename);
 
+signals:
+    void updateFPSStatusMessage(const QString &text);
+    void updateAverageFPSStatusMessage(const QString &text);
+    void updateSimspeedStatusMessage(const QString &text);
+
 public slots:
     void centerAll();
 

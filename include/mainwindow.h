@@ -67,6 +67,10 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    QLabel *simspeedLabel;
+    QLabel *fpsLabel;
+    QLabel *averagefpsLabel;
 };
 
 #endif // MAINWINDOW_H
