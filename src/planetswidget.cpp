@@ -324,19 +324,16 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         float ydelta = (lastmousepos.y() - e->y()) / 20.0f;
         placingRotation *= glm::rotate(xdelta, 1.0f, 0.0f, 0.0f);
         placingRotation *= glm::rotate(ydelta, 0.0f, 1.0f, 0.0f);
-        placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f, 0.0f, 1.0f, 1.0f) * glm::length(placing.velocity));
+        placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f, 0.0f, glm::length(placing.velocity), 0.0f));
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
     }
     else if(e->buttons().testFlag(Qt::MiddleButton)){
-        float xrot = camera.xrotation + ((150.0f * (lastmousepos.y() - e->y()))/this->height());
-        float zrot = camera.zrotation + ((300.0f * (lastmousepos.x() - e->x()))/this->width());
+        camera.xrotation += ((150.0f * (lastmousepos.y() - e->y())) / this->height());
+        camera.zrotation += ((300.0f * (lastmousepos.x() - e->x())) / this->width());
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
 
-        xrot = glm::max(xrot,-90.0f);
-        xrot = glm::min(xrot, 90.0f);
-
-        camera.xrotation = xrot;
-        camera.zrotation = fmod(zrot, 360.0f);
+        camera.xrotation = glm::min(glm::max(camera.xrotation, -90.0f), 90.0f);
+        camera.zrotation = fmod(camera.zrotation, 360.0f);
 
         this->setCursor(Qt::SizeAllCursor);
     }
