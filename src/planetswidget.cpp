@@ -64,6 +64,8 @@ void PlanetsWidget::initializeGL() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_LINE_SMOOTH);
 
+    glEnableClientState(GL_VERTEX_ARRAY);
+
     QImage img(":/textures/planet.png");
     texture = bindTexture(img);
 }
@@ -77,7 +79,7 @@ void PlanetsWidget::resizeGL(int width, int height) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    gluPerspective(45.0f, static_cast<GLfloat>(width)/height, 0.1f, 10000.0f);
+    glLoadMatrixf(glm::value_ptr(glm::perspective(45.0f, float(width)/float(height), 0.1f, 10000.0f)));
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -220,27 +222,39 @@ void PlanetsWidget::paintGL() {
     glScalef(scale, scale, scale);
 
     if(displaysettings & SolidLineGrid){
-        glColor4fv(glm::value_ptr(gridColor));
-        glBegin(GL_LINES);
-        for(int i = -gridRange; i <= gridRange; i++){
-            glVertex3f(i,-gridRange, 0.0f);
-            glVertex3f(i, gridRange, 0.0f);
+        if(gridPoints.size() != (gridRange * 2 + 1) * 4){
+            gridPoints.clear();
+            for(int i = -gridRange; i <= gridRange; i++){
+                gridPoints.push_back(glm::vec2(i,-gridRange));
+                gridPoints.push_back(glm::vec2(i, gridRange));
 
-            glVertex3f(-gridRange, i, 0.0f);
-            glVertex3f( gridRange, i, 0.0f);
+                gridPoints.push_back(glm::vec2(-gridRange, i));
+                gridPoints.push_back(glm::vec2( gridRange, i));
+            }
         }
-        glEnd();
+
+        glColor4fv(glm::value_ptr(gridColor));
+
+        glVertexPointer(2, GL_FLOAT, 0, &gridPoints[0]);
+        glDrawArrays(GL_LINES, 0, gridPoints.size());
+
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
     if(displaysettings & PointGrid){
-        glColor4fv(glm::value_ptr(gridColor));
-        glBegin(GL_POINTS);
-        for(int x = -gridRange; x <= gridRange; x++){
-            for(int y = -gridRange; y <= gridRange; y++){
-                glVertex3f(x, y, 0.0f);
+        if(gridPoints.size() != pow(gridRange * 2 + 1, 2)){
+            gridPoints.clear();
+            for(int x = -gridRange; x <= gridRange; x++){
+                for(int y = -gridRange; y <= gridRange; y++){
+                    gridPoints.push_back(glm::vec2(x, y));
+                }
             }
         }
-        glEnd();
+
+        glColor4fv(glm::value_ptr(gridColor));
+
+        glVertexPointer(2, GL_FLOAT, 0, &gridPoints[0]);
+        glDrawArrays(GL_POINTS, 0, gridPoints.size());
+
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
@@ -288,12 +302,13 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         glLoadIdentity();
         camera.setup();
 
-        glBegin(GL_QUADS);{
-            glVertex4f( 10.0f, 10.0f, 0.0f, 1.0e-5f);
-            glVertex4f( 10.0f,-10.0f, 0.0f, 1.0e-5f);
-            glVertex4f(-10.0f,-10.0f, 0.0f, 1.0e-5f);
-            glVertex4f(-10.0f, 10.0f, 0.0f, 1.0e-5f);
-        }glEnd();
+        static const float plane[] = { 10.0f, 10.0f, 0.0f, 1.0e-5f,
+                                       10.0f,-10.0f, 0.0f, 1.0e-5f,
+                                      -10.0f,-10.0f, 0.0f, 1.0e-5f,
+                                      -10.0f, 10.0f, 0.0f, 1.0e-5f};
+
+        glVertexPointer(4, GL_FLOAT, 0, plane);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         glm::ivec4 viewport;
         glm::mat4 modelview,projection;
