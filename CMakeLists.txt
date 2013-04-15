@@ -25,21 +25,17 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Planets3D.rc.in" "${CMAKE_CURRENT_SO
 set(WINDRES "Planets3D.rc")
 
 find_package(Qt5Widgets)
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
-add_definitions(${Qt5Widgets_DEFINITIONS})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+include_directories(${Qt5OpenGL_INCLUDE_DIRS})
+add_definitions(${Qt5OpenGL_DEFINITIONS})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5OpenGL_EXECUTABLE_COMPILE_FLAGS}")
 
 qt5_wrap_ui(FORM_HEADERS ${FORMS})
 qt5_add_resources(RESOURCES_RCC ${RESOURCES})
 
 add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${FORM_HEADERS} ${HEADERS} ${RESOURCES_RCC} ${WINDRES})
 
-qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)
+qt5_use_modules(${PROJECT_NAME} OpenGL)
 
 find_package(OpenGL REQUIRED)
-if(OPENGL_FOUND)
-  include_directories(${OPENGL_INCLUDE_DIRS})
-  target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
-else(OPENGL_FOUND)
-  message(FATAL_ERROR "OpenGL not found by CMake!!!")
-endif(OPENGL_FOUND)
+include_directories(${OPENGL_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
