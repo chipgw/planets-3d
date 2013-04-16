@@ -1,19 +1,19 @@
 #include "planet.h"
 
-QColor Planet::nextSelectionColor = QColor(1,1,1);
+QColor Planet::nextSelectionColor = QColor(1, 1, 1);
 
-Planet::Planet() : position(0.0f,0.0f,0.0f) {
+Planet::Planet() : position(0.0f) {
     mass = 1000.0f;
 
     selectionColor = nextSelectionColor;
 
-    nextSelectionColor.setRed(nextSelectionColor.red()+1);
+    nextSelectionColor.setRed(nextSelectionColor.red() + 1);
     if(nextSelectionColor.red() == 0) {
         nextSelectionColor.setRed(1);
-        nextSelectionColor.setGreen(nextSelectionColor.green()+1);
+        nextSelectionColor.setGreen(nextSelectionColor.green() + 1);
         if(nextSelectionColor.green() == 0){
             nextSelectionColor.setGreen(1);
-            nextSelectionColor.setBlue(nextSelectionColor.blue()+1);
+            nextSelectionColor.setBlue(nextSelectionColor.blue() + 1);
         }
     }
 }
@@ -24,7 +24,7 @@ Planet::~Planet(){
 
 void Planet::draw(){
     glPushMatrix();
-    glTranslatef(position.x,position.y,position.z);
+    glTranslatef(position.x, position.y, position.z);
 
     GLUquadric *sphere = gluNewQuadric();
     gluQuadricTexture(sphere, GL_TRUE);
@@ -56,11 +56,6 @@ float Planet::getRadius(){
 }
 
 void Planet::drawBounds(GLenum drawmode, bool selectioncolor){
-    bool texturing = glIsEnabled(GL_TEXTURE_2D);
-    if(texturing){
-        glDisable(GL_TEXTURE_2D);
-    }
-
     if(selectioncolor){
         glColor3f(selectionColor.redF(), selectionColor.greenF(), selectionColor.blueF());
     }
@@ -69,18 +64,14 @@ void Planet::drawBounds(GLenum drawmode, bool selectioncolor){
     }
 
     glPushMatrix();
-    glTranslatef(position.x,position.y,position.z);
+    glTranslatef(position.x, position.y, position.z);
 
     GLUquadric *sphere = gluNewQuadric();
     gluQuadricOrientation(sphere, GLU_OUTSIDE);
     gluQuadricDrawStyle(sphere, drawmode);
-    gluSphere(sphere,this->getRadius()*1.02f,32,16);
+    gluSphere(sphere,this->getRadius() * 1.02f, 32, 16);
 
-    glColor3f(1.0f,1.0f,1.0f);
-
-    if(texturing){
-        glEnable(GL_TEXTURE_2D);
-    }
+    glColor3f(1.0f, 1.0f, 1.0f);
 
     glPopMatrix();
 }

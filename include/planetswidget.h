@@ -7,6 +7,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QMouseEvent>
+#include <QGLWidget>
 
 class PlanetsWidget : public QGLWidget {
     Q_OBJECT

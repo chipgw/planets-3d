@@ -2,9 +2,9 @@
 #define PLANET_H
 
 #include "common.h"
+#include <QColor>
 
-class Planet
-{
+class Planet {
 public:
     Planet();
     ~Planet();

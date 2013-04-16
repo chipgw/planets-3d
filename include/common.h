@@ -1,16 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <Qt>
-#include <QApplication>
-#include <QDir>
 #include <QDebug>
-#include <QFile>
-#include <QGLWidget>
-#include <QMap>
-#include <QMessageBox>
 #include <math.h>
-#include <vector>
 #include <GL/glu.h>
 #include <glm/glm.hpp>
 

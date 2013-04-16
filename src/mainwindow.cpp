@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
     ui->setupUi(this);
@@ -44,7 +45,7 @@ void MainWindow::on_createPlanet_PushButton_clicked(){
 void MainWindow::on_speed_Dial_valueChanged(int value){
     ui->centralwidget->simspeed = (value*speeddialmax)/ui->speed_Dial->maximum();
     ui->speedDisplay_lcdNumber->display(ui->centralwidget->simspeed);
-    if(ui->centralwidget->simspeed <= 0){
+    if(ui->centralwidget->simspeed <= 0.0f){
         ui->PauseResume_Button->setText(tr("Resume"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
     }
@@ -55,13 +56,13 @@ void MainWindow::on_speed_Dial_valueChanged(int value){
 }
 
 void MainWindow::on_PauseResume_Button_clicked(){
-    if(ui->centralwidget->simspeed <= 0){
-        ui->centralwidget->simspeed = 1;
+    if(ui->centralwidget->simspeed <= 0.0f){
+        ui->centralwidget->simspeed = 1.0f;
         ui->PauseResume_Button->setText(tr("Pause"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_pause_blue.png"));
     }
     else{
-        ui->centralwidget->simspeed = 0;
+        ui->centralwidget->simspeed = 0.0f;
         ui->PauseResume_Button->setText(tr("Resume"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
     }
@@ -87,7 +88,7 @@ void MainWindow::on_actionClear_Velocity_triggered(){
 
 void MainWindow::on_actionNew_Simulation_triggered(){
     float tmpsimspeed = ui->centralwidget->simspeed;
-    ui->centralwidget->simspeed = 0;
+    ui->centralwidget->simspeed = 0.0f;
 
     QMessageBox areYouSureMsgbox(this);
     areYouSureMsgbox.setText(tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"));

@@ -1,6 +1,7 @@
 #include "planetswidget.h"
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+#include <QDir>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
@@ -45,7 +46,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
 
 PlanetsWidget::~PlanetsWidget() {
     this->deleteAll();
-    qDebug()<< "average fps: " << framecount/(totalTime.msecsTo(QTime::currentTime()) * 0.001f);
+    qDebug()<< "average fps: " << framecount / (totalTime.msecsTo(QTime::currentTime()) * 0.001f);
 }
 
 void PlanetsWidget::initializeGL() {
