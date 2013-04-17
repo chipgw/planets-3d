@@ -172,9 +172,13 @@ void PlanetsWidget::paintGL() {
 
     glEnable(GL_TEXTURE_2D);
 
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
     for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
         i.next().draw();
     }
+
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
     glDisable(GL_TEXTURE_2D);
 
@@ -396,7 +400,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
         camera.setup();
 
         for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
-            i.next().drawBounds(GLU_FILL, true);
+            i.next().drawBounds(GL_TRIANGLES, true);
         }
 
         glm::vec4 color;

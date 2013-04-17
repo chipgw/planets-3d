@@ -25,11 +25,12 @@ Planet::~Planet(){
 void Planet::draw(){
     glPushMatrix();
     glTranslatef(position.x, position.y, position.z);
+    float r = this->getRadius();
+    glScalef(r, r, r);
 
-    GLUquadric *sphere = gluNewQuadric();
-    gluQuadricTexture(sphere, GL_TRUE);
-    gluQuadricOrientation(sphere, GLU_OUTSIDE);
-    gluSphere(sphere,this->getRadius(),64,32);
+    glVertexPointer(3, GL_FLOAT, 0, &highResSphere.verts[0]);
+    glTexCoordPointer(2, GL_FLOAT, 0, &highResSphere.uv[0]);
+    glDrawElements(GL_TRIANGLES, highResSphere.triangles.size(), GL_UNSIGNED_INT, &highResSphere.triangles[0]);
 
     glPopMatrix();
 }
@@ -52,7 +53,7 @@ void Planet::drawPath(){
 }
 
 float Planet::getRadius(){
-    return pow(3.0f * mass / 4.0f * M_PI, 1.0f / 3.0f) / 10.0f;
+    return pow(3.0f * mass / 4.0f * M_PI, 1.0f / 3.0f) * 0.1f;
 }
 
 void Planet::drawBounds(GLenum drawmode, bool selectioncolor){
@@ -65,11 +66,18 @@ void Planet::drawBounds(GLenum drawmode, bool selectioncolor){
 
     glPushMatrix();
     glTranslatef(position.x, position.y, position.z);
+    float r = this->getRadius() * 1.02f;
+    glScalef(r, r, r);
 
-    GLUquadric *sphere = gluNewQuadric();
-    gluQuadricOrientation(sphere, GLU_OUTSIDE);
-    gluQuadricDrawStyle(sphere, drawmode);
-    gluSphere(sphere,this->getRadius() * 1.02f, 32, 16);
+    glVertexPointer(3, GL_FLOAT, 0, &lowResSphere.verts[0]);
+    if(drawmode == GL_TRIANGLES){
+        glTexCoordPointer(2, GL_FLOAT, 0, &lowResSphere.uv[0]);
+        glDrawElements(GL_TRIANGLES, lowResSphere.triangles.size(), GL_UNSIGNED_INT, &lowResSphere.triangles[0]);
+    }else if(drawmode == GL_LINES){
+        glDrawElements(GL_LINES, lowResSphere.lines.size(), GL_UNSIGNED_INT, &lowResSphere.lines[0]);
+    }else{
+        qDebug() << "warning, draw mode not supported!";
+    }
 
     glColor3f(1.0f, 1.0f, 1.0f);
 
@@ -81,3 +89,6 @@ bool Planet::operator ==(const Planet &p2){
 }
 
 unsigned int Planet::pathLength = 200;
+
+Sphere Planet::highResSphere = Sphere(128, 64);
+Sphere Planet::lowResSphere = Sphere(32, 16);

@@ -2,6 +2,7 @@
 #define PLANET_H
 
 #include "common.h"
+#include "spheregenerator.h"
 #include <QColor>
 
 class Planet {
@@ -20,10 +21,13 @@ public:
     std::vector<glm::vec3> path;
     static unsigned int pathLength;
 
+    static Sphere highResSphere;
+    static Sphere lowResSphere;
+
     void draw();
     void drawPath();
     void updatePath();
-    void drawBounds(GLenum drawmode = GLU_LINE, bool selectioncolor = false);
+    void drawBounds(GLenum drawmode = GL_LINES, bool selectioncolor = false);
     float getRadius();
 
     bool operator ==(const Planet &p2);

@@ -13,10 +13,10 @@ class PlanetsWidget : public QGLWidget {
     Q_OBJECT
 public:
     enum DisplaySettings{
-        PlanetTrails = (1<<0),
-        MotionBlur = (1<<1),
+        PlanetTrails  = (1<<0),
+        MotionBlur    = (1<<1),
         SolidLineGrid = (1<<2),
-        PointGrid = (1<<3)
+        PointGrid     = (1<<3)
     };
     enum PlacingStep{
         None,
