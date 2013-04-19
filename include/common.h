@@ -3,7 +3,7 @@
 
 #include <QDebug>
 #include <math.h>
-#include <GL/glu.h>
+#include <qopengl.h>
 #include <glm/glm.hpp>
 
 // just in case math.h did not declare M_PI

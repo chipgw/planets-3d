@@ -38,4 +38,4 @@ qt5_use_modules(${PROJECT_NAME} OpenGL)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
