@@ -7,7 +7,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/norm.hpp>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent) {
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent), highResSphere(128, 64), lowResSphere(32, 16) {
     this->setMouseTracking(true);
 
     this->doScreenshot = false;
@@ -175,7 +175,7 @@ void PlanetsWidget::paintGL() {
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
-        i.next().draw();
+        drawPlanet(i.next());
     }
 
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -188,17 +188,17 @@ void PlanetsWidget::paintGL() {
     }
 
     if(selected){
-        selected->drawBounds();
+        drawPlanetBounds(*selected);
     }
 
     if(displaysettings & PlanetTrails){
         for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
-            i.next().drawPath();
+            drawPlanetPath(i.next());
         }
     }
 
     if(placingStep != None){
-        placing.drawBounds();
+        drawPlanetBounds(placing);
     }
 
     if(placingStep == FreeVelocity){
@@ -426,7 +426,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
         camera.setup();
 
         for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
-            i.next().drawBounds(GL_TRIANGLES, true);
+            drawPlanetBounds(i.next(), GL_TRIANGLES, true);
         }
 
         glm::vec4 color;
@@ -617,4 +617,51 @@ bool PlanetsWidget::save(const QString &filename){
     xml.writeEndDocument();
 
     return true;
+}
+
+void PlanetsWidget::drawPlanet(Planet &planet){
+    glPushMatrix();
+    glTranslatef(planet.position.x, planet.position.y, planet.position.z);
+    float r = planet.getRadius();
+    glScalef(r, r, r);
+
+    glVertexPointer(3, GL_FLOAT, 0, &highResSphere.verts[0]);
+    glTexCoordPointer(2, GL_FLOAT, 0, &highResSphere.uv[0]);
+    glDrawElements(GL_TRIANGLES, highResSphere.triangles.size(), GL_UNSIGNED_INT, &highResSphere.triangles[0]);
+
+    glPopMatrix();
+}
+
+void PlanetsWidget::drawPlanetPath(Planet &planet){
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, &planet.path[0]);
+    glDrawArrays(GL_LINE_STRIP, 0, planet.path.size());
+}
+
+void PlanetsWidget::drawPlanetBounds(Planet &planet, GLenum drawmode, bool selectioncolor){
+    if(selectioncolor){
+        glColor3f(planet.selectionColor.redF(), planet.selectionColor.greenF(), planet.selectionColor.blueF());
+    }
+    else{
+        glColor3f(0.0f, 1.0f, 0.0f);
+    }
+
+    glPushMatrix();
+    glTranslatef(planet.position.x, planet.position.y, planet.position.z);
+    float r = planet.getRadius() * 1.02f;
+    glScalef(r, r, r);
+
+    glVertexPointer(3, GL_FLOAT, 0, &lowResSphere.verts[0]);
+    if(drawmode == GL_TRIANGLES){
+        glTexCoordPointer(2, GL_FLOAT, 0, &lowResSphere.uv[0]);
+        glDrawElements(GL_TRIANGLES, lowResSphere.triangles.size(), GL_UNSIGNED_INT, &lowResSphere.triangles[0]);
+    }else if(drawmode == GL_LINES){
+        glDrawElements(GL_LINES, lowResSphere.lines.size(), GL_UNSIGNED_INT, &lowResSphere.lines[0]);
+    }else{
+        qDebug() << "warning, draw mode not supported!";
+    }
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+    glPopMatrix();
 }

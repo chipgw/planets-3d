@@ -4,6 +4,7 @@
 #include "common.h"
 #include "planet.h"
 #include "camera.h"
+#include "spheregenerator.h"
 #include <QTime>
 #include <QTimer>
 #include <QMouseEvent>
@@ -66,11 +67,18 @@ public:
     int gridRange;
     std::vector<glm::vec2> gridPoints;
 
+    Sphere highResSphere;
+    Sphere lowResSphere;
+
     Planet &createPlanet(glm::vec3 position, glm::vec3 velocity, float mass);
     void deleteAll();
 
     bool save(const QString& filename);
     bool load(const QString& filename);
+
+    void drawPlanet(Planet &planet);
+    void drawPlanetPath(Planet &planet);
+    void drawPlanetBounds(Planet &planet, GLenum drawmode = GL_LINES, bool selectioncolor = false);
 
 signals:
     void updateFPSStatusMessage(const QString &text);
