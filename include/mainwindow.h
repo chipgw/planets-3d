@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "common.h"
+#include "planetsuniverse.h"
 #include <QMainWindow>
 #include <QLabel>
 
@@ -71,6 +72,8 @@ private:
     QLabel *simspeedLabel;
     QLabel *fpsLabel;
     QLabel *averagefpsLabel;
+
+    PlanetsUniverse *universe;
 };
 
 #endif // MAINWINDOW_H

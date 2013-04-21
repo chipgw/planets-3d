@@ -6,6 +6,8 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
     ui->setupUi(this);
 
+    universe = &ui->centralwidget->universe;
+
     simspeedLabel = new QLabel(ui->statusbar);
     simspeedLabel->setFixedWidth(160);
     ui->statusbar->addPermanentWidget(simspeedLabel);
@@ -16,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     averagefpsLabel->setFixedWidth(160);
     ui->statusbar->addPermanentWidget(averagefpsLabel);
 
-    connect(ui->actionCenter_All,                   SIGNAL(triggered()), ui->centralwidget, SLOT(centerAll()));
+    connect(ui->actionCenter_All,                   SIGNAL(triggered()), universe, SLOT(centerAll()));
     connect(ui->actionInteractive_Planet_Placement, SIGNAL(triggered()), ui->centralwidget, SLOT(beginInteractiveCreation()));
 
     connect(ui->centralwidget, SIGNAL(updateSimspeedStatusMessage(QString)),   simspeedLabel,   SLOT(setText(QString)));
@@ -37,15 +39,15 @@ void MainWindow::on_actionExit_triggered(){
 }
 
 void MainWindow::on_createPlanet_PushButton_clicked(){
-    ui->centralwidget->selected = &ui->centralwidget->createPlanet(glm::vec3(ui->newPosX_SpinBox->value(),ui->newPosY_SpinBox->value(),ui->newPosZ_SpinBox->value()),
-                                                                  glm::vec3(ui->newVelocityX_SpinBox->value(),ui->newVelocityY_SpinBox->value(),ui->newVelocityZ_SpinBox->value()) * velocityfac,
-                                                                  ui->newMass_SpinBox->value());
+    universe->selected = &universe->createPlanet(glm::vec3(ui->newPosX_SpinBox->value(),ui->newPosY_SpinBox->value(),ui->newPosZ_SpinBox->value()),
+                                                 glm::vec3(ui->newVelocityX_SpinBox->value(),ui->newVelocityY_SpinBox->value(),ui->newVelocityZ_SpinBox->value()) * velocityfac,
+                                                 ui->newMass_SpinBox->value());
 }
 
 void MainWindow::on_speed_Dial_valueChanged(int value){
-    ui->centralwidget->simspeed = (value*speeddialmax)/ui->speed_Dial->maximum();
-    ui->speedDisplay_lcdNumber->display(ui->centralwidget->simspeed);
-    if(ui->centralwidget->simspeed <= 0.0f){
+    universe->simspeed = (value*  speeddialmax) / ui->speed_Dial->maximum();
+    ui->speedDisplay_lcdNumber->display(universe->simspeed);
+    if(universe->simspeed <= 0.0f){
         ui->PauseResume_Button->setText(tr("Resume"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
     }
@@ -56,18 +58,18 @@ void MainWindow::on_speed_Dial_valueChanged(int value){
 }
 
 void MainWindow::on_PauseResume_Button_clicked(){
-    if(ui->centralwidget->simspeed <= 0.0f){
-        ui->centralwidget->simspeed = 1.0f;
+    if(universe->simspeed <= 0.0f){
+        universe->simspeed = 1.0f;
         ui->PauseResume_Button->setText(tr("Pause"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_pause_blue.png"));
     }
     else{
-        ui->centralwidget->simspeed = 0.0f;
+        universe->simspeed = 0.0f;
         ui->PauseResume_Button->setText(tr("Resume"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
     }
-    ui->speedDisplay_lcdNumber->display(ui->centralwidget->simspeed);
-    ui->speed_Dial->setValue((ui->centralwidget->simspeed/speeddialmax)*ui->speed_Dial->maximum());
+    ui->speedDisplay_lcdNumber->display(universe->simspeed);
+    ui->speed_Dial->setValue((universe->simspeed / speeddialmax) * ui->speed_Dial->maximum());
 }
 
 void MainWindow::on_actionTake_Screenshot_triggered(){
@@ -75,20 +77,20 @@ void MainWindow::on_actionTake_Screenshot_triggered(){
 }
 
 void MainWindow::on_actionDelete_triggered(){
-    if(ui->centralwidget->selected){
-        ui->centralwidget->planets.removeAll(*ui->centralwidget->selected);
+    if(universe->selected){
+        universe->planets.removeAll(*universe->selected);
     }
 }
 
 void MainWindow::on_actionClear_Velocity_triggered(){
-    if(ui->centralwidget->selected){
-        ui->centralwidget->selected->velocity = glm::vec3(0.0f);
+    if(universe->selected){
+        universe->selected->velocity = glm::vec3(0.0f);
     }
 }
 
 void MainWindow::on_actionNew_Simulation_triggered(){
-    float tmpsimspeed = ui->centralwidget->simspeed;
-    ui->centralwidget->simspeed = 0.0f;
+    float tmpsimspeed = universe->simspeed;
+    universe->simspeed = 0.0f;
 
     QMessageBox areYouSureMsgbox(this);
     areYouSureMsgbox.setText(tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"));
@@ -100,9 +102,9 @@ void MainWindow::on_actionNew_Simulation_triggered(){
     int input = areYouSureMsgbox.exec();
 
     if(input == QMessageBox::Yes){
-        ui->centralwidget->deleteAll();
+       universe->deleteAll();
     }
-    ui->centralwidget->simspeed = tmpsimspeed;
+    universe->simspeed = tmpsimspeed;
 }
 
 void MainWindow::on_actionOff_triggered(){
@@ -127,23 +129,23 @@ void MainWindow::on_actionPoints_triggered(){
 }
 
 void MainWindow::on_actionOpen_Simulation_triggered(){
-    float tmpsimspeed = ui->centralwidget->simspeed;
-    ui->centralwidget->simspeed = 0;
+    float tmpsimspeed = universe->simspeed;
+    universe->simspeed = 0;
 
     QString filename = QFileDialog::getOpenFileName(this,tr("Open Simulation"), "", tr("Simulation files (*.uni *.xml)"));
-    ui->centralwidget->load(filename);
+    universe->load(filename);
 
-    ui->centralwidget->simspeed = tmpsimspeed;
+    universe->simspeed = tmpsimspeed;
 }
 
 void MainWindow::on_actionSave_Simulation_triggered(){
-    float tmpsimspeed = ui->centralwidget->simspeed;
-    ui->centralwidget->simspeed = 0;
+    float tmpsimspeed = universe->simspeed;
+    universe->simspeed = 0;
 
     QString filename = QFileDialog::getSaveFileName(this,tr("Save Simulation"), "", tr("Simulation files (*.uni *.xml)"));
-    ui->centralwidget->save(filename);
+    universe->save(filename);
 
-    ui->centralwidget->simspeed = tmpsimspeed;
+    universe->simspeed = tmpsimspeed;
 }
 
 void MainWindow::on_actionDraw_Paths_triggered(){
@@ -159,7 +161,7 @@ void MainWindow::on_actionMotion_Blur_triggered(){
 }
 
 void MainWindow::on_followPlanetPushButton_clicked(){
-    ui->centralwidget->following = ui->centralwidget->selected;
+    ui->centralwidget->following = universe->selected;
     ui->centralwidget->followState = PlanetsWidget::Single;
 
 }

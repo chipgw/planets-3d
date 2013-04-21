@@ -2,8 +2,8 @@
 #define PlanetsWidget_H
 
 #include "common.h"
-#include "planet.h"
 #include "camera.h"
+#include "planetsuniverse.h"
 #include "spheregenerator.h"
 #include <QTime>
 #include <QTimer>
@@ -35,8 +35,8 @@ public:
     PlanetsWidget(QWidget *parent = 0);
     ~PlanetsWidget();
 
-    QList<Planet> planets;
-    Planet* selected;
+    PlanetsUniverse universe;
+
     Planet* following;
     FollowingState followState;
     GLuint texture;
@@ -48,7 +48,6 @@ public:
     Planet placing;
     glm::mat4 placingRotation;
 
-    float simspeed;
     int stepsPerFrame;
     int delay;
     int framecount;
@@ -70,12 +69,6 @@ public:
     Sphere highResSphere;
     Sphere lowResSphere;
 
-    Planet &createPlanet(glm::vec3 position, glm::vec3 velocity, float mass);
-    void deleteAll();
-
-    bool save(const QString& filename);
-    bool load(const QString& filename);
-
     void drawPlanet(Planet &planet);
     void drawPlanetPath(Planet &planet);
     void drawPlanetBounds(Planet &planet, GLenum drawmode = GL_LINES, bool selectioncolor = false);
@@ -86,8 +79,6 @@ signals:
     void updateSimspeedStatusMessage(const QString &text);
 
 public slots:
-    void centerAll();
-
     void beginInteractiveCreation();
 
 protected:

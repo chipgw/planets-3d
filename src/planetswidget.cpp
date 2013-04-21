@@ -1,11 +1,8 @@
 #include "planetswidget.h"
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
 #include <QDir>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtx/norm.hpp>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent), highResSphere(128, 64), lowResSphere(32, 16) {
     this->setMouseTracking(true);
@@ -21,7 +18,6 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     framecount = 0;
     placingStep = None;
     delay = 0;
-    simspeed = 1.0;
     stepsPerFrame = 100;
     totalTime = QTime::currentTime();
     frameTime = QTime::currentTime();
@@ -39,13 +35,11 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     gridRange = 50;
     gridColor = glm::vec4(0.8f, 1.0f, 1.0f, 0.4f);
 
-    selected = NULL;
     following = NULL;
-    load("default.xml");
+    universe.load("default.xml");
 }
 
 PlanetsWidget::~PlanetsWidget() {
-    this->deleteAll();
     qDebug()<< "average fps: " << framecount / (totalTime.msecsTo(QTime::currentTime()) * 0.001f);
 }
 
@@ -90,48 +84,8 @@ void PlanetsWidget::resizeGL(int width, int height) {
 }
 
 void PlanetsWidget::paintGL() {
-    float time = 0.0f;
     if(placingStep == None){
-        time = simspeed * delay * 20.0f / stepsPerFrame;
-
-        for(int s = 0; s < stepsPerFrame; s++){
-            QMutableListIterator<Planet> i(planets);
-            while (i.hasNext()) {
-                Planet &planet = i.next();
-                QMutableListIterator<Planet> o(i);
-                while (o.hasNext()) {
-                    Planet &other = o.next();
-
-                    if(other == planet){
-                        continue;
-                    }
-                    else{
-                        glm::vec3 direction = other.position - planet.position;
-                        float distance = glm::length2(direction);
-                        float frc = gravityconst * ((other.mass * planet.mass) / distance);
-
-                        planet.velocity += direction * frc * time / planet.mass;
-                        other.velocity -= direction * frc * time / other.mass;
-
-                        distance = sqrt(distance);
-
-                        if(distance < planet.getRadius() + other.getRadius() / 2.0f){
-                            planet.position = (other.position * other.mass + planet.position * planet.mass) / (other.mass + planet.mass);
-                            planet.velocity = (other.velocity * other.mass + planet.velocity * planet.mass) / (other.mass + planet.mass);
-                            planet.mass += other.mass;
-                            if(&other == selected){
-                                selected = &planet;
-                            }
-                            o.remove();
-                            planet.path.clear();
-                        }
-                    }
-                }
-
-                planet.position += planet.velocity * time;
-                planet.updatePath();
-            }
-        }
+        universe.advance(delay * 20.0f, stepsPerFrame);
     }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -150,7 +104,7 @@ void PlanetsWidget::paintGL() {
         camera.position = glm::vec3(0.0f);
         float totalmass = 0.0f;
 
-        for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
+        for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
             Planet &planet = i.next();
             camera.position += planet.position * planet.mass;
             totalmass += planet.mass;
@@ -159,10 +113,10 @@ void PlanetsWidget::paintGL() {
     }else if(followState == PlainAverage){
         camera.position = glm::vec3(0.0f);
 
-        for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
+        for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
             camera.position += i.next().position;
         }
-        camera.position /= planets.size();
+        camera.position /= universe.planets.size();
     }
     else{
         camera.position = glm::vec3(0.0f);
@@ -174,7 +128,7 @@ void PlanetsWidget::paintGL() {
 
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
+    for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
         drawPlanet(i.next());
     }
 
@@ -187,12 +141,12 @@ void PlanetsWidget::paintGL() {
         glAccum(GL_ACCUM, 0.999f);
     }
 
-    if(selected){
-        drawPlanetBounds(*selected);
+    if(universe.selected){
+        drawPlanetBounds(*universe.selected);
     }
 
     if(displaysettings & PlanetTrails){
-        for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
+        for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
             drawPlanetPath(i.next());
         }
     }
@@ -317,7 +271,7 @@ void PlanetsWidget::paintGL() {
     framecount++;
 
     // TODO - only update the simspeed label when simspeed has changed.
-    emit updateSimspeedStatusMessage(tr("simulation speed: %1").arg(simspeed));
+    emit updateSimspeedStatusMessage(tr("simulation speed: %1").arg(universe.simspeed));
     emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount / (totalTime.msecsTo(QTime::currentTime()) * 0.001f)));
     emit updateFPSStatusMessage(tr("fps: %1").arg(1000.0f / delay));
 
@@ -414,7 +368,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     else if(placingStep == FreeVelocity){
         if(e->button() == Qt::LeftButton){
             placingStep = None;
-            selected = &createPlanet(placing.position, placing.velocity, placing.mass);
+            universe.selected = &universe.createPlanet(placing.position, placing.velocity, placing.mass);
             this->setCursor(Qt::ArrowCursor);
         }
     }
@@ -425,7 +379,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
         glLoadIdentity();
         camera.setup();
 
-        for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
+        for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
             drawPlanetBounds(i.next(), GL_TRIANGLES, true);
         }
 
@@ -435,17 +389,17 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 
         glReadPixels(e->x(), viewport[3] - e->y(), 1, 1, GL_RGBA, GL_FLOAT, glm::value_ptr(color));
 
-        selected = NULL;
+        universe.selected = NULL;
 
         if(color.a == 0){
             return;
         }
         QColor selectedcolor = QColor::fromRgbF(color.r,color.g,color.b);
 
-        for(QMutableListIterator<Planet> i(planets); i.hasNext();) {
+        for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
             Planet *planet = &i.next();
             if(planet->selectionColor == selectedcolor){
-                this->selected = planet;
+                universe.selected = planet;
             }
         }
     }
@@ -473,151 +427,11 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     }
 }
 
-Planet &PlanetsWidget::createPlanet(glm::vec3 position, glm::vec3 velocity, float mass){
-    Planet planet;
-    planet.position = position;
-    planet.velocity = velocity;
-    planet.mass = mass;
-    planets.append(planet);
-    return planets.back();
-}
-
-void PlanetsWidget::deleteAll(){
-    QMutableListIterator<Planet> i(planets);
-    while (i.hasNext()) {
-        i.next();
-        i.remove();
-    }
-    selected = NULL;
-}
-
-void PlanetsWidget::centerAll(){
-    QMutableListIterator<Planet> i(planets);
-    glm::vec3 averagePosition(0.0f),averageVelocity(0.0f);
-    float totalmass = 0.0f;
-    while (i.hasNext()) {
-        Planet &planet = i.next();
-
-        averagePosition += planet.position * planet.mass;
-        averageVelocity += planet.velocity * planet.mass;
-        totalmass += planet.mass;
-    }
-    averagePosition /= totalmass;
-    averageVelocity /= totalmass;
-
-    i.toFront();
-    while (i.hasNext()) {
-        Planet &planet = i.next();
-
-        planet.position -= averagePosition;
-        planet.velocity -= averageVelocity;
-        planet.path.clear();
-    }
-}
-
 void PlanetsWidget::beginInteractiveCreation(){
     placingStep = FreePositionXY;
-    selected = NULL;
+    universe.selected = NULL;
 }
 
-bool PlanetsWidget::load(const QString &filename){
-    if(!QFile::exists(filename)){
-        qDebug(qPrintable(tr("\"%1\" does not exist!").arg(filename)));
-        return false;
-    }
-    QFile file(filename);
-
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-        return false;
-    }
-
-    QXmlStreamReader xml(&file);
-
-    if(xml.readNextStartElement()) {
-        if (xml.name() == "planets-3d-universe"){
-            deleteAll();
-            while(xml.readNextStartElement()) {
-                if(xml.name() == "planet"){
-                    Planet planet;
-
-                    planet.mass = xml.attributes().value("mass").toString().toFloat();
-
-                    while(xml.readNextStartElement()){
-                        if(xml.name() == "position"){
-                            planet.position.x = xml.attributes().value("x").toString().toFloat();
-                            planet.position.y = xml.attributes().value("y").toString().toFloat();
-                            planet.position.z = xml.attributes().value("z").toString().toFloat();
-                            xml.readNext();
-                        }
-                        if(xml.name() == "velocity"){
-                            planet.velocity.x = xml.attributes().value("x").toString().toFloat() * velocityfac;
-                            planet.velocity.y = xml.attributes().value("y").toString().toFloat() * velocityfac;
-                            planet.velocity.z = xml.attributes().value("z").toString().toFloat() * velocityfac;
-                            xml.readNext();
-                        }
-                    }
-                    planets.append(planet);
-                    xml.readNext();
-                }
-            }
-            if(xml.hasError()){
-                qDebug(qPrintable(tr("\"%1\" had error: %2").arg(filename).arg(xml.errorString())));
-                return false;
-            }
-        }
-
-        else{
-            qDebug(qPrintable(tr("\"%1\" is not a valid universe file!").arg(filename)));
-            return false;
-        }
-    }
-
-
-    return true;
-}
-
-bool PlanetsWidget::save(const QString &filename){
-    QFile file(filename);
-
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        return false;
-    }
-
-    QXmlStreamWriter xml(&file);
-
-    xml.setAutoFormatting(true);
-
-    xml.writeStartDocument();
-    xml.writeStartElement("planets-3d-universe");
-
-    QMutableListIterator<Planet> i(planets);
-    while (i.hasNext()) {
-        const Planet &planet = i.next();
-
-        xml.writeStartElement("planet");
-
-        xml.writeAttribute("mass", QString::number(planet.mass));
-
-        xml.writeStartElement("position"); {
-            xml.writeAttribute("x", QString::number(planet.position.x));
-            xml.writeAttribute("y", QString::number(planet.position.y));
-            xml.writeAttribute("z", QString::number(planet.position.z));
-        } xml.writeEndElement();
-
-        xml.writeStartElement("velocity"); {
-            xml.writeAttribute("x", QString::number(planet.velocity.x / velocityfac));
-            xml.writeAttribute("y", QString::number(planet.velocity.y / velocityfac));
-            xml.writeAttribute("z", QString::number(planet.velocity.z / velocityfac));
-        } xml.writeEndElement();
-
-        xml.writeEndElement();
-    }
-    xml.writeEndElement();
-
-    xml.writeEndDocument();
-
-    return true;
-}
 
 void PlanetsWidget::drawPlanet(Planet &planet){
     glPushMatrix();
