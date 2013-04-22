@@ -1,14 +1,15 @@
 #include "camera.h"
+#include <glm/gtc/matrix_transform.hpp>
 
-Camera::Camera() : position(0,0,0) {
-    distance = 10;
-    xrotation = 45;
-    zrotation = 0;
+Camera::Camera() : position(0.0f) {
+    distance = 10.0f;
+    xrotation = 45.0f;
+    zrotation = 0.0f;
 }
 
 void Camera::setup(){
-    glTranslatef(0,0,-distance);
-    glRotatef(xrotation-90,1,0,0);
-    glRotatef(zrotation,0,0,1);
-    glTranslatef(-position.x,-position.y,-position.z);
+    camera = glm::translate(projection, glm::vec3(0.0f, 0.0f, -distance));
+    camera = glm::rotate(camera, xrotation - 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+    camera = glm::rotate(camera, zrotation, glm::vec3(0.0f, 0.0f, 1.0f));
+    camera = glm::translate(camera, -position);
 }

@@ -8,7 +8,12 @@ public:
     Camera();
 
     glm::vec3 position;
-    float distance,xrotation,zrotation;
+    float distance;
+    float xrotation;
+    float zrotation;
+
+    glm::mat4 projection;
+    glm::mat4 camera;
 
     void setup();
 };

@@ -74,13 +74,7 @@ void PlanetsWidget::resizeGL(int width, int height) {
 
     glViewport(0, 0, width, height);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    glLoadMatrixf(glm::value_ptr(glm::perspective(45.0f, float(width)/float(height), 0.1f, 10000.0f)));
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    camera.projection = glm::perspective(45.0f, float(width) / float(height), 0.1f, 10000.0f);
 }
 
 void PlanetsWidget::paintGL() {
@@ -94,9 +88,6 @@ void PlanetsWidget::paintGL() {
         glAccum(GL_RETURN, 1.0f);
         glClear(GL_ACCUM_BUFFER_BIT);
     }
-
-    glMatrixMode(GL_MODELVIEW_MATRIX);
-    glLoadIdentity();
 
     if(followState == Single && following != NULL){
         camera.position = following->position;
@@ -122,7 +113,13 @@ void PlanetsWidget::paintGL() {
         camera.position = glm::vec3(0.0f);
     }
 
+    glMatrixMode(GL_PROJECTION);
+
     camera.setup();
+    glLoadMatrixf(glm::value_ptr(camera.camera));
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
     glEnable(GL_TEXTURE_2D);
 
@@ -286,9 +283,13 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         glColorMask(0, 0, 0, 0);
         glDisable(GL_CULL_FACE);
 
-        glMatrixMode(GL_MODELVIEW_MATRIX);
-        glLoadIdentity();
+        glMatrixMode(GL_PROJECTION);
+
         camera.setup();
+        glLoadMatrixf(glm::value_ptr(camera.camera));
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 
         static const float plane[] = { 10.0f, 10.0f, 0.0f, 1.0e-5f,
                                        10.0f,-10.0f, 0.0f, 1.0e-5f,
@@ -375,9 +376,13 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     else if(e->button() == Qt::LeftButton){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glMatrixMode(GL_MODELVIEW_MATRIX);
-        glLoadIdentity();
+        glMatrixMode(GL_PROJECTION);
+
         camera.setup();
+        glLoadMatrixf(glm::value_ptr(camera.camera));
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 
         for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
             drawPlanetBounds(i.next(), GL_TRIANGLES, true);
