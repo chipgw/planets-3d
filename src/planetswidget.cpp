@@ -156,7 +156,7 @@ void PlanetsWidget::paintGL() {
         float length = glm::length(placing.velocity) / velocityfac;
 
         if(length > 0.0f){
-            glPushMatrix();
+            glLoadIdentity();
             glTranslatef(placing.position.x, placing.position.y, placing.position.z);
             glMultMatrixf(glm::value_ptr(placingRotation));
 
@@ -196,8 +196,6 @@ void PlanetsWidget::paintGL() {
 
             glVertexPointer(3, GL_FLOAT, 0, verts);
             glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
-
-            glPopMatrix();
         }
 
     }
@@ -439,7 +437,7 @@ void PlanetsWidget::beginInteractiveCreation(){
 
 
 void PlanetsWidget::drawPlanet(Planet &planet){
-    glPushMatrix();
+    glLoadIdentity();
     glTranslatef(planet.position.x, planet.position.y, planet.position.z);
     float r = planet.getRadius();
     glScalef(r, r, r);
@@ -447,8 +445,6 @@ void PlanetsWidget::drawPlanet(Planet &planet){
     glVertexPointer(3, GL_FLOAT, 0, &highResSphere.verts[0]);
     glTexCoordPointer(2, GL_FLOAT, 0, &highResSphere.uv[0]);
     glDrawElements(GL_TRIANGLES, highResSphere.triangles.size(), GL_UNSIGNED_INT, &highResSphere.triangles[0]);
-
-    glPopMatrix();
 }
 
 void PlanetsWidget::drawPlanetPath(Planet &planet){
@@ -465,7 +461,7 @@ void PlanetsWidget::drawPlanetBounds(Planet &planet, GLenum drawmode, bool selec
         glColor3f(0.0f, 1.0f, 0.0f);
     }
 
-    glPushMatrix();
+    glLoadIdentity();
     glTranslatef(planet.position.x, planet.position.y, planet.position.z);
     float r = planet.getRadius() * 1.02f;
     glScalef(r, r, r);
@@ -481,6 +477,4 @@ void PlanetsWidget::drawPlanetBounds(Planet &planet, GLenum drawmode, bool selec
     }
 
     glColor3f(1.0f, 1.0f, 1.0f);
-
-    glPopMatrix();
 }
