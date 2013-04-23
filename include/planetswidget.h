@@ -46,7 +46,7 @@ public:
 
     PlacingStep placingStep;
     Planet placing;
-    glm::mat4 placingRotation;
+    QMatrix4x4 placingRotation;
 
     int stepsPerFrame;
     int delay;
@@ -62,9 +62,10 @@ public:
 
     short displaysettings;
 
-    glm::vec4 gridColor;
+    // not a QColor because that is byte based, this is float based.
+    QVector4D gridColor;
     int gridRange;
-    std::vector<glm::vec2> gridPoints;
+    std::vector<QVector2D> gridPoints;
 
     Sphere highResSphere;
     Sphere lowResSphere;

@@ -11,13 +11,13 @@ public:
 
     float mass;
 
-    glm::vec3 position;
-    glm::vec3 velocity;
+    QVector3D position;
+    QVector3D velocity;
 
     QColor selectionColor;
     static QColor nextSelectionColor;
 
-    std::vector<glm::vec3> path;
+    std::vector<QVector3D> path;
     static unsigned int pathLength;
 
     void updatePath();

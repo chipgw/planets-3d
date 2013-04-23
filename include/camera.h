@@ -2,18 +2,20 @@
 #define CAMERA_H
 
 #include "common.h"
+#include <QVector3D>
+#include <QMatrix4x4>
 
 class Camera {
 public:
     Camera();
 
-    glm::vec3 position;
+    QVector3D position;
     float distance;
     float xrotation;
     float zrotation;
 
-    glm::mat4 projection;
-    glm::mat4 camera;
+    QMatrix4x4 projection;
+    QMatrix4x4 camera;
 
     void setup();
 };

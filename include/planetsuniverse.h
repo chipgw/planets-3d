@@ -11,7 +11,7 @@ public:
 
     float simspeed;
 
-    Planet &createPlanet(glm::vec3 position, glm::vec3 velocity, float mass);
+    Planet &createPlanet(QVector3D position, QVector3D velocity, float mass);
 
     bool save(const QString& filename);
     bool load(const QString& filename);

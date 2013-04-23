@@ -39,8 +39,8 @@ void MainWindow::on_actionExit_triggered(){
 }
 
 void MainWindow::on_createPlanet_PushButton_clicked(){
-    universe->selected = &universe->createPlanet(glm::vec3(ui->newPosX_SpinBox->value(),ui->newPosY_SpinBox->value(),ui->newPosZ_SpinBox->value()),
-                                                 glm::vec3(ui->newVelocityX_SpinBox->value(),ui->newVelocityY_SpinBox->value(),ui->newVelocityZ_SpinBox->value()) * velocityfac,
+    universe->selected = &universe->createPlanet(QVector3D(ui->newPosX_SpinBox->value(),ui->newPosY_SpinBox->value(),ui->newPosZ_SpinBox->value()),
+                                                 QVector3D(ui->newVelocityX_SpinBox->value(),ui->newVelocityY_SpinBox->value(),ui->newVelocityZ_SpinBox->value()) * velocityfac,
                                                  ui->newMass_SpinBox->value());
 }
 
@@ -84,7 +84,7 @@ void MainWindow::on_actionDelete_triggered(){
 
 void MainWindow::on_actionClear_Velocity_triggered(){
     if(universe->selected){
-        universe->selected->velocity = glm::vec3(0.0f);
+        universe->selected->velocity = QVector3D();
     }
 }
 

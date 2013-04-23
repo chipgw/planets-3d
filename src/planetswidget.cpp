@@ -1,8 +1,5 @@
 #include "planetswidget.h"
 #include <QDir>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/rotate_vector.hpp>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent), highResSphere(128, 64), lowResSphere(32, 16) {
     this->setMouseTracking(true);
@@ -26,14 +23,14 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     timer->setSingleShot(true);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
-    placing.position = glm::vec3(0.0f);
-    placing.velocity = glm::vec3(0.0f, velocityfac, 0.0f);
+    placing.position = QVector3D();
+    placing.velocity = QVector3D(0.0f, velocityfac, 0.0f);
     placing.mass = 100.0f;
 
     displaysettings = 000;
 
     gridRange = 50;
-    gridColor = glm::vec4(0.8f, 1.0f, 1.0f, 0.4f);
+    gridColor = QVector4D(0.8f, 1.0f, 1.0f, 0.4f);
 
     following = NULL;
     universe.load("default.xml");
@@ -74,7 +71,8 @@ void PlanetsWidget::resizeGL(int width, int height) {
 
     glViewport(0, 0, width, height);
 
-    camera.projection = glm::perspective(45.0f, float(width) / float(height), 0.1f, 10000.0f);
+    camera.projection = QMatrix4x4();
+    camera.projection.perspective(45.0f, float(width) / float(height), 0.1f, 10000.0f);
 }
 
 void PlanetsWidget::paintGL() {
@@ -92,7 +90,7 @@ void PlanetsWidget::paintGL() {
     if(followState == Single && following != NULL){
         camera.position = following->position;
     }else if(followState == WeightedAverage){
-        camera.position = glm::vec3(0.0f);
+        camera.position = QVector3D();
         float totalmass = 0.0f;
 
         for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
@@ -102,7 +100,7 @@ void PlanetsWidget::paintGL() {
         }
         camera.position /= totalmass;
     }else if(followState == PlainAverage){
-        camera.position = glm::vec3(0.0f);
+        camera.position = QVector3D();
 
         for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
             camera.position += i.next().position;
@@ -110,13 +108,13 @@ void PlanetsWidget::paintGL() {
         camera.position /= universe.planets.size();
     }
     else{
-        camera.position = glm::vec3(0.0f);
+        camera.position = QVector3D();
     }
 
     glMatrixMode(GL_PROJECTION);
 
     camera.setup();
-    glLoadMatrixf(glm::value_ptr(camera.camera));
+    glLoadMatrixf(camera.camera.data());
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -153,12 +151,12 @@ void PlanetsWidget::paintGL() {
     }
 
     if(placingStep == FreeVelocity){
-        float length = glm::length(placing.velocity) / velocityfac;
+        float length = placing.velocity.length() / velocityfac;
 
         if(length > 0.0f){
             glLoadIdentity();
-            glTranslatef(placing.position.x, placing.position.y, placing.position.z);
-            glMultMatrixf(glm::value_ptr(placingRotation));
+            glTranslatef(placing.position.x(), placing.position.y(), placing.position.z());
+            glMultMatrixf(placingRotation.data());
 
             float verts[] = { 0.1f, 0.1f, 0.0f,
                               0.1f,-0.1f, 0.0f,
@@ -197,8 +195,9 @@ void PlanetsWidget::paintGL() {
             glVertexPointer(3, GL_FLOAT, 0, verts);
             glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
         }
-
     }
+
+    glLoadIdentity();
 
     float scale = pow(4, floor(log10(camera.distance)));
 
@@ -208,15 +207,15 @@ void PlanetsWidget::paintGL() {
         if(gridPoints.size() != (gridRange * 2 + 1) * 4){
             gridPoints.clear();
             for(int i = -gridRange; i <= gridRange; i++){
-                gridPoints.push_back(glm::vec2(i,-gridRange));
-                gridPoints.push_back(glm::vec2(i, gridRange));
+                gridPoints.push_back(QVector2D(i,-gridRange));
+                gridPoints.push_back(QVector2D(i, gridRange));
 
-                gridPoints.push_back(glm::vec2(-gridRange, i));
-                gridPoints.push_back(glm::vec2( gridRange, i));
+                gridPoints.push_back(QVector2D(-gridRange, i));
+                gridPoints.push_back(QVector2D( gridRange, i));
             }
         }
 
-        glColor4fv(glm::value_ptr(gridColor));
+        glColor4fv((float*)&gridColor);
 
         glVertexPointer(2, GL_FLOAT, 0, &gridPoints[0]);
         glDrawArrays(GL_LINES, 0, gridPoints.size());
@@ -228,12 +227,12 @@ void PlanetsWidget::paintGL() {
             gridPoints.clear();
             for(int x = -gridRange; x <= gridRange; x++){
                 for(int y = -gridRange; y <= gridRange; y++){
-                    gridPoints.push_back(glm::vec2(x, y));
+                    gridPoints.push_back(QVector2D(x, y));
                 }
             }
         }
 
-        glColor4fv(glm::value_ptr(gridColor));
+        glColor4fv((float*)&gridColor);
 
         glVertexPointer(2, GL_FLOAT, 0, &gridPoints[0]);
         glDrawArrays(GL_POINTS, 0, gridPoints.size());
@@ -284,7 +283,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         glMatrixMode(GL_PROJECTION);
 
         camera.setup();
-        glLoadMatrixf(glm::value_ptr(camera.camera));
+        glLoadMatrixf(camera.camera.data());
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
@@ -297,18 +296,23 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         glVertexPointer(4, GL_FLOAT, 0, plane);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-        glm::ivec4 viewport;
-        glm::mat4 modelview,projection;
+        GLint viewport[4];
+        QMatrix4x4 modelview;
 
-        glGetIntegerv(GL_VIEWPORT, glm::value_ptr(viewport));
-        glGetFloatv(GL_MODELVIEW_MATRIX, glm::value_ptr(modelview));
-        glGetFloatv(GL_PROJECTION_MATRIX, glm::value_ptr(projection));
+        glGetIntegerv(GL_VIEWPORT, viewport);
 
-        glm::vec3 windowCoord(e->x(),viewport[3]-e->y(),0);
+        QVector3D windowCoord(e->x(), viewport[3] - e->y(), 0.0f);
 
-        glReadPixels(windowCoord.x, windowCoord.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &windowCoord.z);
+        float z = 0.0f;
 
-        placing.position = glm::unProject(windowCoord,modelview,projection,viewport);
+        glReadPixels(windowCoord.x(), windowCoord.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+
+
+        windowCoord.setX((2 * (windowCoord.x() - viewport[0])) / viewport[2] - 1);
+        windowCoord.setY((2 * (windowCoord.y() - viewport[1])) / viewport[3] - 1);
+        windowCoord.setZ((2 * z) - 1);
+
+        placing.position = camera.camera.inverted() * windowCoord;
 
         glEnable(GL_CULL_FACE);
         glColorMask(1, 1, 1, 1);
@@ -317,16 +321,16 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     }
     else if(placingStep == FreePositionZ){
         // set placing Z position
-        placing.position.z += (lastmousepos.y() - e->y()) / 10.0f;
+        placing.position.setZ(placing.position.z() + (lastmousepos.y() - e->y()) / 10.0f);
         this->lastmousepos = e->pos();
     }
     else if(placingStep == FreeVelocity){
         // set placing velocity
         float xdelta = (lastmousepos.x() - e->x()) / 20.0f;
         float ydelta = (lastmousepos.y() - e->y()) / 20.0f;
-        placingRotation *= glm::rotate(xdelta, 1.0f, 0.0f, 0.0f);
-        placingRotation *= glm::rotate(ydelta, 0.0f, 1.0f, 0.0f);
-        placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f, 0.0f, glm::length(placing.velocity), 0.0f));
+        placingRotation.rotate(xdelta, 1.0f, 0.0f, 0.0f);
+        placingRotation.rotate(ydelta, 0.0f, 1.0f, 0.0f);
+        placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, placing.velocity.length());
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
     }
     else if(e->buttons().testFlag(Qt::MiddleButton)){
@@ -334,7 +338,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         camera.zrotation += ((300.0f * (lastmousepos.x() - e->x())) / this->width());
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
 
-        camera.xrotation = glm::min(glm::max(camera.xrotation, -90.0f), 90.0f);
+        camera.xrotation = qMin(qMax(camera.xrotation, -90.0f), 90.0f);
         camera.zrotation = fmod(camera.zrotation, 360.0f);
 
         this->setCursor(Qt::SizeAllCursor);
@@ -377,7 +381,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
         glMatrixMode(GL_PROJECTION);
 
         camera.setup();
-        glLoadMatrixf(glm::value_ptr(camera.camera));
+        glLoadMatrixf(camera.camera.data());
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
@@ -386,18 +390,18 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             drawPlanetBounds(i.next(), GL_TRIANGLES, true);
         }
 
-        glm::vec4 color;
+        QVector4D color;
         GLint viewport[4];
         glGetIntegerv(GL_VIEWPORT, viewport);
 
-        glReadPixels(e->x(), viewport[3] - e->y(), 1, 1, GL_RGBA, GL_FLOAT, glm::value_ptr(color));
+        glReadPixels(e->x(), viewport[3] - e->y(), 1, 1, GL_RGBA, GL_FLOAT, &color);
 
         universe.selected = NULL;
 
-        if(color.a == 0){
+        if(color.w() <= 0.0f){
             return;
         }
-        QColor selectedcolor = QColor::fromRgbF(color.r,color.g,color.b);
+        QColor selectedcolor = QColor::fromRgbF(color.x(), color.y(), color.z());
 
         for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
             Planet *planet = &i.next();
@@ -417,16 +421,16 @@ void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
 void PlanetsWidget::wheelEvent(QWheelEvent* e){
     if(placingStep == FreePositionXY || placingStep == FreePositionZ){
         placing.mass += e->delta()*(placing.mass * 1.0e-3f);
-        glm::max(placing.mass, 0.1f);
+        qMax(placing.mass, 0.1f);
     }
     else if(placingStep == FreeVelocity){
-        placing.velocity = glm::vec3(placingRotation * glm::vec4(0.0f, 0.0f, 1.0f, 1.0f) * glm::max(0.0f, glm::length(placing.velocity) + (e->delta() * velocityfac * 1.0e-3f)));
+        placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, qMax(0.0f, placing.velocity.length() + (e->delta() * velocityfac * 1.0e-3f)));
     }
     else {
         camera.distance -= e->delta() * camera.distance * 0.0005f;
 
-        camera.distance = glm::max(camera.distance, 0.1f);
-        camera.distance = glm::min(camera.distance, 1000.0f);
+        camera.distance = qMax(camera.distance, 0.1f);
+        camera.distance = qMin(camera.distance, 1000.0f);
     }
 }
 
@@ -438,7 +442,7 @@ void PlanetsWidget::beginInteractiveCreation(){
 
 void PlanetsWidget::drawPlanet(Planet &planet){
     glLoadIdentity();
-    glTranslatef(planet.position.x, planet.position.y, planet.position.z);
+    glTranslatef(planet.position.x(), planet.position.y(), planet.position.z());
     float r = planet.getRadius();
     glScalef(r, r, r);
 
@@ -448,7 +452,7 @@ void PlanetsWidget::drawPlanet(Planet &planet){
 }
 
 void PlanetsWidget::drawPlanetPath(Planet &planet){
-    glEnableClientState(GL_VERTEX_ARRAY);
+    glLoadIdentity();
     glVertexPointer(3, GL_FLOAT, 0, &planet.path[0]);
     glDrawArrays(GL_LINE_STRIP, 0, planet.path.size());
 }
@@ -462,7 +466,7 @@ void PlanetsWidget::drawPlanetBounds(Planet &planet, GLenum drawmode, bool selec
     }
 
     glLoadIdentity();
-    glTranslatef(planet.position.x, planet.position.y, planet.position.z);
+    glTranslatef(planet.position.x(), planet.position.y(), planet.position.z());
     float r = planet.getRadius() * 1.02f;
     glScalef(r, r, r);
 

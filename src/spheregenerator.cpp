@@ -5,13 +5,13 @@ Sphere::Sphere(unsigned int slices, unsigned int stacks){
     float hstep = (2 * M_PI) / slices;
 
     for(int v = 0; v <= stacks; v++){
-        float z = glm::cos(v * vstep);
-        float r = glm::sin(v * vstep);
+        float z = cos(v * vstep);
+        float r = sin(v * vstep);
 
         for(int h = 0; h <= slices; h++){
-            verts.push_back(glm::vec3(glm::cos(h * hstep) * r, glm::sin(h * hstep) * r, z));
+            verts.push_back(QVector3D(cos(h * hstep) * r, sin(h * hstep) * r, z));
 
-            uv.push_back(glm::vec2(float(h) / float(slices), 1.0f - float(v) / float(stacks)));
+            uv.push_back(QVector2D(float(h) / float(slices), 1.0f - float(v) / float(stacks)));
 
             if(h != slices && v != stacks){
                 int w = slices + 1;

@@ -3,8 +3,7 @@
 
 #include <QDebug>
 #include <math.h>
-#include <qopengl.h>
-#include <glm/glm.hpp>
+#include <QVector3D>
 
 // just in case math.h did not declare M_PI
 #ifndef M_PI

@@ -2,7 +2,7 @@
 
 QColor Planet::nextSelectionColor = QColor(1, 1, 1);
 
-Planet::Planet() : position(0.0f) {
+Planet::Planet() {
     mass = 1000.0f;
 
     selectionColor = nextSelectionColor;
@@ -23,7 +23,7 @@ Planet::~Planet(){
 }
 
 void Planet::updatePath(){
-    if(path.size() < 1 || glm::distance(path.back(), this->position) > 0.05f){
+    if(path.size() < 1 || (path.back() - this->position).length() > 0.05f){
         path.push_back(this->position);
     }
 

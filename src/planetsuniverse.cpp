@@ -1,5 +1,4 @@
 #include "include/planetsuniverse.h"
-#include <glm/gtx/norm.hpp>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QFile>
@@ -33,15 +32,15 @@ bool PlanetsUniverse::load(const QString &filename){
 
                     while(xml.readNextStartElement()){
                         if(xml.name() == "position"){
-                            planet.position.x = xml.attributes().value("x").toString().toFloat();
-                            planet.position.y = xml.attributes().value("y").toString().toFloat();
-                            planet.position.z = xml.attributes().value("z").toString().toFloat();
+                            planet.position.setX(xml.attributes().value("x").toString().toFloat());
+                            planet.position.setY(xml.attributes().value("y").toString().toFloat());
+                            planet.position.setZ(xml.attributes().value("z").toString().toFloat());
                             xml.readNext();
                         }
                         if(xml.name() == "velocity"){
-                            planet.velocity.x = xml.attributes().value("x").toString().toFloat() * velocityfac;
-                            planet.velocity.y = xml.attributes().value("y").toString().toFloat() * velocityfac;
-                            planet.velocity.z = xml.attributes().value("z").toString().toFloat() * velocityfac;
+                            planet.velocity.setX(xml.attributes().value("x").toString().toFloat() * velocityfac);
+                            planet.velocity.setY(xml.attributes().value("y").toString().toFloat() * velocityfac);
+                            planet.velocity.setZ(xml.attributes().value("z").toString().toFloat() * velocityfac);
                             xml.readNext();
                         }
                     }
@@ -88,15 +87,15 @@ bool PlanetsUniverse::save(const QString &filename){
         xml.writeAttribute("mass", QString::number(planet.mass));
 
         xml.writeStartElement("position"); {
-            xml.writeAttribute("x", QString::number(planet.position.x));
-            xml.writeAttribute("y", QString::number(planet.position.y));
-            xml.writeAttribute("z", QString::number(planet.position.z));
+            xml.writeAttribute("x", QString::number(planet.position.x()));
+            xml.writeAttribute("y", QString::number(planet.position.y()));
+            xml.writeAttribute("z", QString::number(planet.position.z()));
         } xml.writeEndElement();
 
         xml.writeStartElement("velocity"); {
-            xml.writeAttribute("x", QString::number(planet.velocity.x / velocityfac));
-            xml.writeAttribute("y", QString::number(planet.velocity.y / velocityfac));
-            xml.writeAttribute("z", QString::number(planet.velocity.z / velocityfac));
+            xml.writeAttribute("x", QString::number(planet.velocity.x() / velocityfac));
+            xml.writeAttribute("y", QString::number(planet.velocity.y() / velocityfac));
+            xml.writeAttribute("z", QString::number(planet.velocity.z() / velocityfac));
         } xml.writeEndElement();
 
         xml.writeEndElement();
@@ -124,8 +123,8 @@ void PlanetsUniverse::advance(float time, int steps){
                     continue;
                 }
                 else{
-                    glm::vec3 direction = other.position - planet.position;
-                    float distance = glm::length2(direction);
+                    QVector3D direction = other.position - planet.position;
+                    float distance = direction.lengthSquared();
                     float frc = gravityconst * ((other.mass * planet.mass) / distance);
 
                     planet.velocity += direction * frc * time / planet.mass;
@@ -152,7 +151,7 @@ void PlanetsUniverse::advance(float time, int steps){
     }
 }
 
-Planet &PlanetsUniverse::createPlanet(glm::vec3 position, glm::vec3 velocity, float mass){
+Planet &PlanetsUniverse::createPlanet(QVector3D position, QVector3D velocity, float mass){
     Planet planet;
     planet.position = position;
     planet.velocity = velocity;
@@ -172,7 +171,7 @@ void PlanetsUniverse::deleteAll(){
 
 void PlanetsUniverse::centerAll(){
     QMutableListIterator<Planet> i(planets);
-    glm::vec3 averagePosition(0.0f),averageVelocity(0.0f);
+    QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
     while (i.hasNext()) {
         Planet &planet = i.next();
