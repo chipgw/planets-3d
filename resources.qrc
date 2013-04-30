@@ -28,4 +28,9 @@
         <file>icons/silk/disk.png</file>
         <file>icons/silk/folder.png</file>
     </qresource>
+    <qresource prefix="/shaders">
+        <file alias="texture.fsh">shaders/texture.fsh</file>
+        <file alias="vertex.vsh">shaders/vertex.vsh</file>
+        <file alias="color.fsh">shaders/color.fsh</file>
+    </qresource>
 </RCC>

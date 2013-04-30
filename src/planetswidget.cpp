@@ -41,9 +41,22 @@ PlanetsWidget::~PlanetsWidget() {
 }
 
 void PlanetsWidget::initializeGL() {
+    initializeOpenGLFunctions();
+
+    QOpenGLShader vertex(QOpenGLShader::Vertex);
+    vertex.compileSourceFile(":/shaders/vertex.vsh");
+
+    shaderTexture.addShader(&vertex);
+    shaderTexture.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture.fsh");
+    shaderTexture.link();
+
+    shaderColor.addShader(&vertex);
+    shaderColor.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/color.fsh");
+    shaderColor.link();
+
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClearAccum(0.0f, 0.0f, 0.0f, 0.0f);
-    glClearDepth(1.0f);
+    glClearDepthf(1.0f);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
 
@@ -53,13 +66,11 @@ void PlanetsWidget::initializeGL() {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    glEnable(GL_TEXTURE_2D);
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_LINE_SMOOTH);
 
-    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableVertexAttribArray(vertexAttrib);
 
     QImage img(":/textures/planet.png");
     texture = bindTexture(img);
@@ -82,6 +93,7 @@ void PlanetsWidget::paintGL() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // TODO - modernize motion blur...
     if(displaysettings & MotionBlur){
         glAccum(GL_RETURN, 1.0f);
         glClear(GL_ACCUM_BUFFER_BIT);
@@ -111,25 +123,23 @@ void PlanetsWidget::paintGL() {
         camera.position = QVector3D();
     }
 
-    glMatrixMode(GL_PROJECTION);
-
     camera.setup();
-    glLoadMatrixf(camera.camera.data());
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    shaderTexture.bind();
+    shaderTexture.setUniformValue("cameraMatrix", camera.camera);
+    shaderTexture.setUniformValue("modelMatrix", QMatrix4x4());
 
-    glEnable(GL_TEXTURE_2D);
-
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableVertexAttribArray(uvAttrib);
 
     for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
         drawPlanet(i.next());
     }
 
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableVertexAttribArray(uvAttrib);
 
-    glDisable(GL_TEXTURE_2D);
+    shaderColor.bind();
+    shaderColor.setUniformValue("cameraMatrix", camera.camera);
+    shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
 
     if(displaysettings & MotionBlur){
         glAccum(GL_ADD, -0.002f * delay);
@@ -141,6 +151,8 @@ void PlanetsWidget::paintGL() {
     }
 
     if(displaysettings & PlanetTrails){
+        shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
+        shaderColor.setUniformValue("color", QColor(Qt::white));
         for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
             drawPlanetPath(i.next());
         }
@@ -154,9 +166,11 @@ void PlanetsWidget::paintGL() {
         float length = placing.velocity.length() / velocityfac;
 
         if(length > 0.0f){
-            glLoadIdentity();
-            glTranslatef(placing.position.x(), placing.position.y(), placing.position.z());
-            glMultMatrixf(placingRotation.data());
+            QMatrix4x4 matrix;
+            matrix.translate(placing.position);
+            matrix *= placingRotation;
+            shaderColor.setUniformValue("modelMatrix", matrix);
+            shaderColor.setUniformValue("color", QColor(Qt::white));
 
             float verts[] = { 0.1f, 0.1f, 0.0f,
                               0.1f,-0.1f, 0.0f,
@@ -192,16 +206,14 @@ void PlanetsWidget::paintGL() {
                                              11, 10, 12,
                                               8, 11, 12};
 
-            glVertexPointer(3, GL_FLOAT, 0, verts);
+            glVertexAttribPointer(vertexAttrib, 3, GL_FLOAT, GL_FALSE, 0, verts);
             glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
         }
     }
 
-    glLoadIdentity();
-
-    float scale = pow(4, floor(log10(camera.distance)));
-
-    glScalef(scale, scale, scale);
+    QMatrix4x4 matrix;
+    matrix.scale(pow(4, floor(log10(camera.distance))));
+    shaderColor.setUniformValue("modelMatrix", matrix);
 
     if(displaysettings & SolidLineGrid){
         if(gridPoints.size() != (gridRange * 2 + 1) * 4){
@@ -215,9 +227,9 @@ void PlanetsWidget::paintGL() {
             }
         }
 
-        glColor4fv((float*)&gridColor);
+        shaderColor.setUniformValue("color", gridColor);
 
-        glVertexPointer(2, GL_FLOAT, 0, &gridPoints[0]);
+        glVertexAttribPointer(vertexAttrib, 2, GL_FLOAT, GL_FALSE, 0, &gridPoints[0]);
         glDrawArrays(GL_LINES, 0, gridPoints.size());
 
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -232,9 +244,9 @@ void PlanetsWidget::paintGL() {
             }
         }
 
-        glColor4fv((float*)&gridColor);
+        shaderColor.setUniformValue("color", gridColor);
 
-        glVertexPointer(2, GL_FLOAT, 0, &gridPoints[0]);
+        glVertexAttribPointer(vertexAttrib, 2, GL_FLOAT, GL_FALSE, 0, &gridPoints[0]);
         glDrawArrays(GL_POINTS, 0, gridPoints.size());
 
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -280,24 +292,21 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         glColorMask(0, 0, 0, 0);
         glDisable(GL_CULL_FACE);
 
-        glMatrixMode(GL_PROJECTION);
-
         camera.setup();
-        glLoadMatrixf(camera.camera.data());
 
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+        shaderColor.bind();
+        shaderColor.setUniformValue("cameraMatrix", camera.camera);
+        shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
 
         static const float plane[] = { 10.0f, 10.0f, 0.0f, 1.0e-5f,
                                        10.0f,-10.0f, 0.0f, 1.0e-5f,
                                       -10.0f,-10.0f, 0.0f, 1.0e-5f,
                                       -10.0f, 10.0f, 0.0f, 1.0e-5f};
 
-        glVertexPointer(4, GL_FLOAT, 0, plane);
+        glVertexAttribPointer(vertexAttrib, 4, GL_FLOAT, GL_FALSE, 0, plane);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         GLint viewport[4];
-        QMatrix4x4 modelview;
 
         glGetIntegerv(GL_VIEWPORT, viewport);
 
@@ -306,7 +315,6 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         float z = 0.0f;
 
         glReadPixels(windowCoord.x(), windowCoord.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
-
 
         windowCoord.setX((2 * (windowCoord.x() - viewport[0])) / viewport[2] - 1);
         windowCoord.setY((2 * (windowCoord.y() - viewport[1])) / viewport[3] - 1);
@@ -378,13 +386,10 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     else if(e->button() == Qt::LeftButton){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glMatrixMode(GL_PROJECTION);
-
         camera.setup();
-        glLoadMatrixf(camera.camera.data());
 
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+        shaderColor.bind();
+        shaderColor.setUniformValue("cameraMatrix", camera.camera);
 
         for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
             drawPlanetBounds(i.next(), GL_TRIANGLES, true);
@@ -441,44 +446,43 @@ void PlanetsWidget::beginInteractiveCreation(){
 
 
 void PlanetsWidget::drawPlanet(Planet &planet){
-    glLoadIdentity();
-    glTranslatef(planet.position.x(), planet.position.y(), planet.position.z());
-    float r = planet.getRadius();
-    glScalef(r, r, r);
+    QMatrix4x4 matrix;
+    matrix.translate(planet.position);
+    matrix.scale(planet.getRadius());
+    shaderTexture.setUniformValue("modelMatrix", matrix);
 
-    glVertexPointer(3, GL_FLOAT, 0, &highResSphere.verts[0]);
-    glTexCoordPointer(2, GL_FLOAT, 0, &highResSphere.uv[0]);
+    glVertexAttribPointer(vertexAttrib, 3, GL_FLOAT, GL_FALSE, 0, &highResSphere.verts[0]);
+    glVertexAttribPointer(uvAttrib, 2, GL_FLOAT, GL_FALSE, 0, &highResSphere.uv[0]);
     glDrawElements(GL_TRIANGLES, highResSphere.triangles.size(), GL_UNSIGNED_INT, &highResSphere.triangles[0]);
 }
 
 void PlanetsWidget::drawPlanetPath(Planet &planet){
-    glLoadIdentity();
-    glVertexPointer(3, GL_FLOAT, 0, &planet.path[0]);
+    glVertexAttribPointer(vertexAttrib, 3, GL_FLOAT, GL_FALSE, 0, &planet.path[0]);
     glDrawArrays(GL_LINE_STRIP, 0, planet.path.size());
 }
 
 void PlanetsWidget::drawPlanetBounds(Planet &planet, GLenum drawmode, bool selectioncolor){
     if(selectioncolor){
-        glColor3f(planet.selectionColor.redF(), planet.selectionColor.greenF(), planet.selectionColor.blueF());
+        shaderColor.setUniformValue("color", planet.selectionColor);
     }
     else{
-        glColor3f(0.0f, 1.0f, 0.0f);
+        shaderColor.setUniformValue("color", QColor(Qt::green));
     }
 
-    glLoadIdentity();
-    glTranslatef(planet.position.x(), planet.position.y(), planet.position.z());
-    float r = planet.getRadius() * 1.02f;
-    glScalef(r, r, r);
+    QMatrix4x4 matrix;
+    matrix.translate(planet.position);
+    matrix.scale(planet.getRadius() * 1.02f);
+    shaderColor.setUniformValue("modelMatrix", matrix);
 
-    glVertexPointer(3, GL_FLOAT, 0, &lowResSphere.verts[0]);
+    glVertexAttribPointer(vertexAttrib, 3, GL_FLOAT, GL_FALSE, 0, &lowResSphere.verts[0]);
     if(drawmode == GL_TRIANGLES){
-        glTexCoordPointer(2, GL_FLOAT, 0, &lowResSphere.uv[0]);
         glDrawElements(GL_TRIANGLES, lowResSphere.triangles.size(), GL_UNSIGNED_INT, &lowResSphere.triangles[0]);
     }else if(drawmode == GL_LINES){
         glDrawElements(GL_LINES, lowResSphere.lines.size(), GL_UNSIGNED_INT, &lowResSphere.lines[0]);
     }else{
         qDebug() << "warning, draw mode not supported!";
     }
-
-    glColor3f(1.0f, 1.0f, 1.0f);
 }
+
+const GLuint PlanetsWidget::vertexAttrib = 0;
+const GLuint PlanetsWidget::uvAttrib = 1;

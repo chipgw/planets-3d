@@ -1,16 +1,17 @@
 #ifndef PlanetsWidget_H
 #define PlanetsWidget_H
 
-#include "common.h"
 #include "camera.h"
 #include "planetsuniverse.h"
 #include "spheregenerator.h"
 #include <QTime>
 #include <QTimer>
 #include <QMouseEvent>
+#include <QOpenGLFunctions>
+#include <QOpenGLShader>
 #include <QGLWidget>
 
-class PlanetsWidget : public QGLWidget {
+class PlanetsWidget : public QGLWidget, public QOpenGLFunctions {
     Q_OBJECT
 public:
     enum DisplaySettings{
@@ -32,6 +33,9 @@ public:
         WeightedAverage
     };
 
+    static const GLuint vertexAttrib;
+    static const GLuint uvAttrib;
+
     PlanetsWidget(QWidget *parent = 0);
     ~PlanetsWidget();
 
@@ -40,6 +44,9 @@ public:
     Planet* following;
     FollowingState followState;
     GLuint texture;
+
+    QOpenGLShaderProgram shaderTexture;
+    QOpenGLShaderProgram shaderColor;
 
     Camera camera;
     bool doScreenshot;
