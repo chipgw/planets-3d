@@ -1,7 +1,7 @@
 #include "planetswidget.h"
 #include <QDir>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent), highResSphere(128, 64), lowResSphere(32, 16) {
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent), highResSphere(128, 64), lowResSphere(32, 16), timer(this) {
     this->setMouseTracking(true);
 
     this->doScreenshot = false;
@@ -19,9 +19,8 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     totalTime = QTime::currentTime();
     frameTime = QTime::currentTime();
 
-    timer = new QTimer(this);
-    timer->setSingleShot(true);
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateGL()));
+    timer.setSingleShot(true);
+    connect(&timer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
     placing.position = QVector3D();
     placing.velocity = QVector3D(0.0f, velocityfac, 0.0f);
@@ -77,7 +76,7 @@ void PlanetsWidget::initializeGL() {
 }
 
 void PlanetsWidget::resizeGL(int width, int height) {
-    if (height == 0)
+    if(height == 0)
         height = 1;
 
     glViewport(0, 0, width, height);
@@ -231,8 +230,6 @@ void PlanetsWidget::paintGL() {
 
         glVertexAttribPointer(vertexAttrib, 2, GL_FLOAT, GL_FALSE, 0, &gridPoints[0]);
         glDrawArrays(GL_LINES, 0, gridPoints.size());
-
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
     if(displaysettings & PointGrid){
         if(gridPoints.size() != pow(gridRange * 2 + 1, 2)){
@@ -248,8 +245,6 @@ void PlanetsWidget::paintGL() {
 
         glVertexAttribPointer(vertexAttrib, 2, GL_FLOAT, GL_FALSE, 0, &gridPoints[0]);
         glDrawArrays(GL_POINTS, 0, gridPoints.size());
-
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     if(this->doScreenshot){
@@ -281,7 +276,7 @@ void PlanetsWidget::paintGL() {
     emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount / (totalTime.msecsTo(QTime::currentTime()) * 0.001f)));
     emit updateFPSStatusMessage(tr("fps: %1").arg(1000.0f / delay));
 
-    timer->start(qMax(0, (1000 / framerate) - delay));
+    timer.start(qMax(0, (1000 / framerate) - delay));
 }
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){

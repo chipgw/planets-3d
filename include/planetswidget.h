@@ -59,7 +59,7 @@ public:
     int delay;
     int framecount;
 
-    QTimer* timer;
+    QTimer timer;
     QTime frameTime;
     QTime totalTime;
 
