@@ -25,6 +25,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     placing.position = QVector3D();
     placing.velocity = QVector3D(0.0f, velocityfac, 0.0f);
     placing.mass = 100.0f;
+    placingRotation.setToIdentity();
 
     displaysettings = 000;
 
@@ -69,7 +70,7 @@ void PlanetsWidget::initializeGL() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_LINE_SMOOTH);
 
-    glEnableVertexAttribArray(vertexAttrib);
+    shaderColor.enableAttributeArray("vertex");
 
     QImage img(":/textures/planet.png");
     texture = bindTexture(img);
@@ -81,7 +82,7 @@ void PlanetsWidget::resizeGL(int width, int height) {
 
     glViewport(0, 0, width, height);
 
-    camera.projection = QMatrix4x4();
+    camera.projection.setToIdentity();
     camera.projection.perspective(45.0f, float(width) / float(height), 0.1f, 10000.0f);
 }
 
@@ -128,13 +129,13 @@ void PlanetsWidget::paintGL() {
     shaderTexture.setUniformValue("cameraMatrix", camera.camera);
     shaderTexture.setUniformValue("modelMatrix", QMatrix4x4());
 
-    glEnableVertexAttribArray(uvAttrib);
+    shaderTexture.enableAttributeArray("uv");
 
     for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
         drawPlanet(i.next());
     }
 
-    glDisableVertexAttribArray(uvAttrib);
+    shaderTexture.disableAttributeArray("uv");
 
     shaderColor.bind();
     shaderColor.setUniformValue("cameraMatrix", camera.camera);
@@ -205,7 +206,7 @@ void PlanetsWidget::paintGL() {
                                              11, 10, 12,
                                               8, 11, 12};
 
-            glVertexAttribPointer(vertexAttrib, 3, GL_FLOAT, GL_FALSE, 0, verts);
+            shaderColor.setAttributeArray("vertex", GL_FLOAT, verts, 3);
             glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
         }
     }
@@ -228,7 +229,7 @@ void PlanetsWidget::paintGL() {
 
         shaderColor.setUniformValue("color", gridColor);
 
-        glVertexAttribPointer(vertexAttrib, 2, GL_FLOAT, GL_FALSE, 0, &gridPoints[0]);
+        shaderColor.setAttributeArray("vertex", GL_FLOAT, &gridPoints[0], 2);
         glDrawArrays(GL_LINES, 0, gridPoints.size());
     }
     if(displaysettings & PointGrid){
@@ -243,7 +244,7 @@ void PlanetsWidget::paintGL() {
 
         shaderColor.setUniformValue("color", gridColor);
 
-        glVertexAttribPointer(vertexAttrib, 2, GL_FLOAT, GL_FALSE, 0, &gridPoints[0]);
+        shaderColor.setAttributeArray("vertex", GL_FLOAT, &gridPoints[0], 2);
         glDrawArrays(GL_POINTS, 0, gridPoints.size());
     }
 
@@ -298,7 +299,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
                                       -10.0f,-10.0f, 0.0f, 1.0e-5f,
                                       -10.0f, 10.0f, 0.0f, 1.0e-5f};
 
-        glVertexAttribPointer(vertexAttrib, 4, GL_FLOAT, GL_FALSE, 0, plane);
+        shaderColor.setAttributeArray("vertex", GL_FLOAT, plane, 4);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         GLint viewport[4];
@@ -374,6 +375,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     else if(placingStep == FreeVelocity){
         if(e->button() == Qt::LeftButton){
             placingStep = None;
+            placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, placing.velocity.length());
             universe.selected = &universe.createPlanet(placing.position, placing.velocity, placing.mass);
             this->setCursor(Qt::ArrowCursor);
         }
@@ -446,13 +448,13 @@ void PlanetsWidget::drawPlanet(Planet &planet){
     matrix.scale(planet.getRadius());
     shaderTexture.setUniformValue("modelMatrix", matrix);
 
-    glVertexAttribPointer(vertexAttrib, 3, GL_FLOAT, GL_FALSE, 0, &highResSphere.verts[0]);
-    glVertexAttribPointer(uvAttrib, 2, GL_FLOAT, GL_FALSE, 0, &highResSphere.uv[0]);
+    shaderTexture.setAttributeArray("vertex", GL_FLOAT, &highResSphere.verts[0], 3);
+    shaderTexture.setAttributeArray("uv", GL_FLOAT, &highResSphere.uv[0], 2);
     glDrawElements(GL_TRIANGLES, highResSphere.triangles.size(), GL_UNSIGNED_INT, &highResSphere.triangles[0]);
 }
 
 void PlanetsWidget::drawPlanetPath(Planet &planet){
-    glVertexAttribPointer(vertexAttrib, 3, GL_FLOAT, GL_FALSE, 0, &planet.path[0]);
+    shaderColor.setAttributeArray("vertex", GL_FLOAT, &planet.path[0], 3);
     glDrawArrays(GL_LINE_STRIP, 0, planet.path.size());
 }
 
@@ -469,7 +471,7 @@ void PlanetsWidget::drawPlanetBounds(Planet &planet, GLenum drawmode, bool selec
     matrix.scale(planet.getRadius() * 1.02f);
     shaderColor.setUniformValue("modelMatrix", matrix);
 
-    glVertexAttribPointer(vertexAttrib, 3, GL_FLOAT, GL_FALSE, 0, &lowResSphere.verts[0]);
+    shaderColor.setAttributeArray("vertex", GL_FLOAT, &lowResSphere.verts[0], 3);
     if(drawmode == GL_TRIANGLES){
         glDrawElements(GL_TRIANGLES, lowResSphere.triangles.size(), GL_UNSIGNED_INT, &lowResSphere.triangles[0]);
     }else if(drawmode == GL_LINES){
@@ -478,6 +480,3 @@ void PlanetsWidget::drawPlanetBounds(Planet &planet, GLenum drawmode, bool selec
         qDebug() << "warning, draw mode not supported!";
     }
 }
-
-const GLuint PlanetsWidget::vertexAttrib = 0;
-const GLuint PlanetsWidget::uvAttrib = 1;

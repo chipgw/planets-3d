@@ -33,9 +33,6 @@ public:
         WeightedAverage
     };
 
-    static const GLuint vertexAttrib;
-    static const GLuint uvAttrib;
-
     PlanetsWidget(QWidget *parent = 0);
     ~PlanetsWidget();
 
