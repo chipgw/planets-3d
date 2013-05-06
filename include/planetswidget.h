@@ -81,7 +81,6 @@ public:
 signals:
     void updateFPSStatusMessage(const QString &text);
     void updateAverageFPSStatusMessage(const QString &text);
-    void updateSimspeedStatusMessage(const QString &text);
 
 public slots:
     void beginInteractiveCreation();

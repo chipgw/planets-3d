@@ -354,9 +354,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
 void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
     if(e->button() == Qt::MiddleButton){
-        camera.distance = 10.0f;
-        camera.xrotation = 45.0f;
-        camera.zrotation = 0.0f;
+        camera.reset();
     }
 }
 
@@ -400,15 +398,14 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 
         universe.selected = NULL;
 
-        if(color.w() <= 0.0f){
-            return;
-        }
-        QColor selectedcolor = QColor::fromRgbF(color.x(), color.y(), color.z());
+        if(color.w() > 0.0f){
+            QColor selectedcolor = QColor::fromRgbF(color.x(), color.y(), color.z());
 
-        for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
-            Planet *planet = &i.next();
-            if(planet->selectionColor == selectedcolor){
-                universe.selected = planet;
+            for(QMutableListIterator<Planet> i(universe.planets); i.hasNext();) {
+                Planet *planet = &i.next();
+                if(planet->selectionColor == selectedcolor){
+                    universe.selected = planet;
+                }
             }
         }
     }
@@ -432,7 +429,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
         camera.distance -= e->delta() * camera.distance * 0.0005f;
 
         camera.distance = qMax(camera.distance, 0.1f);
-        camera.distance = qMin(camera.distance, 1000.0f);
+        camera.distance = qMin(camera.distance, 2000.0f);
     }
 }
 
@@ -474,9 +471,11 @@ void PlanetsWidget::drawPlanetBounds(Planet &planet, GLenum drawmode, bool selec
     shaderColor.setAttributeArray("vertex", GL_FLOAT, &lowResSphere.verts[0], 3);
     if(drawmode == GL_TRIANGLES){
         glDrawElements(GL_TRIANGLES, lowResSphere.triangles.size(), GL_UNSIGNED_INT, &lowResSphere.triangles[0]);
-    }else if(drawmode == GL_LINES){
+    }
+    else if(drawmode == GL_LINES){
         glDrawElements(GL_LINES, lowResSphere.lines.size(), GL_UNSIGNED_INT, &lowResSphere.lines[0]);
-    }else{
+    }
+    else{
         qDebug() << "warning, draw mode not supported!";
     }
 }

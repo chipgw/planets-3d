@@ -17,6 +17,7 @@ public:
     QMatrix4x4 projection;
     QMatrix4x4 camera;
 
+    void reset();
     void setup();
 };
 

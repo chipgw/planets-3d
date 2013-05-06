@@ -1,6 +1,10 @@
 #include "camera.h"
 
 Camera::Camera() {
+    reset();
+}
+
+void Camera::reset(){
     distance = 10.0f;
     xrotation = 45.0f;
     zrotation = 0.0f;
