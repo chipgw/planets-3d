@@ -272,8 +272,6 @@ void PlanetsWidget::paintGL() {
 
     framecount++;
 
-    // TODO - only update the simspeed label when simspeed has changed.
-    emit updateSimspeedStatusMessage(tr("simulation speed: %1").arg(universe.simspeed));
     emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount / (totalTime.msecsTo(QTime::currentTime()) * 0.001f)));
     emit updateFPSStatusMessage(tr("fps: %1").arg(1000.0f / delay));
 
