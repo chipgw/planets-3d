@@ -79,6 +79,7 @@ public:
     void drawPlanetBounds(Planet &planet, GLenum drawmode = GL_LINES, bool selectioncolor = false);
 
 signals:
+    void updatePlanetCountStatusMessage(const QString &text);
     void updateFPSStatusMessage(const QString &text);
     void updateAverageFPSStatusMessage(const QString &text);
 

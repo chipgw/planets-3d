@@ -8,6 +8,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     universe = &ui->centralwidget->universe;
 
+    planetCountLabel = new QLabel(ui->statusbar);
+    planetCountLabel->setFixedWidth(120);
+    ui->statusbar->addPermanentWidget(planetCountLabel);
     fpsLabel = new QLabel(ui->statusbar);
     fpsLabel->setFixedWidth(120);
     ui->statusbar->addPermanentWidget(fpsLabel);
@@ -18,8 +21,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionCenter_All,                   SIGNAL(triggered()), universe, SLOT(centerAll()));
     connect(ui->actionInteractive_Planet_Placement, SIGNAL(triggered()), ui->centralwidget, SLOT(beginInteractiveCreation()));
 
-    connect(ui->centralwidget, SIGNAL(updateFPSStatusMessage(QString)),        fpsLabel,        SLOT(setText(QString)));
-    connect(ui->centralwidget, SIGNAL(updateAverageFPSStatusMessage(QString)), averagefpsLabel, SLOT(setText(QString)));
+    connect(ui->centralwidget, SIGNAL(updatePlanetCountStatusMessage(QString)), planetCountLabel, SLOT(setText(QString)));
+    connect(ui->centralwidget, SIGNAL(updateFPSStatusMessage(QString)),         fpsLabel,         SLOT(setText(QString)));
+    connect(ui->centralwidget, SIGNAL(updateAverageFPSStatusMessage(QString)),  averagefpsLabel,  SLOT(setText(QString)));
 }
 
 MainWindow::~MainWindow(){

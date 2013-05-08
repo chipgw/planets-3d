@@ -69,6 +69,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
+    QLabel *planetCountLabel;
     QLabel *fpsLabel;
     QLabel *averagefpsLabel;
 
