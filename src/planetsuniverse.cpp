@@ -112,27 +112,19 @@ void PlanetsUniverse::advance(float time, int steps){
     time /= steps;
 
     for(int s = 0; s < steps; s++){
-        QMutableListIterator<Planet> i(planets);
-        while (i.hasNext()) {
+        for(QMutableListIterator<Planet> i(planets); i.hasNext();){
             Planet &planet = i.next();
-            QMutableListIterator<Planet> o(i);
-            while (o.hasNext()) {
+            for(QMutableListIterator<Planet> o(i); o.hasNext();){
                 Planet &other = o.next();
 
-                if(other == planet){
+                if(&other == &planet){
                     continue;
                 }
                 else{
                     QVector3D direction = other.position - planet.position;
                     float distance = direction.lengthSquared();
-                    float frc = gravityconst * ((other.mass * planet.mass) / distance);
 
-                    planet.velocity += direction * frc * time / planet.mass;
-                    other.velocity -= direction * frc * time / other.mass;
-
-                    distance = sqrt(distance);
-
-                    if(distance < planet.getRadius() + other.getRadius() / 2.0f){
+                    if(sqrt(distance) < (planet.getRadius() + other.getRadius()) * 0.8f){
                         planet.position = (other.position * other.mass + planet.position * planet.mass) / (other.mass + planet.mass);
                         planet.velocity = (other.velocity * other.mass + planet.velocity * planet.mass) / (other.mass + planet.mass);
                         planet.mass += other.mass;
@@ -141,6 +133,11 @@ void PlanetsUniverse::advance(float time, int steps){
                         }
                         o.remove();
                         planet.path.clear();
+                    }else{
+                        float frc = gravityconst * ((other.mass * planet.mass) / distance);
+
+                        planet.velocity += direction * frc * time / planet.mass;
+                        other.velocity -= direction * frc * time / other.mass;
                     }
                 }
             }
