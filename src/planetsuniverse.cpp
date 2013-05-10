@@ -4,7 +4,7 @@
 #include <QFile>
 
 PlanetsUniverse::PlanetsUniverse(){
-    selected = NULL;
+    selected = 0;
     simspeed = 1.0f;
 }
 
@@ -44,7 +44,7 @@ bool PlanetsUniverse::load(const QString &filename){
                             xml.readNext();
                         }
                     }
-                    planets.append(planet);
+                    createPlanet(planet.position, planet.velocity, planet.mass);
                     xml.readNext();
                 }
             }
@@ -78,9 +78,9 @@ bool PlanetsUniverse::save(const QString &filename){
     xml.writeStartDocument();
     xml.writeStartElement("planets-3d-universe");
 
-    QMutableListIterator<Planet> i(planets);
+    QMutableMapIterator<QRgb, Planet> i(planets);
     while (i.hasNext()) {
-        const Planet &planet = i.next();
+        const Planet &planet = i.next().value();
 
         xml.writeStartElement("planet");
 
@@ -112,10 +112,12 @@ void PlanetsUniverse::advance(float time, int steps){
     time /= steps;
 
     for(int s = 0; s < steps; s++){
-        for(QMutableListIterator<Planet> i(planets); i.hasNext();){
-            Planet &planet = i.next();
-            for(QMutableListIterator<Planet> o(i); o.hasNext();){
-                Planet &other = o.next();
+        for(QMutableMapIterator<QRgb, Planet> i(planets); i.hasNext();){
+            Planet &planet = i.next().value();
+            QRgb planetkey = i.key();
+
+            while(i.hasNext()){
+                Planet &other = i.next().value();
 
                 if(&other == &planet){
                     continue;
@@ -128,10 +130,10 @@ void PlanetsUniverse::advance(float time, int steps){
                         planet.position = (other.position * other.mass + planet.position * planet.mass) / (other.mass + planet.mass);
                         planet.velocity = (other.velocity * other.mass + planet.velocity * planet.mass) / (other.mass + planet.mass);
                         planet.mass += other.mass;
-                        if(&other == selected){
-                            selected = &planet;
+                        if(i.key() == selected){
+                            selected = planetkey;
                         }
-                        o.remove();
+                        i.remove();
                         planet.path.clear();
                     }else{
                         float frc = gravityconst * ((other.mass * planet.mass) / distance);
@@ -141,37 +143,40 @@ void PlanetsUniverse::advance(float time, int steps){
                     }
                 }
             }
+            i.toFront();
+            while(i.hasNext() && i.next().key() != planetkey);
 
             planet.position += planet.velocity * time;
             planet.updatePath();
+
         }
     }
 }
 
-Planet &PlanetsUniverse::createPlanet(QVector3D position, QVector3D velocity, float mass){
+QRgb PlanetsUniverse::createPlanet(QVector3D position, QVector3D velocity, float mass){
     Planet planet;
     planet.position = position;
     planet.velocity = velocity;
     planet.mass = mass;
-    planets.append(planet);
-    return planets.back();
+    QRgb value = qrand() | 0xff000000;
+    while(planets.contains(value)){
+        value = qrand() | 0xff000000;
+    }
+    planets[value] = planet;
+    return value;
 }
 
 void PlanetsUniverse::deleteAll(){
-    QMutableListIterator<Planet> i(planets);
-    while (i.hasNext()) {
-        i.next();
-        i.remove();
-    }
-    selected = NULL;
+    planets.clear();
+    selected = 0;
 }
 
 void PlanetsUniverse::centerAll(){
-    QMutableListIterator<Planet> i(planets);
+    QMutableMapIterator<QRgb, Planet> i(planets);
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
     while (i.hasNext()) {
-        Planet &planet = i.next();
+        Planet &planet = i.next().value();
 
         averagePosition += planet.position * planet.mass;
         averageVelocity += planet.velocity * planet.mass;
@@ -182,7 +187,7 @@ void PlanetsUniverse::centerAll(){
 
     i.toFront();
     while (i.hasNext()) {
-        Planet &planet = i.next();
+        Planet &planet = i.next().value();
 
         planet.position -= averagePosition;
         planet.velocity -= averageVelocity;

@@ -38,9 +38,9 @@ void MainWindow::on_actionExit_triggered(){
 }
 
 void MainWindow::on_createPlanet_PushButton_clicked(){
-    universe->selected = &universe->createPlanet(QVector3D(ui->newPosX_SpinBox->value(),ui->newPosY_SpinBox->value(),ui->newPosZ_SpinBox->value()),
-                                                 QVector3D(ui->newVelocityX_SpinBox->value(),ui->newVelocityY_SpinBox->value(),ui->newVelocityZ_SpinBox->value()) * velocityfac,
-                                                 ui->newMass_SpinBox->value());
+    universe->selected = universe->createPlanet(QVector3D(ui->newPosX_SpinBox->value(),      ui->newPosY_SpinBox->value(),      ui->newPosZ_SpinBox->value()),
+                                                QVector3D(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * velocityfac,
+                                                ui->newMass_SpinBox->value());
 }
 
 void MainWindow::on_speed_Dial_valueChanged(int value){
@@ -77,13 +77,13 @@ void MainWindow::on_actionTake_Screenshot_triggered(){
 
 void MainWindow::on_actionDelete_triggered(){
     if(universe->selected){
-        universe->planets.removeAll(*universe->selected);
+        universe->planets.remove(universe->selected);
     }
 }
 
 void MainWindow::on_actionClear_Velocity_triggered(){
-    if(universe->selected){
-        universe->selected->velocity = QVector3D();
+    if(universe->planets.contains(universe->selected)){
+        universe->planets[universe->selected].velocity = QVector3D();
     }
 }
 
@@ -166,7 +166,7 @@ void MainWindow::on_followPlanetPushButton_clicked(){
 }
 
 void MainWindow::on_clearFollowPushButton_clicked(){
-    ui->centralwidget->following = NULL;
+    ui->centralwidget->following = 0;
     ui->centralwidget->followState = PlanetsWidget::FollowNone;
 }
 

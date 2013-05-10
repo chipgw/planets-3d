@@ -38,7 +38,7 @@ public:
 
     PlanetsUniverse universe;
 
-    Planet* following;
+    QRgb following;
     FollowingState followState;
     GLuint texture;
 
@@ -76,7 +76,7 @@ public:
 
     void drawPlanet(Planet &planet);
     void drawPlanetPath(Planet &planet);
-    void drawPlanetBounds(Planet &planet, GLenum drawmode = GL_LINES, bool selectioncolor = false);
+    void drawPlanetBounds(Planet &planet, GLenum drawmode = GL_LINES, QRgb color = 0xff00ff00);
 
 signals:
     void updatePlanetCountStatusMessage(const QString &text);

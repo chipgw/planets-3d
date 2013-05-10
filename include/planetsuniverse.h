@@ -2,16 +2,17 @@
 #define PLANETSUNIVERSE_H
 
 #include "planet.h"
+#include <QRgb>
 
 class PlanetsUniverse : public QObject {
     Q_OBJECT
 public:
-    QList<Planet> planets;
-    Planet* selected;
+    QMap<QRgb, Planet> planets;
+    QRgb selected;
 
     float simspeed;
 
-    Planet &createPlanet(QVector3D position, QVector3D velocity, float mass);
+    QRgb createPlanet(QVector3D position, QVector3D velocity, float mass);
 
     bool save(const QString& filename);
     bool load(const QString& filename);

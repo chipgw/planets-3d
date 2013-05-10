@@ -1,21 +1,7 @@
 #include "planet.h"
 
-QColor Planet::nextSelectionColor = QColor(1, 1, 1);
-
 Planet::Planet() {
-    mass = 1000.0f;
-
-    selectionColor = nextSelectionColor;
-
-    nextSelectionColor.setRed(nextSelectionColor.red() + 1);
-    if(nextSelectionColor.red() == 0) {
-        nextSelectionColor.setRed(1);
-        nextSelectionColor.setGreen(nextSelectionColor.green() + 1);
-        if(nextSelectionColor.green() == 0){
-            nextSelectionColor.setGreen(1);
-            nextSelectionColor.setBlue(nextSelectionColor.blue() + 1);
-        }
-    }
+    mass = 100.0f;
 }
 
 Planet::~Planet(){
