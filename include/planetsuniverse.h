@@ -12,6 +12,7 @@ public:
 
     float simspeed;
 
+    QRgb addPlanet(Planet planet, QRgb colorhint = 0);
     QRgb createPlanet(QVector3D position, QVector3D velocity, float mass);
 
     bool save(const QString& filename);

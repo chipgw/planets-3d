@@ -2,6 +2,9 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QFile>
+#include <QColor>
+
+#define ALPHAMASK 0xff000000
 
 PlanetsUniverse::PlanetsUniverse(){
     selected = 0;
@@ -29,6 +32,7 @@ bool PlanetsUniverse::load(const QString &filename){
                     Planet planet;
 
                     planet.mass = xml.attributes().value("mass").toString().toFloat();
+                    QRgb color = QColor(xml.attributes().value("color").toString()).rgb();
 
                     while(xml.readNextStartElement()){
                         if(xml.name() == "position"){
@@ -44,7 +48,7 @@ bool PlanetsUniverse::load(const QString &filename){
                             xml.readNext();
                         }
                     }
-                    createPlanet(planet.position, planet.velocity, planet.mass);
+                    addPlanet(planet, color);
                     xml.readNext();
                 }
             }
@@ -59,7 +63,6 @@ bool PlanetsUniverse::load(const QString &filename){
             return false;
         }
     }
-
 
     return true;
 }
@@ -85,6 +88,8 @@ bool PlanetsUniverse::save(const QString &filename){
         xml.writeStartElement("planet");
 
         xml.writeAttribute("mass", QString::number(planet.mass));
+
+        xml.writeAttribute("color", QColor(i.key() ^ALPHAMASK).name());
 
         xml.writeStartElement("position"); {
             xml.writeAttribute("x", QString::number(planet.position.x()));
@@ -153,17 +158,27 @@ void PlanetsUniverse::advance(float time, int steps){
     }
 }
 
+QRgb PlanetsUniverse::addPlanet(Planet planet, QRgb colorhint){
+    if(colorhint != 0){
+        colorhint = colorhint | ALPHAMASK;
+    }else{
+        colorhint = qrand() | ALPHAMASK;
+    }
+
+    while(planets.contains(colorhint)){
+        colorhint = qrand() | ALPHAMASK;
+    }
+
+    planets[colorhint] = planet;
+    return colorhint;
+}
+
 QRgb PlanetsUniverse::createPlanet(QVector3D position, QVector3D velocity, float mass){
     Planet planet;
     planet.position = position;
     planet.velocity = velocity;
     planet.mass = mass;
-    QRgb value = qrand() | 0xff000000;
-    while(planets.contains(value)){
-        value = qrand() | 0xff000000;
-    }
-    planets[value] = planet;
-    return value;
+    return addPlanet(planet);
 }
 
 void PlanetsUniverse::deleteAll(){

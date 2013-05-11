@@ -377,7 +377,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
         if(e->button() == Qt::LeftButton){
             placingStep = None;
             placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, placing.velocity.length());
-            universe.selected = universe.createPlanet(placing.position, placing.velocity, placing.mass);
+            universe.selected = universe.addPlanet(placing);
             this->setCursor(Qt::ArrowCursor);
         }
     }
