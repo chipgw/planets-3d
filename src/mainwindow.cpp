@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 MainWindow::~MainWindow(){
     delete ui;
+    delete planetCountLabel;
     delete averagefpsLabel;
     delete fpsLabel;
 }

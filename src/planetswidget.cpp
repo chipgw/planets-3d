@@ -254,10 +254,8 @@ void PlanetsWidget::paintGL() {
             dir.mkpath(dir.absolutePath());
         }
         QString filename = dir.path() + "/shot%1.png";
-        int i = 1;
-        while(QFile::exists(filename.arg(i, 4, 10, QChar('0')))){
-            i++;
-        }
+        int i = 0;
+        while(QFile::exists(filename.arg(++i, 4, 10, QChar('0'))));
         filename = filename.arg(i, 4, 10, QChar('0'));
         qDebug() << "Screenshot saved to: "<< filename;
 
@@ -315,9 +313,9 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
         glReadPixels(windowCoord.x(), windowCoord.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
 
-        windowCoord.setX((2 * (windowCoord.x() - viewport[0])) / viewport[2] - 1);
-        windowCoord.setY((2 * (windowCoord.y() - viewport[1])) / viewport[3] - 1);
-        windowCoord.setZ((2 * z) - 1);
+        windowCoord.setX((2.0f * (windowCoord.x() - viewport[0])) / viewport[2] - 1.0f);
+        windowCoord.setY((2.0f * (windowCoord.y() - viewport[1])) / viewport[3] - 1.0f);
+        windowCoord.setZ((2.0f * z) - 1.0f);
 
         placing.position = camera.camera.inverted() * windowCoord;
 
