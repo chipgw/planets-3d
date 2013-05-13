@@ -33,8 +33,22 @@ MainWindow::~MainWindow(){
 }
 
 void MainWindow::on_actionExit_triggered(){
-    // TODO - either make confirmation dialog or connect triggered() signal directly to close() slot.
-    this->close();
+    float tmpsimspeed = universe->simspeed;
+    universe->simspeed = 0.0f;
+
+    QMessageBox areYouSureMsgbox(this);
+    areYouSureMsgbox.setText(tr("Are you sure you wish to exit? (universe will not be saved...)"));
+    areYouSureMsgbox.setWindowTitle(tr("Are You Sure?"));
+    areYouSureMsgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    areYouSureMsgbox.setDefaultButton(QMessageBox::Yes);
+    areYouSureMsgbox.setIcon(QMessageBox::Warning);
+
+    int input = areYouSureMsgbox.exec();
+
+    if(input == QMessageBox::Yes){
+        this->close();
+    }
+    universe->simspeed = tmpsimspeed;
 }
 
 void MainWindow::on_createPlanet_PushButton_clicked(){
