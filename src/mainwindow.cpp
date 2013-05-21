@@ -218,3 +218,9 @@ void MainWindow::on_trailLengthSpinBox_valueChanged(int value){
 void MainWindow::on_gridRangeSpinBox_valueChanged(int value){
     ui->centralwidget->gridRange = (value - 1) / 2;
 }
+
+void MainWindow::on_actionPlanet_Colors_triggered(){
+    ui->centralwidget->displaysettings ^= PlanetsWidget::PlanetColors;
+
+    ui->actionMotion_Blur->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PlanetColors);
+}

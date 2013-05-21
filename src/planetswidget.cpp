@@ -146,7 +146,12 @@ void PlanetsWidget::paintGL() {
         glAccum(GL_ACCUM, 0.999f);
     }
 
-    if(universe.planets.contains(universe.selected)){
+    if(displaysettings & PlanetColors){
+        for(QMutableMapIterator<QRgb, Planet> i(universe.planets); i.hasNext();) {
+            i.next();
+            drawPlanetBounds(i.value(), GL_LINES, i.key());
+        }
+    }else if(universe.planets.contains(universe.selected)){
         drawPlanetBounds(universe.planets[universe.selected]);
     }
 

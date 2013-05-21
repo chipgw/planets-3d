@@ -18,7 +18,8 @@ public:
         PlanetTrails  = (1<<0),
         MotionBlur    = (1<<1),
         SolidLineGrid = (1<<2),
-        PointGrid     = (1<<3)
+        PointGrid     = (1<<3),
+        PlanetColors  = (1<<4)
     };
     enum PlacingStep{
         None,
@@ -75,6 +76,7 @@ public:
     Sphere lowResSphere;
 
     void drawPlanet(Planet &planet);
+    void drawPlanet(Planet &planet, QRgb color);
     void drawPlanetPath(Planet &planet);
     void drawPlanetBounds(Planet &planet, GLenum drawmode = GL_LINES, QRgb color = 0xff00ff00);
 

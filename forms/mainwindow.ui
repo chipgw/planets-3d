@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>677</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,6 +53,7 @@
     <addaction name="menuGrid"/>
     <addaction name="actionDraw_Paths"/>
     <addaction name="actionMotion_Blur"/>
+    <addaction name="actionPlanet_Colors"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -597,6 +598,14 @@
   <action name="actionAbout_Qt">
    <property name="text">
     <string>About Qt</string>
+   </property>
+  </action>
+  <action name="actionPlanet_Colors">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Planet Colors</string>
    </property>
   </action>
  </widget>

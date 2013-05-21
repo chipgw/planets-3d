@@ -66,6 +66,8 @@ private slots:
 
     void on_gridRangeSpinBox_valueChanged(int value);
 
+    void on_actionPlanet_Colors_triggered();
+
 private:
     Ui::MainWindow *ui;
 
