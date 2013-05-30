@@ -40,8 +40,7 @@ bool PlanetsUniverse::load(const QString &filename){
                             planet.position.setY(xml.attributes().value("y").toString().toFloat());
                             planet.position.setZ(xml.attributes().value("z").toString().toFloat());
                             xml.readNext();
-                        }
-                        if(xml.name() == "velocity"){
+                        }else if(xml.name() == "velocity"){
                             planet.velocity.setX(xml.attributes().value("x").toString().toFloat() * velocityfac);
                             planet.velocity.setY(xml.attributes().value("y").toString().toFloat() * velocityfac);
                             planet.velocity.setZ(xml.attributes().value("z").toString().toFloat() * velocityfac);
@@ -56,9 +55,7 @@ bool PlanetsUniverse::load(const QString &filename){
                 qDebug(qPrintable(tr("\"%1\" had error: %2").arg(filename).arg(xml.errorString())));
                 return false;
             }
-        }
-
-        else{
+        }else{
             qDebug(qPrintable(tr("\"%1\" is not a valid universe file!").arg(filename)));
             return false;
         }
@@ -126,8 +123,7 @@ void PlanetsUniverse::advance(float time, int steps){
 
                 if(&other == &planet){
                     continue;
-                }
-                else{
+                }else{
                     QVector3D direction = other.position - planet.position;
                     float distance = direction.lengthSquared();
 

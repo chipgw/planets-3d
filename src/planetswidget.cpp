@@ -77,8 +77,9 @@ void PlanetsWidget::initializeGL() {
 }
 
 void PlanetsWidget::resizeGL(int width, int height) {
-    if(height == 0)
+    if(height == 0){
         height = 1;
+    }
 
     glViewport(0, 0, width, height);
 
@@ -118,8 +119,7 @@ void PlanetsWidget::paintGL() {
             camera.position += i.next().value().position;
         }
         camera.position /= universe.planets.size();
-    }
-    else{
+    }else{
         camera.position = QVector3D();
     }
 
@@ -328,13 +328,11 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         glColorMask(1, 1, 1, 1);
 
         this->lastmousepos = e->pos();
-    }
-    else if(placingStep == FreePositionZ){
+    }else if(placingStep == FreePositionZ){
         // set placing Z position
         placing.position.setZ(placing.position.z() + (lastmousepos.y() - e->y()) / 10.0f);
         this->lastmousepos = e->pos();
-    }
-    else if(placingStep == FreeVelocity){
+    }else if(placingStep == FreeVelocity){
         // set placing velocity
         float xdelta = (lastmousepos.x() - e->x()) / 20.0f;
         float ydelta = (lastmousepos.y() - e->y()) / 20.0f;
@@ -342,8 +340,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         placingRotation.rotate(ydelta, 0.0f, 1.0f, 0.0f);
         placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, placing.velocity.length());
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
-    }
-    else if(e->buttons().testFlag(Qt::MiddleButton)){
+    }else if(e->buttons().testFlag(Qt::MiddleButton)){
         camera.xrotation += ((150.0f * (lastmousepos.y() - e->y())) / this->height());
         camera.zrotation += ((300.0f * (lastmousepos.x() - e->x())) / this->width());
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
@@ -352,8 +349,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         camera.zrotation = fmod(camera.zrotation, 360.0f);
 
         this->setCursor(Qt::SizeAllCursor);
-    }
-    else{
+    }else{
         this->lastmousepos = e->pos();
     }
 }
@@ -370,21 +366,18 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             placingStep = FreePositionZ;
             setCursor(QCursor(Qt::BlankCursor));
         }
-    }
-    else if(placingStep == FreePositionZ){
+    }else if(placingStep == FreePositionZ){
         if(e->button() == Qt::LeftButton){
             placingStep = FreeVelocity;
         }
-    }
-    else if(placingStep == FreeVelocity){
+    }else if(placingStep == FreeVelocity){
         if(e->button() == Qt::LeftButton){
             placingStep = None;
             placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, placing.velocity.length());
             universe.selected = universe.addPlanet(placing);
             this->setCursor(Qt::ArrowCursor);
         }
-    }
-    else if(e->button() == Qt::LeftButton){
+    }else if(e->button() == Qt::LeftButton){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         camera.setup();
@@ -417,11 +410,9 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     if(placingStep == FreePositionXY || placingStep == FreePositionZ){
         placing.mass += e->delta()*(placing.mass * 1.0e-3f);
         qMax(placing.mass, 0.1f);
-    }
-    else if(placingStep == FreeVelocity){
+    }else if(placingStep == FreeVelocity){
         placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, qMax(0.0f, placing.velocity.length() + (e->delta() * velocityfac * 1.0e-3f)));
-    }
-    else {
+    }else {
         camera.distance -= e->delta() * camera.distance * 0.0005f;
 
         camera.distance = qMax(camera.distance, 0.1f);
@@ -462,11 +453,9 @@ void PlanetsWidget::drawPlanetBounds(Planet &planet, GLenum drawmode, QRgb color
     shaderColor.setAttributeArray("vertex", GL_FLOAT, &lowResSphere.verts[0], 3);
     if(drawmode == GL_TRIANGLES){
         glDrawElements(GL_TRIANGLES, lowResSphere.triangles.size(), GL_UNSIGNED_INT, &lowResSphere.triangles[0]);
-    }
-    else if(drawmode == GL_LINES){
+    }else if(drawmode == GL_LINES){
         glDrawElements(GL_LINES, lowResSphere.lines.size(), GL_UNSIGNED_INT, &lowResSphere.lines[0]);
-    }
-    else{
+    }else{
         qDebug() << "warning, draw mode not supported!";
     }
 }

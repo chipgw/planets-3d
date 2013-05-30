@@ -3,7 +3,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
     universe = &ui->centralwidget->universe;
@@ -64,8 +64,7 @@ void MainWindow::on_speed_Dial_valueChanged(int value){
     if(universe->simspeed <= 0.0f){
         ui->PauseResume_Button->setText(tr("Resume"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
-    }
-    else{
+    }else{
         ui->PauseResume_Button->setText(tr("Pause"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_pause_blue.png"));
     }
@@ -76,8 +75,7 @@ void MainWindow::on_PauseResume_Button_clicked(){
         universe->simspeed = 1.0f;
         ui->PauseResume_Button->setText(tr("Pause"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_pause_blue.png"));
-    }
-    else{
+    }else{
         universe->simspeed = 0.0f;
         ui->PauseResume_Button->setText(tr("Resume"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
@@ -186,7 +184,7 @@ void MainWindow::on_clearFollowPushButton_clicked(){
 }
 
 void MainWindow::on_actionAbout_triggered(){
-    QMessageBox::about(this, "About Planets3D",
+    QMessageBox::about(this, tr("About Planets3D"),
                        tr("<html><head/><body>"
                           "<p>Planets3D is a simple 3D gravitational simulator</p>"
                           "<p>Website: <a href=\"https://github.com/chipgw/planets-3d\">github.com/chipgw/planets-3d</a></p>"
