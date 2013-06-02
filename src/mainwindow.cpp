@@ -37,16 +37,12 @@ void MainWindow::on_actionExit_triggered(){
     float tmpsimspeed = universe->simspeed;
     universe->simspeed = 0.0f;
 
-    QMessageBox areYouSureMsgbox(this);
-    areYouSureMsgbox.setText(tr("Are you sure you wish to exit? (universe will not be saved...)"));
-    areYouSureMsgbox.setWindowTitle(tr("Are You Sure?"));
-    areYouSureMsgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    QMessageBox areYouSureMsgbox(QMessageBox::Warning, tr("Are You Sure?"),
+                                 tr("Are you sure you wish to exit? (universe will not be saved...)"),
+                                 QMessageBox::Yes | QMessageBox::No, this);
     areYouSureMsgbox.setDefaultButton(QMessageBox::Yes);
-    areYouSureMsgbox.setIcon(QMessageBox::Warning);
 
-    int input = areYouSureMsgbox.exec();
-
-    if(input == QMessageBox::Yes){
+    if(areYouSureMsgbox.exec() == QMessageBox::Yes){
         this->close();
     }
     universe->simspeed = tmpsimspeed;
@@ -104,16 +100,12 @@ void MainWindow::on_actionNew_Simulation_triggered(){
     float tmpsimspeed = universe->simspeed;
     universe->simspeed = 0.0f;
 
-    QMessageBox areYouSureMsgbox(this);
-    areYouSureMsgbox.setText(tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"));
-    areYouSureMsgbox.setWindowTitle(tr("Are You Sure?"));
-    areYouSureMsgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    QMessageBox areYouSureMsgbox(QMessageBox::Warning, tr("Are You Sure?"),
+                                 tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"),
+                                 QMessageBox::Yes | QMessageBox::No, this);
     areYouSureMsgbox.setDefaultButton(QMessageBox::Yes);
-    areYouSureMsgbox.setIcon(QMessageBox::Warning);
 
-    int input = areYouSureMsgbox.exec();
-
-    if(input == QMessageBox::Yes){
+    if(areYouSureMsgbox.exec() == QMessageBox::Yes){
        universe->deleteAll();
     }
     universe->simspeed = tmpsimspeed;
@@ -144,7 +136,7 @@ void MainWindow::on_actionOpen_Simulation_triggered(){
     float tmpsimspeed = universe->simspeed;
     universe->simspeed = 0;
 
-    QString filename = QFileDialog::getOpenFileName(this,tr("Open Simulation"), "", tr("Simulation files (*.uni *.xml)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.uni *.xml)"));
     universe->load(filename);
 
     universe->simspeed = tmpsimspeed;
@@ -154,7 +146,7 @@ void MainWindow::on_actionSave_Simulation_triggered(){
     float tmpsimspeed = universe->simspeed;
     universe->simspeed = 0;
 
-    QString filename = QFileDialog::getSaveFileName(this,tr("Save Simulation"), "", tr("Simulation files (*.uni *.xml)"));
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.uni *.xml)"));
     universe->save(filename);
 
     universe->simspeed = tmpsimspeed;
