@@ -18,7 +18,7 @@ bool PlanetsUniverse::load(const QString &filename){
     }
     QFile file(filename);
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
         return false;
     }
 
@@ -67,7 +67,7 @@ bool PlanetsUniverse::load(const QString &filename){
 bool PlanetsUniverse::save(const QString &filename){
     QFile file(filename);
 
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
         return false;
     }
 
@@ -79,7 +79,7 @@ bool PlanetsUniverse::save(const QString &filename){
     xml.writeStartElement("planets-3d-universe");
 
     QMutableMapIterator<QRgb, Planet> i(planets);
-    while (i.hasNext()) {
+    while(i.hasNext()) {
         const Planet &planet = i.next().value();
 
         xml.writeStartElement("planet");
@@ -186,7 +186,7 @@ void PlanetsUniverse::centerAll(){
     QMutableMapIterator<QRgb, Planet> i(planets);
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
-    while (i.hasNext()) {
+    while(i.hasNext()) {
         Planet &planet = i.next().value();
 
         averagePosition += planet.position * planet.mass;
@@ -197,7 +197,7 @@ void PlanetsUniverse::centerAll(){
     averageVelocity /= totalmass;
 
     i.toFront();
-    while (i.hasNext()) {
+    while(i.hasNext()) {
         Planet &planet = i.next().value();
 
         planet.position -= averagePosition;

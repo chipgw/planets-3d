@@ -85,9 +85,7 @@ void MainWindow::on_actionTake_Screenshot_triggered(){
 }
 
 void MainWindow::on_actionDelete_triggered(){
-    if(universe->selected){
-        universe->planets.remove(universe->selected);
-    }
+    universe->planets.remove(universe->selected);
 }
 
 void MainWindow::on_actionClear_Velocity_triggered(){

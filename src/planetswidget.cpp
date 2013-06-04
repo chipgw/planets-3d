@@ -149,7 +149,7 @@ void PlanetsWidget::paintGL() {
     if(displaysettings & PlanetColors){
         for(QMutableMapIterator<QRgb, Planet> i(universe.planets); i.hasNext();) {
             i.next();
-            drawPlanetBounds(i.value(), GL_LINES, i.key());
+            drawPlanetBounds(i.value(), false, i.key());
         }
     }else if(universe.planets.contains(universe.selected)){
         drawPlanetBounds(universe.planets[universe.selected]);
@@ -387,7 +387,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 
         for(QMutableMapIterator<QRgb, Planet> i(universe.planets); i.hasNext();) {
             i.next();
-            drawPlanetBounds(i.value(), GL_TRIANGLES, i.key());
+            drawPlanetBounds(i.value(), true, i.key());
         }
 
         QVector4D color;
@@ -442,7 +442,7 @@ void PlanetsWidget::drawPlanetPath(Planet &planet){
     glDrawArrays(GL_LINE_STRIP, 0, planet.path.size());
 }
 
-void PlanetsWidget::drawPlanetBounds(Planet &planet, GLenum drawmode, QRgb color){
+void PlanetsWidget::drawPlanetBounds(Planet &planet, bool triangles, QRgb color){
     shaderColor.setUniformValue("color", QColor(color));
 
     QMatrix4x4 matrix;
@@ -451,11 +451,9 @@ void PlanetsWidget::drawPlanetBounds(Planet &planet, GLenum drawmode, QRgb color
     shaderColor.setUniformValue("modelMatrix", matrix);
 
     shaderColor.setAttributeArray("vertex", GL_FLOAT, &lowResSphere.verts[0], 3);
-    if(drawmode == GL_TRIANGLES){
+    if(triangles){
         glDrawElements(GL_TRIANGLES, lowResSphere.triangles.size(), GL_UNSIGNED_INT, &lowResSphere.triangles[0]);
-    }else if(drawmode == GL_LINES){
-        glDrawElements(GL_LINES, lowResSphere.lines.size(), GL_UNSIGNED_INT, &lowResSphere.lines[0]);
     }else{
-        qDebug() << "warning, draw mode not supported!";
+        glDrawElements(GL_LINES, lowResSphere.lines.size(), GL_UNSIGNED_INT, &lowResSphere.lines[0]);
     }
 }
