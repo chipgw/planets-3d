@@ -169,14 +169,6 @@ QRgb PlanetsUniverse::addPlanet(Planet planet, QRgb colorhint){
     return colorhint;
 }
 
-QRgb PlanetsUniverse::createPlanet(QVector3D position, QVector3D velocity, float mass){
-    Planet planet;
-    planet.position = position;
-    planet.velocity = velocity;
-    planet.mass = mass;
-    return addPlanet(planet);
-}
-
 void PlanetsUniverse::deleteAll(){
     planets.clear();
     selected = 0;

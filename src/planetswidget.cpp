@@ -2,7 +2,9 @@
 #include <QDir>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent), highResSphere(128, 64), lowResSphere(32, 16), timer(this),
-    displaysettings(000), gridRange(50), gridColor(0.8f, 1.0f, 1.0f, 0.4f), following(0), doScreenshot(false), framecount(0), placingStep(None), delay(0), stepsPerFrame(100) {
+    displaysettings(000), gridRange(50), gridColor(0.8f, 1.0f, 1.0f, 0.4f), following(0), doScreenshot(false), framecount(0), placingStep(None), delay(0), stepsPerFrame(100),
+    placing(QVector3D(), QVector3D(0.0f, velocityfac, 0.0f)), totalTime(QTime::currentTime()), frameTime(QTime::currentTime()) {
+
 #ifndef NDEBUG
     framerate = 60000;
 #else
@@ -11,22 +13,14 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
 
     this->setMouseTracking(true);
 
-    totalTime = QTime::currentTime();
-    frameTime = QTime::currentTime();
-
     timer.setSingleShot(true);
     connect(&timer, SIGNAL(timeout()), this, SLOT(updateGL()));
-
-    placing.position = QVector3D();
-    placing.velocity = QVector3D(0.0f, velocityfac, 0.0f);
-    placing.mass = 100.0f;
-    placingRotation.setToIdentity();
 
     universe.load("default.xml");
 }
 
 PlanetsWidget::~PlanetsWidget() {
-    qDebug()<< "average fps: " << framecount / (totalTime.msecsTo(QTime::currentTime()) * 0.001f);
+    qDebug() << "average fps: " << framecount / (totalTime.msecsTo(QTime::currentTime()) * 0.001f);
 }
 
 void PlanetsWidget::initializeGL() {

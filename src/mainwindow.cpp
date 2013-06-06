@@ -49,9 +49,9 @@ void MainWindow::on_actionExit_triggered(){
 }
 
 void MainWindow::on_createPlanet_PushButton_clicked(){
-    universe->selected = universe->createPlanet(QVector3D(ui->newPosX_SpinBox->value(),      ui->newPosY_SpinBox->value(),      ui->newPosZ_SpinBox->value()),
-                                                QVector3D(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * velocityfac,
-                                                ui->newMass_SpinBox->value());
+    universe->selected = universe->addPlanet(Planet(QVector3D(ui->newPosX_SpinBox->value(),      ui->newPosY_SpinBox->value(),      ui->newPosZ_SpinBox->value()),
+                                                    QVector3D(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * velocityfac,
+                                                    ui->newMass_SpinBox->value()));
 }
 
 void MainWindow::on_speed_Dial_valueChanged(int value){

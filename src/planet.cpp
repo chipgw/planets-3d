@@ -1,7 +1,7 @@
 #include "planet.h"
 
-Planet::Planet() {
-    mass = 100.0f;
+Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v), mass(m) {
+
 }
 
 Planet::~Planet(){
