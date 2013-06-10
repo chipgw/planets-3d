@@ -19,10 +19,6 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     universe.load("default.xml");
 }
 
-PlanetsWidget::~PlanetsWidget() {
-    qDebug() << "average fps: " << framecount / (totalTime.msecsTo(QTime::currentTime()) * 0.001f);
-}
-
 void PlanetsWidget::initializeGL() {
     initializeOpenGLFunctions();
 

@@ -134,7 +134,7 @@ void MainWindow::on_actionOpen_Simulation_triggered(){
     float tmpsimspeed = universe->simspeed;
     universe->simspeed = 0;
 
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.uni *.xml)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.xml)"));
     universe->load(filename);
 
     universe->simspeed = tmpsimspeed;
@@ -144,7 +144,7 @@ void MainWindow::on_actionSave_Simulation_triggered(){
     float tmpsimspeed = universe->simspeed;
     universe->simspeed = 0;
 
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.uni *.xml)"));
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
     universe->save(filename);
 
     universe->simspeed = tmpsimspeed;

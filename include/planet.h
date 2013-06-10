@@ -6,7 +6,6 @@
 class Planet {
 public:
     Planet(QVector3D p = QVector3D(), QVector3D v = QVector3D(), float m = 100.0f);
-    ~Planet();
 
     float mass;
 
@@ -18,8 +17,6 @@ public:
 
     void updatePath();
     float getRadius();
-
-    bool operator ==(const Planet &p2);
 };
 
 #endif // PLANET_H

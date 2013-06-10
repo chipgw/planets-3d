@@ -35,7 +35,6 @@ public:
     };
 
     PlanetsWidget(QWidget *parent = 0);
-    ~PlanetsWidget();
 
     PlanetsUniverse universe;
 

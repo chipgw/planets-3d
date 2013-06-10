@@ -4,10 +4,6 @@ Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v), ma
 
 }
 
-Planet::~Planet(){
-
-}
-
 void Planet::updatePath(){
     if(path.size() < 1 || (path.back() - this->position).length() > 0.05f){
         path.push_back(this->position);
@@ -21,10 +17,6 @@ void Planet::updatePath(){
 
 float Planet::getRadius(){
     return pow(3.0f * mass / 4.0f * M_PI, 1.0f / 3.0f) * 0.1f;
-}
-
-bool Planet::operator ==(const Planet &p2){
-    return this == &p2;
 }
 
 unsigned int Planet::pathLength = 200;
