@@ -37,12 +37,8 @@ void MainWindow::on_actionExit_triggered(){
     float tmpsimspeed = universe->simspeed;
     universe->simspeed = 0.0f;
 
-    QMessageBox areYouSureMsgbox(QMessageBox::Warning, tr("Are You Sure?"),
-                                 tr("Are you sure you wish to exit? (universe will not be saved...)"),
-                                 QMessageBox::Yes | QMessageBox::No, this);
-    areYouSureMsgbox.setDefaultButton(QMessageBox::Yes);
-
-    if(areYouSureMsgbox.exec() == QMessageBox::Yes){
+    if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
+                            QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
         this->close();
     }
     universe->simspeed = tmpsimspeed;
@@ -98,12 +94,8 @@ void MainWindow::on_actionNew_Simulation_triggered(){
     float tmpsimspeed = universe->simspeed;
     universe->simspeed = 0.0f;
 
-    QMessageBox areYouSureMsgbox(QMessageBox::Warning, tr("Are You Sure?"),
-                                 tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"),
-                                 QMessageBox::Yes | QMessageBox::No, this);
-    areYouSureMsgbox.setDefaultButton(QMessageBox::Yes);
-
-    if(areYouSureMsgbox.exec() == QMessageBox::Yes){
+    if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"),
+                            QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
        universe->deleteAll();
     }
     universe->simspeed = tmpsimspeed;

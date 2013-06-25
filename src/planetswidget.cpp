@@ -390,7 +390,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
         placing.mass += e->delta()*(placing.mass * 1.0e-3f);
         qMax(placing.mass, 0.1f);
     }else if(placingStep == FreeVelocity){
-        placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, qMax(0.0f, placing.velocity.length() + (e->delta() * velocityfac * 1.0e-3f)));
+        placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, qMax(0.0f, float(placing.velocity.length() + (e->delta() * velocityfac * 1.0e-3f))));
     }else {
         camera.distance -= e->delta() * camera.distance * 0.0005f;
 
