@@ -3,6 +3,7 @@
 #include <QXmlStreamWriter>
 #include <QFile>
 #include <QColor>
+#include <QMessageBox>
 
 #define ALPHAMASK 0xff000000
 
@@ -24,41 +25,40 @@ bool PlanetsUniverse::load(const QString &filename){
 
     QXmlStreamReader xml(&file);
 
-    if(xml.readNextStartElement()) {
-        if (xml.name() == "planets-3d-universe"){
-            deleteAll();
-            while(xml.readNextStartElement()) {
-                if(xml.name() == "planet"){
-                    Planet planet;
+    if(xml.readNextStartElement() && xml.name() == "planets-3d-universe"){
+        deleteAll();
+        while(xml.readNextStartElement()) {
+            if(xml.name() == "planet"){
+                Planet planet;
 
-                    planet.mass = xml.attributes().value("mass").toString().toFloat();
-                    QRgb color = QColor(xml.attributes().value("color").toString()).rgb();
+                planet.mass = xml.attributes().value("mass").toString().toFloat();
+                QRgb color = QColor(xml.attributes().value("color").toString()).rgb();
 
-                    while(xml.readNextStartElement()){
-                        if(xml.name() == "position"){
-                            planet.position.setX(xml.attributes().value("x").toString().toFloat());
-                            planet.position.setY(xml.attributes().value("y").toString().toFloat());
-                            planet.position.setZ(xml.attributes().value("z").toString().toFloat());
-                            xml.readNext();
-                        }else if(xml.name() == "velocity"){
-                            planet.velocity.setX(xml.attributes().value("x").toString().toFloat() * velocityfac);
-                            planet.velocity.setY(xml.attributes().value("y").toString().toFloat() * velocityfac);
-                            planet.velocity.setZ(xml.attributes().value("z").toString().toFloat() * velocityfac);
-                            xml.readNext();
-                        }
+                while(xml.readNextStartElement()){
+                    if(xml.name() == "position"){
+                        planet.position.setX(xml.attributes().value("x").toString().toFloat());
+                        planet.position.setY(xml.attributes().value("y").toString().toFloat());
+                        planet.position.setZ(xml.attributes().value("z").toString().toFloat());
+                        xml.readNext();
+                    }else if(xml.name() == "velocity"){
+                        planet.velocity.setX(xml.attributes().value("x").toString().toFloat() * velocityfac);
+                        planet.velocity.setY(xml.attributes().value("y").toString().toFloat() * velocityfac);
+                        planet.velocity.setZ(xml.attributes().value("z").toString().toFloat() * velocityfac);
+                        xml.readNext();
                     }
-                    addPlanet(planet, color);
-                    xml.readNext();
                 }
+                addPlanet(planet, color);
+                xml.readNext();
             }
-            if(xml.hasError()){
-                qDebug(qPrintable(tr("\"%1\" had error: %2").arg(filename).arg(xml.errorString())));
-                return false;
-            }
-        }else{
-            qDebug(qPrintable(tr("\"%1\" is not a valid universe file!").arg(filename)));
+        }
+        if(xml.hasError()){
+            deleteAll();
+            QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("Error in file \"%1\": %2").arg(filename).arg(xml.errorString()));
             return false;
         }
+    }else{
+        QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("\"%1\" is not a valid universe file!").arg(filename));
+        return false;
     }
 
     return true;
