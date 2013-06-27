@@ -20,6 +20,7 @@ bool PlanetsUniverse::load(const QString &filename){
     QFile file(filename);
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+        QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("Unable to open file \"%1\" for reading!").arg(filename));
         return false;
     }
 
@@ -68,6 +69,7 @@ bool PlanetsUniverse::save(const QString &filename){
     QFile file(filename);
 
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        QMessageBox::warning(NULL, tr("Error saving simulation!"), tr("Unable to open file \"%1\" for writing!").arg(filename));
         return false;
     }
 
@@ -78,8 +80,7 @@ bool PlanetsUniverse::save(const QString &filename){
     xml.writeStartDocument();
     xml.writeStartElement("planets-3d-universe");
 
-    QMutableMapIterator<QRgb, Planet> i(planets);
-    while(i.hasNext()) {
+    for(QMapIterator<QRgb, Planet> i(planets); i.hasNext();) {
         const Planet &planet = i.next().value();
 
         xml.writeStartElement("planet");
@@ -105,6 +106,11 @@ bool PlanetsUniverse::save(const QString &filename){
     xml.writeEndElement();
 
     xml.writeEndDocument();
+
+    if(xml.hasError()){
+        QMessageBox::warning(NULL, tr("Error saving simulation!"), tr("Error writing to file \"%1\"!").arg(filename));
+        return false;
+    }
 
     return true;
 }
