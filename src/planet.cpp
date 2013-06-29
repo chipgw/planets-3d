@@ -1,8 +1,6 @@
 #include "planet.h"
 
-Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v), mass(m) {
-
-}
+Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v), mass(m) {}
 
 void Planet::updatePath(){
     if(path.size() < 1 || (path.back() - this->position).length() > 0.05f){

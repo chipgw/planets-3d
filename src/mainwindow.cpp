@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     averagefpsLabel->setFixedWidth(160);
     ui->statusbar->addPermanentWidget(averagefpsLabel);
 
-    connect(ui->actionCenter_All,                   SIGNAL(triggered()), universe, SLOT(centerAll()));
+    connect(ui->actionCenter_All,                   SIGNAL(triggered()), universe,          SLOT(centerAll()));
     connect(ui->actionInteractive_Planet_Placement, SIGNAL(triggered()), ui->centralwidget, SLOT(beginInteractiveCreation()));
 
     connect(ui->centralwidget, SIGNAL(updatePlanetCountStatusMessage(QString)), planetCountLabel, SLOT(setText(QString)));

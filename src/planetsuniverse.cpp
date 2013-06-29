@@ -7,10 +7,7 @@
 
 #define ALPHAMASK 0xff000000
 
-PlanetsUniverse::PlanetsUniverse(){
-    selected = 0;
-    simspeed = 1.0f;
-}
+PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f) {}
 
 bool PlanetsUniverse::load(const QString &filename){
     if(!QFile::exists(filename)){
