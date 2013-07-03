@@ -51,7 +51,7 @@ void MainWindow::on_createPlanet_PushButton_clicked(){
 }
 
 void MainWindow::on_speed_Dial_valueChanged(int value){
-    universe->simspeed = (value*  speeddialmax) / ui->speed_Dial->maximum();
+    universe->simspeed = (value * speeddialmax) / ui->speed_Dial->maximum();
     ui->speedDisplay_lcdNumber->display(universe->simspeed);
     if(universe->simspeed <= 0.0f){
         ui->PauseResume_Button->setText(tr("Resume"));

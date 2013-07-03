@@ -2,13 +2,8 @@
 #define COMMON_H
 
 #include <QDebug>
-#include <math.h>
+#include <qmath.h>
 #include <QVector3D>
-
-// just in case math.h did not declare M_PI
-#ifndef M_PI
-#define M_PI 3.141592654
-#endif
 
 // the gravity constant
 const float gravityconst = 6.67e-11f;
