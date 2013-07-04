@@ -6,8 +6,8 @@ namespace version{
     const QString git_revision = "@GIT_SHA1@";
 
     QString getVersionString(){
-        QString val = "%1.%2";
-        return val.arg(major).arg(minor, 2, 10, QLatin1Char('0'));
+        return QString("%1.%2").arg(major).arg(minor, 2, 10, QLatin1Char('0'));
     }
+
     const QString build_type = "@CMAKE_BUILD_TYPE@";
 }
