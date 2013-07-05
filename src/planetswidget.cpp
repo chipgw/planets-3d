@@ -233,6 +233,8 @@ void PlanetsWidget::paintGL() {
     }
 
     if(this->doScreenshot){
+        this->doScreenshot = false;
+
         QDir dir = QDir::homePath() + "/Pictures/Planets3D Screenshots/";
         if(!dir.exists()){
             dir.mkpath(dir.absolutePath());
@@ -241,12 +243,11 @@ void PlanetsWidget::paintGL() {
         int i = 0;
         while(QFile::exists(filename.arg(++i, 4, 10, QChar('0'))));
         filename = filename.arg(i, 4, 10, QChar('0'));
-        qDebug() << "Screenshot saved to: "<< filename;
 
         QImage img = this->grabFrameBuffer();
-        img.save(filename);
-
-        this->doScreenshot = false;
+        if(!img.isNull() && img.save(filename)){
+            qDebug() << "Screenshot saved to:" << filename;
+        }
     }
 
     delay = qMax(frameTime.msecsTo(QTime::currentTime()), 1);
@@ -387,11 +388,11 @@ void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
 
 void PlanetsWidget::wheelEvent(QWheelEvent* e){
     if(placingStep == FreePositionXY || placingStep == FreePositionZ){
-        placing.mass += e->delta()*(placing.mass * 1.0e-3f);
+        placing.mass += e->delta() * placing.mass * 1.0e-3f;
         qMax(placing.mass, 0.1f);
     }else if(placingStep == FreeVelocity){
         placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, qMax(0.0f, float(placing.velocity.length() + (e->delta() * velocityfac * 1.0e-3f))));
-    }else {
+    }else{
         camera.distance -= e->delta() * camera.distance * 0.0005f;
 
         camera.distance = qMax(camera.distance, 0.1f);
@@ -403,7 +404,6 @@ void PlanetsWidget::beginInteractiveCreation(){
     placingStep = FreePositionXY;
     universe.selected = 0;
 }
-
 
 void PlanetsWidget::drawPlanet(Planet &planet){
     QMatrix4x4 matrix;
