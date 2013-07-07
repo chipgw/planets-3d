@@ -36,6 +36,11 @@ add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${FORM_HEADERS} ${HEADERS} ${RES
 
 qt5_use_modules(${PROJECT_NAME} OpenGL)
 
-find_package(OpenGL REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
+if(DEFINED Qt5Gui_OPENGL_LIBRARIES)
+    include_directories(${Qt5Gui_OPENGL_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} ${Qt5Gui_OPENGL_LIBRARIES})
+else(DEFINED Qt5Gui_OPENGL_LIBRARIES)
+    find_package(OpenGL REQUIRED)
+    include_directories(${OPENGL_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
+endif(DEFINED Qt5Gui_OPENGL_LIBRARIES)
