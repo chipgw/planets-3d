@@ -269,43 +269,26 @@ void PlanetsWidget::paintGL() {
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     if(placingStep == FreePositionXY){
         // set placing XY position based on grid
-        glClear(GL_DEPTH_BUFFER_BIT);
-
-        glColorMask(0, 0, 0, 0);
-        glDisable(GL_CULL_FACE);
-
         camera.setup();
-
-        shaderColor.bind();
-        shaderColor.setUniformValue("cameraMatrix", camera.camera);
-        shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
-
-        static const float plane[] = { 10.0f, 10.0f, 0.0f, 1.0e-5f,
-                                       10.0f,-10.0f, 0.0f, 1.0e-5f,
-                                      -10.0f,-10.0f, 0.0f, 1.0e-5f,
-                                      -10.0f, 10.0f, 0.0f, 1.0e-5f};
-
-        shaderColor.setAttributeArray("vertex", GL_FLOAT, plane, 4);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         GLint viewport[4];
 
         glGetIntegerv(GL_VIEWPORT, viewport);
 
-        QVector3D windowCoord(e->x(), viewport[3] - e->y(), 0.0f);
+        QVector3D windowCoord((2.0f * (e->x() - viewport[0])) / viewport[2] - 1.0f,
+                (2.0f * ((viewport[3] - e->y()) - viewport[1])) / viewport[3] - 1.0f, 0.0f);
 
-        float z = 0.0f;
+        QMatrix4x4 inv = camera.camera.inverted();
 
-        glReadPixels(windowCoord.x(), windowCoord.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+        QVector3D origin = inv * windowCoord;
 
-        windowCoord.setX((2.0f * (windowCoord.x() - viewport[0])) / viewport[2] - 1.0f);
-        windowCoord.setY((2.0f * (windowCoord.y() - viewport[1])) / viewport[3] - 1.0f);
-        windowCoord.setZ((2.0f * z) - 1.0f);
+        windowCoord.setZ(1.0f);
 
-        placing.position = camera.camera.inverted() * windowCoord;
+        QVector3D ray = origin - (inv * windowCoord);
 
-        glEnable(GL_CULL_FACE);
-        glColorMask(1, 1, 1, 1);
+        float scalar = (-origin.z()) / ray.z();
+
+        placing.position = origin + (ray * scalar);
 
         this->lastmousepos = e->pos();
     }else if(placingStep == FreePositionZ){
