@@ -47,7 +47,10 @@ void PlanetsWidget::initializeGL() {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+#ifdef GL_LINE_SMOOTH
     glEnable(GL_LINE_SMOOTH);
+#endif
 
     shaderColor.enableAttributeArray("vertex");
 
@@ -286,9 +289,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
         QVector3D ray = origin - (inv * windowCoord);
 
-        float scalar = (-origin.z()) / ray.z();
-
-        placing.position = origin + (ray * scalar);
+        placing.position = origin + (ray * ((-origin.z()) / ray.z()));
 
         this->lastmousepos = e->pos();
     }else if(placingStep == FreePositionZ){
