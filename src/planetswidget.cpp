@@ -36,7 +36,7 @@ void PlanetsWidget::initializeGL() {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClearDepthf(1.0f);
 
-#ifdef GL_ACCUM_BUFFER_BIT
+#ifdef GL_ACCUM
     glClearAccum(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
 #else
@@ -82,7 +82,7 @@ void PlanetsWidget::paintGL() {
 
     // TODO - modernize motion blur...
     if(displaysettings & MotionBlur){
-#ifdef GL_ACCUM_BUFFER_BIT
+#ifdef GL_ACCUM
         glAccum(GL_RETURN, 1.0f);
         glClear(GL_ACCUM_BUFFER_BIT);
 #endif
@@ -130,7 +130,7 @@ void PlanetsWidget::paintGL() {
     shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
 
     if(displaysettings & MotionBlur){
-#ifdef GL_ACCUM_BUFFER_BIT
+#ifdef GL_ACCUM
         glAccum(GL_ADD, -0.002f * delay);
         glAccum(GL_ACCUM, 0.999f);
 #endif

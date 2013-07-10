@@ -24,6 +24,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->centralwidget, SIGNAL(updatePlanetCountStatusMessage(QString)), planetCountLabel, SLOT(setText(QString)));
     connect(ui->centralwidget, SIGNAL(updateFPSStatusMessage(QString)),         fpsLabel,         SLOT(setText(QString)));
     connect(ui->centralwidget, SIGNAL(updateAverageFPSStatusMessage(QString)),  averagefpsLabel,  SLOT(setText(QString)));
+
+#ifndef GL_ACCUM
+    ui->actionMotion_Blur->setEnabled(false);
+#endif
 }
 
 MainWindow::~MainWindow(){
