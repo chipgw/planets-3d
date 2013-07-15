@@ -282,12 +282,8 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         // set placing XY position based on grid
         camera.setup();
 
-        GLint viewport[4];
-
-        glGetIntegerv(GL_VIEWPORT, viewport);
-
-        QVector3D windowCoord((2.0f * (e->x() - viewport[0])) / viewport[2] - 1.0f,
-                (2.0f * ((viewport[3] - e->y()) - viewport[1])) / viewport[3] - 1.0f, 0.0f);
+        QVector3D windowCoord((2.0f * e->x()) / width() - 1.0f,
+                              (2.0f * -e->y()) / height() + 1.0f, 0.0f);
 
         QMatrix4x4 inv = camera.camera.inverted();
 
@@ -317,7 +313,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         camera.zrotation += ((300.0f * (lastmousepos.x() - e->x())) / this->width());
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
 
-        camera.xrotation = qMin(qMax(camera.xrotation, -90.0f), 90.0f);
+        camera.xrotation = qBound(-90.0f, camera.xrotation, 90.0f);
         camera.zrotation = fmod(camera.zrotation, 360.0f);
 
         this->setCursor(Qt::SizeAllCursor);

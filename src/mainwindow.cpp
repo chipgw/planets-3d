@@ -76,7 +76,6 @@ void MainWindow::on_PauseResume_Button_clicked(){
         ui->PauseResume_Button->setText(tr("Resume"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
     }
-    ui->speedDisplay_lcdNumber->display(universe->simspeed);
     ui->speed_Dial->setValue((universe->simspeed / speeddialmax) * ui->speed_Dial->maximum());
 }
 
