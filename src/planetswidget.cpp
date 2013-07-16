@@ -358,13 +358,13 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             drawPlanetBounds(i.value(), true, i.key());
         }
 
-        QVector4D color;
+        GLubyte color[4];
         GLint viewport[4];
         glGetIntegerv(GL_VIEWPORT, viewport);
 
-        glReadPixels(e->x(), viewport[3] - e->y(), 1, 1, GL_RGBA, GL_FLOAT, &color);
+        glReadPixels(e->x(), viewport[3] - e->y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
 
-        universe.selected = qRgba(color.x() * 0xff, color.y() * 0xff, color.z() * 0xff, color.w() * 0xff);
+        universe.selected = qRgba(color[0], color[1], color[2], color[3]);
     }
 }
 
