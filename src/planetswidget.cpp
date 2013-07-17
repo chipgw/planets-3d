@@ -2,7 +2,7 @@
 #include <QDir>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent), highResSphere(128, 64), lowResSphere(32, 16), timer(this),
-    displaysettings(000), gridRange(50), gridColor(0.8f, 1.0f, 1.0f, 0.4f), following(0), doScreenshot(false), framecount(0), placingStep(None), delay(0), stepsPerFrame(100),
+    displaysettings(000), gridRange(50), gridColor(0xcc, 0xff, 0xff, 0x66), following(0), doScreenshot(false), framecount(0), placingStep(None), delay(0), stepsPerFrame(100),
     placing(QVector3D(), QVector3D(0.0f, velocityfac, 0.0f)), totalTime(QTime::currentTime()), frameTime(QTime::currentTime()) {
 
 #ifndef NDEBUG
@@ -359,10 +359,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
         }
 
         GLubyte color[4];
-        GLint viewport[4];
-        glGetIntegerv(GL_VIEWPORT, viewport);
-
-        glReadPixels(e->x(), viewport[3] - e->y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
+        glReadPixels(e->x(), height() - e->y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
 
         universe.selected = qRgba(color[0], color[1], color[2], color[3]);
     }
@@ -383,8 +380,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     }else{
         camera.distance -= e->delta() * camera.distance * 0.0005f;
 
-        camera.distance = qMax(camera.distance, 0.1f);
-        camera.distance = qMin(camera.distance, 2000.0f);
+        camera.distance = qBound(0.1f, camera.distance, 2000.0f);
     }
 }
 

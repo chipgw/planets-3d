@@ -66,8 +66,7 @@ public:
 
     short displaysettings;
 
-    // not a QColor because that is byte based, this is float based.
-    QVector4D gridColor;
+    QColor gridColor;
     int gridRange;
     std::vector<QVector2D> gridPoints;
 
