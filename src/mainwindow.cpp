@@ -109,6 +109,7 @@ void MainWindow::on_actionOff_triggered(){
     ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
     ui->actionLines->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::SolidLineGrid);
     ui->actionPoints->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PointGrid);
+    ui->centralwidget->gridPoints.clear();
 }
 
 void MainWindow::on_actionLines_triggered(){
@@ -116,6 +117,7 @@ void MainWindow::on_actionLines_triggered(){
     ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
     ui->actionLines->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::SolidLineGrid);
     ui->actionPoints->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PointGrid);
+    ui->centralwidget->gridPoints.clear();
 }
 
 void MainWindow::on_actionPoints_triggered(){
@@ -123,6 +125,7 @@ void MainWindow::on_actionPoints_triggered(){
     ui->centralwidget->displaysettings |= PlanetsWidget::PointGrid;
     ui->actionLines->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::SolidLineGrid);
     ui->actionPoints->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PointGrid);
+    ui->centralwidget->gridPoints.clear();
 }
 
 void MainWindow::on_actionOpen_Simulation_triggered(){
@@ -201,7 +204,7 @@ void MainWindow::on_trailLengthSpinBox_valueChanged(int value){
 }
 
 void MainWindow::on_gridRangeSpinBox_valueChanged(int value){
-    ui->centralwidget->gridRange = (value - 1) / 2;
+    ui->centralwidget->gridRange = value;
 }
 
 void MainWindow::on_actionPlanet_Colors_triggered(){

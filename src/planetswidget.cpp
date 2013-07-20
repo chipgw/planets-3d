@@ -211,14 +211,15 @@ void PlanetsWidget::paintGL() {
     shaderColor.setUniformValue("modelMatrix", matrix);
 
     if(displaysettings & SolidLineGrid){
-        if(gridPoints.size() != (gridRange * 2 + 1) * 4){
+        if(gridPoints.size() != gridRange * 4){
             gridPoints.clear();
-            for(int i = -gridRange; i <= gridRange; i++){
-                gridPoints.push_back(QVector2D(i,-gridRange));
-                gridPoints.push_back(QVector2D(i, gridRange));
+            float bounds = (gridRange - 1) / 2.0f;
+            for(float i = -bounds; i <= bounds; i++){
+                gridPoints.push_back(QVector2D(i,-bounds));
+                gridPoints.push_back(QVector2D(i, bounds));
 
-                gridPoints.push_back(QVector2D(-gridRange, i));
-                gridPoints.push_back(QVector2D( gridRange, i));
+                gridPoints.push_back(QVector2D(-bounds, i));
+                gridPoints.push_back(QVector2D( bounds, i));
             }
         }
 
@@ -228,10 +229,11 @@ void PlanetsWidget::paintGL() {
         glDrawArrays(GL_LINES, 0, gridPoints.size());
     }
     if(displaysettings & PointGrid){
-        if(gridPoints.size() != pow(gridRange * 2 + 1, 2)){
+        if(gridPoints.size() != pow(gridRange, 2)){
             gridPoints.clear();
-            for(int x = -gridRange; x <= gridRange; x++){
-                for(int y = -gridRange; y <= gridRange; y++){
+            float bounds = (gridRange - 1) / 2.0f;
+            for(float x = -bounds; x <= bounds; x++){
+                for(float y = -bounds; y <= bounds; y++){
                     gridPoints.push_back(QVector2D(x, y));
                 }
             }
