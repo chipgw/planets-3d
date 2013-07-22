@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->centralwidget, SIGNAL(updateFPSStatusMessage(QString)),         fpsLabel,         SLOT(setText(QString)));
     connect(ui->centralwidget, SIGNAL(updateAverageFPSStatusMessage(QString)),  averagefpsLabel,  SLOT(setText(QString)));
 
+    connect(ui->actionExit, SIGNAL(triggered()),  this,  SLOT(close()));
+
 #ifndef GL_ACCUM
     ui->actionMotion_Blur->setEnabled(false);
 #endif
@@ -38,15 +40,17 @@ MainWindow::~MainWindow(){
     delete fpsLabel;
 }
 
-void MainWindow::on_actionExit_triggered(){
+void MainWindow::closeEvent(QCloseEvent *e){
     float tmpsimspeed = universe->simspeed;
     universe->simspeed = 0.0f;
 
     if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
                             QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
-        this->close();
+        e->accept();
+    }else{
+        universe->simspeed = tmpsimspeed;
+        e->ignore();
     }
-    universe->simspeed = tmpsimspeed;
 }
 
 void MainWindow::on_createPlanet_PushButton_clicked(){

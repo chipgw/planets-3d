@@ -18,8 +18,6 @@ public:
     ~MainWindow();
     
 private slots:
-    void on_actionExit_triggered();
-
     void on_createPlanet_PushButton_clicked();
 
     void on_speed_Dial_valueChanged(int value);
@@ -76,6 +74,8 @@ private:
     QLabel *averagefpsLabel;
 
     PlanetsUniverse *universe;
+
+    void closeEvent(QCloseEvent *e);
 };
 
 #endif // MAINWINDOW_H
