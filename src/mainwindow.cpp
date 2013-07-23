@@ -73,15 +73,10 @@ void MainWindow::on_speed_Dial_valueChanged(int value){
 
 void MainWindow::on_PauseResume_Button_clicked(){
     if(universe->simspeed <= 0.0f){
-        universe->simspeed = 1.0f;
-        ui->PauseResume_Button->setText(tr("Pause"));
-        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_pause_blue.png"));
+        ui->speed_Dial->setValue(ui->speed_Dial->maximum() / speeddialmax);
     }else{
-        universe->simspeed = 0.0f;
-        ui->PauseResume_Button->setText(tr("Resume"));
-        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
+        ui->speed_Dial->setValue(0);
     }
-    ui->speed_Dial->setValue((universe->simspeed / speeddialmax) * ui->speed_Dial->maximum());
 }
 
 void MainWindow::on_actionTake_Screenshot_triggered(){
@@ -135,7 +130,7 @@ void MainWindow::on_actionPoints_triggered(){
 
 void MainWindow::on_actionOpen_Simulation_triggered(){
     float tmpsimspeed = universe->simspeed;
-    universe->simspeed = 0;
+    universe->simspeed = 0.0f;
 
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.xml)"));
     universe->load(filename);
@@ -145,7 +140,7 @@ void MainWindow::on_actionOpen_Simulation_triggered(){
 
 void MainWindow::on_actionSave_Simulation_triggered(){
     float tmpsimspeed = universe->simspeed;
-    universe->simspeed = 0;
+    universe->simspeed = 0.0f;
 
     QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
     universe->save(filename);

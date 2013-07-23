@@ -94,8 +94,7 @@ void PlanetsWidget::paintGL() {
         camera.position = QVector3D();
         float totalmass = 0.0f;
 
-        for(QMutableMapIterator<QRgb, Planet> i(universe.planets); i.hasNext();) {
-            Planet &planet = i.next().value();
+        foreach(const Planet &planet, universe.planets){
             camera.position += planet.position * planet.mass;
             totalmass += planet.mass;
         }
@@ -103,8 +102,8 @@ void PlanetsWidget::paintGL() {
     }else if(followState == PlainAverage){
         camera.position = QVector3D();
 
-        for(QMutableMapIterator<QRgb, Planet> i(universe.planets); i.hasNext();) {
-            camera.position += i.next().value().position;
+        foreach(const Planet &planet, universe.planets){
+            camera.position += planet.position;
         }
         camera.position /= universe.planets.size();
     }else{
