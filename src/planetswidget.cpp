@@ -138,10 +138,10 @@ void PlanetsWidget::paintGL() {
     if(displaysettings & PlanetColors){
         for(QMutableMapIterator<QRgb, Planet> i(universe.planets); i.hasNext();) {
             i.next();
-            drawPlanetBounds(i.value(), false, i.key());
+            drawPlanetWireframe(i.value(), i.key());
         }
     }else if(universe.planets.contains(universe.selected)){
-        drawPlanetBounds(universe.planets[universe.selected]);
+        drawPlanetWireframe(universe.planets[universe.selected]);
     }
 
     if(displaysettings & PlanetTrails){
@@ -153,7 +153,7 @@ void PlanetsWidget::paintGL() {
     }
 
     if(placingStep != None){
-        drawPlanetBounds(placing);
+        drawPlanetWireframe(placing);
     }
 
     if(placingStep == FreeVelocity){
@@ -356,7 +356,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 
         for(QMutableMapIterator<QRgb, Planet> i(universe.planets); i.hasNext();) {
             i.next();
-            drawPlanetBounds(i.value(), true, i.key());
+            drawPlanetColor(i.value(), i.key());
         }
 
         GLubyte color[4];
@@ -406,7 +406,7 @@ void PlanetsWidget::drawPlanetPath(Planet &planet){
     glDrawArrays(GL_LINE_STRIP, 0, planet.path.size());
 }
 
-void PlanetsWidget::drawPlanetBounds(Planet &planet, bool triangles, QRgb color){
+void PlanetsWidget::drawPlanetColor(Planet &planet, QRgb color){
     shaderColor.setUniformValue("color", QColor(color));
 
     QMatrix4x4 matrix;
@@ -415,9 +415,17 @@ void PlanetsWidget::drawPlanetBounds(Planet &planet, bool triangles, QRgb color)
     shaderColor.setUniformValue("modelMatrix", matrix);
 
     shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts.data(), 3);
-    if(triangles){
-        glDrawElements(GL_TRIANGLES, lowResSphere.triangles.size(), GL_UNSIGNED_INT, lowResSphere.triangles.data());
-    }else{
-        glDrawElements(GL_LINES, lowResSphere.lines.size(), GL_UNSIGNED_INT, lowResSphere.lines.data());
-    }
+    glDrawElements(GL_TRIANGLES, lowResSphere.triangles.size(), GL_UNSIGNED_INT, lowResSphere.triangles.data());
+}
+
+void PlanetsWidget::drawPlanetWireframe(Planet &planet, QRgb color){
+    shaderColor.setUniformValue("color", QColor(color));
+
+    QMatrix4x4 matrix;
+    matrix.translate(planet.position);
+    matrix.scale(planet.getRadius() * 1.02f);
+    shaderColor.setUniformValue("modelMatrix", matrix);
+
+    shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts.data(), 3);
+    glDrawElements(GL_LINES, lowResSphere.lines.size(), GL_UNSIGNED_INT, lowResSphere.lines.data());
 }

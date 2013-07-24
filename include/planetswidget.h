@@ -76,7 +76,8 @@ public:
     void drawPlanet(Planet &planet);
     void drawPlanet(Planet &planet, QRgb color);
     void drawPlanetPath(Planet &planet);
-    void drawPlanetBounds(Planet &planet, bool triangles = false, QRgb color = 0xff00ff00);
+    void drawPlanetColor(Planet &planet, QRgb color);
+    void drawPlanetWireframe(Planet &planet, QRgb color = 0xff00ff00);
 
 signals:
     void updatePlanetCountStatusMessage(const QString &text);
