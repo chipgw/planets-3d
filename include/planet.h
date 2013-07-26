@@ -16,7 +16,7 @@ public:
     static unsigned int pathLength;
 
     void updatePath();
-    float getRadius();
+    float getRadius() const;
 };
 
 #endif // PLANET_H

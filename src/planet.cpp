@@ -13,7 +13,7 @@ void Planet::updatePath(){
     }
 }
 
-float Planet::getRadius(){
+float Planet::getRadius() const {
     return pow(3.0f * mass / 4.0f * M_PI, 1.0f / 3.0f) * 0.1f;
 }
 

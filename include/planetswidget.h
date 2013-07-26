@@ -73,11 +73,10 @@ public:
     Sphere highResSphere;
     Sphere lowResSphere;
 
-    void drawPlanet(Planet &planet);
-    void drawPlanet(Planet &planet, QRgb color);
-    void drawPlanetPath(Planet &planet);
-    void drawPlanetColor(Planet &planet, QRgb color);
-    void drawPlanetWireframe(Planet &planet, QRgb color = 0xff00ff00);
+    void drawPlanet(const Planet &planet);
+    void drawPlanetPath(const Planet &planet);
+    void drawPlanetColor(const Planet &planet, QRgb color);
+    void drawPlanetWireframe(const Planet &planet, QRgb color = 0xff00ff00);
 
 signals:
     void updatePlanetCountStatusMessage(const QString &text);
