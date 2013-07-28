@@ -95,8 +95,8 @@ void PlanetsWidget::paintGL() {
         float totalmass = 0.0f;
 
         foreach(const Planet &planet, universe.planets){
-            camera.position += planet.position * planet.mass;
-            totalmass += planet.mass;
+            camera.position += planet.position * planet.mass();
+            totalmass += planet.mass();
         }
         camera.position /= totalmass;
     }else if(followState == PlainAverage){
@@ -374,8 +374,7 @@ void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
 
 void PlanetsWidget::wheelEvent(QWheelEvent* e){
     if(placingStep == FreePositionXY || placingStep == FreePositionZ){
-        placing.mass += e->delta() * placing.mass * 1.0e-3f;
-        qMax(placing.mass, 0.1f);
+        placing.setMass(qMax(placing.mass() + e->delta() * placing.mass() * 1.0e-3f, 0.1f));
     }else if(placingStep == FreeVelocity){
         placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, qMax(0.0f, float(placing.velocity.length() + (e->delta() * velocityfac * 1.0e-3f))));
     }else{
@@ -393,7 +392,7 @@ void PlanetsWidget::beginInteractiveCreation(){
 void PlanetsWidget::drawPlanet(const Planet &planet){
     QMatrix4x4 matrix;
     matrix.translate(planet.position);
-    matrix.scale(planet.getRadius());
+    matrix.scale(planet.radius());
     shaderTexture.setUniformValue("modelMatrix", matrix);
 
     shaderTexture.setAttributeArray("vertex", GL_FLOAT, highResSphere.verts.data(), 3);
@@ -411,7 +410,7 @@ void PlanetsWidget::drawPlanetColor(const Planet &planet, QRgb color){
 
     QMatrix4x4 matrix;
     matrix.translate(planet.position);
-    matrix.scale(planet.getRadius() * 1.02f);
+    matrix.scale(planet.radius() * 1.02f);
     shaderColor.setUniformValue("modelMatrix", matrix);
 
     shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts.data(), 3);
@@ -423,7 +422,7 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, QRgb color){
 
     QMatrix4x4 matrix;
     matrix.translate(planet.position);
-    matrix.scale(planet.getRadius() * 1.02f);
+    matrix.scale(planet.radius() * 1.02f);
     shaderColor.setUniformValue("modelMatrix", matrix);
 
     shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts.data(), 3);

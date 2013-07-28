@@ -4,10 +4,12 @@
 #include "common.h"
 
 class Planet {
+private:
+    float mass_p;
+    float radius_p;
+
 public:
     Planet(QVector3D p = QVector3D(), QVector3D v = QVector3D(), float m = 100.0f);
-
-    float mass;
 
     QVector3D position;
     QVector3D velocity;
@@ -16,7 +18,11 @@ public:
     static unsigned int pathLength;
 
     void updatePath();
-    float getRadius() const;
+
+    float radius() const;
+
+    float setMass(float m);
+    float mass() const;
 };
 
 #endif // PLANET_H

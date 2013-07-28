@@ -29,7 +29,7 @@ bool PlanetsUniverse::load(const QString &filename){
             if(xml.name() == "planet"){
                 Planet planet;
 
-                planet.mass = xml.attributes().value("mass").toString().toFloat();
+                planet.setMass(xml.attributes().value("mass").toString().toFloat());
                 QRgb color = QColor(xml.attributes().value("color").toString()).rgb();
 
                 while(xml.readNextStartElement()){
@@ -82,7 +82,7 @@ bool PlanetsUniverse::save(const QString &filename){
 
         xml.writeStartElement("planet");
 
-        xml.writeAttribute("mass", QString::number(planet.mass));
+        xml.writeAttribute("mass", QString::number(planet.mass()));
 
         xml.writeAttribute("color", QColor(i.key() ^ALPHAMASK).name());
 
@@ -127,20 +127,20 @@ void PlanetsUniverse::advance(float time, int steps){
                 QVector3D direction = other.position - planet.position;
                 float distance = direction.lengthSquared();
 
-                if(sqrt(distance) < (planet.getRadius() + other.getRadius()) * 0.8f){
-                    planet.position = (other.position * other.mass + planet.position * planet.mass) / (other.mass + planet.mass);
-                    planet.velocity = (other.velocity * other.mass + planet.velocity * planet.mass) / (other.mass + planet.mass);
-                    planet.mass += other.mass;
+                if(sqrt(distance) < (planet.radius() + other.radius()) * 0.8f){
+                    planet.position = (other.position * other.mass() + planet.position * planet.mass()) / (other.mass() + planet.mass());
+                    planet.velocity = (other.velocity * other.mass() + planet.velocity * planet.mass()) / (other.mass() + planet.mass());
+                    planet.setMass(planet.mass() + other.mass());
                     if(i.key() == selected){
                         selected = planetkey;
                     }
                     i.remove();
                     planet.path.clear();
                 }else{
-                    float frc = gravityconst * ((other.mass * planet.mass) / distance);
+                    float frc = gravityconst * ((other.mass() * planet.mass()) / distance);
 
-                    planet.velocity += direction * frc * time / planet.mass;
-                    other.velocity -= direction * frc * time / other.mass;
+                    planet.velocity += direction * frc * time / planet.mass();
+                    other.velocity -= direction * frc * time / other.mass();
                 }
             }
 
@@ -181,9 +181,9 @@ void PlanetsUniverse::centerAll(){
     while(i.hasNext()) {
         Planet &planet = i.next().value();
 
-        averagePosition += planet.position * planet.mass;
-        averageVelocity += planet.velocity * planet.mass;
-        totalmass += planet.mass;
+        averagePosition += planet.position * planet.mass();
+        averageVelocity += planet.velocity * planet.mass();
+        totalmass += planet.mass();
     }
     averagePosition /= totalmass;
     averageVelocity /= totalmass;

@@ -1,6 +1,8 @@
 #include "planet.h"
 
-Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v), mass(m) {}
+Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v) {
+    setMass(m);
+}
 
 void Planet::updatePath(){
     if(path.size() < 1 || (path.back() - this->position).length() > 0.05f){
@@ -13,8 +15,18 @@ void Planet::updatePath(){
     }
 }
 
-float Planet::getRadius() const {
-    return pow(3.0f * mass / 4.0f * M_PI, 1.0f / 3.0f) * 0.1f;
+float Planet::radius() const {
+    return radius_p;
+}
+
+float Planet::setMass(float m){
+    mass_p = m;
+
+    radius_p = pow((3.0f * m / 4.0f) * M_PI, 1.0f / 3.0f) * 0.1f;
+}
+
+float Planet::mass() const {
+    return mass_p;
 }
 
 unsigned int Planet::pathLength = 200;
