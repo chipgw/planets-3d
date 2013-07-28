@@ -46,9 +46,9 @@
      <property name="title">
       <string>Grid</string>
      </property>
-     <addaction name="actionOff"/>
-     <addaction name="actionLines"/>
-     <addaction name="actionPoints"/>
+     <addaction name="actionGridOff"/>
+     <addaction name="actionGridLines"/>
+     <addaction name="actionGridPoints"/>
     </widget>
     <addaction name="menuGrid"/>
     <addaction name="actionDraw_Paths"/>
@@ -510,7 +510,7 @@
     <string>P</string>
    </property>
   </action>
-  <action name="actionOff">
+  <action name="actionGridOff">
    <property name="checkable">
     <bool>false</bool>
    </property>
@@ -521,7 +521,7 @@
     <string>Off</string>
    </property>
   </action>
-  <action name="actionLines">
+  <action name="actionGridLines">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -529,7 +529,7 @@
     <string>Lines</string>
    </property>
   </action>
-  <action name="actionPoints">
+  <action name="actionGridPoints">
    <property name="checkable">
     <bool>true</bool>
    </property>

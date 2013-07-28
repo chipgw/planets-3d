@@ -59,6 +59,16 @@ void MainWindow::on_createPlanet_PushButton_clicked(){
                                                     ui->newMass_SpinBox->value()));
 }
 
+void MainWindow::on_actionDelete_triggered(){
+    universe->planets.remove(universe->selected);
+}
+
+void MainWindow::on_actionClear_Velocity_triggered(){
+    if(universe->planets.contains(universe->selected)){
+        universe->planets[universe->selected].velocity = QVector3D();
+    }
+}
+
 void MainWindow::on_speed_Dial_valueChanged(int value){
     universe->simspeed = (value * speeddialmax) / ui->speed_Dial->maximum();
     ui->speedDisplay_lcdNumber->display(universe->simspeed);
@@ -83,14 +93,46 @@ void MainWindow::on_actionTake_Screenshot_triggered(){
     ui->centralwidget->doScreenshot = true;
 }
 
-void MainWindow::on_actionDelete_triggered(){
-    universe->planets.remove(universe->selected);
+void MainWindow::on_actionGridOff_triggered(){
+    ui->centralwidget->displaysettings &= ~PlanetsWidget::SolidLineGrid;
+    ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
+    ui->actionGridLines->setChecked(false);
+    ui->actionGridPoints->setChecked(false);
+    ui->centralwidget->gridPoints.clear();
 }
 
-void MainWindow::on_actionClear_Velocity_triggered(){
-    if(universe->planets.contains(universe->selected)){
-        universe->planets[universe->selected].velocity = QVector3D();
-    }
+void MainWindow::on_actionGridLines_triggered(){
+    ui->centralwidget->displaysettings |= PlanetsWidget::SolidLineGrid;
+    ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
+    ui->actionGridLines->setChecked(true);
+    ui->actionGridPoints->setChecked(false);
+    ui->centralwidget->gridPoints.clear();
+}
+
+void MainWindow::on_actionGridPoints_triggered(){
+    ui->centralwidget->displaysettings &= ~PlanetsWidget::SolidLineGrid;
+    ui->centralwidget->displaysettings |= PlanetsWidget::PointGrid;
+    ui->actionGridLines->setChecked(false);
+    ui->actionGridPoints->setChecked(true);
+    ui->centralwidget->gridPoints.clear();
+}
+
+void MainWindow::on_actionDraw_Paths_triggered(){
+    ui->centralwidget->displaysettings ^= PlanetsWidget::PlanetTrails;
+
+    ui->actionDraw_Paths->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PlanetTrails);
+}
+
+void MainWindow::on_actionMotion_Blur_triggered(){
+    ui->centralwidget->displaysettings ^= PlanetsWidget::MotionBlur;
+
+    ui->actionMotion_Blur->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::MotionBlur);
+}
+
+void MainWindow::on_actionPlanet_Colors_triggered(){
+    ui->centralwidget->displaysettings ^= PlanetsWidget::PlanetColors;
+
+    ui->actionPlanet_Colors->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PlanetColors);
 }
 
 void MainWindow::on_actionNew_Simulation_triggered(){
@@ -102,30 +144,6 @@ void MainWindow::on_actionNew_Simulation_triggered(){
        universe->deleteAll();
     }
     universe->simspeed = tmpsimspeed;
-}
-
-void MainWindow::on_actionOff_triggered(){
-    ui->centralwidget->displaysettings &= ~PlanetsWidget::SolidLineGrid;
-    ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
-    ui->actionLines->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::SolidLineGrid);
-    ui->actionPoints->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PointGrid);
-    ui->centralwidget->gridPoints.clear();
-}
-
-void MainWindow::on_actionLines_triggered(){
-    ui->centralwidget->displaysettings |= PlanetsWidget::SolidLineGrid;
-    ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
-    ui->actionLines->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::SolidLineGrid);
-    ui->actionPoints->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PointGrid);
-    ui->centralwidget->gridPoints.clear();
-}
-
-void MainWindow::on_actionPoints_triggered(){
-    ui->centralwidget->displaysettings &= ~PlanetsWidget::SolidLineGrid;
-    ui->centralwidget->displaysettings |= PlanetsWidget::PointGrid;
-    ui->actionLines->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::SolidLineGrid);
-    ui->actionPoints->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PointGrid);
-    ui->centralwidget->gridPoints.clear();
 }
 
 void MainWindow::on_actionOpen_Simulation_triggered(){
@@ -148,18 +166,6 @@ void MainWindow::on_actionSave_Simulation_triggered(){
     universe->simspeed = tmpsimspeed;
 }
 
-void MainWindow::on_actionDraw_Paths_triggered(){
-    ui->centralwidget->displaysettings ^= PlanetsWidget::PlanetTrails;
-
-    ui->actionDraw_Paths->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PlanetTrails);
-}
-
-void MainWindow::on_actionMotion_Blur_triggered(){
-    ui->centralwidget->displaysettings ^= PlanetsWidget::MotionBlur;
-
-    ui->actionMotion_Blur->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::MotionBlur);
-}
-
 void MainWindow::on_followPlanetPushButton_clicked(){
     ui->centralwidget->following = universe->selected;
     ui->centralwidget->followState = PlanetsWidget::Single;
@@ -169,6 +175,14 @@ void MainWindow::on_followPlanetPushButton_clicked(){
 void MainWindow::on_clearFollowPushButton_clicked(){
     ui->centralwidget->following = 0;
     ui->centralwidget->followState = PlanetsWidget::FollowNone;
+}
+
+void MainWindow::on_followPlainAveragePushButton_clicked(){
+    ui->centralwidget->followState = PlanetsWidget::PlainAverage;
+}
+
+void MainWindow::on_followWeightedAveragePushButton_clicked(){
+    ui->centralwidget->followState = PlanetsWidget::WeightedAverage;
 }
 
 void MainWindow::on_actionAbout_triggered(){
@@ -187,14 +201,6 @@ void MainWindow::on_actionAbout_Qt_triggered(){
     QMessageBox::aboutQt(this);
 }
 
-void MainWindow::on_followPlainAveragePushButton_clicked(){
-    ui->centralwidget->followState = PlanetsWidget::PlainAverage;
-}
-
-void MainWindow::on_followWeightedAveragePushButton_clicked(){
-    ui->centralwidget->followState = PlanetsWidget::WeightedAverage;
-}
-
 void MainWindow::on_stepsPerFrameSpinBox_valueChanged(int value){
     ui->centralwidget->stepsPerFrame = value;
 }
@@ -205,10 +211,4 @@ void MainWindow::on_trailLengthSpinBox_valueChanged(int value){
 
 void MainWindow::on_gridRangeSpinBox_valueChanged(int value){
     ui->centralwidget->gridRange = value;
-}
-
-void MainWindow::on_actionPlanet_Colors_triggered(){
-    ui->centralwidget->displaysettings ^= PlanetsWidget::PlanetColors;
-
-    ui->actionPlanet_Colors->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PlanetColors);
 }
