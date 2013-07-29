@@ -74,8 +74,10 @@ void PlanetsWidget::resizeGL(int width, int height) {
 }
 
 void PlanetsWidget::paintGL() {
+    frameTime = QTime::currentTime();
+
     if(placingStep == None){
-        universe.advance(delay * 20.0f, stepsPerFrame);
+        universe.advance((delay + timer.interval()) * 20.0f, stepsPerFrame);
     }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -263,7 +265,6 @@ void PlanetsWidget::paintGL() {
     }
 
     delay = qMax(frameTime.msecsTo(QTime::currentTime()), 1);
-    frameTime = QTime::currentTime();
 
     framecount++;
 
@@ -273,7 +274,7 @@ void PlanetsWidget::paintGL() {
         emit updatePlanetCountStatusMessage(tr("%1 planets").arg(universe.planets.size()));
     }
     emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount / (totalTime.msecsTo(QTime::currentTime()) * 0.001f)));
-    emit updateFPSStatusMessage(tr("fps: %1").arg(1000.0f / delay));
+    emit updateFPSStatusMessage(tr("fps: %1").arg(1000.0f / (delay + timer.interval())));
 
     timer.start(qMax(0, (1000 / framerate) - delay));
 }
