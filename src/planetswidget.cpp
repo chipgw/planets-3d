@@ -404,7 +404,7 @@ void PlanetsWidget::drawPlanetPath(const Planet &planet){
     glDrawArrays(GL_LINE_STRIP, 0, planet.path.size());
 }
 
-void PlanetsWidget::drawPlanetColor(const Planet &planet, QRgb color){
+void PlanetsWidget::drawPlanetColor(const Planet &planet, const QRgb &color){
     shaderColor.setUniformValue("color", QColor(color));
 
     QMatrix4x4 matrix;
@@ -416,7 +416,7 @@ void PlanetsWidget::drawPlanetColor(const Planet &planet, QRgb color){
     glDrawElements(GL_TRIANGLES, lowResSphere.triangles.size(), GL_UNSIGNED_INT, lowResSphere.triangles.data());
 }
 
-void PlanetsWidget::drawPlanetWireframe(const Planet &planet, QRgb color){
+void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QRgb &color){
     shaderColor.setUniformValue("color", QColor(color));
 
     QMatrix4x4 matrix;
