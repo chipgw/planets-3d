@@ -154,7 +154,7 @@ void PlanetsUniverse::advance(float time, int steps){
     }
 }
 
-QRgb PlanetsUniverse::addPlanet(Planet planet, QRgb colorhint){
+QRgb PlanetsUniverse::addPlanet(const Planet &planet, QRgb colorhint){
     if(colorhint != 0){
         colorhint = colorhint | ALPHAMASK;
     }else{

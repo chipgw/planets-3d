@@ -1,15 +1,14 @@
 #ifndef SPHEREGENERATOR_H
 #define SPHEREGENERATOR_H
 
-#include "common.h"
-#include <QVector2D>
+#include <QVector>
 
 class Sphere{
 public:
-    std::vector<QVector3D> verts;
-    std::vector<QVector2D> uv;
-    std::vector<unsigned int> triangles;
-    std::vector<unsigned int> lines;
+    QVector<QVector3D> verts;
+    QVector<QVector2D> uv;
+    QVector<unsigned int> triangles;
+    QVector<unsigned int> lines;
 
     Sphere(unsigned int slices, unsigned int stacks);
 };

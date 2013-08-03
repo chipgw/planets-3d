@@ -12,7 +12,7 @@ public:
 
     float simspeed;
 
-    QRgb addPlanet(Planet planet, QRgb colorhint = 0);
+    QRgb addPlanet(const Planet &planet, QRgb colorhint = 0);
 
     bool save(const QString& filename);
     bool load(const QString& filename);

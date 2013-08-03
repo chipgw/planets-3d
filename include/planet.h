@@ -21,7 +21,7 @@ public:
 
     float radius() const;
 
-    float setMass(float m);
+    float setMass(const float &m);
     float mass() const;
 };
 

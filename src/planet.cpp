@@ -19,7 +19,7 @@ float Planet::radius() const {
     return radius_p;
 }
 
-float Planet::setMass(float m){
+float Planet::setMass(const float &m){
     mass_p = m;
 
     radius_p = pow((3.0f * m / 4.0f) * M_PI, 1.0f / 3.0f) * 0.1f;
