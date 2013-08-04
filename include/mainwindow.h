@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include "common.h"
-#include "planetsuniverse.h"
 #include <QMainWindow>
 #include <QLabel>
 
@@ -57,8 +56,6 @@ private:
     QLabel *planetCountLabel;
     QLabel *fpsLabel;
     QLabel *averagefpsLabel;
-
-    PlanetsUniverse *universe;
 
     void closeEvent(QCloseEvent *e);
 };

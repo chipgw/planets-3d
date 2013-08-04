@@ -7,8 +7,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     ui->PauseResume_Button->setFocus();
 
-    universe = &ui->centralwidget->universe;
-
     planetCountLabel = new QLabel(ui->statusbar);
     planetCountLabel->setFixedWidth(120);
     ui->statusbar->addPermanentWidget(planetCountLabel);
@@ -19,8 +17,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     averagefpsLabel->setFixedWidth(160);
     ui->statusbar->addPermanentWidget(averagefpsLabel);
 
-    connect(ui->actionCenter_All,                   SIGNAL(triggered()), universe,          SLOT(centerAll()));
-    connect(ui->actionInteractive_Planet_Placement, SIGNAL(triggered()), ui->centralwidget, SLOT(beginInteractiveCreation()));
+    connect(ui->actionCenter_All,                   SIGNAL(triggered()), &ui->centralwidget->universe,  SLOT(centerAll()));
+    connect(ui->actionInteractive_Planet_Placement, SIGNAL(triggered()), ui->centralwidget,             SLOT(beginInteractiveCreation()));
 
     connect(ui->centralwidget, SIGNAL(updatePlanetCountStatusMessage(QString)), planetCountLabel, SLOT(setText(QString)));
     connect(ui->centralwidget, SIGNAL(updateFPSStatusMessage(QString)),         fpsLabel,         SLOT(setText(QString)));
@@ -41,38 +39,39 @@ MainWindow::~MainWindow(){
 }
 
 void MainWindow::closeEvent(QCloseEvent *e){
-    float tmpsimspeed = universe->simspeed;
-    universe->simspeed = 0.0f;
+    float tmpsimspeed = ui->centralwidget->universe.simspeed;
+    ui->centralwidget->universe.simspeed = 0.0f;
 
     if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
                             QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
         e->accept();
     }else{
-        universe->simspeed = tmpsimspeed;
+        ui->centralwidget->universe.simspeed = tmpsimspeed;
         e->ignore();
     }
 }
 
 void MainWindow::on_createPlanet_PushButton_clicked(){
-    universe->selected = universe->addPlanet(Planet(QVector3D(ui->newPosX_SpinBox->value(),      ui->newPosY_SpinBox->value(),      ui->newPosZ_SpinBox->value()),
-                                                    QVector3D(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * velocityfac,
-                                                    ui->newMass_SpinBox->value()));
+    ui->centralwidget->universe.selected = ui->centralwidget->universe.addPlanet(
+                Planet(QVector3D(ui->newPosX_SpinBox->value(),      ui->newPosY_SpinBox->value(),      ui->newPosZ_SpinBox->value()),
+                       QVector3D(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * velocityfac,
+                       ui->newMass_SpinBox->value()));
 }
 
 void MainWindow::on_actionDelete_triggered(){
-    universe->planets.remove(universe->selected);
+    ui->centralwidget->universe.planets.remove(ui->centralwidget->universe.selected);
 }
 
 void MainWindow::on_actionClear_Velocity_triggered(){
-    if(universe->planets.contains(universe->selected)){
-        universe->planets[universe->selected].velocity = QVector3D();
+    if(ui->centralwidget->universe.planets.contains(ui->centralwidget->universe.selected)){
+        ui->centralwidget->universe.planets[ui->centralwidget->universe.selected].velocity = QVector3D();
     }
 }
 
 void MainWindow::on_speed_Dial_valueChanged(int value){
-    universe->simspeed = (value * speeddialmax) / ui->speed_Dial->maximum();
-    ui->speedDisplay_lcdNumber->display(universe->simspeed);
-    if(universe->simspeed <= 0.0f){
+    ui->centralwidget->universe.simspeed = (value * speeddialmax) / ui->speed_Dial->maximum();
+    ui->speedDisplay_lcdNumber->display(ui->centralwidget->universe.simspeed);
+    if(ui->centralwidget->universe.simspeed <= 0.0f){
         ui->PauseResume_Button->setText(tr("Resume"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
     }else{
@@ -82,7 +81,7 @@ void MainWindow::on_speed_Dial_valueChanged(int value){
 }
 
 void MainWindow::on_PauseResume_Button_clicked(){
-    if(universe->simspeed <= 0.0f){
+    if(ui->centralwidget->universe.simspeed <= 0.0f){
         ui->speed_Dial->setValue(ui->speed_Dial->maximum() / speeddialmax);
     }else{
         ui->speed_Dial->setValue(0);
@@ -136,38 +135,38 @@ void MainWindow::on_actionPlanet_Colors_triggered(){
 }
 
 void MainWindow::on_actionNew_Simulation_triggered(){
-    float tmpsimspeed = universe->simspeed;
-    universe->simspeed = 0.0f;
+    float tmpsimspeed = ui->centralwidget->universe.simspeed;
+    ui->centralwidget->universe.simspeed = 0.0f;
 
     if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"),
                             QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
-       universe->deleteAll();
+       ui->centralwidget->universe.deleteAll();
     }
-    universe->simspeed = tmpsimspeed;
+    ui->centralwidget->universe.simspeed = tmpsimspeed;
 }
 
 void MainWindow::on_actionOpen_Simulation_triggered(){
-    float tmpsimspeed = universe->simspeed;
-    universe->simspeed = 0.0f;
+    float tmpsimspeed = ui->centralwidget->universe.simspeed;
+    ui->centralwidget->universe.simspeed = 0.0f;
 
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.xml)"));
-    universe->load(filename);
+    ui->centralwidget->universe.load(filename);
 
-    universe->simspeed = tmpsimspeed;
+    ui->centralwidget->universe.simspeed = tmpsimspeed;
 }
 
 void MainWindow::on_actionSave_Simulation_triggered(){
-    float tmpsimspeed = universe->simspeed;
-    universe->simspeed = 0.0f;
+    float tmpsimspeed = ui->centralwidget->universe.simspeed;
+    ui->centralwidget->universe.simspeed = 0.0f;
 
     QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
-    universe->save(filename);
+    ui->centralwidget->universe.save(filename);
 
-    universe->simspeed = tmpsimspeed;
+    ui->centralwidget->universe.simspeed = tmpsimspeed;
 }
 
 void MainWindow::on_followPlanetPushButton_clicked(){
-    ui->centralwidget->following = universe->selected;
+    ui->centralwidget->following = ui->centralwidget->universe.selected;
     ui->centralwidget->followState = PlanetsWidget::Single;
 
 }
