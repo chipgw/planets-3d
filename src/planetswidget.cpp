@@ -279,10 +279,10 @@ void PlanetsWidget::paintGL() {
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     if(placingStep == FreePositionXY){
-        // set placing XY position based on grid
+        // set placing position on the XY plane
         camera.setup();
 
-        QVector3D windowCoord((2.0f * e->x()) / width() - 1.0f,
+        QVector3D windowCoord((2.0f * e->x())  / width()  - 1.0f,
                               (2.0f * -e->y()) / height() + 1.0f, 0.0f);
 
         QMatrix4x4 inv = camera.camera.inverted();
@@ -329,39 +329,35 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
 }
 
 void PlanetsWidget::mousePressEvent(QMouseEvent* e){
-    if(placingStep == FreePositionXY){
-        if(e->button() == Qt::LeftButton){
+    if(e->button() == Qt::LeftButton){
+        if(placingStep == FreePositionXY){
             placingStep = FreePositionZ;
-            setCursor(QCursor(Qt::BlankCursor));
-        }
-    }else if(placingStep == FreePositionZ){
-        if(e->button() == Qt::LeftButton){
+            this->setCursor(Qt::BlankCursor);
+        }else if(placingStep == FreePositionZ){
             placingStep = FreeVelocity;
-        }
-    }else if(placingStep == FreeVelocity){
-        if(e->button() == Qt::LeftButton){
+        }else if(placingStep == FreeVelocity){
             placingStep = None;
             placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, placing.velocity.length());
             universe.selected = universe.addPlanet(placing);
             this->setCursor(Qt::ArrowCursor);
+        }else{
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            camera.setup();
+
+            shaderColor.bind();
+            shaderColor.setUniformValue("cameraMatrix", camera.camera);
+
+            for(QMapIterator<QRgb, Planet> i(universe.planets); i.hasNext();) {
+                i.next();
+                drawPlanetColor(i.value(), i.key());
+            }
+
+            GLubyte color[4];
+            glReadPixels(e->x(), height() - e->y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
+
+            universe.selected = qRgba(color[0], color[1], color[2], color[3]);
         }
-    }else if(e->button() == Qt::LeftButton){
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        camera.setup();
-
-        shaderColor.bind();
-        shaderColor.setUniformValue("cameraMatrix", camera.camera);
-
-        for(QMapIterator<QRgb, Planet> i(universe.planets); i.hasNext();) {
-            i.next();
-            drawPlanetColor(i.value(), i.key());
-        }
-
-        GLubyte color[4];
-        glReadPixels(e->x(), height() - e->y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
-
-        universe.selected = qRgba(color[0], color[1], color[2], color[3]);
     }
 }
 
