@@ -53,7 +53,6 @@ public:
     QMatrix4x4 placingRotation;
 
     int stepsPerFrame;
-    int delay;
     int framecount;
 
     QTimer timer;

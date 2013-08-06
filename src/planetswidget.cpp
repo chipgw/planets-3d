@@ -2,7 +2,7 @@
 #include <QDir>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent), highResSphere(128, 64), lowResSphere(32, 16), timer(this),
-    displaysettings(000), gridRange(50), gridColor(0xcc, 0xff, 0xff, 0x66), following(0), doScreenshot(false), framecount(0), placingStep(None), delay(0), stepsPerFrame(100),
+    displaysettings(000), gridRange(50), gridColor(0xcc, 0xff, 0xff, 0x66), following(0), doScreenshot(false), framecount(0), placingStep(None), stepsPerFrame(100),
     placing(QVector3D(), QVector3D(0.0f, velocityfac, 0.0f)), totalTime(QTime::currentTime()), frameTime(QTime::currentTime()) {
 
 #ifndef NDEBUG
@@ -74,7 +74,7 @@ void PlanetsWidget::resizeGL(int width, int height) {
 }
 
 void PlanetsWidget::paintGL() {
-    delay = frameTime.restart();
+    int delay = frameTime.restart();
 
     if(placingStep == None){
         universe.advance(delay * 20.0f, stepsPerFrame);
