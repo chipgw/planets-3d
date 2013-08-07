@@ -65,7 +65,7 @@ public:
 
     short displaysettings;
 
-    QColor gridColor;
+    const static QColor gridColor;
     int gridRange;
     std::vector<QVector2D> gridPoints;
 

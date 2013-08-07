@@ -1,8 +1,8 @@
 #include "planetswidget.h"
 #include <QDir>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent), highResSphere(128, 64), lowResSphere(32, 16), timer(this),
-    displaysettings(000), gridRange(50), gridColor(0xcc, 0xff, 0xff, 0x66), following(0), doScreenshot(false), framecount(0), placingStep(None), stepsPerFrame(100),
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent), highResSphere(128, 64), lowResSphere(32, 16),
+    timer(this), displaysettings(000), gridRange(50), following(0), doScreenshot(false), framecount(0), placingStep(None), stepsPerFrame(100),
     placing(QVector3D(), QVector3D(0.0f, velocityfac, 0.0f)), totalTime(QTime::currentTime()), frameTime(QTime::currentTime()) {
 
 #ifndef NDEBUG
@@ -423,3 +423,5 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QRgb &color)
     shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts.data(), 3);
     glDrawElements(GL_LINES, lowResSphere.lines.size(), GL_UNSIGNED_INT, lowResSphere.lines.data());
 }
+
+const QColor PlanetsWidget::gridColor = QColor(0xcc, 0xff, 0xff, 0x66);
