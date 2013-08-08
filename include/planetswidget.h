@@ -69,8 +69,8 @@ public:
     int gridRange;
     std::vector<QVector2D> gridPoints;
 
-    Sphere highResSphere;
-    Sphere lowResSphere;
+    const static Sphere highResSphere;
+    const static Sphere lowResSphere;
 
     void drawPlanet(const Planet &planet);
     void drawPlanetPath(const Planet &planet);
