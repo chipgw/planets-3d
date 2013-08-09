@@ -1,4 +1,5 @@
 #include "planet.h"
+#include <qmath.h>
 
 Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v) {
     setMass(m);
@@ -6,7 +7,7 @@ Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v) {
 
 void Planet::updatePath(){
     if(path.size() < 1 || (path.back() - this->position).length() > 0.05f){
-        path.push_back(this->position);
+        path.append(this->position);
     }
 
     // doing this even if it hasn't been recorded allows it to get shorter.

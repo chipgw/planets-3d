@@ -1,7 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "common.h"
 #include <QVector3D>
 #include <QMatrix4x4>
 

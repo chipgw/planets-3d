@@ -1,7 +1,8 @@
 #ifndef PLANET_H
 #define PLANET_H
 
-#include "common.h"
+#include <QVector>
+#include <QVector3D>
 
 class Planet {
 private:
@@ -14,7 +15,7 @@ public:
     QVector3D position;
     QVector3D velocity;
 
-    std::vector<QVector3D> path;
+    QVector<QVector3D> path;
     static unsigned int pathLength;
 
     void updatePath();

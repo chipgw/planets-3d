@@ -1,5 +1,6 @@
 #include "planetswidget.h"
 #include <QDir>
+#include <qmath.h>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent), timer(this),
     displaysettings(000), gridRange(50), following(0), doScreenshot(false), framecount(0), placingStep(None), stepsPerFrame(100),

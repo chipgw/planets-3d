@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QColor>
 #include <QMessageBox>
+#include <qmath.h>
 
 #define ALPHAMASK 0xff000000
 

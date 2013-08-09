@@ -1,13 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "common.h"
 #include <QMainWindow>
 #include <QLabel>
 
 namespace Ui {
 class MainWindow;
 }
+
+// the maximum value of the simulation speed dial as a float.
+const float speeddialmax = 10.0f;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT

@@ -2,6 +2,8 @@
 #define SPHEREGENERATOR_H
 
 #include <QVector>
+#include <QVector2D>
+#include <QVector3D>
 
 class Sphere{
 public:

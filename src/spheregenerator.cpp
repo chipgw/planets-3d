@@ -1,6 +1,5 @@
-#include "include/common.h"
 #include "include/spheregenerator.h"
-#include <QVector2D>
+#include <qmath.h>
 
 Sphere::Sphere(unsigned int slices, unsigned int stacks){
     float vstep = M_PI / stacks;
