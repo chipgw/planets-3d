@@ -1,4 +1,4 @@
-#include "common.h"
+#include "version.h"
 
 namespace version{
     const int major = @Planets3D_VERSION_MAJOR@;
