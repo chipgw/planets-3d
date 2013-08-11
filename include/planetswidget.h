@@ -52,7 +52,6 @@ public:
     Planet placing;
     QMatrix4x4 placingRotation;
 
-    int stepsPerFrame;
     int framecount;
 
     QTimer timer;

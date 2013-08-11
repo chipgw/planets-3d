@@ -202,7 +202,7 @@ void MainWindow::on_actionAbout_Qt_triggered(){
 }
 
 void MainWindow::on_stepsPerFrameSpinBox_valueChanged(int value){
-    ui->centralwidget->stepsPerFrame = value;
+    ui->centralwidget->universe.stepsPerFrame = value;
 }
 
 void MainWindow::on_trailLengthSpinBox_valueChanged(int value){

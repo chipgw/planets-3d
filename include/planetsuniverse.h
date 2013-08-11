@@ -18,6 +18,7 @@ public:
     QRgb selected;
 
     float simspeed;
+    int stepsPerFrame;
 
     QRgb addPlanet(const Planet &planet, QRgb colorhint = 0);
 
@@ -26,7 +27,7 @@ public:
 
     PlanetsUniverse();
 
-    void advance(float time, int steps);
+    void advance(float time);
 
 public slots:
     void centerAll();

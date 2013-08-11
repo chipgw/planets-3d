@@ -8,7 +8,7 @@
 
 #define ALPHAMASK 0xff000000
 
-PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f) {}
+PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(100) {}
 
 bool PlanetsUniverse::load(const QString &filename){
     if(!QFile::exists(filename)){
@@ -113,11 +113,11 @@ bool PlanetsUniverse::save(const QString &filename){
     return true;
 }
 
-void PlanetsUniverse::advance(float time, int steps){
+void PlanetsUniverse::advance(float time){
     time *= simspeed;
-    time /= steps;
+    time /= stepsPerFrame;
 
-    for(int s = 0; s < steps; s++){
+    for(int s = 0; s < stepsPerFrame; s++){
         for(QMutableMapIterator<QRgb, Planet> i(planets); i.hasNext();){
             Planet &planet = i.next().value();
             QRgb planetkey = i.key();
