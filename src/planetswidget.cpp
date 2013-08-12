@@ -217,11 +217,11 @@ void PlanetsWidget::paintGL() {
             gridPoints.clear();
             float bounds = (gridRange - 1) / 2.0f;
             for(float i = -bounds; i <= bounds; i++){
-                gridPoints.push_back(QVector2D(i,-bounds));
-                gridPoints.push_back(QVector2D(i, bounds));
+                gridPoints.append(QVector2D(i,-bounds));
+                gridPoints.append(QVector2D(i, bounds));
 
-                gridPoints.push_back(QVector2D(-bounds, i));
-                gridPoints.push_back(QVector2D( bounds, i));
+                gridPoints.append(QVector2D(-bounds, i));
+                gridPoints.append(QVector2D( bounds, i));
             }
         }
 
@@ -236,7 +236,7 @@ void PlanetsWidget::paintGL() {
             float bounds = (gridRange - 1) / 2.0f;
             for(float x = -bounds; x <= bounds; x++){
                 for(float y = -bounds; y <= bounds; y++){
-                    gridPoints.push_back(QVector2D(x, y));
+                    gridPoints.append(QVector2D(x, y));
                 }
             }
         }

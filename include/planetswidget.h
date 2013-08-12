@@ -66,7 +66,7 @@ public:
 
     const static QColor gridColor;
     int gridRange;
-    std::vector<QVector2D> gridPoints;
+    QVector<QVector2D> gridPoints;
 
     const static Sphere highResSphere;
     const static Sphere lowResSphere;
