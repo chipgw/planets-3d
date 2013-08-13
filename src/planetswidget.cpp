@@ -7,9 +7,9 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBu
     placing(QVector3D(), QVector3D(0.0f, velocityfac, 0.0f)), totalTime(QTime::currentTime()), frameTime(QTime::currentTime()) {
 
 #ifndef NDEBUG
-    framerate = 60000;
+    refreshRate = 0;
 #else
-    framerate = 60;
+    refreshRate = 16; //ms per frame
 #endif
 
     this->setMouseTracking(true);
@@ -265,7 +265,7 @@ void PlanetsWidget::paintGL() {
         }
     }
 
-    timer.start(qMax(0, (1000 / framerate) - frameTime.elapsed()));
+    timer.start(qMax(0, refreshRate - frameTime.elapsed()));
 
     framecount++;
 

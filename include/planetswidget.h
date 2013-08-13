@@ -58,7 +58,7 @@ public:
     QTime frameTime;
     QTime totalTime;
 
-    int framerate;
+    int refreshRate;
 
     QPoint lastmousepos;
 
