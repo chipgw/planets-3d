@@ -82,7 +82,7 @@ void MainWindow::on_speed_Dial_valueChanged(int value){
 }
 
 void MainWindow::on_PauseResume_Button_clicked(){
-    if(ui->centralwidget->universe.simspeed <= 0.0f){
+    if(ui->speed_Dial->value() == 0){
         ui->speed_Dial->setValue(ui->speed_Dial->maximum() / speeddialmax);
     }else{
         ui->speed_Dial->setValue(0);
@@ -169,7 +169,6 @@ void MainWindow::on_actionSave_Simulation_triggered(){
 void MainWindow::on_followPlanetPushButton_clicked(){
     ui->centralwidget->following = ui->centralwidget->universe.selected;
     ui->centralwidget->followState = PlanetsWidget::Single;
-
 }
 
 void MainWindow::on_clearFollowPushButton_clicked(){
