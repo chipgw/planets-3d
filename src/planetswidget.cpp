@@ -3,8 +3,8 @@
 #include <qmath.h>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent),
-    timer(this), displaysettings(000), gridRange(50), following(0), doScreenshot(false), framecount(0), placingStep(None),
-    placing(QVector3D(), QVector3D(0.0f, velocityfac, 0.0f)), totalTime(QTime::currentTime()), frameTime(QTime::currentTime()) {
+    timer(this), displaysettings(0), gridRange(50), following(0), doScreenshot(false), framecount(0),
+    placingStep(None), placing(QVector3D(), QVector3D(0.0f, velocityfac, 0.0f)) {
 
 #ifndef NDEBUG
     refreshRate = 0;
@@ -61,6 +61,11 @@ void PlanetsWidget::initializeGL() {
 
     QImage img(":/textures/planet.png");
     texture = bindTexture(img);
+
+    if(totalTime.isNull()){
+        totalTime.start();
+        frameTime.start();
+    }
 }
 
 void PlanetsWidget::resizeGL(int width, int height) {
