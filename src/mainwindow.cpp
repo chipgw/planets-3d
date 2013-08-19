@@ -26,10 +26,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->centralwidget, SIGNAL(updateAverageFPSStatusMessage(QString)),  averagefpsLabel,  SLOT(setText(QString)));
 
     connect(ui->actionExit, SIGNAL(triggered()),  this,  SLOT(close()));
-
-#ifndef GL_ACCUM
-    ui->actionMotion_Blur->setEnabled(false);
-#endif
 }
 
 MainWindow::~MainWindow(){
@@ -121,12 +117,6 @@ void MainWindow::on_actionDraw_Paths_triggered(){
     ui->centralwidget->displaysettings ^= PlanetsWidget::PlanetTrails;
 
     ui->actionDraw_Paths->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PlanetTrails);
-}
-
-void MainWindow::on_actionMotion_Blur_triggered(){
-    ui->centralwidget->displaysettings ^= PlanetsWidget::MotionBlur;
-
-    ui->actionMotion_Blur->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::MotionBlur);
 }
 
 void MainWindow::on_actionPlanet_Colors_triggered(){

@@ -2,7 +2,7 @@
 #include <QDir>
 #include <qmath.h>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::AccumBuffer | QGL::SampleBuffers), parent),
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
     timer(this), displaysettings(0), gridRange(50), following(0), doScreenshot(false), framecount(0),
     placingStep(None), placing(QVector3D(), QVector3D(0.0f, velocityfac, 0.0f)) {
 
@@ -37,12 +37,7 @@ void PlanetsWidget::initializeGL() {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClearDepthf(1.0f);
 
-#ifdef GL_ACCUM
-    glClearAccum(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
-#else
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-#endif
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -88,14 +83,6 @@ void PlanetsWidget::paintGL() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // TODO - modernize motion blur...
-    if(displaysettings & MotionBlur){
-#ifdef GL_ACCUM
-        glAccum(GL_RETURN, 1.0f);
-        glClear(GL_ACCUM_BUFFER_BIT);
-#endif
-    }
-
     if(followState == Single && universe.planets.contains(following)){
         camera.position = universe.planets[following].position;
     }else if(followState == WeightedAverage){
@@ -135,13 +122,6 @@ void PlanetsWidget::paintGL() {
     shaderColor.bind();
     shaderColor.setUniformValue("cameraMatrix", camera.camera);
     shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
-
-    if(displaysettings & MotionBlur){
-#ifdef GL_ACCUM
-        glAccum(GL_ADD, -0.002f * delay);
-        glAccum(GL_ACCUM, 0.999f);
-#endif
-    }
 
     if(displaysettings & PlanetColors){
         for(QMapIterator<QRgb, Planet> i(universe.planets); i.hasNext();) {

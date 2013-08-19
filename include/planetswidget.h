@@ -16,10 +16,9 @@ class PlanetsWidget : public QGLWidget, public QOpenGLFunctions {
 public:
     enum DisplaySettings{
         PlanetTrails  = (1<<0),
-        MotionBlur    = (1<<1),
-        SolidLineGrid = (1<<2),
-        PointGrid     = (1<<3),
-        PlanetColors  = (1<<4)
+        SolidLineGrid = (1<<1),
+        PointGrid     = (1<<2),
+        PlanetColors  = (1<<3)
     };
     enum PlacingStep{
         None,

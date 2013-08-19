@@ -33,7 +33,6 @@ private slots:
     void on_actionGridPoints_triggered();
 
     void on_actionDraw_Paths_triggered();
-    void on_actionMotion_Blur_triggered();
     void on_actionPlanet_Colors_triggered();
 
     void on_actionNew_Simulation_triggered();
