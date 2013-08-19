@@ -279,8 +279,8 @@ void PlanetsWidget::paintGL() {
     }else{
         emit updatePlanetCountStatusMessage(tr("%1 planets").arg(universe.planets.size()));
     }
-    emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount / (totalTime.elapsed() * 0.001f)));
-    emit updateFPSStatusMessage(tr("fps: %1").arg(1000.0f / delay));
+    emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount / (totalTime.elapsed() * 1.0e-3f)));
+    emit updateFPSStatusMessage(tr("fps: %1").arg(delay * 1.0e-3f));
 }
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
@@ -308,20 +308,18 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         this->lastmousepos = e->pos();
     }else if(placingStep == FreeVelocity){
         // set placing velocity
-        float xdelta = (lastmousepos.x() - e->x()) / 20.0f;
-        float ydelta = (lastmousepos.y() - e->y()) / 20.0f;
-        placingRotation.rotate(xdelta, 1.0f, 0.0f, 0.0f);
-        placingRotation.rotate(ydelta, 0.0f, 1.0f, 0.0f);
+        placingRotation.rotate((lastmousepos.x() - e->x()) / 20.0f, 1.0f, 0.0f, 0.0f);
+        placingRotation.rotate((lastmousepos.y() - e->y()) / 20.0f, 0.0f, 1.0f, 0.0f);
         placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, placing.velocity.length());
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
     }else if(e->buttons().testFlag(Qt::MiddleButton)){
         camera.xrotation += ((150.0f * (lastmousepos.y() - e->y())) / this->height());
         camera.zrotation += ((300.0f * (lastmousepos.x() - e->x())) / this->width());
-        QCursor::setPos(this->mapToGlobal(this->lastmousepos));
 
         camera.xrotation = qBound(-90.0f, camera.xrotation, 90.0f);
         camera.zrotation = fmod(camera.zrotation, 360.0f);
 
+        QCursor::setPos(this->mapToGlobal(this->lastmousepos));
         this->setCursor(Qt::SizeAllCursor);
     }else{
         this->lastmousepos = e->pos();
@@ -377,9 +375,9 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     if(placingStep == FreePositionXY || placingStep == FreePositionZ){
         placing.setMass(qMax(placing.mass() + e->delta() * placing.mass() * 1.0e-3f, 0.1f));
     }else if(placingStep == FreeVelocity){
-        placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, qMax(0.0f, float(placing.velocity.length() + (e->delta() * velocityfac * 1.0e-3f))));
+        placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, qMax(0.0f, float(placing.velocity.length() + e->delta() * velocityfac * 1.0e-3f)));
     }else{
-        camera.distance -= e->delta() * camera.distance * 0.0005f;
+        camera.distance -= e->delta() * camera.distance * 5.0e-4f;
 
         camera.distance = qBound(0.1f, camera.distance, 2000.0f);
     }
