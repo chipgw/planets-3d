@@ -12,9 +12,10 @@ PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(
 
 bool PlanetsUniverse::load(const QString &filename){
     if(!QFile::exists(filename)){
-        qDebug(qPrintable(tr("\"%1\" does not exist!").arg(filename)));
+        QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("file \"%1\" does not exist!").arg(filename));
         return false;
     }
+
     QFile file(filename);
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
@@ -24,39 +25,40 @@ bool PlanetsUniverse::load(const QString &filename){
 
     QXmlStreamReader xml(&file);
 
-    if(xml.readNextStartElement() && xml.name() == "planets-3d-universe"){
-        deleteAll();
-        while(xml.readNextStartElement()) {
-            if(xml.name() == "planet"){
-                Planet planet;
-
-                planet.setMass(xml.attributes().value("mass").toString().toFloat());
-                QRgb color = QColor(xml.attributes().value("color").toString()).rgb();
-
-                while(xml.readNextStartElement()){
-                    if(xml.name() == "position"){
-                        planet.position.setX(xml.attributes().value("x").toString().toFloat());
-                        planet.position.setY(xml.attributes().value("y").toString().toFloat());
-                        planet.position.setZ(xml.attributes().value("z").toString().toFloat());
-                        xml.readNext();
-                    }else if(xml.name() == "velocity"){
-                        planet.velocity.setX(xml.attributes().value("x").toString().toFloat() * velocityfac);
-                        planet.velocity.setY(xml.attributes().value("y").toString().toFloat() * velocityfac);
-                        planet.velocity.setZ(xml.attributes().value("z").toString().toFloat() * velocityfac);
-                        xml.readNext();
-                    }
-                }
-                addPlanet(planet, color);
-                xml.readNext();
-            }
-        }
-        if(xml.hasError()){
-            deleteAll();
-            QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("Error in file \"%1\": %2").arg(filename).arg(xml.errorString()));
-            return false;
-        }
-    }else{
+    if(!(xml.readNextStartElement() && xml.name() == "planets-3d-universe")){
         QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("\"%1\" is not a valid universe file!").arg(filename));
+        return false;
+    }
+
+    deleteAll();
+    while(xml.readNextStartElement()) {
+        if(xml.name() == "planet"){
+            Planet planet;
+
+            planet.setMass(xml.attributes().value("mass").toString().toFloat());
+            QRgb color = QColor(xml.attributes().value("color").toString()).rgb();
+
+            while(xml.readNextStartElement()){
+                if(xml.name() == "position"){
+                    planet.position.setX(xml.attributes().value("x").toString().toFloat());
+                    planet.position.setY(xml.attributes().value("y").toString().toFloat());
+                    planet.position.setZ(xml.attributes().value("z").toString().toFloat());
+                    xml.readNext();
+                }else if(xml.name() == "velocity"){
+                    planet.velocity.setX(xml.attributes().value("x").toString().toFloat() * velocityfac);
+                    planet.velocity.setY(xml.attributes().value("y").toString().toFloat() * velocityfac);
+                    planet.velocity.setZ(xml.attributes().value("z").toString().toFloat() * velocityfac);
+                    xml.readNext();
+                }
+            }
+            addPlanet(planet, color);
+            xml.readNext();
+        }
+    }
+
+    if(xml.hasError()){
+        deleteAll();
+        QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("Error in file \"%1\": %2").arg(filename).arg(xml.errorString()));
         return false;
     }
 
