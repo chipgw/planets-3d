@@ -16,8 +16,6 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleB
 
     timer.setSingleShot(true);
     connect(&timer, SIGNAL(timeout()), this, SLOT(updateGL()));
-
-    universe.load("default.xml");
 }
 
 void PlanetsWidget::initializeGL() {
@@ -121,7 +119,6 @@ void PlanetsWidget::paintGL() {
 
     shaderColor.bind();
     shaderColor.setUniformValue("cameraMatrix", camera.camera);
-    shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
 
     if(displaysettings & PlanetColors){
         for(QMapIterator<QRgb, Planet> i(universe.planets); i.hasNext();) {
