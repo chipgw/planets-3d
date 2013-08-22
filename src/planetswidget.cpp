@@ -2,15 +2,16 @@
 #include <QDir>
 #include <qmath.h>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
-    timer(this), displaysettings(0), gridRange(50), following(0), doScreenshot(false), framecount(0),
-    placingStep(None), placing(QVector3D(), QVector3D(0.0f, velocityfac, 0.0f)) {
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this),
+    displaysettings(0), gridRange(50), following(0), doScreenshot(false), framecount(0), placingStep(None) {
 
 #ifndef NDEBUG
     refreshRate = 0;
 #else
     refreshRate = 16; //ms per frame
 #endif
+
+    placing.velocity.setY(velocityfac);
 
     this->setMouseTracking(true);
 
@@ -287,7 +288,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         // set placing velocity
         placingRotation.rotate((lastmousepos.x() - e->x()) / 20.0f, 1.0f, 0.0f, 0.0f);
         placingRotation.rotate((lastmousepos.y() - e->y()) / 20.0f, 0.0f, 1.0f, 0.0f);
-        placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, placing.velocity.length());
+        placing.velocity = placingRotation.column(2).toVector3D() * placing.velocity.length();
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
     }else if(e->buttons().testFlag(Qt::MiddleButton)){
         camera.xrotation += ((150.0f * (lastmousepos.y() - e->y())) / this->height());
