@@ -151,22 +151,22 @@ void PlanetsWidget::paintGL() {
                 shaderColor.setUniformValue("modelMatrix", matrix);
                 shaderColor.setUniformValue("color", QColor(Qt::white));
 
-                float verts[] = { 0.1f, 0.1f, 0.0f,
-                                  0.1f,-0.1f, 0.0f,
+                float verts[] = {  0.1f, 0.1f, 0.0f,
+                                   0.1f,-0.1f, 0.0f,
                                   -0.1f,-0.1f, 0.0f,
                                   -0.1f, 0.1f, 0.0f,
 
-                                  0.1f, 0.1f, length,
-                                  0.1f,-0.1f, length,
+                                   0.1f, 0.1f, length,
+                                   0.1f,-0.1f, length,
                                   -0.1f,-0.1f, length,
                                   -0.1f, 0.1f, length,
 
-                                  0.2f, 0.2f, length,
-                                  0.2f,-0.2f, length,
+                                   0.2f, 0.2f, length,
+                                   0.2f,-0.2f, length,
                                   -0.2f,-0.2f, length,
                                   -0.2f, 0.2f, length,
 
-                                  0.0f, 0.0f, length + 0.4f};
+                                   0.0f, 0.0f, length + 0.4f};
 
                 static const GLubyte indexes[] = {0,  1,  2,       2,  3,  0,
 
@@ -181,8 +181,8 @@ void PlanetsWidget::paintGL() {
                                                   4,  7,  8,      11,  8,  7,
 
                                                   9,  8, 12,
-                                                  10,  9, 12,
-                                                  11, 10, 12,
+                                                 10,  9, 12,
+                                                 11, 10, 12,
                                                   8, 11, 12};
 
                 shaderColor.setAttributeArray("vertex", GL_FLOAT, verts, 3);
@@ -279,17 +279,16 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
         placing.position = origin + (ray * ((-origin.z()) / ray.z()));
 
-        this->lastmousepos = e->pos();
     }else if(placingStep == FreePositionZ){
         // set placing Z position
         placing.position.setZ(placing.position.z() + (lastmousepos.y() - e->y()) / 10.0f);
-        this->lastmousepos = e->pos();
     }else if(placingStep == FreeVelocity){
         // set placing velocity
         placingRotation.rotate((lastmousepos.x() - e->x()) / 20.0f, 1.0f, 0.0f, 0.0f);
         placingRotation.rotate((lastmousepos.y() - e->y()) / 20.0f, 0.0f, 1.0f, 0.0f);
         placing.velocity = placingRotation.column(2).toVector3D() * placing.velocity.length();
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
+        return;
     }else if(e->buttons().testFlag(Qt::MiddleButton)){
         camera.xrotation += ((150.0f * (lastmousepos.y() - e->y())) / this->height());
         camera.zrotation += ((300.0f * (lastmousepos.x() - e->x())) / this->width());
@@ -299,9 +298,9 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
         this->setCursor(Qt::SizeAllCursor);
-    }else{
-        this->lastmousepos = e->pos();
+        return;
     }
+    this->lastmousepos = e->pos();
 }
 
 void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
