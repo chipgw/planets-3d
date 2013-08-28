@@ -147,6 +147,7 @@ void PlanetsWidget::paintGL() {
             if(length > 0.0f){
                 QMatrix4x4 matrix;
                 matrix.translate(placing.position);
+                matrix.scale(placing.radius());
                 matrix *= placingRotation;
                 shaderColor.setUniformValue("modelMatrix", matrix);
                 shaderColor.setUniformValue("color", QColor(Qt::white));
