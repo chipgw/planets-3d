@@ -259,7 +259,7 @@ void PlanetsWidget::paintGL() {
         emit updatePlanetCountStatusMessage(tr("%1 planets").arg(universe.planets.size()));
     }
     emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount / (totalTime.elapsed() * 1.0e-3f)));
-    emit updateFPSStatusMessage(tr("fps: %1").arg(delay * 1.0e-3f));
+    emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e3f / delay));
 }
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
