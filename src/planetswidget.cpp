@@ -285,14 +285,14 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         placing.position.setZ(placing.position.z() + (lastmousepos.y() - e->y()) / 10.0f);
     }else if(placingStep == FreeVelocity){
         // set placing velocity
-        placingRotation.rotate((lastmousepos.x() - e->x()) / 20.0f, 1.0f, 0.0f, 0.0f);
-        placingRotation.rotate((lastmousepos.y() - e->y()) / 20.0f, 0.0f, 1.0f, 0.0f);
+        placingRotation.rotate((lastmousepos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
+        placingRotation.rotate((lastmousepos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
         placing.velocity = placingRotation.column(2).toVector3D() * placing.velocity.length();
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
         return;
     }else if(e->buttons().testFlag(Qt::MiddleButton)){
-        camera.xrotation += ((150.0f * (lastmousepos.y() - e->y())) / this->height());
-        camera.zrotation += ((300.0f * (lastmousepos.x() - e->x())) / this->width());
+        camera.xrotation += (lastmousepos.y() - e->y()) * 0.2f;
+        camera.zrotation += (lastmousepos.x() - e->x()) * 0.2f;
 
         camera.xrotation = qBound(-90.0f, camera.xrotation, 90.0f);
         camera.zrotation = fmod(camera.zrotation, 360.0f);
