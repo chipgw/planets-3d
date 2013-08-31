@@ -3,12 +3,10 @@
 #include <qmath.h>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this),
-    displaysettings(0), gridRange(50), following(0), doScreenshot(false), framecount(0), placingStep(None) {
+    displaysettings(0), gridRange(50), following(0), doScreenshot(false), framecount(0), placingStep(None), refreshRate(16) {
 
 #ifndef NDEBUG
     refreshRate = 0;
-#else
-    refreshRate = 16; //ms per frame
 #endif
 
     placing.velocity.setY(velocityfac);
@@ -70,7 +68,7 @@ void PlanetsWidget::resizeGL(int width, int height) {
     glViewport(0, 0, width, height);
 
     camera.projection.setToIdentity();
-    camera.projection.perspective(45.0f, float(width) / float(height), 0.1f, 10000.0f);
+    camera.projection.perspective(45.0f, float(width) / float(height), 0.1f, 1.0e4f);
 }
 
 void PlanetsWidget::paintGL() {
@@ -215,7 +213,7 @@ void PlanetsWidget::paintGL() {
         glDrawArrays(GL_LINES, 0, gridPoints.size());
     }
     if(displaysettings & PointGrid){
-        if(gridPoints.size() != pow(gridRange, 2)){
+        if(gridPoints.size() != gridRange * gridRange){
             gridPoints.clear();
             float bounds = (gridRange - 1) / 2.0f;
             for(float x = -bounds; x <= bounds; x++){
@@ -282,7 +280,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
     }else if(placingStep == FreePositionZ){
         // set placing Z position
-        placing.position.setZ(placing.position.z() + (lastmousepos.y() - e->y()) / 10.0f);
+        placing.position.setZ(placing.position.z() + (lastmousepos.y() - e->y()) * 0.1f);
     }else if(placingStep == FreeVelocity){
         // set placing velocity
         placingRotation.rotate((lastmousepos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
@@ -357,7 +355,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     }else{
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;
 
-        camera.distance = qBound(0.1f, camera.distance, 2000.0f);
+        camera.distance = qBound(0.1f, camera.distance, 2.0e3f);
     }
 }
 
