@@ -259,7 +259,8 @@ void PlanetsWidget::paintGL() {
 }
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
-    if(placingStep == FreePositionXY){
+    switch(placingStep){
+    case FreePositionXY:{
         // set placing position on the XY plane
         camera.setup();
 
@@ -276,26 +277,31 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
         placing.position = origin + (ray * ((-origin.z()) / ray.z()));
 
-    }else if(placingStep == FreePositionZ){
+        break;
+    }
+    case FreePositionZ:
         // set placing Z position
         placing.position.setZ(placing.position.z() + (lastmousepos.y() - e->y()) * 0.1f);
-    }else if(placingStep == FreeVelocity){
+        break;
+    case FreeVelocity:
         // set placing velocity
         placingRotation.rotate((lastmousepos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
         placingRotation.rotate((lastmousepos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
         placing.velocity = placingRotation.column(2).toVector3D() * placing.velocity.length();
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
         return;
-    }else if(e->buttons().testFlag(Qt::MiddleButton)){
-        camera.xrotation += (lastmousepos.y() - e->y()) * 0.2f;
-        camera.zrotation += (lastmousepos.x() - e->x()) * 0.2f;
+    default:
+        if(e->buttons().testFlag(Qt::MiddleButton)){
+            camera.xrotation += (lastmousepos.y() - e->y()) * 0.2f;
+            camera.zrotation += (lastmousepos.x() - e->x()) * 0.2f;
 
-        camera.xrotation = qBound(-90.0f, camera.xrotation, 90.0f);
-        camera.zrotation = fmod(camera.zrotation, 360.0f);
+            camera.xrotation = qBound(-90.0f, camera.xrotation, 90.0f);
+            camera.zrotation = fmod(camera.zrotation, 360.0f);
 
-        QCursor::setPos(this->mapToGlobal(this->lastmousepos));
-        this->setCursor(Qt::SizeAllCursor);
-        return;
+            QCursor::setPos(this->mapToGlobal(this->lastmousepos));
+            this->setCursor(Qt::SizeAllCursor);
+            return;
+        }
     }
     this->lastmousepos = e->pos();
 }
@@ -308,17 +314,21 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
 
 void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     if(e->button() == Qt::LeftButton){
-        if(placingStep == FreePositionXY){
+        switch(placingStep){
+        case FreePositionXY:
             placingStep = FreePositionZ;
             this->setCursor(Qt::BlankCursor);
-        }else if(placingStep == FreePositionZ){
+            break;
+        case FreePositionZ:
             placingStep = FreeVelocity;
-        }else if(placingStep == FreeVelocity){
+            break;
+        case FreeVelocity:
             placingStep = None;
             placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, placing.velocity.length());
             universe.selected = universe.addPlanet(placing);
             this->setCursor(Qt::ArrowCursor);
-        }else{
+            break;
+        default:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             camera.setup();
@@ -335,6 +345,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             glReadPixels(e->x(), height() - e->y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
 
             universe.selected = qRgba(color[0], color[1], color[2], color[3]);
+            break;
         }
     }
 }
