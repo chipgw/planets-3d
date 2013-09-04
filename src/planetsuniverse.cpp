@@ -178,21 +178,19 @@ void PlanetsUniverse::deleteAll(){
 }
 
 void PlanetsUniverse::centerAll(){
-    QMutableMapIterator<QRgb, Planet> i(planets);
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
-    while(i.hasNext()) {
-        Planet &planet = i.next().value();
 
+    foreach(const Planet &planet, planets){
         averagePosition += planet.position * planet.mass();
         averageVelocity += planet.velocity * planet.mass();
         totalmass += planet.mass();
     }
+
     averagePosition /= totalmass;
     averageVelocity /= totalmass;
 
-    i.toFront();
-    while(i.hasNext()) {
+    for(QMutableMapIterator<QRgb, Planet> i(planets); i.hasNext();) {
         Planet &planet = i.next().value();
 
         planet.position -= averagePosition;
