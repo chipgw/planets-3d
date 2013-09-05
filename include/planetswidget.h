@@ -25,6 +25,7 @@ public:
         FreePositionXY,
         FreePositionZ,
         FreeVelocity,
+        Firing
     };
     enum FollowingState{
         FollowNone,
@@ -82,6 +83,7 @@ signals:
 
 public slots:
     void beginInteractiveCreation();
+    void toggleFiringMode();
 
 protected:
     void initializeGL();

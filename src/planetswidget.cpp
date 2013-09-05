@@ -72,7 +72,7 @@ void PlanetsWidget::resizeGL(int width, int height) {
 void PlanetsWidget::paintGL() {
     int delay = frameTime.restart();
 
-    if(placingStep == None){
+    if(placingStep == None || placingStep == Firing){
         universe.advance(delay * 20.0f);
     }
 
@@ -134,7 +134,7 @@ void PlanetsWidget::paintGL() {
         }
     }
 
-    if(placingStep != None){
+    if(placingStep != None && placingStep != Firing){
         drawPlanetWireframe(placing);
 
         if(placingStep == FreeVelocity){
@@ -328,6 +328,22 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             universe.selected = universe.addPlanet(placing);
             this->setCursor(Qt::ArrowCursor);
             break;
+        case Firing:{
+            QVector3D windowCoord((2.0f * e->x())  / width()  - 1.0f,
+                                  (2.0f * -e->y()) / height() + 1.0f, 0.8f);
+
+            QMatrix4x4 inv = camera.camera.inverted();
+
+            QVector3D origin = inv * windowCoord;
+
+            windowCoord.setZ(0.799f);
+
+            QVector3D velocity = origin - (inv * windowCoord);
+
+            universe.addPlanet(Planet(origin, velocity));
+
+            break;
+        }
         default:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -376,6 +392,15 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
 void PlanetsWidget::beginInteractiveCreation(){
     placingStep = FreePositionXY;
     universe.selected = 0;
+}
+
+void PlanetsWidget::toggleFiringMode(){
+    if(placingStep == Firing){
+        placingStep = None;
+    }else{
+        placingStep = Firing;
+        universe.selected = 0;
+    }
 }
 
 void PlanetsWidget::drawPlanet(const Planet &planet){

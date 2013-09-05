@@ -290,6 +290,7 @@
    <addaction name="actionNew_Simulation"/>
    <addaction name="actionCenter_All"/>
    <addaction name="actionInteractive_Planet_Placement"/>
+   <addaction name="actionToggle_Firing_Mode"/>
   </widget>
   <widget class="QDockWidget" name="camera_DockWidget">
    <property name="windowTitle">
@@ -597,6 +598,11 @@
    </property>
    <property name="text">
     <string>Planet Colors</string>
+   </property>
+  </action>
+  <action name="actionToggle_Firing_Mode">
+   <property name="text">
+    <string>Toggle Firing Mode</string>
    </property>
   </action>
  </widget>
