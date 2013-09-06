@@ -83,7 +83,7 @@ signals:
 
 public slots:
     void beginInteractiveCreation();
-    void toggleFiringMode();
+    void enableFiringMode(bool enable);
 
 protected:
     void initializeGL();

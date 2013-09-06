@@ -601,6 +601,9 @@
    </property>
   </action>
   <action name="actionToggle_Firing_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Toggle Firing Mode</string>
    </property>

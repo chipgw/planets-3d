@@ -394,12 +394,12 @@ void PlanetsWidget::beginInteractiveCreation(){
     universe.selected = 0;
 }
 
-void PlanetsWidget::toggleFiringMode(){
-    if(placingStep == Firing){
-        placingStep = None;
-    }else{
+void PlanetsWidget::enableFiringMode(bool enable){
+    if(enable){
         placingStep = Firing;
         universe.selected = 0;
+    }else{
+        placingStep = None;
     }
 }
 
