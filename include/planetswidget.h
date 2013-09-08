@@ -68,8 +68,8 @@ public:
     int gridRange;
     QVector<QVector2D> gridPoints;
 
-    const static Sphere highResSphere;
-    const static Sphere lowResSphere;
+    const static Sphere<128, 64> highResSphere;
+    const static Sphere<32,  16> lowResSphere;
 
     void drawPlanet(const Planet &planet);
     void drawPlanetPath(const Planet &planet);

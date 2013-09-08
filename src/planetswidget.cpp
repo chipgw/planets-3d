@@ -409,9 +409,9 @@ void PlanetsWidget::drawPlanet(const Planet &planet){
     matrix.scale(planet.radius());
     shaderTexture.setUniformValue("modelMatrix", matrix);
 
-    shaderTexture.setAttributeArray("vertex", GL_FLOAT, highResSphere.verts.data(), 3);
-    shaderTexture.setAttributeArray("uv", GL_FLOAT, highResSphere.uv.data(), 2);
-    glDrawElements(GL_TRIANGLES, highResSphere.triangles.size(), GL_UNSIGNED_INT, highResSphere.triangles.data());
+    shaderTexture.setAttributeArray("vertex", GL_FLOAT, highResSphere.verts, 3);
+    shaderTexture.setAttributeArray("uv", GL_FLOAT, highResSphere.uv, 2);
+    glDrawElements(GL_TRIANGLES, highResSphere.triangleCount, GL_UNSIGNED_INT, highResSphere.triangles);
 }
 
 void PlanetsWidget::drawPlanetPath(const Planet &planet){
@@ -427,8 +427,8 @@ void PlanetsWidget::drawPlanetColor(const Planet &planet, const QRgb &color){
     matrix.scale(planet.radius() * 1.02f);
     shaderColor.setUniformValue("modelMatrix", matrix);
 
-    shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts.data(), 3);
-    glDrawElements(GL_TRIANGLES, lowResSphere.triangles.size(), GL_UNSIGNED_INT, lowResSphere.triangles.data());
+    shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts, 3);
+    glDrawElements(GL_TRIANGLES, lowResSphere.triangleCount, GL_UNSIGNED_INT, lowResSphere.triangles);
 }
 
 void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QRgb &color){
@@ -439,11 +439,11 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QRgb &color)
     matrix.scale(planet.radius() * 1.02f);
     shaderColor.setUniformValue("modelMatrix", matrix);
 
-    shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts.data(), 3);
-    glDrawElements(GL_LINES, lowResSphere.lines.size(), GL_UNSIGNED_INT, lowResSphere.lines.data());
+    shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts, 3);
+    glDrawElements(GL_LINES, lowResSphere.lineCount, GL_UNSIGNED_INT, lowResSphere.lines);
 }
 
 const QColor PlanetsWidget::gridColor = QColor(0xcc, 0xff, 0xff, 0x66);
 
-const Sphere PlanetsWidget::highResSphere = Sphere(128, 64);
-const Sphere PlanetsWidget::lowResSphere = Sphere(32, 16);
+const Sphere<128, 64> PlanetsWidget::highResSphere = Sphere<128, 64>();
+const Sphere<32,  16> PlanetsWidget::lowResSphere  = Sphere<32,  16>();
