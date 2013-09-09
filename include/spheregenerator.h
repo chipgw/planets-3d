@@ -31,28 +31,28 @@ template <unsigned int slices, unsigned int stacks> Sphere<slices, stacks>::Sphe
         float r = sin(v * vstep);
 
         for(int h = 0; h <= slices; h++){
-            int w = slices + 1;
-            int current = v * w + h;
+            unsigned int w = slices + 1;
+            unsigned int current = v * w + h;
 
             verts[current] = QVector3D(cos(h * hstep) * r, sin(h * hstep) * r, z);
 
             uv[current] = QVector2D(float(h) / float(slices), 1.0f - float(v) / float(stacks));
 
             if(h != slices && v != stacks){
-                triangles[currentTriangle++] = ((v    ) * w) + (h    );
-                triangles[currentTriangle++] = ((v + 1) * w) + (h    );
-                triangles[currentTriangle++] = ((v    ) * w) + (h + 1);
+                triangles[currentTriangle++] = current;
+                triangles[currentTriangle++] = current + w;
+                triangles[currentTriangle++] = current + 1;
 
-                triangles[currentTriangle++] = ((v + 1) * w) + (h + 1);
-                triangles[currentTriangle++] = ((v    ) * w) + (h + 1);
-                triangles[currentTriangle++] = ((v + 1) * w) + (h    );
+                triangles[currentTriangle++] = current + w + 1;
+                triangles[currentTriangle++] = current + 1;
+                triangles[currentTriangle++] = current + w;
 
 
-                lines[currentLine++] = ((v    ) * w) + (h    );
-                lines[currentLine++] = ((v + 1) * w) + (h    );
+                lines[currentLine++] = current;
+                lines[currentLine++] = current + w;
 
-                lines[currentLine++] = ((v    ) * w) + (h    );
-                lines[currentLine++] = ((v    ) * w) + (h + 1);
+                lines[currentLine++] = current;
+                lines[currentLine++] = current + 1;
             }
         }
     }

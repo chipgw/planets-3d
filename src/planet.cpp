@@ -12,7 +12,7 @@ void Planet::updatePath(){
 
     // doing this even if it hasn't been recorded allows it to get shorter.
     if(path.size() > pathLength){
-        path.erase(path.begin());
+        path.removeFirst();
     }
 }
 
