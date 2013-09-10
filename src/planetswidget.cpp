@@ -3,7 +3,8 @@
 #include <qmath.h>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this),
-    displaysettings(0), gridRange(50), following(0), doScreenshot(false), framecount(0), placingStep(None), refreshRate(16) {
+    displaysettings(0), gridRange(50), following(0), doScreenshot(false), framecount(0), placingStep(None),
+    refreshRate(16), firingSpeed(velocityfac * 10.0f), firingMass(100.0f) {
 
 #ifndef NDEBUG
     refreshRate = 0;
@@ -336,11 +337,11 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 
             QVector3D origin = inv * windowCoord;
 
-            windowCoord.setZ(0.799f);
+            windowCoord.setZ(0.7f);
 
             QVector3D velocity = origin - (inv * windowCoord);
 
-            universe.addPlanet(Planet(origin, velocity));
+            universe.addPlanet(Planet(origin, velocity.normalized() * firingSpeed, firingMass));
 
             break;
         }

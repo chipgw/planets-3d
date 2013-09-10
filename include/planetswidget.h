@@ -51,6 +51,8 @@ public:
     PlacingStep placingStep;
     Planet placing;
     QMatrix4x4 placingRotation;
+    float firingSpeed;
+    float firingMass;
 
     int framecount;
 
