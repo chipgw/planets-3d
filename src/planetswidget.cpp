@@ -4,7 +4,7 @@
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this),
     displaysettings(0), gridRange(50), following(0), doScreenshot(false), framecount(0), placingStep(None),
-    refreshRate(16), firingSpeed(velocityfac * 10.0f), firingMass(100.0f) {
+    refreshRate(16), firingSpeed(velocityfac * 10.0f), firingMass(25.0f) {
 
 #ifndef NDEBUG
     refreshRate = 0;

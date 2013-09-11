@@ -202,3 +202,11 @@ void MainWindow::on_trailLengthSpinBox_valueChanged(int value){
 void MainWindow::on_gridRangeSpinBox_valueChanged(int value){
     ui->centralwidget->gridRange = value;
 }
+
+void MainWindow::on_firingVelocityDoubleSpinBox_valueChanged(double value){
+    ui->centralwidget->firingSpeed = value * velocityfac;
+}
+
+void MainWindow::on_firingMassSpinBox_valueChanged(int value){
+    ui->centralwidget->firingMass = value;
+}

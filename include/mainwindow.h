@@ -51,6 +51,9 @@ private slots:
     void on_trailLengthSpinBox_valueChanged(int value);
     void on_gridRangeSpinBox_valueChanged(int value);
 
+    void on_firingVelocityDoubleSpinBox_valueChanged(double value);
+    void on_firingMassSpinBox_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
 
