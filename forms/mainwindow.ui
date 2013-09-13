@@ -61,8 +61,19 @@
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionNew_Planet"/>
+    <addaction name="actionSpeed_Control"/>
+    <addaction name="actionCamera_Location"/>
+    <addaction name="actionView_Settings"/>
+    <addaction name="actionFiring_Mode_Settings"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -655,6 +666,61 @@
    </property>
    <property name="text">
     <string>Toggle Firing Mode</string>
+   </property>
+  </action>
+  <action name="actionNew_Planet">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>New Planet</string>
+   </property>
+  </action>
+  <action name="actionSpeed_Control">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Speed Control</string>
+   </property>
+  </action>
+  <action name="actionCamera_Location">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Camera Location</string>
+   </property>
+  </action>
+  <action name="actionView_Settings">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>View Settings</string>
+   </property>
+  </action>
+  <action name="actionFiring_Mode_Settings">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Firing Mode Settings</string>
    </property>
   </action>
  </widget>
