@@ -26,8 +26,6 @@ private slots:
     void on_speed_Dial_valueChanged(int value);
     void on_PauseResume_Button_clicked();
 
-    void on_actionTake_Screenshot_triggered();
-
     void on_actionGridOff_triggered();
     void on_actionGridLines_triggered();
     void on_actionGridPoints_triggered();

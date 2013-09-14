@@ -404,6 +404,10 @@ void PlanetsWidget::enableFiringMode(bool enable){
     }
 }
 
+void PlanetsWidget::takeScreenshot(){
+    doScreenshot = true;
+}
+
 void PlanetsWidget::drawPlanet(const Planet &planet){
     QMatrix4x4 matrix;
     matrix.translate(planet.position);

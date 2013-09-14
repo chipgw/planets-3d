@@ -13,19 +13,43 @@
 
 class PlanetsWidget : public QGLWidget, public QOpenGLFunctions {
     Q_OBJECT
-public:
-    enum DisplaySettings{
-        PlanetTrails  = (1<<0),
-        SolidLineGrid = (1<<1),
-        PointGrid     = (1<<2),
-        PlanetColors  = (1<<3)
-    };
+private:
     enum PlacingStep{
         None,
         FreePositionXY,
         FreePositionZ,
         FreeVelocity,
         Firing
+    };
+
+    QOpenGLShaderProgram shaderTexture;
+    QOpenGLShaderProgram shaderColor;
+    GLuint texture;
+
+    Camera camera;
+    bool doScreenshot;
+
+    int framecount;
+
+    QTimer timer;
+    QTime frameTime;
+    QTime totalTime;
+
+    QPoint lastmousepos;
+
+    PlacingStep placingStep;
+    Planet placing;
+    QMatrix4x4 placingRotation;
+
+    const static Sphere<128, 64> highResSphere;
+    const static Sphere<32,  16> lowResSphere;
+
+public:
+    enum DisplaySettings{
+        PlanetTrails  = (1<<0),
+        SolidLineGrid = (1<<1),
+        PointGrid     = (1<<2),
+        PlanetColors  = (1<<3)
     };
     enum FollowingState{
         FollowNone,
@@ -40,43 +64,16 @@ public:
 
     QRgb following;
     FollowingState followState;
-    GLuint texture;
 
-    QOpenGLShaderProgram shaderTexture;
-    QOpenGLShaderProgram shaderColor;
-
-    Camera camera;
-    bool doScreenshot;
-
-    PlacingStep placingStep;
-    Planet placing;
-    QMatrix4x4 placingRotation;
     float firingSpeed;
     float firingMass;
 
-    int framecount;
-
-    QTimer timer;
-    QTime frameTime;
-    QTime totalTime;
-
-    int refreshRate;
-
-    QPoint lastmousepos;
-
+    unsigned int refreshRate;
     short displaysettings;
 
     const static QColor gridColor;
-    int gridRange;
+    unsigned int gridRange;
     QVector<QVector2D> gridPoints;
-
-    const static Sphere<128, 64> highResSphere;
-    const static Sphere<32,  16> lowResSphere;
-
-    void drawPlanet(const Planet &planet);
-    void drawPlanetPath(const Planet &planet);
-    void drawPlanetColor(const Planet &planet, const QRgb &color);
-    void drawPlanetWireframe(const Planet &planet, const QRgb &color = 0xff00ff00);
 
 signals:
     void updatePlanetCountStatusMessage(const QString &text);
@@ -86,6 +83,7 @@ signals:
 public slots:
     void beginInteractiveCreation();
     void enableFiringMode(bool enable);
+    void takeScreenshot();
 
 protected:
     void initializeGL();
@@ -96,6 +94,11 @@ protected:
     void mouseReleaseEvent(QMouseEvent* e);
     void mouseDoubleClickEvent(QMouseEvent* e);
     void wheelEvent(QWheelEvent* e);
+
+    void drawPlanet(const Planet &planet);
+    void drawPlanetPath(const Planet &planet);
+    void drawPlanetColor(const Planet &planet, const QRgb &color);
+    void drawPlanetWireframe(const Planet &planet, const QRgb &color = 0xff00ff00);
 };
 
 #endif // PlanetsWidget_H
