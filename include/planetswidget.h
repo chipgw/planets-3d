@@ -68,7 +68,7 @@ public:
     float firingSpeed;
     float firingMass;
 
-    unsigned int refreshRate;
+    int refreshRate;
     short displaysettings;
 
     const static QColor gridColor;
