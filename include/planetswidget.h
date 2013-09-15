@@ -7,8 +7,20 @@
 #include <QTime>
 #include <QTimer>
 #include <QMouseEvent>
+
+#if QT_VERSION >= 0x050000
 #include <QOpenGLFunctions>
 #include <QOpenGLShader>
+#else
+#include <QGLFunctions>
+#include <QGLShader>
+
+#define QOpenGLShader               QGLShader
+#define QOpenGLShaderProgram        QGLShaderProgram
+#define QOpenGLFunctions            QGLFunctions
+#define initializeOpenGLFunctions   initializeGLFunctions
+#endif
+
 #include <QGLWidget>
 
 class PlanetsWidget : public QGLWidget, public QOpenGLFunctions {
