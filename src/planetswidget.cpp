@@ -195,15 +195,7 @@ void PlanetsWidget::paintGL() {
 
     if(displaysettings & SolidLineGrid){
         if(gridPoints.size() != gridRange * 4){
-            gridPoints.clear();
-            float bounds = (gridRange - 1) / 2.0f;
-            for(float i = -bounds; i <= bounds; i++){
-                gridPoints.append(QVector2D(i,-bounds));
-                gridPoints.append(QVector2D(i, bounds));
-
-                gridPoints.append(QVector2D(-bounds, i));
-                gridPoints.append(QVector2D( bounds, i));
-            }
+            updateGrid();
         }
 
         shaderColor.setUniformValue("color", gridColor);
@@ -213,13 +205,7 @@ void PlanetsWidget::paintGL() {
     }
     if(displaysettings & PointGrid){
         if(gridPoints.size() != gridRange * gridRange){
-            gridPoints.clear();
-            float bounds = (gridRange - 1) / 2.0f;
-            for(float x = -bounds; x <= bounds; x++){
-                for(float y = -bounds; y <= bounds; y++){
-                    gridPoints.append(QVector2D(x, y));
-                }
-            }
+            updateGrid();
         }
 
         shaderColor.setUniformValue("color", gridColor);
@@ -446,6 +432,34 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QRgb &color)
 
     shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts, 3);
     glDrawElements(GL_LINES, lowResSphere.lineCount, GL_UNSIGNED_INT, lowResSphere.lines);
+}
+
+void PlanetsWidget::updateGrid(){
+    gridPoints.clear();
+
+    if(displaysettings & SolidLineGrid){
+        float bounds = (gridRange - 1) / 2.0f;
+        for(float i = -bounds; i <= bounds; i++){
+            gridPoints.append(QVector2D(i,-bounds));
+            gridPoints.append(QVector2D(i, bounds));
+
+            gridPoints.append(QVector2D(-bounds, i));
+            gridPoints.append(QVector2D( bounds, i));
+        }
+    }
+    if(displaysettings & PointGrid){
+        float bounds = (gridRange - 1) / 2.0f;
+        for(float x = -bounds; x <= bounds; x++){
+            for(float y = -bounds; y <= bounds; y++){
+                gridPoints.append(QVector2D(x, y));
+            }
+        }
+    }
+}
+
+void PlanetsWidget::setGridRange(int value){
+    gridRange = value;
+    updateGrid();
 }
 
 const QColor PlanetsWidget::gridColor = QColor(0xcc, 0xff, 0xff, 0x66);

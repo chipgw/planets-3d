@@ -29,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(ui->actionExit, SIGNAL(triggered()),  this,  SLOT(close()));
 
+    connect(ui->gridRangeSpinBox, SIGNAL(valueChanged(int)), ui->centralwidget, SLOT(setGridRange(int)));
+
     connect(ui->actionNew_Planet,           SIGNAL(toggled(bool)),              ui->newPlanet_DockWidget,       SLOT(setVisible(bool)));
     connect(ui->newPlanet_DockWidget,       SIGNAL(visibilityChanged(bool)),    ui->actionNew_Planet,           SLOT(setChecked(bool)));
 
@@ -107,7 +109,7 @@ void MainWindow::on_actionGridOff_triggered(){
     ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
     ui->actionGridLines->setChecked(false);
     ui->actionGridPoints->setChecked(false);
-    ui->centralwidget->gridPoints.clear();
+    ui->centralwidget->updateGrid();
 }
 
 void MainWindow::on_actionGridLines_triggered(){
@@ -115,7 +117,7 @@ void MainWindow::on_actionGridLines_triggered(){
     ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
     ui->actionGridLines->setChecked(true);
     ui->actionGridPoints->setChecked(false);
-    ui->centralwidget->gridPoints.clear();
+    ui->centralwidget->updateGrid();
 }
 
 void MainWindow::on_actionGridPoints_triggered(){
@@ -123,7 +125,7 @@ void MainWindow::on_actionGridPoints_triggered(){
     ui->centralwidget->displaysettings |= PlanetsWidget::PointGrid;
     ui->actionGridLines->setChecked(false);
     ui->actionGridPoints->setChecked(true);
-    ui->centralwidget->gridPoints.clear();
+    ui->centralwidget->updateGrid();
 }
 
 void MainWindow::on_actionDraw_Paths_triggered(){
@@ -209,10 +211,6 @@ void MainWindow::on_stepsPerFrameSpinBox_valueChanged(int value){
 
 void MainWindow::on_trailLengthSpinBox_valueChanged(int value){
     Planet::pathLength = value;
-}
-
-void MainWindow::on_gridRangeSpinBox_valueChanged(int value){
-    ui->centralwidget->gridRange = value;
 }
 
 void MainWindow::on_firingVelocityDoubleSpinBox_valueChanged(double value){

@@ -56,6 +56,10 @@ private:
     const static Sphere<128, 64> highResSphere;
     const static Sphere<32,  16> lowResSphere;
 
+    const static QColor gridColor;
+    unsigned int gridRange;
+    QVector<QVector2D> gridPoints;
+
 public:
     enum DisplaySettings{
         PlanetTrails  = (1<<0),
@@ -83,10 +87,6 @@ public:
     int refreshRate;
     short displaysettings;
 
-    const static QColor gridColor;
-    unsigned int gridRange;
-    QVector<QVector2D> gridPoints;
-
 signals:
     void updatePlanetCountStatusMessage(const QString &text);
     void updateFPSStatusMessage(const QString &text);
@@ -96,6 +96,8 @@ public slots:
     void beginInteractiveCreation();
     void enableFiringMode(bool enable);
     void takeScreenshot();
+    void updateGrid();
+    void setGridRange(int value);
 
 protected:
     void initializeGL();
