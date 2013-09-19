@@ -5,4 +5,4 @@ Binary releases: http://sourceforge.net/projects/planets-3d/files/
 Build using CMake (http://www.cmake.org)
 
 Dependencies:
-Qt 5 (http://qt-project.org) (5.1 or later or desktop OpenGL build)
+Qt 4.8 or 5 (http://qt-project.org) (Qt 5 must be 5.1 or later or desktop OpenGL build, to use Qt 4.8 enable option PLANETS3D_USE_QT4)
