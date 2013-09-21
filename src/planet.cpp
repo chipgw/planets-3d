@@ -6,7 +6,7 @@ Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v) {
 }
 
 void Planet::updatePath(){
-    if(path.size() < 1 || (path.back() - this->position).lengthSquared() > 5.0e-3f){
+    if(path.size() < 1 || (path.back() - this->position).lengthSquared() > pathRecordDistance){
         path.append(this->position);
     }
 
@@ -31,3 +31,5 @@ float Planet::mass() const {
 }
 
 unsigned int Planet::pathLength = 200;
+
+float Planet::pathRecordDistance = 5.0e-3f;

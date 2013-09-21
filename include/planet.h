@@ -17,6 +17,7 @@ public:
 
     QVector<QVector3D> path;
     static unsigned int pathLength;
+    static float pathRecordDistance;
 
     void updatePath();
 
