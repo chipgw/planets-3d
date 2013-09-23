@@ -6,7 +6,7 @@ Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v) {
 }
 
 void Planet::updatePath(){
-    if(path.size() < 1 || (path.back() - this->position).lengthSquared() > pathRecordDistance){
+    if(path.isEmpty() || (path.back() - this->position).lengthSquared() > pathRecordDistance){
         path.append(this->position);
     }
 
