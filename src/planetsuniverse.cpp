@@ -124,6 +124,11 @@ void PlanetsUniverse::advance(float time){
             Planet &planet = i.next().value();
             QRgb planetkey = i.key();
 
+            if(planet.mass() <= 0.0f){
+                i.remove();
+                continue;
+            }
+
             while(i.hasNext()){
                 Planet &other = i.next().value();
 
