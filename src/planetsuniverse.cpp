@@ -147,6 +147,7 @@ void PlanetsUniverse::advance(float time){
                 }else{
                     float frc = gravityconst * ((other.mass() * planet.mass()) / distance);
 
+                    direction.normalize();
                     planet.velocity += direction * frc * time / planet.mass();
                     other.velocity -= direction * frc * time / other.mass();
                 }

@@ -74,7 +74,7 @@ void PlanetsWidget::paintGL() {
     int delay = frameTime.restart();
 
     if(placingStep == None || placingStep == Firing){
-        universe.advance(delay * 20.0f);
+        universe.advance(delay * 200.0f);
     }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
