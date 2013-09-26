@@ -74,7 +74,7 @@ void PlanetsWidget::paintGL() {
     int delay = frameTime.restart();
 
     if(placingStep == None || placingStep == Firing){
-        universe.advance(delay * 200.0f);
+        universe.advance(delay * 1000.0f);
     }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -371,7 +371,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     default:
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;
 
-        camera.distance = qBound(0.1f, camera.distance, 2.0e3f);
+        camera.distance = qBound(10.0f, camera.distance, 2.0e3f);
         break;
     }
 }

@@ -5,7 +5,7 @@ Camera::Camera() {
 }
 
 void Camera::reset(){
-    distance = 10.0f;
+    distance = 100.0f;
     xrotation = 45.0f;
     zrotation = 0.0f;
 }

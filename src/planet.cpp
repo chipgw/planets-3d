@@ -25,7 +25,7 @@ void Planet::setMass(const float &m){
     radius_p = 0.0f;
 
     if(m > 0.0f){
-        radius_p = pow((3.0f * m / 4.0f) * M_PI, 1.0f / 3.0f) * 0.1f;
+        radius_p = pow((3.0f * m / 4.0f) * M_PI, 1.0f / 3.0f);
     }
 }
 
@@ -35,4 +35,4 @@ float Planet::mass() const {
 
 unsigned int Planet::pathLength = 200;
 
-float Planet::pathRecordDistance = 5.0e-3f;
+float Planet::pathRecordDistance = 0.1f;
