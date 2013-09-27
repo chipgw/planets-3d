@@ -363,7 +363,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     switch(placingStep){
     case FreePositionXY:
     case FreePositionZ:
-        placing.setMass(qMax(placing.mass() + e->delta() * placing.mass() * 1.0e-3f, 0.1f));
+        placing.setMass(qMax(placing.mass() + e->delta() * placing.mass() * 1.0e-3f, 0.01f));
         break;
     case FreeVelocity:
         placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, qMax(0.0f, float(placing.velocity.length() + e->delta() * velocityfac * 1.0e-3f)));
