@@ -55,16 +55,18 @@ MainWindow::~MainWindow(){
 }
 
 void MainWindow::closeEvent(QCloseEvent *e){
-    float tmpsimspeed = ui->centralwidget->universe.simspeed;
-    ui->centralwidget->universe.simspeed = 0.0f;
+    if(ui->centralwidget->universe.planets.count() > 0){
+        float tmpsimspeed = ui->centralwidget->universe.simspeed;
+        ui->centralwidget->universe.simspeed = 0.0f;
 
-    if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
-                            QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
-        e->accept();
-    }else{
-        ui->centralwidget->universe.simspeed = tmpsimspeed;
-        e->ignore();
+        if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
+                                QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::No){
+            ui->centralwidget->universe.simspeed = tmpsimspeed;
+            e->ignore();
+            return;
+        }
     }
+    e->accept();
 }
 
 void MainWindow::on_createPlanet_PushButton_clicked(){
