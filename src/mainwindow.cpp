@@ -106,6 +106,14 @@ void MainWindow::on_PauseResume_Button_clicked(){
     }
 }
 
+void MainWindow::on_FastForward_Button_clicked(){
+    if(ui->speed_Dial->value() >= ui->speed_Dial->maximum() / 2){
+        ui->speed_Dial->setValue(ui->speed_Dial->maximum() / speeddialmax);
+    }else{
+        ui->speed_Dial->setValue(ui->speed_Dial->maximum());
+    }
+}
+
 void MainWindow::on_actionGridOff_triggered(){
     ui->centralwidget->displaysettings &= ~PlanetsWidget::SolidLineGrid;
     ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
