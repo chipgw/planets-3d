@@ -18,10 +18,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     averagefpsLabel->setFixedWidth(160);
     ui->statusbar->addPermanentWidget(averagefpsLabel);
 
-    connect(ui->actionCenter_All,                   SIGNAL(triggered()),    &ui->centralwidget->universe,   SLOT(centerAll()));
-    connect(ui->actionInteractive_Planet_Placement, SIGNAL(triggered()),    ui->centralwidget,              SLOT(beginInteractiveCreation()));
-    connect(ui->actionToggle_Firing_Mode,           SIGNAL(toggled(bool)),  ui->centralwidget,              SLOT(enableFiringMode(bool)));
-    connect(ui->actionTake_Screenshot,              SIGNAL(triggered()),    ui->centralwidget,              SLOT(takeScreenshot()));
+    connect(ui->actionCenter_All,                       SIGNAL(triggered()),    &ui->centralwidget->universe,   SLOT(centerAll()));
+    connect(ui->actionInteractive_Planet_Placement,     SIGNAL(triggered()),    ui->centralwidget,              SLOT(beginInteractiveCreation()));
+    connect(ui->actionInteractive_Orbital_Placement,    SIGNAL(triggered()),    ui->centralwidget,              SLOT(beginOrbitalCreation()));
+    connect(ui->actionToggle_Firing_Mode,               SIGNAL(toggled(bool)),  ui->centralwidget,              SLOT(enableFiringMode(bool)));
+    connect(ui->actionTake_Screenshot,                  SIGNAL(triggered()),    ui->centralwidget,              SLOT(takeScreenshot()));
 
     connect(ui->centralwidget, SIGNAL(updatePlanetCountStatusMessage(QString)), planetCountLabel, SLOT(setText(QString)));
     connect(ui->centralwidget, SIGNAL(updateFPSStatusMessage(QString)),         fpsLabel,         SLOT(setText(QString)));

@@ -4,7 +4,7 @@
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this),
     displaysettings(0), gridRange(50), following(0), doScreenshot(false), framecount(0), placingStep(None),
-    refreshRate(16), firingSpeed(velocityfac * 10.0f), firingMass(25.0f) {
+    placingOrbitalRadius(1.5f), refreshRate(16), firingSpeed(velocityfac * 10.0f), firingMass(25.0f) {
 
 #ifndef NDEBUG
     refreshRate = 0;
@@ -135,7 +135,7 @@ void PlanetsWidget::paintGL() {
         }
     }
 
-    if(placingStep != None && placingStep != Firing){
+    if(placingStep != None && placingStep != Firing && placingStep != OrbitalPlane){
         drawPlanetWireframe(placing);
 
         if(placingStep == FreeVelocity){
@@ -187,6 +187,18 @@ void PlanetsWidget::paintGL() {
                 glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
             }
         }
+    }
+
+    if((placingStep == OrbitalPlane || placingStep == OrbitalPlanet) &&universe.planets.contains(universe.selected)){
+        QMatrix4x4 matrix;
+        matrix.translate(universe.planets[universe.selected].position);
+        matrix.scale(universe.planets[universe.selected].radius() * placingOrbitalRadius);
+        matrix *= placingRotation;
+        shaderColor.setUniformValue("modelMatrix", matrix);
+        shaderColor.setUniformValue("color", QColor(Qt::white));
+
+        shaderColor.setAttributeArray("vertex", GL_FLOAT, circle.verts, 3);
+        glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
     }
 
     QMatrix4x4 matrix;
@@ -277,6 +289,22 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         placing.velocity = placingRotation.column(2).toVector3D() * placing.velocity.length();
         QCursor::setPos(this->mapToGlobal(this->lastmousepos));
         return;
+    case OrbitalPlane:
+        if(universe.planets.contains(universe.selected)){
+            placingRotation.rotate((lastmousepos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
+            placingRotation.rotate((lastmousepos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
+            QCursor::setPos(this->mapToGlobal(this->lastmousepos));
+            return;
+        }
+        break;
+    case OrbitalPlanet:
+        if(universe.planets.contains(universe.selected)){
+            placingRotation.rotate((lastmousepos.y() - e->y()) * 0.05f, 0.0f, 0.0f, 1.0f);
+            placing.position = universe.planets[universe.selected].position + placingRotation.column(0).toVector3D() * universe.planets[universe.selected].radius() * placingOrbitalRadius;
+            QCursor::setPos(this->mapToGlobal(this->lastmousepos));
+            return;
+        }
+        break;
     default:
         if(e->buttons().testFlag(Qt::MiddleButton)){
             camera.xrotation += (lastmousepos.y() - e->y()) * 0.2f;
@@ -331,6 +359,19 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 
             break;
         }
+        case OrbitalPlane:
+            placingStep = OrbitalPlanet;
+            placing.position = universe.planets[universe.selected].position + placingRotation.column(0).toVector3D() * universe.planets[universe.selected].radius() * placingOrbitalRadius;
+            break;
+        case OrbitalPlanet:
+            if(universe.planets.contains(universe.selected)){
+                const Planet &selected = universe.planets[universe.selected];
+                float speed = sqrt((selected.mass() * selected.mass() * gravityconst) / ((selected.mass() + placing.mass()) * selected.radius() * placingOrbitalRadius));
+                QVector3D velocity = selected.velocity + placingRotation.column(1).toVector3D() * speed;
+                universe.selected = universe.addPlanet(Planet(placing.position, velocity, placing.mass()));
+            }
+            placingStep = None;
+            break;
         default:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -363,10 +404,19 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     switch(placingStep){
     case FreePositionXY:
     case FreePositionZ:
+    case OrbitalPlanet:
         placing.setMass(qMax(placing.mass() + e->delta() * placing.mass() * 1.0e-3f, 0.01f));
         break;
     case FreeVelocity:
         placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, qMax(0.0f, float(placing.velocity.length() + e->delta() * velocityfac * 1.0e-3f)));
+        break;
+    case OrbitalPlane:
+        if(universe.planets.contains(universe.selected)){
+            const Planet &selected = universe.planets[universe.selected];
+            placingOrbitalRadius += e->delta() * 0.001f * placingOrbitalRadius;
+            placingOrbitalRadius = qBound(1.5f, placingOrbitalRadius, 100.0f);
+            placing.position = selected.position + placingRotation.column(0).toVector3D() * selected.radius() * placingOrbitalRadius;
+        }
         break;
     default:
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;
@@ -387,6 +437,12 @@ void PlanetsWidget::enableFiringMode(bool enable){
         universe.selected = 0;
     }else{
         placingStep = None;
+    }
+}
+
+void PlanetsWidget::beginOrbitalCreation(){
+    if(universe.planets.contains(universe.selected)){
+        placingStep = OrbitalPlane;
     }
 }
 
@@ -466,3 +522,5 @@ const QColor PlanetsWidget::gridColor = QColor(0xcc, 0xff, 0xff, 0x66);
 
 const Sphere<128, 64> PlanetsWidget::highResSphere = Sphere<128, 64>();
 const Sphere<32,  16> PlanetsWidget::lowResSphere  = Sphere<32,  16>();
+
+const Circle<64> PlanetsWidget::circle = Circle<64>();

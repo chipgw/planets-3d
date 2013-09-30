@@ -31,7 +31,9 @@ private:
         FreePositionXY,
         FreePositionZ,
         FreeVelocity,
-        Firing
+        Firing,
+        OrbitalPlane,
+        OrbitalPlanet
     };
 
     QOpenGLShaderProgram shaderTexture;
@@ -52,9 +54,11 @@ private:
     PlacingStep placingStep;
     Planet placing;
     QMatrix4x4 placingRotation;
+    float placingOrbitalRadius;
 
     const static Sphere<128, 64> highResSphere;
     const static Sphere<32,  16> lowResSphere;
+    const static Circle<64> circle;
 
     const static QColor gridColor;
     unsigned int gridRange;
@@ -95,6 +99,7 @@ signals:
 public slots:
     void beginInteractiveCreation();
     void enableFiringMode(bool enable);
+    void beginOrbitalCreation();
     void takeScreenshot();
     void updateGrid();
     void setGridRange(int value);

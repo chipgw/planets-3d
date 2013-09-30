@@ -5,6 +5,35 @@
 #include <QVector3D>
 #include <qmath.h>
 
+template <unsigned int slices> class Circle {
+public:
+    static const unsigned int vertexCount = slices;
+    static const unsigned int lineCount = slices * 2;
+
+    QVector3D verts[vertexCount];
+    unsigned int lines[lineCount];
+
+    Circle();
+};
+
+template <unsigned int slices> Circle<slices>::Circle(){
+    float step = (2 * M_PI) / slices;
+
+    unsigned int currentLine = 0;
+
+    for(unsigned int current = 0; current < slices; current++){
+        verts[current] = QVector3D(cos(current * step), sin(current * step), 0.0f);
+
+        if(current == (slices - 1)){
+            lines[currentLine++] = current;
+            lines[currentLine++] = 0;
+        }else{
+            lines[currentLine++] = current;
+            lines[currentLine++] = current + 1;
+        }
+    }
+}
+
 template <unsigned int slices, unsigned int stacks> class Sphere {
 public:
     static const unsigned int vertexCount = (slices + 1) * (stacks + 1);

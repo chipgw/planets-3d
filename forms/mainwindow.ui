@@ -313,6 +313,7 @@
    <addaction name="actionCenter_All"/>
    <addaction name="actionInteractive_Planet_Placement"/>
    <addaction name="actionToggle_Firing_Mode"/>
+   <addaction name="actionInteractive_Orbital_Placement"/>
   </widget>
   <widget class="QDockWidget" name="camera_DockWidget">
    <property name="windowTitle">
@@ -732,6 +733,18 @@
    </property>
    <property name="text">
     <string>Firing Mode Settings</string>
+   </property>
+  </action>
+  <action name="actionInteractive_Orbital_Placement">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/silk/world_add.png</normaloff>:/icons/silk/world_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Interactive Orbital Placement</string>
+   </property>
+   <property name="shortcut">
+    <string>O</string>
    </property>
   </action>
  </widget>
