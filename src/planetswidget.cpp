@@ -201,15 +201,15 @@ void PlanetsWidget::paintGL() {
         glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
     }
 
-    QMatrix4x4 matrix;
-    matrix.scale(pow(4, floor(log10(camera.distance))));
-    shaderColor.setUniformValue("modelMatrix", matrix);
 
     if(displaysettings & SolidLineGrid){
         if(gridPoints.size() != gridRange * 4){
             updateGrid();
         }
 
+        QMatrix4x4 matrix;
+        matrix.scale(pow(4, floor(log10(camera.distance))));
+        shaderColor.setUniformValue("modelMatrix", matrix);
         shaderColor.setUniformValue("color", gridColor);
 
         shaderColor.setAttributeArray("vertex", GL_FLOAT, gridPoints.data(), 2);
@@ -220,6 +220,9 @@ void PlanetsWidget::paintGL() {
             updateGrid();
         }
 
+        QMatrix4x4 matrix;
+        matrix.scale(pow(4, floor(log10(camera.distance))));
+        shaderColor.setUniformValue("modelMatrix", matrix);
         shaderColor.setUniformValue("color", gridColor);
 
         shaderColor.setAttributeArray("vertex", GL_FLOAT, gridPoints.data(), 2);
