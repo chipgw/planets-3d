@@ -35,19 +35,36 @@ bool PlanetsUniverse::load(const QString &filename){
         if(xml.name() == "planet"){
             Planet planet;
 
+#if QT_VERSION >= 0x050100
+            planet.setMass(xml.attributes().value("mass").toFloat());
+#else
             planet.setMass(xml.attributes().value("mass").toString().toFloat());
+#endif
+
             QRgb color = QColor(xml.attributes().value("color").toString()).rgb();
 
             while(xml.readNextStartElement()){
                 if(xml.name() == "position"){
+#if QT_VERSION >= 0x050100
+                    planet.position.setX(xml.attributes().value("x").toFloat());
+                    planet.position.setY(xml.attributes().value("y").toFloat());
+                    planet.position.setZ(xml.attributes().value("z").toFloat());
+#else
                     planet.position.setX(xml.attributes().value("x").toString().toFloat());
                     planet.position.setY(xml.attributes().value("y").toString().toFloat());
                     planet.position.setZ(xml.attributes().value("z").toString().toFloat());
+#endif
                     xml.readNext();
                 }else if(xml.name() == "velocity"){
+#if QT_VERSION >= 0x050100
+                    planet.velocity.setX(xml.attributes().value("x").toFloat() * velocityfac);
+                    planet.velocity.setY(xml.attributes().value("y").toFloat() * velocityfac);
+                    planet.velocity.setZ(xml.attributes().value("z").toFloat() * velocityfac);
+#else
                     planet.velocity.setX(xml.attributes().value("x").toString().toFloat() * velocityfac);
                     planet.velocity.setY(xml.attributes().value("y").toString().toFloat() * velocityfac);
                     planet.velocity.setZ(xml.attributes().value("z").toString().toFloat() * velocityfac);
+#endif
                     xml.readNext();
                 }
             }

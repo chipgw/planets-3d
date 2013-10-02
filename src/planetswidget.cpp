@@ -189,7 +189,7 @@ void PlanetsWidget::paintGL() {
         }
     }
 
-    if((placingStep == OrbitalPlane || placingStep == OrbitalPlanet) &&universe.planets.contains(universe.selected)){
+    if((placingStep == OrbitalPlane || placingStep == OrbitalPlanet) && universe.planets.contains(universe.selected)){
         QMatrix4x4 matrix;
         matrix.translate(universe.planets[universe.selected].position);
         matrix.scale(universe.planets[universe.selected].radius() * placingOrbitalRadius);
