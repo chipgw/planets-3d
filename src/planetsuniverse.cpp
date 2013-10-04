@@ -100,25 +100,23 @@ bool PlanetsUniverse::save(const QString &filename){
     for(QMapIterator<QRgb, Planet> i(planets); i.hasNext();) {
         const Planet &planet = i.next().value();
 
-        xml.writeStartElement("planet");
+        xml.writeStartElement("planet"); {
+            xml.writeAttribute("mass", QString::number(planet.mass()));
 
-        xml.writeAttribute("mass", QString::number(planet.mass()));
+            xml.writeAttribute("color", QColor(i.key() ^ALPHAMASK).name());
 
-        xml.writeAttribute("color", QColor(i.key() ^ALPHAMASK).name());
+            xml.writeStartElement("position"); {
+                xml.writeAttribute("x", QString::number(planet.position.x()));
+                xml.writeAttribute("y", QString::number(planet.position.y()));
+                xml.writeAttribute("z", QString::number(planet.position.z()));
+            } xml.writeEndElement();
 
-        xml.writeStartElement("position"); {
-            xml.writeAttribute("x", QString::number(planet.position.x()));
-            xml.writeAttribute("y", QString::number(planet.position.y()));
-            xml.writeAttribute("z", QString::number(planet.position.z()));
+            xml.writeStartElement("velocity"); {
+                xml.writeAttribute("x", QString::number(planet.velocity.x() / velocityfac));
+                xml.writeAttribute("y", QString::number(planet.velocity.y() / velocityfac));
+                xml.writeAttribute("z", QString::number(planet.velocity.z() / velocityfac));
+            } xml.writeEndElement();
         } xml.writeEndElement();
-
-        xml.writeStartElement("velocity"); {
-            xml.writeAttribute("x", QString::number(planet.velocity.x() / velocityfac));
-            xml.writeAttribute("y", QString::number(planet.velocity.y() / velocityfac));
-            xml.writeAttribute("z", QString::number(planet.velocity.z() / velocityfac));
-        } xml.writeEndElement();
-
-        xml.writeEndElement();
     }
     xml.writeEndElement();
 
