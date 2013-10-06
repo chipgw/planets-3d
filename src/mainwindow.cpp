@@ -176,8 +176,12 @@ void MainWindow::on_actionSave_Simulation_triggered(){
     float tmpsimspeed = ui->centralwidget->universe.simspeed;
     ui->centralwidget->universe.simspeed = 0.0f;
 
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
-    ui->centralwidget->universe.save(filename);
+    if(ui->centralwidget->universe.planets.count() > 0){
+        QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
+        ui->centralwidget->universe.save(filename);
+    }else{
+        QMessageBox::warning(this, tr("Error Saving Simulation."), tr("No planets to save!"));
+    }
 
     ui->centralwidget->universe.simspeed = tmpsimspeed;
 }
