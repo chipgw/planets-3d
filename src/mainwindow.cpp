@@ -56,7 +56,7 @@ MainWindow::~MainWindow(){
 }
 
 void MainWindow::closeEvent(QCloseEvent *e){
-    if(ui->centralwidget->universe.planets.count() > 0){
+    if(!ui->centralwidget->universe.planets.isEmpty()){
         float tmpsimspeed = ui->centralwidget->universe.simspeed;
         ui->centralwidget->universe.simspeed = 0.0f;
 
@@ -152,14 +152,16 @@ void MainWindow::on_actionPlanet_Colors_triggered(){
 }
 
 void MainWindow::on_actionNew_Simulation_triggered(){
-    float tmpsimspeed = ui->centralwidget->universe.simspeed;
-    ui->centralwidget->universe.simspeed = 0.0f;
+    if(!ui->centralwidget->universe.planets.isEmpty()){
+        float tmpsimspeed = ui->centralwidget->universe.simspeed;
+        ui->centralwidget->universe.simspeed = 0.0f;
 
-    if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"),
-                            QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
-       ui->centralwidget->universe.deleteAll();
+        if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"),
+                                QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
+            ui->centralwidget->universe.deleteAll();
+        }
+        ui->centralwidget->universe.simspeed = tmpsimspeed;
     }
-    ui->centralwidget->universe.simspeed = tmpsimspeed;
 }
 
 void MainWindow::on_actionOpen_Simulation_triggered(){
@@ -176,7 +178,7 @@ void MainWindow::on_actionSave_Simulation_triggered(){
     float tmpsimspeed = ui->centralwidget->universe.simspeed;
     ui->centralwidget->universe.simspeed = 0.0f;
 
-    if(ui->centralwidget->universe.planets.count() > 0){
+    if(!ui->centralwidget->universe.planets.isEmpty()){
         QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
         ui->centralwidget->universe.save(filename);
     }else{
