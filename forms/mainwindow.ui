@@ -511,7 +511,7 @@
   <action name="actionTake_Screenshot">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/icons/silk/image.png</normaloff>:/icons/silk/image.png</iconset>
+     <normaloff>:/icons/silk/camera.png</normaloff>:/icons/silk/camera.png</iconset>
    </property>
    <property name="text">
     <string>Take Screenshot</string>
@@ -687,6 +687,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/silk/world_add.png</normaloff>:/icons/silk/world_add.png</iconset>
+   </property>
    <property name="text">
     <string>New Planet</string>
    </property>
@@ -697,6 +701,10 @@
    </property>
    <property name="checked">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/silk/control_equalizer_blue.png</normaloff>:/icons/silk/control_equalizer_blue.png</iconset>
    </property>
    <property name="text">
     <string>Speed Control</string>
@@ -709,6 +717,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/silk/camera.png</normaloff>:/icons/silk/camera.png</iconset>
+   </property>
    <property name="text">
     <string>Camera Location</string>
    </property>
@@ -720,6 +732,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/silk/eye.png</normaloff>:/icons/silk/eye.png</iconset>
+   </property>
    <property name="text">
     <string>View Settings</string>
    </property>
@@ -730,6 +746,10 @@
    </property>
    <property name="checked">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/silk/world_add.png</normaloff>:/icons/silk/world_add.png</iconset>
    </property>
    <property name="text">
     <string>Firing Mode Settings</string>
