@@ -1,5 +1,4 @@
 Planets3D is a 3D gravitational simulator inspired by Planets (planets.homedns.org)
-demo video: http://youtu.be/4ihB0k1ME10
 
 Binary releases: http://sourceforge.net/projects/planets-3d/files/
 Build using CMake (http://www.cmake.org)
