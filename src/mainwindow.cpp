@@ -115,30 +115,6 @@ void MainWindow::on_FastForward_Button_clicked(){
     }
 }
 
-void MainWindow::on_actionGridOff_triggered(){
-    ui->centralwidget->displaysettings &= ~PlanetsWidget::SolidLineGrid;
-    ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
-    ui->actionGridLines->setChecked(false);
-    ui->actionGridPoints->setChecked(false);
-    ui->centralwidget->updateGrid();
-}
-
-void MainWindow::on_actionGridLines_triggered(){
-    ui->centralwidget->displaysettings |= PlanetsWidget::SolidLineGrid;
-    ui->centralwidget->displaysettings &= ~PlanetsWidget::PointGrid;
-    ui->actionGridLines->setChecked(true);
-    ui->actionGridPoints->setChecked(false);
-    ui->centralwidget->updateGrid();
-}
-
-void MainWindow::on_actionGridPoints_triggered(){
-    ui->centralwidget->displaysettings &= ~PlanetsWidget::SolidLineGrid;
-    ui->centralwidget->displaysettings |= PlanetsWidget::PointGrid;
-    ui->actionGridLines->setChecked(false);
-    ui->actionGridPoints->setChecked(true);
-    ui->centralwidget->updateGrid();
-}
-
 void MainWindow::on_actionDraw_Paths_triggered(){
     ui->centralwidget->displaysettings ^= PlanetsWidget::PlanetTrails;
 
@@ -236,4 +212,12 @@ void MainWindow::on_firingVelocityDoubleSpinBox_valueChanged(double value){
 
 void MainWindow::on_firingMassSpinBox_valueChanged(int value){
     ui->centralwidget->firingMass = value;
+}
+
+void MainWindow::on_actionGrid_toggled(bool value){
+    if(value){
+        ui->centralwidget->displaysettings |= PlanetsWidget::Grid;
+    }else{
+        ui->centralwidget->displaysettings &= ~PlanetsWidget::Grid;
+    }
 }

@@ -42,15 +42,7 @@
     <property name="title">
      <string>View</string>
     </property>
-    <widget class="QMenu" name="menuGrid">
-     <property name="title">
-      <string>Grid</string>
-     </property>
-     <addaction name="actionGridOff"/>
-     <addaction name="actionGridLines"/>
-     <addaction name="actionGridPoints"/>
-    </widget>
-    <addaction name="menuGrid"/>
+    <addaction name="actionGrid"/>
     <addaction name="actionDraw_Paths"/>
     <addaction name="actionPlanet_Colors"/>
    </widget>
@@ -582,33 +574,6 @@
     <string>P</string>
    </property>
   </action>
-  <action name="actionGridOff">
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Off</string>
-   </property>
-  </action>
-  <action name="actionGridLines">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Lines</string>
-   </property>
-  </action>
-  <action name="actionGridPoints">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Points</string>
-   </property>
-  </action>
   <action name="actionDraw_Paths">
    <property name="checkable">
     <bool>true</bool>
@@ -765,6 +730,14 @@
    </property>
    <property name="shortcut">
     <string>O</string>
+   </property>
+  </action>
+  <action name="actionGrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Grid</string>
    </property>
   </action>
  </widget>

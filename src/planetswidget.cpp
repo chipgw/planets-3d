@@ -202,7 +202,7 @@ void PlanetsWidget::paintGL() {
     }
 
 
-    if(displaysettings & SolidLineGrid){
+    if(displaysettings & Grid){
         if(gridPoints.size() != gridRange * 4){
             updateGrid();
         }
@@ -214,19 +214,6 @@ void PlanetsWidget::paintGL() {
 
         shaderColor.setAttributeArray("vertex", GL_FLOAT, gridPoints.data(), 2);
         glDrawArrays(GL_LINES, 0, gridPoints.size());
-    }
-    if(displaysettings & PointGrid){
-        if(gridPoints.size() != gridRange * gridRange){
-            updateGrid();
-        }
-
-        QMatrix4x4 matrix;
-        matrix.scale(pow(4, floor(log10(camera.distance))));
-        shaderColor.setUniformValue("modelMatrix", matrix);
-        shaderColor.setUniformValue("color", gridColor);
-
-        shaderColor.setAttributeArray("vertex", GL_FLOAT, gridPoints.data(), 2);
-        glDrawArrays(GL_POINTS, 0, gridPoints.size());
     }
 
     if(this->doScreenshot){
@@ -496,23 +483,13 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QRgb &color)
 void PlanetsWidget::updateGrid(){
     gridPoints.clear();
 
-    if(displaysettings & SolidLineGrid){
-        float bounds = (gridRange - 1) / 2.0f;
-        for(float i = -bounds; i <= bounds; i++){
-            gridPoints.append(QVector2D(i,-bounds));
-            gridPoints.append(QVector2D(i, bounds));
+    float bounds = (gridRange - 1) / 2.0f;
+    for(float i = -bounds; i <= bounds; i++){
+        gridPoints.append(QVector2D(i,-bounds));
+        gridPoints.append(QVector2D(i, bounds));
 
-            gridPoints.append(QVector2D(-bounds, i));
-            gridPoints.append(QVector2D( bounds, i));
-        }
-    }
-    if(displaysettings & PointGrid){
-        float bounds = (gridRange - 1) / 2.0f;
-        for(float x = -bounds; x <= bounds; x++){
-            for(float y = -bounds; y <= bounds; y++){
-                gridPoints.append(QVector2D(x, y));
-            }
-        }
+        gridPoints.append(QVector2D(-bounds, i));
+        gridPoints.append(QVector2D( bounds, i));
     }
 }
 

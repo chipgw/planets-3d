@@ -66,10 +66,9 @@ private:
 
 public:
     enum DisplaySettings{
-        PlanetTrails  = (1<<0),
-        SolidLineGrid = (1<<1),
-        PointGrid     = (1<<2),
-        PlanetColors  = (1<<3)
+        Grid         = (1<<0),
+        PlanetTrails = (1<<1),
+        PlanetColors = (1<<2)
     };
     enum FollowingState{
         FollowNone,
