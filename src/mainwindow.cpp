@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(ui->actionFiring_Mode_Settings, SIGNAL(toggled(bool)),              ui->firingSettings_DockWidget,  SLOT(setVisible(bool)));
     connect(ui->firingSettings_DockWidget,  SIGNAL(visibilityChanged(bool)),    ui->actionFiring_Mode_Settings, SLOT(setChecked(bool)));
+
+    connect(ui->actionAbout_Qt, SIGNAL(triggered()), QApplication::instance(), SLOT(aboutQt()));
 }
 
 MainWindow::~MainWindow(){
@@ -192,10 +194,6 @@ void MainWindow::on_actionAbout_triggered(){
                           "<li>Git sha1: %2</li>"
                           "<li>Build type: %3</li>"
                           "</ul></body></html>").arg(version::getVersionString()).arg(version::git_revision).arg(version::build_type));
-}
-
-void MainWindow::on_actionAbout_Qt_triggered(){
-    QMessageBox::aboutQt(this);
 }
 
 void MainWindow::on_stepsPerFrameSpinBox_valueChanged(int value){

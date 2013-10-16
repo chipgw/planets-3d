@@ -1,7 +1,7 @@
 #include "mainwindow.h"
+#include "version.h"
 #include <QApplication>
 #include <QTime>
-#include "version.h"
 
 int main(int argc, char *argv[]){
     QApplication a(argc, argv);
