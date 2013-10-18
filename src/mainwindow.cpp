@@ -110,8 +110,10 @@ void MainWindow::on_PauseResume_Button_clicked(){
 }
 
 void MainWindow::on_FastForward_Button_clicked(){
-    if(ui->speed_Dial->value() >= ui->speed_Dial->maximum() / 2){
+    if(ui->speed_Dial->value() >= ui->speed_Dial->maximum() * 3 / 4){
         ui->speed_Dial->setValue(ui->speed_Dial->maximum() / speeddialmax);
+    }else if(ui->speed_Dial->value() <= ui->speed_Dial->maximum() / 4){
+        ui->speed_Dial->setValue(ui->speed_Dial->maximum() / 2);
     }else{
         ui->speed_Dial->setValue(ui->speed_Dial->maximum());
     }
