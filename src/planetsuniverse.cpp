@@ -97,7 +97,7 @@ bool PlanetsUniverse::save(const QString &filename){
     xml.writeStartDocument();
     xml.writeStartElement("planets-3d-universe");
 
-    for(QMapIterator<QRgb, Planet> i(planets); i.hasNext();) {
+    for(QMapIterator<QRgb, Planet> i(planets_p); i.hasNext();) {
         const Planet &planet = i.next().value();
 
         xml.writeStartElement("planet"); {
@@ -135,7 +135,7 @@ void PlanetsUniverse::advance(float time){
     time /= stepsPerFrame;
 
     for(int s = 0; s < stepsPerFrame; s++){
-        for(QMutableMapIterator<QRgb, Planet> i(planets); i.hasNext();){
+        for(QMutableMapIterator<QRgb, Planet> i(planets_p); i.hasNext();){
             Planet &planet = i.next().value();
             QRgb planetkey = i.key();
 
@@ -185,16 +185,16 @@ QRgb PlanetsUniverse::addPlanet(const Planet &planet, QRgb colorhint){
         colorhint = qrand() | ALPHAMASK;
     }
 
-    while(planets.contains(colorhint)){
+    while(planets_p.contains(colorhint)){
         colorhint = qrand() | ALPHAMASK;
     }
 
-    planets[colorhint] = planet;
+    planets_p[colorhint] = planet;
     return colorhint;
 }
 
 void PlanetsUniverse::deleteAll(){
-    planets.clear();
+    planets_p.clear();
     selected = 0;
 }
 
@@ -202,7 +202,7 @@ void PlanetsUniverse::centerAll(){
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
 
-    foreach(const Planet &planet, planets){
+    foreach(const Planet &planet, planets_p){
         averagePosition += planet.position * planet.mass();
         averageVelocity += planet.velocity * planet.mass();
         totalmass += planet.mass();
@@ -211,11 +211,31 @@ void PlanetsUniverse::centerAll(){
     averagePosition /= totalmass;
     averageVelocity /= totalmass;
 
-    for(QMutableMapIterator<QRgb, Planet> i(planets); i.hasNext();) {
+    for(QMutableMapIterator<QRgb, Planet> i(planets_p); i.hasNext();) {
         Planet &planet = i.next().value();
 
         planet.position -= averagePosition;
         planet.velocity -= averageVelocity;
         planet.path.clear();
     }
+}
+
+bool PlanetsUniverse::isEmpty(){
+    return planets_p.isEmpty();
+}
+
+bool PlanetsUniverse::isValid(QRgb key){
+    return planets_p.contains(key);
+}
+
+void PlanetsUniverse::remove(QRgb key){
+    planets_p.remove(key);
+}
+
+Planet &PlanetsUniverse::operator [] (QRgb key){
+    return planets_p[key];
+}
+
+const QMap<QRgb, Planet> &PlanetsUniverse::planets(){
+    return planets_p;
 }

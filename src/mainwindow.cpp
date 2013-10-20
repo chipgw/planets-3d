@@ -58,7 +58,7 @@ MainWindow::~MainWindow(){
 }
 
 void MainWindow::closeEvent(QCloseEvent *e){
-    if(!ui->centralwidget->universe.planets.isEmpty()){
+    if(!ui->centralwidget->universe.isEmpty()){
         float tmpsimspeed = ui->centralwidget->universe.simspeed;
         ui->centralwidget->universe.simspeed = 0.0f;
 
@@ -80,12 +80,12 @@ void MainWindow::on_createPlanet_PushButton_clicked(){
 }
 
 void MainWindow::on_actionDelete_triggered(){
-    ui->centralwidget->universe.planets.remove(ui->centralwidget->universe.selected);
+    ui->centralwidget->universe.remove(ui->centralwidget->universe.selected);
 }
 
 void MainWindow::on_actionClear_Velocity_triggered(){
-    if(ui->centralwidget->universe.planets.contains(ui->centralwidget->universe.selected)){
-        ui->centralwidget->universe.planets[ui->centralwidget->universe.selected].velocity = QVector3D();
+    if(ui->centralwidget->universe.isValid(ui->centralwidget->universe.selected)){
+        ui->centralwidget->universe[ui->centralwidget->universe.selected].velocity = QVector3D();
     }
 }
 
@@ -132,7 +132,7 @@ void MainWindow::on_actionPlanet_Colors_triggered(){
 }
 
 void MainWindow::on_actionNew_Simulation_triggered(){
-    if(!ui->centralwidget->universe.planets.isEmpty()){
+    if(!ui->centralwidget->universe.isEmpty()){
         float tmpsimspeed = ui->centralwidget->universe.simspeed;
         ui->centralwidget->universe.simspeed = 0.0f;
 
@@ -158,7 +158,7 @@ void MainWindow::on_actionSave_Simulation_triggered(){
     float tmpsimspeed = ui->centralwidget->universe.simspeed;
     ui->centralwidget->universe.simspeed = 0.0f;
 
-    if(!ui->centralwidget->universe.planets.isEmpty()){
+    if(!ui->centralwidget->universe.isEmpty()){
         QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
         ui->centralwidget->universe.save(filename);
     }else{

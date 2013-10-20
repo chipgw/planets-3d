@@ -13,8 +13,10 @@ const float velocityfac = 1.0e-5f;
 
 class PlanetsUniverse : public QObject {
     Q_OBJECT
+private:
+    QMap<QRgb, Planet> planets_p;
+
 public:
-    QMap<QRgb, Planet> planets;
     QRgb selected;
 
     float simspeed;
@@ -28,6 +30,13 @@ public:
     PlanetsUniverse();
 
     void advance(float time);
+
+    bool isEmpty();
+    bool isValid(QRgb key);
+    void remove(QRgb key);
+    Planet &operator [] (QRgb key);
+
+    const QMap<QRgb, Planet> &planets();
 
 public slots:
     void centerAll();
