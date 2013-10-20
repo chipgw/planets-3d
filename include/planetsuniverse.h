@@ -15,6 +15,7 @@ class PlanetsUniverse : public QObject {
     Q_OBJECT
 private:
     QMap<QRgb, Planet> planets_p;
+    void sizeChanged();
 
 public:
     QRgb selected;
@@ -41,6 +42,9 @@ public:
 public slots:
     void centerAll();
     void deleteAll();
+
+signals:
+    void updatePlanetCountMessage(const QString &text);
 };
 
 #endif // PLANETSUNIVERSE_H

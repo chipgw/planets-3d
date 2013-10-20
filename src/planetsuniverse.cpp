@@ -78,6 +78,7 @@ bool PlanetsUniverse::load(const QString &filename){
         QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("Error in file \"%1\": %2").arg(filename).arg(xml.errorString()));
         return false;
     }
+    sizeChanged();
 
     return true;
 }
@@ -131,6 +132,7 @@ bool PlanetsUniverse::save(const QString &filename){
 }
 
 void PlanetsUniverse::advance(float time){
+    int planetcount = planets_p.size();
     time *= simspeed;
     time /= stepsPerFrame;
 
@@ -173,8 +175,10 @@ void PlanetsUniverse::advance(float time){
 
             planet.position += planet.velocity * time;
             planet.updatePath();
-
         }
+    }
+    if(planetcount != planets_p.size()){
+        sizeChanged();
     }
 }
 
@@ -190,12 +194,14 @@ QRgb PlanetsUniverse::addPlanet(const Planet &planet, QRgb colorhint){
     }
 
     planets_p[colorhint] = planet;
+    sizeChanged();
     return colorhint;
 }
 
 void PlanetsUniverse::deleteAll(){
     planets_p.clear();
     selected = 0;
+    sizeChanged();
 }
 
 void PlanetsUniverse::centerAll(){
@@ -230,6 +236,7 @@ bool PlanetsUniverse::isValid(QRgb key){
 
 void PlanetsUniverse::remove(QRgb key){
     planets_p.remove(key);
+    sizeChanged();
 }
 
 Planet &PlanetsUniverse::operator [] (QRgb key){
@@ -238,4 +245,12 @@ Planet &PlanetsUniverse::operator [] (QRgb key){
 
 const QMap<QRgb, Planet> &PlanetsUniverse::planets(){
     return planets_p;
+}
+
+void PlanetsUniverse::sizeChanged(){
+    if(planets_p.size() == 1){
+        emit updatePlanetCountMessage(tr("1 planet"));
+    }else{
+        emit updatePlanetCountMessage(tr("%1 planets").arg(planets_p.size()));
+    }
 }

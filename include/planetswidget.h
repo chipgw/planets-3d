@@ -91,7 +91,6 @@ public:
     short displaysettings;
 
 signals:
-    void updatePlanetCountStatusMessage(const QString &text);
     void updateFPSStatusMessage(const QString &text);
     void updateAverageFPSStatusMessage(const QString &text);
 
