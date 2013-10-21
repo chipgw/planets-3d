@@ -27,9 +27,6 @@ private slots:
     void on_PauseResume_Button_clicked();
     void on_FastForward_Button_clicked();
 
-    void on_actionDraw_Paths_triggered();
-    void on_actionPlanet_Colors_triggered();
-
     void on_actionNew_Simulation_triggered();
     void on_actionOpen_Simulation_triggered();
     void on_actionSave_Simulation_triggered();
@@ -48,6 +45,8 @@ private slots:
     void on_firingMassSpinBox_valueChanged(int value);
 
     void on_actionGrid_toggled(bool value);
+    void on_actionDraw_Paths_toggled(bool value);
+    void on_actionPlanet_Colors_toggled(bool value);
 
 private:
     Ui::MainWindow *ui;

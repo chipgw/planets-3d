@@ -119,18 +119,6 @@ void MainWindow::on_FastForward_Button_clicked(){
     }
 }
 
-void MainWindow::on_actionDraw_Paths_triggered(){
-    ui->centralwidget->displaysettings ^= PlanetsWidget::PlanetTrails;
-
-    ui->actionDraw_Paths->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PlanetTrails);
-}
-
-void MainWindow::on_actionPlanet_Colors_triggered(){
-    ui->centralwidget->displaysettings ^= PlanetsWidget::PlanetColors;
-
-    ui->actionPlanet_Colors->setChecked(ui->centralwidget->displaysettings & PlanetsWidget::PlanetColors);
-}
-
 void MainWindow::on_actionNew_Simulation_triggered(){
     if(!ui->centralwidget->universe.isEmpty()){
         float tmpsimspeed = ui->centralwidget->universe.simspeed;
@@ -219,5 +207,22 @@ void MainWindow::on_actionGrid_toggled(bool value){
         ui->centralwidget->displaysettings |= PlanetsWidget::Grid;
     }else{
         ui->centralwidget->displaysettings &= ~PlanetsWidget::Grid;
+    }
+}
+
+void MainWindow::on_actionDraw_Paths_toggled(bool value){
+    if(value){
+        ui->centralwidget->displaysettings |= PlanetsWidget::PlanetTrails;
+    }else{
+        ui->centralwidget->displaysettings &= ~PlanetsWidget::PlanetTrails;
+    }
+
+}
+
+void MainWindow::on_actionPlanet_Colors_toggled(bool value){
+    if(value){
+        ui->centralwidget->displaysettings |= PlanetsWidget::PlanetColors;
+    }else{
+        ui->centralwidget->displaysettings &= ~PlanetsWidget::PlanetColors;
     }
 }
