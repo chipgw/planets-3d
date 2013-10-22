@@ -136,7 +136,7 @@ void PlanetsUniverse::advance(float time){
     time *= simspeed;
     time /= stepsPerFrame;
 
-    for(int s = 0; s < stepsPerFrame; s++){
+    for(int s = 0; s < stepsPerFrame; ++s){
         for(QMutableMapIterator<QRgb, Planet> i(planets_p); i.hasNext();){
             Planet &planet = i.next().value();
             QRgb planetkey = i.key();
@@ -152,21 +152,23 @@ void PlanetsUniverse::advance(float time){
                 QVector3D direction = other.position - planet.position;
                 float distance = direction.lengthSquared();
 
-                if(sqrt(distance) < (planet.radius() + other.radius()) * 0.8f){
-                    planet.position = (other.position * other.mass() + planet.position * planet.mass()) / (other.mass() + planet.mass());
-                    planet.velocity = (other.velocity * other.mass() + planet.velocity * planet.mass()) / (other.mass() + planet.mass());
+                if(distance < pow(planet.radius() + other.radius() * 0.8f, 2)){
+                    planet.position = other.position * other.mass() + planet.position * planet.mass();
+                    planet.velocity = other.velocity * other.mass() + planet.velocity * planet.mass();
                     planet.setMass(planet.mass() + other.mass());
+                    planet.position /= planet.mass();
+                    planet.velocity /= planet.mass();
                     if(i.key() == selected){
                         selected = planetkey;
                     }
                     i.remove();
                     planet.path.clear();
                 }else{
-                    float frc = gravityconst * ((other.mass() * planet.mass()) / distance);
-
                     direction.normalize();
-                    planet.velocity += direction * frc * time / planet.mass();
-                    other.velocity -= direction * frc * time / other.mass();
+                    direction *= gravityconst * ((other.mass() * planet.mass()) / distance) * time;
+
+                    planet.velocity += direction / planet.mass();
+                    other.velocity -= direction / other.mass();
                 }
             }
 
