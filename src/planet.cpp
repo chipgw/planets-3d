@@ -10,8 +10,7 @@ void Planet::updatePath(){
         path.append(this->position);
     }
 
-    // doing this even if it hasn't been recorded allows it to get shorter.
-    if(path.size() > pathLength){
+    while(path.size() > pathLength){
         path.remove(0);
     }
 }
