@@ -101,10 +101,8 @@ void PlanetsWidget::paintGL() {
         camera.position = QVector3D();
     }
 
-    camera.setup();
-
     shaderTexture.bind();
-    shaderTexture.setUniformValue("cameraMatrix", camera.camera);
+    shaderTexture.setUniformValue("cameraMatrix", camera.setup());
     shaderTexture.setUniformValue("modelMatrix", QMatrix4x4());
 
     shaderTexture.enableAttributeArray("uv");
@@ -246,12 +244,10 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     switch(placingStep){
     case FreePositionXY:{
         // set placing position on the XY plane
-        camera.setup();
-
         QVector3D windowCoord((2.0f * e->x())  / width()  - 1.0f,
                               (2.0f * -e->y()) / height() + 1.0f, 0.0f);
 
-        QMatrix4x4 inv = camera.camera.inverted();
+        QMatrix4x4 inv = camera.setup().inverted();
 
         QVector3D origin = inv * windowCoord;
 
@@ -332,7 +328,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             QVector3D windowCoord((2.0f * e->x())  / width()  - 1.0f,
                                   (2.0f * -e->y()) / height() + 1.0f, 0.8f);
 
-            QMatrix4x4 inv = camera.camera.inverted();
+            QMatrix4x4 inv = camera.setup().inverted();
 
             QVector3D origin = inv * windowCoord;
 
@@ -360,10 +356,8 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
         default:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            camera.setup();
-
             shaderColor.bind();
-            shaderColor.setUniformValue("cameraMatrix", camera.camera);
+            shaderColor.setUniformValue("cameraMatrix", camera.setup());
 
             for(QMapIterator<QRgb, Planet> i(universe.planets()); i.hasNext();) {
                 i.next();

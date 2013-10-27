@@ -17,7 +17,7 @@ public:
     QMatrix4x4 camera;
 
     void reset();
-    void setup();
+    const QMatrix4x4 &setup();
 };
 
 #endif // CAMERA_H
