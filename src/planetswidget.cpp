@@ -12,7 +12,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleB
 
     placing.velocity.setY(velocityfac);
 
-    this->setMouseTracking(true);
+    setMouseTracking(true);
 
     timer.setSingleShot(true);
     connect(&timer, SIGNAL(timeout()), this, SLOT(updateGL()));
@@ -214,8 +214,8 @@ void PlanetsWidget::paintGL() {
         glDrawArrays(GL_LINES, 0, gridPoints.size());
     }
 
-    if(this->doScreenshot){
-        this->doScreenshot = false;
+    if(doScreenshot){
+        doScreenshot = false;
 
         QDir dir = QDir::homePath() + "/Pictures/Planets3D Screenshots/";
         if(!dir.exists()){
@@ -226,7 +226,7 @@ void PlanetsWidget::paintGL() {
         while(QFile::exists(filename.arg(++i, 4, 10, QChar('0'))));
         filename = filename.arg(i, 4, 10, QChar('0'));
 
-        QImage img = this->grabFrameBuffer();
+        QImage img = grabFrameBuffer();
         if(!img.isNull() && img.save(filename)){
             qDebug() << "Screenshot saved to:" << filename;
         }
@@ -268,13 +268,13 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         placingRotation.rotate((lastmousepos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
         placingRotation.rotate((lastmousepos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
         placing.velocity = placingRotation.column(2).toVector3D() * placing.velocity.length();
-        QCursor::setPos(this->mapToGlobal(this->lastmousepos));
+        QCursor::setPos(mapToGlobal(lastmousepos));
         return;
     case OrbitalPlane:
         if(universe.isValid(universe.selected)){
             placingRotation.rotate((lastmousepos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
             placingRotation.rotate((lastmousepos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
-            QCursor::setPos(this->mapToGlobal(this->lastmousepos));
+            QCursor::setPos(mapToGlobal(lastmousepos));
             return;
         }
         break;
@@ -282,7 +282,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         if(universe.isValid(universe.selected)){
             placingRotation.rotate((lastmousepos.y() - e->y()) * 0.05f, 0.0f, 0.0f, 1.0f);
             placing.position = universe[universe.selected].position + placingRotation.column(0).toVector3D() * universe[universe.selected].radius() * placingOrbitalRadius;
-            QCursor::setPos(this->mapToGlobal(this->lastmousepos));
+            QCursor::setPos(mapToGlobal(lastmousepos));
             return;
         }
         break;
@@ -294,12 +294,12 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
             camera.xrotation = qBound(-90.0f, camera.xrotation, 90.0f);
             camera.zrotation = fmod(camera.zrotation, 360.0f);
 
-            QCursor::setPos(this->mapToGlobal(this->lastmousepos));
-            this->setCursor(Qt::SizeAllCursor);
+            QCursor::setPos(mapToGlobal(lastmousepos));
+            setCursor(Qt::SizeAllCursor);
             return;
         }
     }
-    this->lastmousepos = e->pos();
+    lastmousepos = e->pos();
 }
 
 void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
@@ -313,7 +313,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
         switch(placingStep){
         case FreePositionXY:
             placingStep = FreePositionZ;
-            this->setCursor(Qt::BlankCursor);
+            setCursor(Qt::BlankCursor);
             break;
         case FreePositionZ:
             placingStep = FreeVelocity;
@@ -322,7 +322,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             placingStep = None;
             placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, placing.velocity.length());
             universe.selected = universe.addPlanet(placing);
-            this->setCursor(Qt::ArrowCursor);
+            setCursor(Qt::ArrowCursor);
             break;
         case Firing:{
             QVector3D windowCoord((2.0f * e->x())  / width()  - 1.0f,
@@ -341,8 +341,12 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             break;
         }
         case OrbitalPlane:
-            placingStep = OrbitalPlanet;
-            placing.position = universe[universe.selected].position + placingRotation.column(0).toVector3D() * universe[universe.selected].radius() * placingOrbitalRadius;
+            if(universe.isValid(universe.selected)){
+                placingStep = OrbitalPlanet;
+                placing.position = universe[universe.selected].position + placingRotation.column(0).toVector3D() * universe[universe.selected].radius() * placingOrbitalRadius;
+                break;
+            }
+            placingStep = None;
             break;
         case OrbitalPlanet:
             if(universe.isValid(universe.selected)){
@@ -375,7 +379,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 
 void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
     if(e->button() == Qt::MiddleButton){
-        this->setCursor(Qt::ArrowCursor);
+        setCursor(Qt::ArrowCursor);
     }
 }
 
