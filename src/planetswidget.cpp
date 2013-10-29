@@ -2,9 +2,9 @@
 #include <QDir>
 #include <qmath.h>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this),
-    displaysettings(0), gridRange(50), following(0), doScreenshot(false), framecount(0), placingStep(None),
-    placingOrbitalRadius(1.5f), refreshRate(16), firingSpeed(velocityfac * 10.0f), firingMass(25.0f) {
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this), drawGrid(false),
+    gridRange(50), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false), framecount(0),
+    placingStep(None), placingOrbitalRadius(1.5f), refreshRate(16), firingSpeed(velocityfac * 10.0f), firingMass(25.0f) {
 
 #ifndef NDEBUG
     refreshRate = 0;
@@ -116,7 +116,7 @@ void PlanetsWidget::paintGL() {
     shaderColor.bind();
     shaderColor.setUniformValue("cameraMatrix", camera.camera);
 
-    if(displaysettings & PlanetColors){
+    if(drawPlanetColors){
         for(QMapIterator<QRgb, Planet> i(universe.planets()); i.hasNext();) {
             i.next();
             drawPlanetWireframe(i.value(), i.key());
@@ -125,7 +125,7 @@ void PlanetsWidget::paintGL() {
         drawPlanetWireframe(universe[universe.selected]);
     }
 
-    if(displaysettings & PlanetTrails){
+    if(drawPlanetTrails){
         shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
         shaderColor.setUniformValue("color", QColor(Qt::white));
         foreach(const Planet &planet, universe.planets()) {
@@ -200,7 +200,7 @@ void PlanetsWidget::paintGL() {
     }
 
 
-    if(displaysettings & Grid){
+    if(drawGrid){
         if(gridPoints.size() != gridRange * 4){
             updateGrid();
         }

@@ -65,11 +65,6 @@ private:
     QVector<QVector2D> gridPoints;
 
 public:
-    enum DisplaySettings{
-        Grid         = (1<<0),
-        PlanetTrails = (1<<1),
-        PlanetColors = (1<<2)
-    };
     enum FollowingState{
         FollowNone,
         Single,
@@ -88,7 +83,9 @@ public:
     float firingMass;
 
     int refreshRate;
-    short displaysettings;
+    bool drawGrid;
+    bool drawPlanetTrails;
+    bool drawPlanetColors;
 
 signals:
     void updateFPSStatusMessage(const QString &text);

@@ -203,26 +203,13 @@ void MainWindow::on_firingMassSpinBox_valueChanged(int value){
 }
 
 void MainWindow::on_actionGrid_toggled(bool value){
-    if(value){
-        ui->centralwidget->displaysettings |= PlanetsWidget::Grid;
-    }else{
-        ui->centralwidget->displaysettings &= ~PlanetsWidget::Grid;
-    }
+    ui->centralwidget->drawGrid = value;
 }
 
 void MainWindow::on_actionDraw_Paths_toggled(bool value){
-    if(value){
-        ui->centralwidget->displaysettings |= PlanetsWidget::PlanetTrails;
-    }else{
-        ui->centralwidget->displaysettings &= ~PlanetsWidget::PlanetTrails;
-    }
-
+    ui->centralwidget->drawPlanetTrails = value;
 }
 
 void MainWindow::on_actionPlanet_Colors_toggled(bool value){
-    if(value){
-        ui->centralwidget->displaysettings |= PlanetsWidget::PlanetColors;
-    }else{
-        ui->centralwidget->displaysettings &= ~PlanetsWidget::PlanetColors;
-    }
+    ui->centralwidget->drawPlanetColors = value;
 }
