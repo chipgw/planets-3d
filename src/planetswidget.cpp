@@ -320,7 +320,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             break;
         case FreeVelocity:
             placingStep = None;
-            placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, placing.velocity.length());
+            placing.velocity = placingRotation.column(2).toVector3D() * placing.velocity.length();
             universe.selected = universe.addPlanet(placing);
             setCursor(Qt::ArrowCursor);
             break;
@@ -391,7 +391,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
         placing.setMass(qMax(placing.mass() + e->delta() * placing.mass() * 1.0e-3f, 0.01f));
         break;
     case FreeVelocity:
-        placing.velocity = placingRotation * QVector3D(0.0f, 0.0f, qMax(0.0f, float(placing.velocity.length() + e->delta() * velocityfac * 1.0e-3f)));
+        placing.velocity = placingRotation.column(2).toVector3D() * qMax(0.0f, float(placing.velocity.length() + e->delta() * velocityfac * 1.0e-3f));
         break;
     case OrbitalPlane:
         if(universe.isValid(universe.selected)){

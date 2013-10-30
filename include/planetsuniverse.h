@@ -33,9 +33,9 @@ public:
     void advance(float time);
 
     bool isEmpty();
-    bool isValid(QRgb key);
-    void remove(QRgb key);
-    Planet &operator [] (QRgb key);
+    bool isValid(const QRgb &key);
+    void remove(const QRgb &key);
+    Planet &operator [] (const QRgb &key);
 
     const QMap<QRgb, Planet> &planets();
 

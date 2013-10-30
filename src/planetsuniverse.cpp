@@ -232,16 +232,16 @@ bool PlanetsUniverse::isEmpty(){
     return planets_p.isEmpty();
 }
 
-bool PlanetsUniverse::isValid(QRgb key){
+bool PlanetsUniverse::isValid(const QRgb &key){
     return planets_p.contains(key);
 }
 
-void PlanetsUniverse::remove(QRgb key){
+void PlanetsUniverse::remove(const QRgb &key){
     planets_p.remove(key);
     sizeChanged();
 }
 
-Planet &PlanetsUniverse::operator [] (QRgb key){
+Planet &PlanetsUniverse::operator [] (const QRgb &key){
     return planets_p[key];
 }
 
