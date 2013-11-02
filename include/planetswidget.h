@@ -32,8 +32,8 @@ private:
         FreePositionZ,
         FreeVelocity,
         Firing,
-        OrbitalPlane,
-        OrbitalPlanet
+        OrbitalPlanet,
+        OrbitalPlane
     };
 
     QOpenGLShaderProgram shaderTexture;
