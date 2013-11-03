@@ -358,6 +358,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
         case OrbitalPlanet:
             if(universe.isValid(universe.selected)){
                 placingStep = OrbitalPlane;
+                setCursor(Qt::BlankCursor);
                 break;
             }
             placingStep = None;
@@ -370,6 +371,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
                 universe.selected = universe.addPlanet(Planet(placing.position, velocity, placing.mass()));
             }
             placingStep = None;
+            setCursor(Qt::ArrowCursor);
             break;
         default:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
