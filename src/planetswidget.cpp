@@ -67,7 +67,7 @@ void PlanetsWidget::resizeGL(int width, int height) {
     glViewport(0, 0, width, height);
 
     camera.projection.setToIdentity();
-    camera.projection.perspective(45.0f, float(width) / float(height), 0.1f, 1.0e4f);
+    camera.projection.perspective(45.0f, float(width) / float(height), 0.1f, 1.0e6f);
 }
 
 void PlanetsWidget::paintGL() {
@@ -413,7 +413,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     default:
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;
 
-        camera.distance = qBound(10.0f, camera.distance, 2.0e3f);
+        camera.distance = qBound(10.0f, camera.distance, 1.0e4f);
         break;
     }
 }
