@@ -1,6 +1,7 @@
 #include "planetswidget.h"
 #include <QDir>
 #include <qmath.h>
+#include <QMouseEvent>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this), drawGrid(false),
     gridRange(50), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false), framecount(0),

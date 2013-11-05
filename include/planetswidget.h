@@ -6,7 +6,8 @@
 #include "spheregenerator.h"
 #include <QTime>
 #include <QTimer>
-#include <QMouseEvent>
+
+class QMouseEvent;
 
 #if QT_VERSION >= 0x050000
 #include <QOpenGLFunctions>

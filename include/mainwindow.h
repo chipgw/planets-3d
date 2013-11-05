@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QLabel>
+
+class QLabel;
 
 namespace Ui {
 class MainWindow;
