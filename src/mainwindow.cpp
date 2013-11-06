@@ -9,6 +9,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     ui->PauseResume_Button->setFocus();
 
+    connect(ui->actionExit,     SIGNAL(triggered()), this,                      SLOT(close()));
+    connect(ui->actionAbout_Qt, SIGNAL(triggered()), QApplication::instance(),  SLOT(aboutQt()));
+
+    connect(ui->actionCenter_All,                       SIGNAL(triggered()),        &ui->centralwidget->universe,   SLOT(centerAll()));
+    connect(ui->actionInteractive_Planet_Placement,     SIGNAL(triggered()),        ui->centralwidget,              SLOT(beginInteractiveCreation()));
+    connect(ui->actionInteractive_Orbital_Placement,    SIGNAL(triggered()),        ui->centralwidget,              SLOT(beginOrbitalCreation()));
+    connect(ui->actionToggle_Firing_Mode,               SIGNAL(toggled(bool)),      ui->centralwidget,              SLOT(enableFiringMode(bool)));
+    connect(ui->actionTake_Screenshot,                  SIGNAL(triggered()),        ui->centralwidget,              SLOT(takeScreenshot()));
+    connect(ui->gridRangeSpinBox,                       SIGNAL(valueChanged(int)),  ui->centralwidget,              SLOT(setGridRange(int)));
+
     planetCountLabel = new QLabel(ui->statusbar);
     planetCountLabel->setFixedWidth(120);
     ui->statusbar->addPermanentWidget(planetCountLabel);
@@ -19,36 +29,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     averagefpsLabel->setFixedWidth(160);
     ui->statusbar->addPermanentWidget(averagefpsLabel);
 
-    connect(ui->actionCenter_All,                       SIGNAL(triggered()),    &ui->centralwidget->universe,   SLOT(centerAll()));
-    connect(ui->actionInteractive_Planet_Placement,     SIGNAL(triggered()),    ui->centralwidget,              SLOT(beginInteractiveCreation()));
-    connect(ui->actionInteractive_Orbital_Placement,    SIGNAL(triggered()),    ui->centralwidget,              SLOT(beginOrbitalCreation()));
-    connect(ui->actionToggle_Firing_Mode,               SIGNAL(toggled(bool)),  ui->centralwidget,              SLOT(enableFiringMode(bool)));
-    connect(ui->actionTake_Screenshot,                  SIGNAL(triggered()),    ui->centralwidget,              SLOT(takeScreenshot()));
-
     connect(&ui->centralwidget->universe,   SIGNAL(updatePlanetCountMessage(QString)),      planetCountLabel, SLOT(setText(QString)));
     connect(ui->centralwidget,              SIGNAL(updateFPSStatusMessage(QString)),        fpsLabel,         SLOT(setText(QString)));
     connect(ui->centralwidget,              SIGNAL(updateAverageFPSStatusMessage(QString)), averagefpsLabel,  SLOT(setText(QString)));
 
-    connect(ui->actionExit, SIGNAL(triggered()),  this,  SLOT(close()));
-
-    connect(ui->gridRangeSpinBox, SIGNAL(valueChanged(int)), ui->centralwidget, SLOT(setGridRange(int)));
-
     connect(ui->actionNew_Planet,           SIGNAL(toggled(bool)),              ui->newPlanet_DockWidget,       SLOT(setVisible(bool)));
     connect(ui->newPlanet_DockWidget,       SIGNAL(visibilityChanged(bool)),    ui->actionNew_Planet,           SLOT(setChecked(bool)));
-
     connect(ui->actionSpeed_Control,        SIGNAL(toggled(bool)),              ui->speedControl_DockWidget,    SLOT(setVisible(bool)));
     connect(ui->speedControl_DockWidget,    SIGNAL(visibilityChanged(bool)),    ui->actionSpeed_Control,        SLOT(setChecked(bool)));
-
     connect(ui->actionCamera_Location,      SIGNAL(toggled(bool)),              ui->camera_DockWidget,          SLOT(setVisible(bool)));
     connect(ui->camera_DockWidget,          SIGNAL(visibilityChanged(bool)),    ui->actionCamera_Location,      SLOT(setChecked(bool)));
-
     connect(ui->actionView_Settings,        SIGNAL(toggled(bool)),              ui->viewSettings_DockWidget,    SLOT(setVisible(bool)));
     connect(ui->viewSettings_DockWidget,    SIGNAL(visibilityChanged(bool)),    ui->actionView_Settings,        SLOT(setChecked(bool)));
-
     connect(ui->actionFiring_Mode_Settings, SIGNAL(toggled(bool)),              ui->firingSettings_DockWidget,  SLOT(setVisible(bool)));
     connect(ui->firingSettings_DockWidget,  SIGNAL(visibilityChanged(bool)),    ui->actionFiring_Mode_Settings, SLOT(setChecked(bool)));
-
-    connect(ui->actionAbout_Qt, SIGNAL(triggered()), QApplication::instance(), SLOT(aboutQt()));
 }
 
 MainWindow::~MainWindow(){
