@@ -19,15 +19,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionTake_Screenshot,                  SIGNAL(triggered()),        ui->centralwidget,              SLOT(takeScreenshot()));
     connect(ui->gridRangeSpinBox,                       SIGNAL(valueChanged(int)),  ui->centralwidget,              SLOT(setGridRange(int)));
 
-    planetCountLabel = new QLabel(ui->statusbar);
-    planetCountLabel->setFixedWidth(120);
-    ui->statusbar->addPermanentWidget(planetCountLabel);
-    fpsLabel = new QLabel(ui->statusbar);
+    ui->statusbar->addPermanentWidget(planetCountLabel = new QLabel(ui->statusbar));
+    ui->statusbar->addPermanentWidget(fpsLabel = new QLabel(ui->statusbar));
+    ui->statusbar->addPermanentWidget(averagefpsLabel = new QLabel(ui->statusbar));
     fpsLabel->setFixedWidth(120);
-    ui->statusbar->addPermanentWidget(fpsLabel);
-    averagefpsLabel = new QLabel(ui->statusbar);
+    planetCountLabel->setFixedWidth(120);
     averagefpsLabel->setFixedWidth(160);
-    ui->statusbar->addPermanentWidget(averagefpsLabel);
 
     connect(&ui->centralwidget->universe,   SIGNAL(updatePlanetCountMessage(QString)),      planetCountLabel, SLOT(setText(QString)));
     connect(ui->centralwidget,              SIGNAL(updateFPSStatusMessage(QString)),        fpsLabel,         SLOT(setText(QString)));
