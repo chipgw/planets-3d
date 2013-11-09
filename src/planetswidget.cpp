@@ -3,9 +3,9 @@
 #include <qmath.h>
 #include <QMouseEvent>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this), drawGrid(false),
-    gridRange(50), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false), framecount(0),
-    placingStep(None), placingOrbitalRadius(1.5f), refreshRate(16), firingSpeed(velocityfac * 10.0f), firingMass(25.0f) {
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this),
+    drawGrid(false), gridRange(50), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false),
+    framecount(0), placingStep(None), refreshRate(16), firingSpeed(velocityfac * 10.0f), firingMass(25.0f) {
 
 #ifndef NDEBUG
     refreshRate = 0;
@@ -366,10 +366,11 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             break;
         case OrbitalPlane:
             if(universe.isValid(universe.selected)){
-                const Planet &selected = universe[universe.selected];
+                Planet &selected = universe[universe.selected];
                 float speed = sqrt((selected.mass() * selected.mass() * gravityconst) / ((selected.mass() + placing.mass()) * placingOrbitalRadius));
-                QVector3D velocity = selected.velocity + placingRotation.column(1).toVector3D() * speed;
-                universe.selected = universe.addPlanet(Planet(placing.position, velocity, placing.mass()));
+                QVector3D velocity = placingRotation.column(1).toVector3D() * speed;
+                universe.selected = universe.addPlanet(Planet(placing.position, selected.velocity + velocity, placing.mass()));
+                selected.velocity -= velocity * (placing.mass() / selected.mass());
             }
             placingStep = None;
             setCursor(Qt::ArrowCursor);
