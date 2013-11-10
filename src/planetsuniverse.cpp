@@ -219,12 +219,14 @@ void PlanetsUniverse::centerAll(){
     averagePosition /= totalmass;
     averageVelocity /= totalmass;
 
-    for(QMutableMapIterator<QRgb, Planet> i(planets_p); i.hasNext();) {
-        Planet &planet = i.next().value();
+    if(!averagePosition.isNull() || !averageVelocity.isNull()){
+        for(QMutableMapIterator<QRgb, Planet> i(planets_p); i.hasNext();) {
+            Planet &planet = i.next().value();
 
-        planet.position -= averagePosition;
-        planet.velocity -= averageVelocity;
-        planet.path.clear();
+            planet.position -= averagePosition;
+            planet.velocity -= averageVelocity;
+            planet.path.clear();
+        }
     }
 }
 
