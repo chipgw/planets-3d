@@ -10,4 +10,24 @@ namespace version{
     }
 
     const QString build_type = "@CMAKE_BUILD_TYPE@";
+
+#if defined(__clang__)
+    const QString compiler = "Clang/LLVM";
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+    const QString compiler = "Intel ICC/ICPC";
+#elif defined(__GNUC__) || defined(__GNUG__)
+    const QString compiler = "GNU GCC/G++";
+#elif defined(__HP_cc) || defined(__HP_aCC)
+    const QString compiler = "Hewlett-Packard C/aC++";
+#elif defined(__IBMC__) || defined(__IBMCPP__)
+    const QString compiler = "IBM XL C/C++";
+#elif defined(_MSC_VER)
+    const QString compiler = "Microsoft Visual Studio";
+#elif defined(__PGI)
+    const QString compiler = "Portland Group PGCC/PGCPP";
+#elif defined(__SUNPRO_C) || defined(__SUNPRO_CC)
+    const QString compiler = "Oracle Solaris Studio";
+#else
+    const QString compiler = "Unknown";
+#endif
 }

@@ -175,7 +175,12 @@ void MainWindow::on_actionAbout_triggered(){
                           "<p>Build Info:</p><ul>"
                           "<li>Git sha1: %2</li>"
                           "<li>Build type: %3</li>"
-                          "</ul></body></html>").arg(version::getVersionString()).arg(version::git_revision).arg(version::build_type));
+                          "<li>Compiler: %4</li>"
+                          "</ul></body></html>")
+                       .arg(version::getVersionString())
+                       .arg(version::git_revision)
+                       .arg(version::build_type)
+                       .arg(version::compiler));
 }
 
 void MainWindow::on_stepsPerFrameSpinBox_valueChanged(int value){

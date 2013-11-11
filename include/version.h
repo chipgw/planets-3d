@@ -9,6 +9,7 @@ namespace version{
     extern const QString git_revision;
     QString getVersionString();
     extern const QString build_type;
+    extern const QString compiler;
 }
 
 #endif // VERSION_H
