@@ -49,6 +49,8 @@ private slots:
     void on_actionDraw_Paths_toggled(bool value);
     void on_actionPlanet_Colors_toggled(bool value);
 
+    void on_actionGenerate_Random_triggered();
+
 private:
     Ui::MainWindow *ui;
 

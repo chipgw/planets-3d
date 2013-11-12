@@ -210,3 +210,7 @@ void MainWindow::on_actionDraw_Paths_toggled(bool value){
 void MainWindow::on_actionPlanet_Colors_toggled(bool value){
     ui->centralwidget->drawPlanetColors = value;
 }
+
+void MainWindow::on_actionGenerate_Random_triggered(){
+    ui->centralwidget->universe.generateRandom(10);
+}

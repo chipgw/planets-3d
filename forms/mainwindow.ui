@@ -306,6 +306,7 @@
    <addaction name="actionInteractive_Planet_Placement"/>
    <addaction name="actionToggle_Firing_Mode"/>
    <addaction name="actionInteractive_Orbital_Placement"/>
+   <addaction name="actionGenerate_Random"/>
   </widget>
   <widget class="QDockWidget" name="camera_DockWidget">
    <property name="windowTitle">
@@ -738,6 +739,11 @@
    </property>
    <property name="text">
     <string>Grid</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Random">
+   <property name="text">
+    <string>Generate Random</string>
    </property>
   </action>
  </widget>
