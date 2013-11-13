@@ -10,7 +10,7 @@ class MainWindow;
 }
 
 // the maximum value of the simulation speed dial as a float.
-const float speeddialmax = 20.0f;
+const int speeddialmax = 32;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
