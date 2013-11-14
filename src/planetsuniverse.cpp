@@ -137,46 +137,44 @@ void PlanetsUniverse::advance(float time){
     time /= stepsPerFrame;
 
     for(int s = 0; s < stepsPerFrame; ++s){
-        for(QMutableMapIterator<QRgb, Planet> i(planets_p); i.hasNext();){
-            Planet &planet = i.next().value();
-            QRgb planetkey = i.key();
+        for(QMap<QRgb, Planet>::iterator i = planets_p.begin(); i != planets_p.end();){
+            Planet &planet = i.value();
 
             if(planet.mass() <= 0.0f){
-                i.remove();
-                continue;
-            }
+                i = planets_p.erase(i);
+            }else{
+                for(QMap<QRgb, Planet>::iterator o = i + 1; o != planets_p.end();){
+                    Planet &other = o.value();
 
-            while(i.hasNext()){
-                Planet &other = i.next().value();
+                    QVector3D direction = other.position - planet.position;
+                    float distancesqr = direction.lengthSquared();
 
-                QVector3D direction = other.position - planet.position;
-                float distance = direction.lengthSquared();
+                    if(distancesqr < pow(planet.radius() + other.radius() * 0.8f, 2)){
+                        planet.position = other.position * other.mass() + planet.position * planet.mass();
+                        planet.velocity = other.velocity * other.mass() + planet.velocity * planet.mass();
+                        planet.setMass(planet.mass() + other.mass());
+                        planet.position /= planet.mass();
+                        planet.velocity /= planet.mass();
+                        if(o.key() == selected){
+                            selected = i.key();
+                        }
+                        planet.path.clear();
+                        o = planets_p.erase(o);
+                    }else{
+                        direction.normalize();
+                        direction *= gravityconst * ((other.mass() * planet.mass()) / distancesqr) * time;
 
-                if(distance < pow(planet.radius() + other.radius() * 0.8f, 2)){
-                    planet.position = other.position * other.mass() + planet.position * planet.mass();
-                    planet.velocity = other.velocity * other.mass() + planet.velocity * planet.mass();
-                    planet.setMass(planet.mass() + other.mass());
-                    planet.position /= planet.mass();
-                    planet.velocity /= planet.mass();
-                    if(i.key() == selected){
-                        selected = planetkey;
+                        planet.velocity += direction / planet.mass();
+                        other.velocity -= direction / other.mass();
+                        ++o;
                     }
-                    i.remove();
-                    planet.path.clear();
-                }else{
-                    direction.normalize();
-                    direction *= gravityconst * ((other.mass() * planet.mass()) / distance) * time;
-
-                    planet.velocity += direction / planet.mass();
-                    other.velocity -= direction / other.mass();
                 }
+
+                planet.position += planet.velocity * time;
+                planet.updatePath();
+
+                ++i;
             }
-
-            i.toFront();
-            while(i.hasNext() && i.next().key() != planetkey);
-
-            planet.position += planet.velocity * time;
-            planet.updatePath();
         }
     }
     if(planetcount != planets_p.size()){
