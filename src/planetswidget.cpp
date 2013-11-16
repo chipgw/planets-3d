@@ -477,7 +477,7 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QRgb &color)
 
     QMatrix4x4 matrix;
     matrix.translate(planet.position);
-    matrix.scale(planet.radius() * 1.02f);
+    matrix.scale(planet.radius() * 1.05f);
     shaderColor.setUniformValue("modelMatrix", matrix);
 
     shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts, 3);
@@ -504,7 +504,7 @@ void PlanetsWidget::setGridRange(int value){
 
 const QColor PlanetsWidget::gridColor = QColor(0xcc, 0xff, 0xff, 0x66);
 
-const Sphere<128, 64> PlanetsWidget::highResSphere = Sphere<128, 64>();
-const Sphere<32,  16> PlanetsWidget::lowResSphere  = Sphere<32,  16>();
+const Sphere<64, 32> PlanetsWidget::highResSphere = Sphere<64, 32>();
+const Sphere<32, 16> PlanetsWidget::lowResSphere  = Sphere<32, 16>();
 
 const Circle<64> PlanetsWidget::circle = Circle<64>();

@@ -57,8 +57,8 @@ private:
     QMatrix4x4 placingRotation;
     float placingOrbitalRadius;
 
-    const static Sphere<128, 64> highResSphere;
-    const static Sphere<32,  16> lowResSphere;
+    const static Sphere<64, 32> highResSphere;
+    const static Sphere<32, 16> lowResSphere;
     const static Circle<64> circle;
 
     const static QColor gridColor;
