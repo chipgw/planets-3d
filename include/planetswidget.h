@@ -111,7 +111,6 @@ protected:
     void wheelEvent(QWheelEvent* e);
 
     void drawPlanet(const Planet &planet);
-    void drawPlanetPath(const Planet &planet);
     void drawPlanetColor(const Planet &planet, const QRgb &color);
     void drawPlanetWireframe(const Planet &planet, const QRgb &color = 0xff00ff00);
 };

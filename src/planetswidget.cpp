@@ -130,7 +130,8 @@ void PlanetsWidget::paintGL() {
         shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
         shaderColor.setUniformValue("color", QColor(Qt::white));
         foreach(const Planet &planet, universe.planets()) {
-            drawPlanetPath(planet);
+            shaderColor.setAttributeArray("vertex", GL_FLOAT, planet.path.data(), 3);
+            glDrawArrays(GL_LINE_STRIP, 0, planet.path.size());
         }
     }
 
@@ -453,11 +454,6 @@ void PlanetsWidget::drawPlanet(const Planet &planet){
     shaderTexture.setAttributeArray("vertex", GL_FLOAT, highResSphere.verts, 3);
     shaderTexture.setAttributeArray("uv", GL_FLOAT, highResSphere.uv, 2);
     glDrawElements(GL_TRIANGLES, highResSphere.triangleCount, GL_UNSIGNED_INT, highResSphere.triangles);
-}
-
-void PlanetsWidget::drawPlanetPath(const Planet &planet){
-    shaderColor.setAttributeArray("vertex", GL_FLOAT, planet.path.data(), 3);
-    glDrawArrays(GL_LINE_STRIP, 0, planet.path.size());
 }
 
 void PlanetsWidget::drawPlanetColor(const Planet &planet, const QRgb &color){
