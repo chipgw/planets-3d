@@ -6,8 +6,6 @@
 #include <QMessageBox>
 #include <qmath.h>
 
-#define ALPHAMASK 0xff000000
-
 PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(100) {}
 
 bool PlanetsUniverse::load(const QString &filename){
@@ -104,7 +102,7 @@ bool PlanetsUniverse::save(const QString &filename){
         xml.writeStartElement("planet"); {
             xml.writeAttribute("mass", QString::number(planet.mass()));
 
-            xml.writeAttribute("color", QColor(i.key() ^ALPHAMASK).name());
+            xml.writeAttribute("color", QColor(i.key() & RGB_MASK).name());
 
             xml.writeStartElement("position"); {
                 xml.writeAttribute("x", QString::number(planet.position.x()));
@@ -184,13 +182,13 @@ void PlanetsUniverse::advance(float time){
 
 QRgb PlanetsUniverse::addPlanet(const Planet &planet, QRgb colorhint){
     if(colorhint != 0){
-        colorhint = colorhint | ALPHAMASK;
+        colorhint = colorhint | ~RGB_MASK;
     }else{
-        colorhint = qrand() | ALPHAMASK;
+        colorhint = qrand() | ~RGB_MASK;
     }
 
     while(planets_p.contains(colorhint)){
-        colorhint = qrand() | ALPHAMASK;
+        colorhint = qrand() | ~RGB_MASK;
     }
 
     planets_p[colorhint] = planet;
