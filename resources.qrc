@@ -1,7 +1,4 @@
 <RCC>
-    <qresource prefix="/textures">
-        <file>planet.png</file>
-    </qresource>
     <qresource prefix="/">
         <file>icons/silk/information.png</file>
         <file>icons/silk/accept.png</file>
@@ -30,10 +27,9 @@
         <file>icons/silk/camera.png</file>
         <file>icons/silk/zoom.png</file>
         <file>icons/silk/eye.png</file>
-    </qresource>
-    <qresource prefix="/shaders">
-        <file alias="texture.fsh">shaders/texture.fsh</file>
-        <file alias="vertex.vsh">shaders/vertex.vsh</file>
-        <file alias="color.fsh">shaders/color.fsh</file>
+        <file>textures/planet.png</file>
+        <file>shaders/color.fsh</file>
+        <file>shaders/texture.fsh</file>
+        <file>shaders/vertex.vsh</file>
     </qresource>
 </RCC>
