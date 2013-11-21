@@ -189,6 +189,10 @@ void MainWindow::on_trailLengthSpinBox_valueChanged(int value){
     Planet::pathLength = value;
 }
 
+void MainWindow::on_trailRecordDistanceDoubleSpinBox_valueChanged(double value){
+    Planet::pathRecordDistance = value * value;
+}
+
 void MainWindow::on_firingVelocityDoubleSpinBox_valueChanged(double value){
     ui->centralwidget->firingSpeed = value * velocityfac;
 }
