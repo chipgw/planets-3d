@@ -96,8 +96,8 @@ bool PlanetsUniverse::save(const QString &filename){
     xml.writeStartDocument();
     xml.writeStartElement("planets-3d-universe");
 
-    for(QMapIterator<QRgb, Planet> i(planets_p); i.hasNext();) {
-        const Planet &planet = i.next().value();
+    for(QMap<QRgb, Planet>::const_iterator i = planets_p.constBegin(); i != planets_p.constEnd(); ++i){
+        const Planet &planet = i.value();
 
         xml.writeStartElement("planet"); {
             xml.writeAttribute("mass", QString::number(planet.mass()));
@@ -225,8 +225,8 @@ void PlanetsUniverse::centerAll(){
     averageVelocity /= totalmass;
 
     if(!averagePosition.isNull() || !averageVelocity.isNull()){
-        for(QMutableMapIterator<QRgb, Planet> i(planets_p); i.hasNext();) {
-            Planet &planet = i.next().value();
+        for(QMap<QRgb, Planet>::iterator i = planets_p.begin(); i != planets_p.end(); ++i){
+            Planet &planet = i.value();
 
             planet.position -= averagePosition;
             planet.velocity -= averageVelocity;

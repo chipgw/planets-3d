@@ -118,8 +118,7 @@ void PlanetsWidget::paintGL() {
     shaderColor.setUniformValue("cameraMatrix", camera.camera);
 
     if(drawPlanetColors){
-        for(QMapIterator<QRgb, Planet> i(universe.planets()); i.hasNext();) {
-            i.next();
+        for(QMap<QRgb, Planet>::const_iterator i = universe.planets().constBegin(); i != universe.planets().constEnd(); ++i){
             drawPlanetWireframe(i.value(), i.key());
         }
     }else if(universe.isValid(universe.selected)){
@@ -382,8 +381,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             shaderColor.bind();
             shaderColor.setUniformValue("cameraMatrix", camera.setup());
 
-            for(QMapIterator<QRgb, Planet> i(universe.planets()); i.hasNext();) {
-                i.next();
+            for(QMap<QRgb, Planet>::const_iterator i = universe.planets().constBegin(); i != universe.planets().constEnd(); ++i){
                 drawPlanetColor(i.value(), i.key());
             }
 
