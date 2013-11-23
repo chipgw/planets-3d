@@ -9,8 +9,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     ui->PauseResume_Button->setFocus();
 
-    connect(ui->actionExit,     SIGNAL(triggered()), this,                      SLOT(close()));
-    connect(ui->actionAbout_Qt, SIGNAL(triggered()), QApplication::instance(),  SLOT(aboutQt()));
+    connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
 
     connect(ui->actionCenter_All,                       SIGNAL(triggered()),        &ui->centralwidget->universe,   SLOT(centerAll()));
     connect(ui->actionInteractive_Planet_Placement,     SIGNAL(triggered()),        ui->centralwidget,              SLOT(beginInteractiveCreation()));
@@ -165,6 +164,9 @@ void MainWindow::on_followWeightedAveragePushButton_clicked(){
 }
 
 void MainWindow::on_actionAbout_triggered(){
+    float tmpsimspeed = ui->centralwidget->universe.simspeed;
+    ui->centralwidget->universe.simspeed = 0.0f;
+
     QMessageBox::about(this, tr("About Planets3D"),
                        tr("<html><head/><body>"
                           "<h1>Planets3D %1</h1>"
@@ -179,6 +181,17 @@ void MainWindow::on_actionAbout_triggered(){
                        .arg(version::git_revision)
                        .arg(version::build_type)
                        .arg(version::compiler));
+
+    ui->centralwidget->universe.simspeed = tmpsimspeed;
+}
+
+void MainWindow::on_actionAbout_Qt_triggered(){
+    float tmpsimspeed = ui->centralwidget->universe.simspeed;
+    ui->centralwidget->universe.simspeed = 0.0f;
+
+    QMessageBox::aboutQt(this);
+
+    ui->centralwidget->universe.simspeed = tmpsimspeed;
 }
 
 void MainWindow::on_stepsPerFrameSpinBox_valueChanged(int value){

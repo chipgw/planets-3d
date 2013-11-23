@@ -38,6 +38,7 @@ private slots:
     void on_followWeightedAveragePushButton_clicked();
 
     void on_actionAbout_triggered();
+    void on_actionAbout_Qt_triggered();
 
     void on_stepsPerFrameSpinBox_valueChanged(int value);
     void on_trailLengthSpinBox_valueChanged(int value);
