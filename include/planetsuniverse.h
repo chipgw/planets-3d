@@ -38,7 +38,9 @@ public:
     void remove(const QRgb &key);
     Planet &operator [] (const QRgb &key);
 
-    const QMap<QRgb, Planet> &planets();
+    QMap<QRgb, Planet>::const_iterator begin();
+    QMap<QRgb, Planet>::const_iterator end();
+    int size();
 
 public slots:
     void centerAll();

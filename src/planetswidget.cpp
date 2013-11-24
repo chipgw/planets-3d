@@ -86,18 +86,18 @@ void PlanetsWidget::paintGL() {
         camera.position = QVector3D();
         float totalmass = 0.0f;
 
-        foreach(const Planet &planet, universe.planets()){
-            camera.position += planet.position * planet.mass();
-            totalmass += planet.mass();
+        for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
+            camera.position += i.value().position * i.value().mass();
+            totalmass += i.value().mass();
         }
         camera.position /= totalmass;
     }else if(followState == PlainAverage){
         camera.position = QVector3D();
 
-        foreach(const Planet &planet, universe.planets()){
-            camera.position += planet.position;
+        for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
+            camera.position += i.value().position;
         }
-        camera.position /= universe.planets().size();
+        camera.position /= universe.size();
     }else{
         camera.position = QVector3D();
     }
@@ -108,8 +108,8 @@ void PlanetsWidget::paintGL() {
 
     shaderTexture.enableAttributeArray("uv");
 
-    foreach(const Planet &planet, universe.planets()) {
-        drawPlanet(planet);
+    for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
+        drawPlanet(i.value());
     }
 
     shaderTexture.disableAttributeArray("uv");
@@ -118,7 +118,7 @@ void PlanetsWidget::paintGL() {
     shaderColor.setUniformValue("cameraMatrix", camera.camera);
 
     if(drawPlanetColors){
-        for(QMap<QRgb, Planet>::const_iterator i = universe.planets().constBegin(); i != universe.planets().constEnd(); ++i){
+        for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
             drawPlanetWireframe(i.value(), i.key());
         }
     }else if(universe.isValid(universe.selected)){
@@ -128,9 +128,10 @@ void PlanetsWidget::paintGL() {
     if(drawPlanetTrails){
         shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
         shaderColor.setUniformValue("color", QColor(Qt::white));
-        foreach(const Planet &planet, universe.planets()) {
-            shaderColor.setAttributeArray("vertex", GL_FLOAT, planet.path.data(), 3);
-            glDrawArrays(GL_LINE_STRIP, 0, planet.path.size());
+
+        for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
+            shaderColor.setAttributeArray("vertex", GL_FLOAT, i.value().path.data(), 3);
+            glDrawArrays(GL_LINE_STRIP, 0, i.value().path.size());
         }
     }
 
@@ -199,7 +200,6 @@ void PlanetsWidget::paintGL() {
         shaderColor.setAttributeArray("vertex", GL_FLOAT, circle.verts, 3);
         glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
     }
-
 
     if(drawGrid){
         if(gridPoints.size() != gridRange * 4){
@@ -314,6 +314,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
             setCursor(Qt::SizeAllCursor);
             return;
         }
+        break;
     }
     lastmousepos = e->pos();
 }
@@ -381,7 +382,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             shaderColor.bind();
             shaderColor.setUniformValue("cameraMatrix", camera.setup());
 
-            for(QMap<QRgb, Planet>::const_iterator i = universe.planets().constBegin(); i != universe.planets().constEnd(); ++i){
+            for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
                 drawPlanetColor(i.value(), i.key());
             }
 

@@ -252,8 +252,16 @@ Planet &PlanetsUniverse::operator [] (const QRgb &key){
     return planets_p[key];
 }
 
-const QMap<QRgb, Planet> &PlanetsUniverse::planets(){
-    return planets_p;
+QMap<QRgb, Planet>::const_iterator PlanetsUniverse::begin(){
+    return planets_p.constBegin();
+}
+
+QMap<QRgb, Planet>::const_iterator PlanetsUniverse::end(){
+    return planets_p.constEnd();
+}
+
+int PlanetsUniverse::size(){
+    return planets_p.size();
 }
 
 void PlanetsUniverse::sizeChanged(){
