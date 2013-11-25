@@ -86,7 +86,7 @@ void PlanetsWidget::paintGL() {
         camera.position = QVector3D();
         float totalmass = 0.0f;
 
-        for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
+        for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
             camera.position += i.value().position * i.value().mass();
             totalmass += i.value().mass();
         }
@@ -94,7 +94,7 @@ void PlanetsWidget::paintGL() {
     }else if(followState == PlainAverage){
         camera.position = QVector3D();
 
-        for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
+        for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
             camera.position += i.value().position;
         }
         camera.position /= universe.size();
@@ -108,7 +108,7 @@ void PlanetsWidget::paintGL() {
 
     shaderTexture.enableAttributeArray("uv");
 
-    for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
+    for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
         drawPlanet(i.value());
     }
 
@@ -118,7 +118,7 @@ void PlanetsWidget::paintGL() {
     shaderColor.setUniformValue("cameraMatrix", camera.camera);
 
     if(drawPlanetColors){
-        for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
+        for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
             drawPlanetWireframe(i.value(), i.key());
         }
     }else if(universe.isValid(universe.selected)){
@@ -129,7 +129,7 @@ void PlanetsWidget::paintGL() {
         shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
         shaderColor.setUniformValue("color", QColor(Qt::white));
 
-        for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
+        for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
             shaderColor.setAttributeArray("vertex", GL_FLOAT, i.value().path.data(), 3);
             glDrawArrays(GL_LINE_STRIP, 0, i.value().path.size());
         }
@@ -257,7 +257,6 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         QVector3D ray = origin - (inv * windowCoord);
 
         placing.position = origin + (ray * ((-origin.z()) / ray.z()));
-
         break;
     }
     case FreePositionZ:
@@ -382,7 +381,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             shaderColor.bind();
             shaderColor.setUniformValue("cameraMatrix", camera.setup());
 
-            for(QMap<QRgb, Planet>::const_iterator i = universe.begin(); i != universe.end(); ++i){
+            for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
                 drawPlanetColor(i.value(), i.key());
             }
 

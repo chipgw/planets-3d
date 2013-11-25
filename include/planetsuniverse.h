@@ -16,6 +16,7 @@ class PlanetsUniverse : public QObject {
 private:
     QMap<QRgb, Planet> planets_p;
     void sizeChanged();
+    typedef QMap<QRgb, Planet>::iterator planet_iterator;
 
 public:
     QRgb selected;
@@ -38,8 +39,9 @@ public:
     void remove(const QRgb &key);
     Planet &operator [] (const QRgb &key);
 
-    QMap<QRgb, Planet>::const_iterator begin();
-    QMap<QRgb, Planet>::const_iterator end();
+    typedef QMap<QRgb, Planet>::const_iterator const_iterator;
+    const_iterator begin();
+    const_iterator end();
     int size();
 
 public slots:

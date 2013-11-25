@@ -135,13 +135,13 @@ void PlanetsUniverse::advance(float time){
     time /= stepsPerFrame;
 
     for(int s = 0; s < stepsPerFrame; ++s){
-        for(QMap<QRgb, Planet>::iterator i = planets_p.begin(); i != planets_p.end();){
+        for(planet_iterator i = planets_p.begin(); i != planets_p.end();){
             Planet &planet = i.value();
 
             if(planet.mass() <= 0.0f){
                 i = planets_p.erase(i);
             }else{
-                for(QMap<QRgb, Planet>::iterator o = i + 1; o != planets_p.end();){
+                for(planet_iterator o = i + 1; o != planets_p.end();){
                     Planet &other = o.value();
 
                     QVector3D direction = other.position - planet.position;
@@ -225,7 +225,7 @@ void PlanetsUniverse::centerAll(){
     averageVelocity /= totalmass;
 
     if(!averagePosition.isNull() || !averageVelocity.isNull()){
-        for(QMap<QRgb, Planet>::iterator i = planets_p.begin(); i != planets_p.end(); ++i){
+        for(planet_iterator i = planets_p.begin(); i != planets_p.end(); ++i){
             Planet &planet = i.value();
 
             planet.position -= averagePosition;
@@ -252,11 +252,11 @@ Planet &PlanetsUniverse::operator [] (const QRgb &key){
     return planets_p[key];
 }
 
-QMap<QRgb, Planet>::const_iterator PlanetsUniverse::begin(){
+PlanetsUniverse::const_iterator PlanetsUniverse::begin(){
     return planets_p.constBegin();
 }
 
-QMap<QRgb, Planet>::const_iterator PlanetsUniverse::end(){
+PlanetsUniverse::const_iterator PlanetsUniverse::end(){
     return planets_p.constEnd();
 }
 
