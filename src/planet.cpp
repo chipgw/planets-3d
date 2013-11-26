@@ -10,8 +10,8 @@ void Planet::updatePath(){
         path.append(position);
     }
 
-    while(path.size() > pathLength){
-        path.remove(0);
+    if(path.size() > pathLength){
+        path.remove(0, path.size() - pathLength);
     }
 }
 
