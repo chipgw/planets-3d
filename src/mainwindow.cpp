@@ -69,7 +69,7 @@ void MainWindow::closeEvent(QCloseEvent *e){
 void MainWindow::on_createPlanet_PushButton_clicked(){
     ui->centralwidget->universe.selected = ui->centralwidget->universe.addPlanet(
                 Planet(QVector3D(ui->newPosX_SpinBox->value(),      ui->newPosY_SpinBox->value(),      ui->newPosZ_SpinBox->value()),
-                       QVector3D(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * velocityfac,
+                       QVector3D(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * PlanetsUniverse::velocityfac,
                        ui->newMass_SpinBox->value()));
 }
 
@@ -210,7 +210,7 @@ void MainWindow::on_trailRecordDistanceDoubleSpinBox_valueChanged(double value){
 }
 
 void MainWindow::on_firingVelocityDoubleSpinBox_valueChanged(double value){
-    ui->centralwidget->firingSpeed = value * velocityfac;
+    ui->centralwidget->firingSpeed = value * PlanetsUniverse::velocityfac;
 }
 
 void MainWindow::on_firingMassSpinBox_valueChanged(int value){
@@ -232,3 +232,5 @@ void MainWindow::on_actionPlanet_Colors_toggled(bool value){
 void MainWindow::on_actionGenerate_Random_triggered(){
     ui->centralwidget->universe.generateRandom(10);
 }
+
+const int MainWindow::speeddialmax = 32;

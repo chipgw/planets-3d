@@ -5,13 +5,13 @@
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this),
     drawGrid(false), gridRange(50), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false),
-    framecount(0), placingStep(None), refreshRate(16), firingSpeed(velocityfac * 10.0f), firingMass(25.0f) {
+    framecount(0), placingStep(None), refreshRate(16), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f) {
 
 #ifndef NDEBUG
     refreshRate = 0;
 #endif
 
-    placing.velocity.setY(velocityfac);
+    placing.velocity.setY(PlanetsUniverse::velocityfac);
 
     setMouseTracking(true);
 
@@ -139,7 +139,7 @@ void PlanetsWidget::paintGL() {
         drawPlanetWireframe(placing);
 
         if(placingStep == FreeVelocity){
-            float length = placing.velocity.length() / velocityfac;
+            float length = placing.velocity.length() / PlanetsUniverse::velocityfac;
 
             if(length > 0.0f){
                 QMatrix4x4 matrix;
@@ -367,7 +367,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
         case OrbitalPlane:
             if(universe.isValid(universe.selected)){
                 Planet &selected = universe[universe.selected];
-                float speed = sqrt((selected.mass() * selected.mass() * gravityconst) / ((selected.mass() + placing.mass()) * placingOrbitalRadius));
+                float speed = sqrt((selected.mass() * selected.mass() * PlanetsUniverse::gravityconst) / ((selected.mass() + placing.mass()) * placingOrbitalRadius));
                 QVector3D velocity = placingRotation.column(1).toVector3D() * speed;
                 universe.selected = universe.addPlanet(Planet(placing.position, selected.velocity + velocity, placing.mass()));
                 selected.velocity -= velocity * (placing.mass() / selected.mass());
@@ -409,7 +409,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
         placing.setMass(qMax(placing.mass() + e->delta() * placing.mass() * 1.0e-3f, 0.01f));
         break;
     case FreeVelocity:
-        placing.velocity = placingRotation.column(2).toVector3D() * qMax(0.0f, float(placing.velocity.length() + e->delta() * velocityfac * 1.0e-3f));
+        placing.velocity = placingRotation.column(2).toVector3D() * qMax(0.0f, float(placing.velocity.length() + e->delta() * PlanetsUniverse::velocityfac * 1.0e-3f));
         break;
     default:
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;

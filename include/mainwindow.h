@@ -9,9 +9,6 @@ namespace Ui {
 class MainWindow;
 }
 
-// the maximum value of the simulation speed dial as a float.
-const int speeddialmax = 32;
-
 class MainWindow : public QMainWindow {
     Q_OBJECT
     
@@ -54,6 +51,9 @@ private slots:
     void on_actionGenerate_Random_triggered();
 
 private:
+    // the maximum value of the simulation speed dial.
+    static const int speeddialmax;
+
     Ui::MainWindow *ui;
 
     QLabel *planetCountLabel;

@@ -271,3 +271,7 @@ void PlanetsUniverse::sizeChanged(){
         emit updatePlanetCountMessage(tr("%1 planets").arg(planets_p.size()));
     }
 }
+
+const float PlanetsUniverse::gravityconst = 6.67e-11f;
+
+const float PlanetsUniverse::velocityfac = 1.0e-5f;
