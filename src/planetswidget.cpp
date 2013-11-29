@@ -121,8 +121,8 @@ void PlanetsWidget::paintGL() {
         for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
             drawPlanetWireframe(i.value(), i.key());
         }
-    }else if(universe.isValid(universe.selected)){
-        drawPlanetWireframe(universe[universe.selected]);
+    }else if(universe.isSelectedValid()){
+        drawPlanetWireframe(universe.getSelected());
     }
 
     if(drawPlanetTrails){
@@ -189,9 +189,9 @@ void PlanetsWidget::paintGL() {
         }
     }
 
-    if((placingStep == OrbitalPlane || placingStep == OrbitalPlanet) && universe.isValid(universe.selected)){
+    if((placingStep == OrbitalPlane || placingStep == OrbitalPlanet) && universe.isSelectedValid()){
         QMatrix4x4 matrix;
-        matrix.translate(universe[universe.selected].position);
+        matrix.translate(universe.getSelected().position);
         matrix.scale(placingOrbitalRadius);
         matrix *= placingRotation;
         shaderColor.setUniformValue("modelMatrix", matrix);
@@ -271,7 +271,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         QCursor::setPos(mapToGlobal(lastmousepos));
         return;
     case OrbitalPlanet:
-        if(universe.isValid(universe.selected)){
+        if(universe.isSelectedValid()){
             QVector3D windowCoord((2.0f * e->x())  / width()  - 1.0f,
                                   (2.0f * -e->y()) / height() + 1.0f, 0.0f);
 
@@ -283,8 +283,8 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
             QVector3D ray = origin - (inv * windowCoord);
 
-            placing.position = origin + (ray * ((universe[universe.selected].position.z() - origin.z()) / ray.z()));
-            QVector3D relative = placing.position - universe[universe.selected].position;
+            placing.position = origin + (ray * ((universe.getSelected().position.z() - origin.z()) / ray.z()));
+            QVector3D relative = placing.position - universe.getSelected().position;
             placingOrbitalRadius = relative.length();
             placingRotation.setToIdentity();
             relative.normalize();
@@ -293,10 +293,10 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         }
         break;
     case OrbitalPlane:
-        if(universe.isValid(universe.selected)){
+        if(universe.isSelectedValid()){
             placingRotation.rotate((lastmousepos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
             placingRotation.rotate((lastmousepos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
-            placing.position = universe[universe.selected].position + placingRotation.column(0).toVector3D() * placingOrbitalRadius;
+            placing.position = universe.getSelected().position + placingRotation.column(0).toVector3D() * placingOrbitalRadius;
             QCursor::setPos(mapToGlobal(lastmousepos));
             return;
         }
@@ -357,7 +357,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             break;
         }
         case OrbitalPlanet:
-            if(universe.isValid(universe.selected)){
+            if(universe.isSelectedValid()){
                 placingStep = OrbitalPlane;
                 setCursor(Qt::BlankCursor);
                 break;
@@ -365,8 +365,8 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             placingStep = None;
             break;
         case OrbitalPlane:
-            if(universe.isValid(universe.selected)){
-                Planet &selected = universe[universe.selected];
+            if(universe.isSelectedValid()){
+                Planet &selected = universe.getSelected();
                 float speed = sqrt((selected.mass() * selected.mass() * PlanetsUniverse::gravityconst) / ((selected.mass() + placing.mass()) * placingOrbitalRadius));
                 QVector3D velocity = placingRotation.column(1).toVector3D() * speed;
                 universe.selected = universe.addPlanet(Planet(placing.position, selected.velocity + velocity, placing.mass()));
@@ -434,7 +434,7 @@ void PlanetsWidget::enableFiringMode(bool enable){
 }
 
 void PlanetsWidget::beginOrbitalCreation(){
-    if(universe.isValid(universe.selected)){
+    if(universe.isSelectedValid()){
         placingStep = OrbitalPlanet;
     }
 }

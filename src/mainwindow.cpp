@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
 
     connect(ui->actionCenter_All,                       SIGNAL(triggered()),        &ui->centralwidget->universe,   SLOT(centerAll()));
+    connect(ui->actionDelete,                           SIGNAL(triggered()),        &ui->centralwidget->universe,   SLOT(deleteSelected()));
     connect(ui->actionInteractive_Planet_Placement,     SIGNAL(triggered()),        ui->centralwidget,              SLOT(beginInteractiveCreation()));
     connect(ui->actionInteractive_Orbital_Placement,    SIGNAL(triggered()),        ui->centralwidget,              SLOT(beginOrbitalCreation()));
     connect(ui->actionToggle_Firing_Mode,               SIGNAL(toggled(bool)),      ui->centralwidget,              SLOT(enableFiringMode(bool)));
@@ -59,8 +60,7 @@ void MainWindow::closeEvent(QCloseEvent *e){
         if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
                                 QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::No){
             ui->centralwidget->universe.simspeed = tmpsimspeed;
-            e->ignore();
-            return;
+            return e->ignore();
         }
     }
     e->accept();
@@ -73,13 +73,9 @@ void MainWindow::on_createPlanet_PushButton_clicked(){
                        ui->newMass_SpinBox->value()));
 }
 
-void MainWindow::on_actionDelete_triggered(){
-    ui->centralwidget->universe.remove(ui->centralwidget->universe.selected);
-}
-
 void MainWindow::on_actionClear_Velocity_triggered(){
-    if(ui->centralwidget->universe.isValid(ui->centralwidget->universe.selected)){
-        ui->centralwidget->universe[ui->centralwidget->universe.selected].velocity = QVector3D();
+    if(ui->centralwidget->universe.isSelectedValid()){
+        ui->centralwidget->universe.getSelected().velocity = QVector3D();
     }
 }
 

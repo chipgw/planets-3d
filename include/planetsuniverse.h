@@ -39,6 +39,8 @@ public:
     bool isValid(const QRgb &key);
     void remove(const QRgb &key);
     Planet &operator [] (const QRgb &key);
+    bool isSelectedValid();
+    Planet &getSelected();
 
     typedef QMap<QRgb, Planet>::const_iterator const_iterator;
     const_iterator begin();
@@ -48,6 +50,7 @@ public:
 public slots:
     void centerAll();
     void deleteAll();
+    void deleteSelected();
 
 signals:
     void updatePlanetCountMessage(const QString &text);

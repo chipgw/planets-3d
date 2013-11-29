@@ -18,7 +18,6 @@ public:
     
 private slots:
     void on_createPlanet_PushButton_clicked();
-    void on_actionDelete_triggered();
     void on_actionClear_Velocity_triggered();
 
     void on_speed_Dial_valueChanged(int value);

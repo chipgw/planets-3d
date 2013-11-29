@@ -211,6 +211,10 @@ void PlanetsUniverse::deleteAll(){
     sizeChanged();
 }
 
+void PlanetsUniverse::deleteSelected(){
+    planets_p.remove(selected);
+}
+
 void PlanetsUniverse::centerAll(){
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
@@ -250,6 +254,14 @@ void PlanetsUniverse::remove(const QRgb &key){
 
 Planet &PlanetsUniverse::operator [] (const QRgb &key){
     return planets_p[key];
+}
+
+bool PlanetsUniverse::isSelectedValid(){
+    return planets_p.contains(selected);
+}
+
+Planet &PlanetsUniverse::getSelected(){
+    return planets_p[selected];
 }
 
 PlanetsUniverse::const_iterator PlanetsUniverse::begin(){
