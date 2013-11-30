@@ -196,12 +196,11 @@ QRgb PlanetsUniverse::addPlanet(const Planet &planet, QRgb colorhint){
     return colorhint;
 }
 
-void PlanetsUniverse::generateRandom(const int &count){
-    // TODO - add more arguments and UI.
+void PlanetsUniverse::generateRandom(const int &count, const float &range, const float &velocity, const float &mass){
     for(int i = 0; i < count; ++i){
-        addPlanet(Planet(QVector3D(float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f) * 1.0e3f,
-                         QVector3D(float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f) * 1.0e-5f,
-                         (float(qrand()) / RAND_MAX) * 2.0e2f));
+        addPlanet(Planet(QVector3D(float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f) * range,
+                         QVector3D(float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f) * velocity,
+                         (float(qrand()) / RAND_MAX) * mass));
     }
 }
 

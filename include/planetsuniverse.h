@@ -26,7 +26,7 @@ public:
     int stepsPerFrame;
 
     QRgb addPlanet(const Planet &planet, QRgb colorhint = 0);
-    void generateRandom(const int &count);
+    void generateRandom(const int &count, const float &range, const float &velocity, const float &mass);
 
     bool save(const QString& filename);
     bool load(const QString& filename);
