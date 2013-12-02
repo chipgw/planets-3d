@@ -43,7 +43,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionRandom_Settings,      SIGNAL(toggled(bool)),              ui->randomSettings_DockWidget,  SLOT(setVisible(bool)));
     connect(ui->randomSettings_DockWidget,  SIGNAL(visibilityChanged(bool)),    ui->actionRandom_Settings,      SLOT(setChecked(bool)));
 
-    ui->actionNew_Planet->setChecked(false);
     ui->actionFiring_Mode_Settings->setChecked(false);
     ui->actionRandom_Settings->setChecked(false);
 }
