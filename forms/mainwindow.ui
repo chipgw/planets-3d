@@ -343,7 +343,6 @@
    <addaction name="actionNew_Simulation"/>
    <addaction name="actionCenter_All"/>
    <addaction name="actionInteractive_Planet_Placement"/>
-   <addaction name="actionToggle_Firing_Mode"/>
    <addaction name="actionInteractive_Orbital_Placement"/>
   </widget>
   <widget class="QDockWidget" name="camera_DockWidget">
@@ -547,6 +546,16 @@
        </property>
        <property name="maximum">
         <number>1000000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QPushButton" name="toggleFiringModePushButton">
+       <property name="text">
+        <string>Toggle Firing Mode</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -805,14 +814,6 @@
    </property>
    <property name="text">
     <string>Planet Colors</string>
-   </property>
-  </action>
-  <action name="actionToggle_Firing_Mode">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Toggle Firing Mode</string>
    </property>
   </action>
   <action name="actionNew_Planet">
