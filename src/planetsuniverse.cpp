@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <qmath.h>
 
-PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(100) {}
+PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20) {}
 
 bool PlanetsUniverse::load(const QString &filename){
     if(!QFile::exists(filename)){
