@@ -212,6 +212,7 @@ void PlanetsUniverse::deleteAll(){
 
 void PlanetsUniverse::deleteSelected(){
     planets_p.remove(selected);
+    sizeChanged();
 }
 
 void PlanetsUniverse::centerAll(){
