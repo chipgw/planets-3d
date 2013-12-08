@@ -61,6 +61,7 @@ private:
     const static Sphere<32, 16> lowResSphere;
     const static Circle<64> circle;
 
+    const static QColor trailColor;
     const static QColor gridColor;
     unsigned int gridRange;
     QVector<QVector2D> gridPoints;

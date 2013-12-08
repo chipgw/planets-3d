@@ -127,7 +127,7 @@ void PlanetsWidget::paintGL() {
 
     if(drawPlanetTrails){
         shaderColor.setUniformValue("modelMatrix", QMatrix4x4());
-        shaderColor.setUniformValue("color", QColor(Qt::white));
+        shaderColor.setUniformValue("color", trailColor);
 
         for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
             shaderColor.setAttributeArray("vertex", GL_FLOAT, i.value().path.data(), 3);
@@ -237,7 +237,7 @@ void PlanetsWidget::paintGL() {
 
     framecount++;
 
-    emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount / (totalTime.elapsed() * 1.0e-3f)));
+    emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount * 1.0e3f / totalTime.elapsed()));
     emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e3f / delay));
 }
 
@@ -496,6 +496,7 @@ void PlanetsWidget::setGridRange(int value){
     updateGrid();
 }
 
+const QColor PlanetsWidget::trailColor = QColor(0xcc, 0xff, 0xff, 0xff);
 const QColor PlanetsWidget::gridColor = QColor(0xcc, 0xff, 0xff, 0x66);
 
 const Sphere<64, 32> PlanetsWidget::highResSphere = Sphere<64, 32>();
