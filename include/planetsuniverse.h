@@ -50,6 +50,7 @@ public:
 public slots:
     void centerAll();
     void deleteAll();
+    void deleteEscapees();
     void deleteSelected();
 
 signals:

@@ -210,6 +210,28 @@ void PlanetsUniverse::deleteAll(){
     sizeChanged();
 }
 
+void PlanetsUniverse::deleteEscapees(){
+    QVector3D averagePosition, averageVelocity;
+    float totalmass = 0.0f;
+
+    foreach(const Planet &planet, planets_p){
+        averagePosition += planet.position * planet.mass();
+        averageVelocity += planet.velocity * planet.mass();
+        totalmass += planet.mass();
+    }
+
+    averagePosition /= totalmass;
+    averageVelocity /= totalmass;
+
+    float limits = 1.0e8f;
+
+    for(planet_iterator i = planets_p.begin(); i != planets_p.end(); ++i){
+        if((i.value().position - averagePosition).lengthSquared() > limits){
+            i = planets_p.erase(i);
+        }
+    }
+}
+
 void PlanetsUniverse::deleteSelected(){
     planets_p.remove(selected);
     sizeChanged();

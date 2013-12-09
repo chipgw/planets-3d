@@ -344,6 +344,7 @@
    <addaction name="actionCenter_All"/>
    <addaction name="actionInteractive_Planet_Placement"/>
    <addaction name="actionInteractive_Orbital_Placement"/>
+   <addaction name="actionDelete_Escapees"/>
   </widget>
   <widget class="QDockWidget" name="camera_DockWidget">
    <property name="windowTitle">
@@ -924,6 +925,18 @@
    </property>
    <property name="text">
     <string>Random Settings</string>
+   </property>
+  </action>
+  <action name="actionDelete_Escapees">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/silk/delete.png</normaloff>:/icons/silk/delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Escapees</string>
+   </property>
+   <property name="toolTip">
+    <string>Deletes all planets too far from the universe center to see.</string>
    </property>
   </action>
  </widget>
