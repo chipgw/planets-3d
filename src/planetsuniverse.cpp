@@ -211,6 +211,8 @@ void PlanetsUniverse::deleteAll(){
 }
 
 void PlanetsUniverse::deleteEscapees(){
+    int planetcount = planets_p.size();
+
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
 
@@ -229,6 +231,10 @@ void PlanetsUniverse::deleteEscapees(){
         if((i.value().position - averagePosition).lengthSquared() > limits){
             i = planets_p.erase(i);
         }
+    }
+
+    if(planetcount != planets_p.size()){
+        sizeChanged();
     }
 }
 
