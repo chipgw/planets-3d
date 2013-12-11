@@ -428,7 +428,7 @@ void PlanetsWidget::enableFiringMode(bool enable){
     if(enable){
         placingStep = Firing;
         universe.selected = 0;
-    }else{
+    }else if(placingStep == Firing){
         placingStep = None;
     }
 }
@@ -459,7 +459,7 @@ void PlanetsWidget::drawPlanetColor(const Planet &planet, const QRgb &color){
 
     QMatrix4x4 matrix;
     matrix.translate(planet.position);
-    matrix.scale(planet.radius() * 1.02f);
+    matrix.scale(planet.radius() * 1.05f);
     shaderColor.setUniformValue("modelMatrix", matrix);
 
     shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts, 3);
