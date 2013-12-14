@@ -10,7 +10,7 @@
 class PlanetsUniverse : public QObject {
     Q_OBJECT
 private:
-    QMap<QRgb, Planet> planets_p;
+    QMap<QRgb, Planet> planets;
     void sizeChanged();
     typedef QMap<QRgb, Planet>::iterator planet_iterator;
 

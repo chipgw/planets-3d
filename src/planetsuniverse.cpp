@@ -96,7 +96,7 @@ bool PlanetsUniverse::save(const QString &filename){
     xml.writeStartDocument();
     xml.writeStartElement("planets-3d-universe");
 
-    for(QMap<QRgb, Planet>::const_iterator i = planets_p.constBegin(); i != planets_p.constEnd(); ++i){
+    for(const_iterator i = planets.constBegin(); i != planets.constEnd(); ++i){
         const Planet &planet = i.value();
 
         xml.writeStartElement("planet"); {
@@ -130,18 +130,18 @@ bool PlanetsUniverse::save(const QString &filename){
 }
 
 void PlanetsUniverse::advance(float time){
-    int planetcount = planets_p.size();
+    int planetcount = planets.size();
     time *= simspeed;
     time /= stepsPerFrame;
 
     for(int s = 0; s < stepsPerFrame; ++s){
-        for(planet_iterator i = planets_p.begin(); i != planets_p.end();){
+        for(planet_iterator i = planets.begin(); i != planets.end();){
             Planet &planet = i.value();
 
             if(planet.mass() <= 0.0f){
-                i = planets_p.erase(i);
+                i = planets.erase(i);
             }else{
-                for(planet_iterator o = i + 1; o != planets_p.end();){
+                for(planet_iterator o = i + 1; o != planets.end();){
                     Planet &other = o.value();
 
                     QVector3D direction = other.position - planet.position;
@@ -157,7 +157,7 @@ void PlanetsUniverse::advance(float time){
                             selected = i.key();
                         }
                         planet.path.clear();
-                        o = planets_p.erase(o);
+                        o = planets.erase(o);
                     }else{
                         direction.normalize();
                         direction *= gravityconst * ((other.mass() * planet.mass()) / distancesqr) * time;
@@ -175,7 +175,7 @@ void PlanetsUniverse::advance(float time){
             }
         }
     }
-    if(planetcount != planets_p.size()){
+    if(planetcount != planets.size()){
         sizeChanged();
     }
 }
@@ -187,11 +187,11 @@ QRgb PlanetsUniverse::addPlanet(const Planet &planet, QRgb colorhint){
         colorhint = qrand() | ~RGB_MASK;
     }
 
-    while(planets_p.contains(colorhint)){
+    while(planets.contains(colorhint)){
         colorhint = qrand() | ~RGB_MASK;
     }
 
-    planets_p[colorhint] = planet;
+    planets[colorhint] = planet;
     sizeChanged();
     return colorhint;
 }
@@ -205,18 +205,18 @@ void PlanetsUniverse::generateRandom(const int &count, const float &range, const
 }
 
 void PlanetsUniverse::deleteAll(){
-    planets_p.clear();
+    planets.clear();
     selected = 0;
     sizeChanged();
 }
 
 void PlanetsUniverse::deleteEscapees(){
-    int planetcount = planets_p.size();
+    int planetcount = planets.size();
 
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
 
-    foreach(const Planet &planet, planets_p){
+    foreach(const Planet &planet, planets){
         averagePosition += planet.position * planet.mass();
         averageVelocity += planet.velocity * planet.mass();
         totalmass += planet.mass();
@@ -227,21 +227,21 @@ void PlanetsUniverse::deleteEscapees(){
 
     float limits = 1.0e8f;
 
-    for(planet_iterator i = planets_p.begin(); i != planets_p.end();){
+    for(planet_iterator i = planets.begin(); i != planets.end();){
         if((i.value().position - averagePosition).lengthSquared() > limits){
-            i = planets_p.erase(i);
+            i = planets.erase(i);
         } else{
             ++i;
         }
     }
 
-    if(planetcount != planets_p.size()){
+    if(planetcount != planets.size()){
         sizeChanged();
     }
 }
 
 void PlanetsUniverse::deleteSelected(){
-    planets_p.remove(selected);
+    planets.remove(selected);
     sizeChanged();
 }
 
@@ -249,7 +249,7 @@ void PlanetsUniverse::centerAll(){
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
 
-    foreach(const Planet &planet, planets_p){
+    foreach(const Planet &planet, planets){
         averagePosition += planet.position * planet.mass();
         averageVelocity += planet.velocity * planet.mass();
         totalmass += planet.mass();
@@ -259,7 +259,7 @@ void PlanetsUniverse::centerAll(){
     averageVelocity /= totalmass;
 
     if(!averagePosition.isNull() || !averageVelocity.isNull()){
-        for(planet_iterator i = planets_p.begin(); i != planets_p.end(); ++i){
+        for(planet_iterator i = planets.begin(); i != planets.end(); ++i){
             Planet &planet = i.value();
 
             planet.position -= averagePosition;
@@ -270,47 +270,47 @@ void PlanetsUniverse::centerAll(){
 }
 
 bool PlanetsUniverse::isEmpty(){
-    return planets_p.isEmpty();
+    return planets.isEmpty();
 }
 
 bool PlanetsUniverse::isValid(const QRgb &key){
-    return planets_p.contains(key);
+    return planets.contains(key);
 }
 
 void PlanetsUniverse::remove(const QRgb &key){
-    planets_p.remove(key);
+    planets.remove(key);
     sizeChanged();
 }
 
 Planet &PlanetsUniverse::operator [] (const QRgb &key){
-    return planets_p[key];
+    return planets[key];
 }
 
 bool PlanetsUniverse::isSelectedValid(){
-    return planets_p.contains(selected);
+    return planets.contains(selected);
 }
 
 Planet &PlanetsUniverse::getSelected(){
-    return planets_p[selected];
+    return planets[selected];
 }
 
 PlanetsUniverse::const_iterator PlanetsUniverse::begin(){
-    return planets_p.constBegin();
+    return planets.constBegin();
 }
 
 PlanetsUniverse::const_iterator PlanetsUniverse::end(){
-    return planets_p.constEnd();
+    return planets.constEnd();
 }
 
 int PlanetsUniverse::size(){
-    return planets_p.size();
+    return planets.size();
 }
 
 void PlanetsUniverse::sizeChanged(){
-    if(planets_p.size() == 1){
+    if(planets.size() == 1){
         emit updatePlanetCountMessage(tr("1 planet"));
     }else{
-        emit updatePlanetCountMessage(tr("%1 planets").arg(planets_p.size()));
+        emit updatePlanetCountMessage(tr("%1 planets").arg(planets.size()));
     }
 }
 
