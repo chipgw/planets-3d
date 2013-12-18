@@ -181,13 +181,9 @@ void PlanetsUniverse::advance(float time){
 }
 
 QRgb PlanetsUniverse::addPlanet(const Planet &planet, QRgb colorhint){
-    if(colorhint != 0){
-        colorhint = colorhint | ~RGB_MASK;
-    }else{
-        colorhint = qrand() | ~RGB_MASK;
-    }
+    colorhint |= ~RGB_MASK;
 
-    while(planets.contains(colorhint)){
+    while(planets.contains(colorhint) || (colorhint & RGB_MASK) == 0){
         colorhint = qrand() | ~RGB_MASK;
     }
 
