@@ -1,3 +1,5 @@
+set(CMAKE_BUILD_TYPE_INIT "Debug")
+
 project(Planets3D)
 cmake_minimum_required(VERSION 2.8)
 
