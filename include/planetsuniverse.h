@@ -35,17 +35,18 @@ public:
 
     void advance(float time);
 
-    bool isEmpty();
-    bool isValid(const QRgb &key);
-    void remove(const QRgb &key);
-    Planet &operator [] (const QRgb &key);
-    bool isSelectedValid();
-    Planet &getSelected();
+    inline bool isEmpty() { return planets.isEmpty(); }
+    inline bool isValid(const QRgb &key) { return planets.contains(key); }
+    inline void remove(const QRgb &key) { planets.remove(key); sizeChanged(); }
+    inline Planet &operator [] (const QRgb &key) { return planets[key]; }
+
+    inline bool isSelectedValid() { return planets.contains(selected); }
+    inline Planet &getSelected() { return planets[selected]; }
 
     typedef QMap<QRgb, Planet>::const_iterator const_iterator;
-    const_iterator begin();
-    const_iterator end();
-    int size();
+    inline const_iterator begin() { return planets.constBegin(); }
+    inline const_iterator end() { return planets.constEnd(); }
+    inline int size() { return planets.size(); }
 
 public slots:
     void centerAll();

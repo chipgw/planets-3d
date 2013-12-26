@@ -265,43 +265,6 @@ void PlanetsUniverse::centerAll(){
     }
 }
 
-bool PlanetsUniverse::isEmpty(){
-    return planets.isEmpty();
-}
-
-bool PlanetsUniverse::isValid(const QRgb &key){
-    return planets.contains(key);
-}
-
-void PlanetsUniverse::remove(const QRgb &key){
-    planets.remove(key);
-    sizeChanged();
-}
-
-Planet &PlanetsUniverse::operator [] (const QRgb &key){
-    return planets[key];
-}
-
-bool PlanetsUniverse::isSelectedValid(){
-    return planets.contains(selected);
-}
-
-Planet &PlanetsUniverse::getSelected(){
-    return planets[selected];
-}
-
-PlanetsUniverse::const_iterator PlanetsUniverse::begin(){
-    return planets.constBegin();
-}
-
-PlanetsUniverse::const_iterator PlanetsUniverse::end(){
-    return planets.constEnd();
-}
-
-int PlanetsUniverse::size(){
-    return planets.size();
-}
-
 void PlanetsUniverse::sizeChanged(){
     if(planets.size() == 1){
         emit updatePlanetCountMessage(tr("1 planet"));
