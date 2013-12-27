@@ -10,7 +10,7 @@ int main(int argc, char *argv[]){
 
     a.setOrganizationName("chipgw");
     a.setApplicationName("Planets3D");
-    a.setApplicationVersion(version::getVersionString());
+    a.setApplicationVersion(version::git_revision);
 
     MainWindow w;
     w.showMaximized();

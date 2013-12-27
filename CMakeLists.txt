@@ -5,9 +5,6 @@ cmake_minimum_required(VERSION 2.8)
 
 option(PLANETS3D_USE_QT4 "use Qt 4 rather than Qt 5." OFF)
 
-set(Planets3D_VERSION_MAJOR 0)
-set(Planets3D_VERSION_MINOR 4)
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 

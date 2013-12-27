@@ -172,7 +172,6 @@ void MainWindow::on_actionAbout_triggered(){
 
     QMessageBox::about(this, tr("About Planets3D"),
                        tr("<html><head/><body>"
-                          "<h1>Planets3D %1</h1>"
                           "<p>Planets3D is a simple 3D gravitational simulator</p>"
                           "<p>Website: <a href=\"https://github.com/chipgw/planets-3d\">github.com/chipgw/planets-3d</a></p>"
                           "<p>Build Info:</p><ul>"
@@ -180,7 +179,6 @@ void MainWindow::on_actionAbout_triggered(){
                           "<li>Build type: %3</li>"
                           "<li>Compiler: %4</li>"
                           "</ul></body></html>")
-                       .arg(version::getVersionString())
                        .arg(version::git_revision)
                        .arg(version::build_type)
                        .arg(version::compiler));
