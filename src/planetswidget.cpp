@@ -302,7 +302,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         }
         break;
     default:
-        if(e->buttons().testFlag(Qt::MiddleButton)){
+        if(e->buttons().testFlag(Qt::MiddleButton) || e->buttons().testFlag(Qt::RightButton)){
             camera.xrotation += (lastmousepos.y() - e->y()) * 0.2f;
             camera.zrotation += (lastmousepos.x() - e->x()) * 0.2f;
 
@@ -395,7 +395,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 }
 
 void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
-    if(e->button() == Qt::MiddleButton){
+    if(e->button() == Qt::MiddleButton || e->button() == Qt::RightButton){
         setCursor(Qt::ArrowCursor);
     }
 }
