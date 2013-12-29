@@ -342,13 +342,13 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             break;
         case Firing:{
             QVector3D windowCoord((2.0f * e->x())  / width()  - 1.0f,
-                                  (2.0f * -e->y()) / height() + 1.0f, 0.8f);
+                                  (2.0f * -e->y()) / height() + 1.0f, 0.96f);
 
             QMatrix4x4 inv = camera.setup().inverted();
 
             QVector3D origin = inv * windowCoord;
 
-            windowCoord.setZ(0.7f);
+            windowCoord.setZ(0.0f);
 
             QVector3D velocity = origin - (inv * windowCoord);
 
