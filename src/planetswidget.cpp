@@ -229,7 +229,7 @@ void PlanetsWidget::paintGL() {
 
         QImage img = grabFrameBuffer();
         if(!img.isNull() && img.save(filename)){
-            qDebug() << "Screenshot saved to:" << filename;
+            qDebug("Screenshot saved to: %s", qPrintable(filename));
         }
     }
 
