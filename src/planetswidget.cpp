@@ -319,8 +319,18 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 }
 
 void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
-    if(e->button() == Qt::MiddleButton){
+    switch(e->button()){
+    case Qt::LeftButton:
+        if(universe.isSelectedValid()){
+            following = universe.selected;
+            followState = Single;
+        }else{
+            followState = FollowNone;
+        }
+        break;
+    case Qt::MiddleButton:
         camera.reset();
+        break;
     }
 }
 
