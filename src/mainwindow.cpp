@@ -36,8 +36,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->newPlanet_DockWidget,       SIGNAL(visibilityChanged(bool)),    ui->actionNew_Planet,           SLOT(setChecked(bool)));
     connect(ui->actionSpeed_Control,        SIGNAL(toggled(bool)),              ui->speedControl_DockWidget,    SLOT(setVisible(bool)));
     connect(ui->speedControl_DockWidget,    SIGNAL(visibilityChanged(bool)),    ui->actionSpeed_Control,        SLOT(setChecked(bool)));
-    connect(ui->actionCamera_Location,      SIGNAL(toggled(bool)),              ui->camera_DockWidget,          SLOT(setVisible(bool)));
-    connect(ui->camera_DockWidget,          SIGNAL(visibilityChanged(bool)),    ui->actionCamera_Location,      SLOT(setChecked(bool)));
     connect(ui->actionView_Settings,        SIGNAL(toggled(bool)),              ui->viewSettings_DockWidget,    SLOT(setVisible(bool)));
     connect(ui->viewSettings_DockWidget,    SIGNAL(visibilityChanged(bool)),    ui->actionView_Settings,        SLOT(setChecked(bool)));
     connect(ui->actionFiring_Mode_Settings, SIGNAL(toggled(bool)),              ui->firingSettings_DockWidget,  SLOT(setVisible(bool)));
@@ -148,21 +146,21 @@ void MainWindow::on_actionSave_Simulation_triggered(){
     ui->centralwidget->universe.simspeed = tmpsimspeed;
 }
 
-void MainWindow::on_followPlanetPushButton_clicked(){
+void MainWindow::on_actionFollow_Selection_triggered(){
     ui->centralwidget->following = ui->centralwidget->universe.selected;
     ui->centralwidget->followState = PlanetsWidget::Single;
 }
 
-void MainWindow::on_clearFollowPushButton_clicked(){
+void MainWindow::on_actionClear_Follow_triggered(){
     ui->centralwidget->following = 0;
     ui->centralwidget->followState = PlanetsWidget::FollowNone;
 }
 
-void MainWindow::on_followPlainAveragePushButton_clicked(){
+void MainWindow::on_actionPlain_Average_triggered(){
     ui->centralwidget->followState = PlanetsWidget::PlainAverage;
 }
 
-void MainWindow::on_followWeightedAveragePushButton_clicked(){
+void MainWindow::on_actionWeighted_Average_triggered(){
     ui->centralwidget->followState = PlanetsWidget::WeightedAverage;
 }
 
