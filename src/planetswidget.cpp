@@ -80,9 +80,8 @@ void PlanetsWidget::paintGL() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if(followState == Single && universe.isValid(following)){
-        camera.position = universe[following].position;
-    }else if(followState == WeightedAverage){
+    switch(followState){
+    case WeightedAverage:{
         camera.position = QVector3D();
         float totalmass = 0.0f;
 
@@ -91,14 +90,22 @@ void PlanetsWidget::paintGL() {
             totalmass += i.value().mass();
         }
         camera.position /= totalmass;
-    }else if(followState == PlainAverage){
+        break;
+    }
+    case PlainAverage:
         camera.position = QVector3D();
 
         for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
             camera.position += i.value().position;
         }
         camera.position /= universe.size();
-    }else{
+        break;
+    case Single:
+        if(universe.isValid(following)){
+            camera.position = universe[following].position;
+            break;
+        }
+    default:
         camera.position = QVector3D();
     }
 
