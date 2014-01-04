@@ -45,7 +45,7 @@ private:
     bool doScreenshot;
 
     int framecount;
-
+    int refreshRate;
     QTimer timer;
     QTime frameTime;
     QTime totalTime;
@@ -83,8 +83,6 @@ public:
 
     float firingSpeed;
     float firingMass;
-
-    int refreshRate;
     bool drawGrid;
     bool drawPlanetTrails;
     bool drawPlanetColors;
