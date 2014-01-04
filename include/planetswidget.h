@@ -28,7 +28,7 @@ class PlanetsWidget : public QGLWidget, public QOpenGLFunctions {
     Q_OBJECT
 private:
     enum PlacingStep{
-        None,
+        NotPlacing,
         FreePositionXY,
         FreePositionZ,
         FreeVelocity,

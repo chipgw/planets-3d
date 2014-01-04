@@ -5,7 +5,7 @@
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this),
     drawGrid(false), gridRange(50), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false),
-    framecount(0), placingStep(None), refreshRate(16), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f) {
+    framecount(0), placingStep(NotPlacing), refreshRate(16), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f) {
 
 #ifndef NDEBUG
     refreshRate = 0;
@@ -74,7 +74,7 @@ void PlanetsWidget::resizeGL(int width, int height) {
 void PlanetsWidget::paintGL() {
     int delay = frameTime.restart();
 
-    if(placingStep == None || placingStep == Firing){
+    if(placingStep == NotPlacing || placingStep == Firing){
         universe.advance(delay * 1000.0f);
     }
 
@@ -142,7 +142,7 @@ void PlanetsWidget::paintGL() {
         }
     }
 
-    if(placingStep != None && placingStep != Firing){
+    if(placingStep != NotPlacing && placingStep != Firing){
         drawPlanetWireframe(placing);
 
         if(placingStep == FreeVelocity){
@@ -352,7 +352,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             placingStep = FreeVelocity;
             break;
         case FreeVelocity:
-            placingStep = None;
+            placingStep = NotPlacing;
             placing.velocity = placingRotation.column(2).toVector3D() * placing.velocity.length();
             universe.selected = universe.addPlanet(placing);
             setCursor(Qt::ArrowCursor);
@@ -379,7 +379,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
                 setCursor(Qt::BlankCursor);
                 break;
             }
-            placingStep = None;
+            placingStep = NotPlacing;
             break;
         case OrbitalPlane:
             if(universe.isSelectedValid()){
@@ -389,7 +389,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
                 universe.selected = universe.addPlanet(Planet(placing.position, selected.velocity + velocity, placing.mass()));
                 selected.velocity -= velocity * (placing.mass() / selected.mass());
             }
-            placingStep = None;
+            placingStep = NotPlacing;
             setCursor(Qt::ArrowCursor);
             break;
         default:
@@ -446,7 +446,7 @@ void PlanetsWidget::enableFiringMode(bool enable){
         placingStep = Firing;
         universe.selected = 0;
     }else if(placingStep == Firing){
-        placingStep = None;
+        placingStep = NotPlacing;
     }
 }
 
