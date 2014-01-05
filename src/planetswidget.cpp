@@ -154,7 +154,7 @@ void PlanetsWidget::paintGL() {
                 matrix.scale(placing.radius());
                 matrix *= placingRotation;
                 shaderColor.setUniformValue("modelMatrix", matrix);
-                shaderColor.setUniformValue("color", QColor(Qt::white));
+                shaderColor.setUniformValue("color", trailColor);
 
                 float verts[] = {  0.1f, 0.1f, 0.0f,
                                    0.1f,-0.1f, 0.0f,
@@ -202,7 +202,7 @@ void PlanetsWidget::paintGL() {
         matrix.scale(placingOrbitalRadius);
         matrix *= placingRotation;
         shaderColor.setUniformValue("modelMatrix", matrix);
-        shaderColor.setUniformValue("color", QColor(Qt::white));
+        shaderColor.setUniformValue("color", trailColor);
 
         shaderColor.setAttributeArray("vertex", GL_FLOAT, circle.verts, 3);
         glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
