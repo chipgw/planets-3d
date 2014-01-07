@@ -52,12 +52,26 @@ void PlanetsWidget::initializeGL() {
     shaderColor.enableAttributeArray("vertex");
 
     QImage img(":/textures/planet.png");
-    texture = bindTexture(img);
+
+#ifdef PLANETS3D_USE_QOPENGLTEXTURE
+    texture = new QOpenGLTexture(img.mirrored());
+    texture->setMagnificationFilter(QOpenGLTexture::Linear);
+    texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    texture->bind();
+#else
+    bindTexture(img);
+#endif
 
     if(totalTime.isNull()){
         totalTime.start();
         frameTime.start();
     }
+}
+
+PlanetsWidget::~PlanetsWidget(){
+#ifdef PLANETS3D_USE_QOPENGLTEXTURE
+    delete texture;
+#endif
 }
 
 void PlanetsWidget::resizeGL(int width, int height) {
