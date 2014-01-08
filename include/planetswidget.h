@@ -95,6 +95,7 @@ public:
     bool drawGrid;
     bool drawPlanetTrails;
     bool drawPlanetColors;
+    bool hidePlanets;
 
 signals:
     void updateFPSStatusMessage(const QString &text);

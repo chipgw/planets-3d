@@ -46,6 +46,7 @@ private slots:
     void on_actionGrid_toggled(bool value);
     void on_actionDraw_Paths_toggled(bool value);
     void on_actionPlanet_Colors_toggled(bool value);
+    void on_actionHide_Planets_toggled(bool value);
 
     void on_generateRandomPushButton_clicked();
 

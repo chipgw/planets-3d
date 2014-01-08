@@ -3,7 +3,7 @@
 #include <qmath.h>
 #include <QMouseEvent>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this),
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this), hidePlanets(false),
     drawGrid(false), gridRange(50), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false),
     framecount(0), placingStep(NotPlacing), refreshRate(16), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f) {
 
@@ -123,17 +123,21 @@ void PlanetsWidget::paintGL() {
         camera.position = QVector3D();
     }
 
-    shaderTexture.bind();
-    shaderTexture.setUniformValue("cameraMatrix", camera.setup());
-    shaderTexture.setUniformValue("modelMatrix", QMatrix4x4());
+    camera.setup();
 
-    shaderTexture.enableAttributeArray("uv");
+    if(!hidePlanets){
+        shaderTexture.bind();
+        shaderTexture.setUniformValue("cameraMatrix", camera.camera);
+        shaderTexture.setUniformValue("modelMatrix", QMatrix4x4());
 
-    for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-        drawPlanet(i.value());
+        shaderTexture.enableAttributeArray("uv");
+
+        for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
+            drawPlanet(i.value());
+        }
+
+        shaderTexture.disableAttributeArray("uv");
     }
-
-    shaderTexture.disableAttributeArray("uv");
 
     shaderColor.bind();
     shaderColor.setUniformValue("cameraMatrix", camera.camera);
@@ -142,7 +146,7 @@ void PlanetsWidget::paintGL() {
         for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
             drawPlanetWireframe(i.value(), i.key());
         }
-    }else if(universe.isSelectedValid()){
+    }else if(!hidePlanets && universe.isSelectedValid()){
         drawPlanetWireframe(universe.getSelected());
     }
 

@@ -225,6 +225,10 @@ void MainWindow::on_actionPlanet_Colors_toggled(bool value){
     ui->centralwidget->drawPlanetColors = value;
 }
 
+void MainWindow::on_actionHide_Planets_toggled(bool value){
+    ui->centralwidget->hidePlanets = value;
+}
+
 void MainWindow::on_generateRandomPushButton_clicked(){
     ui->centralwidget->universe.generateRandom(ui->randomAmountSpinBox->value(), ui->randomRangeDoubleSpinBox->value(),
                                                ui->randomSpeedDoubleSpinBox->value() * PlanetsUniverse::velocityfac,

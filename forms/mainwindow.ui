@@ -45,6 +45,7 @@
     <addaction name="actionGrid"/>
     <addaction name="actionDraw_Paths"/>
     <addaction name="actionPlanet_Colors"/>
+    <addaction name="actionHide_Planets"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -915,6 +916,14 @@
   <action name="actionClear_Follow">
    <property name="text">
     <string>Clear Follow</string>
+   </property>
+  </action>
+  <action name="actionHide_Planets">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hide Planets</string>
    </property>
   </action>
  </widget>
