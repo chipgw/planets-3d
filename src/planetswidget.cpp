@@ -354,6 +354,7 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
         }
         break;
     case Qt::MiddleButton:
+    case Qt::RightButton:
         camera.reset();
         break;
     }
