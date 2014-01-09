@@ -17,6 +17,8 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleB
 
     timer.setSingleShot(true);
     connect(&timer, SIGNAL(timeout()), this, SLOT(updateGL()));
+
+    setMinimumSize(QSize(100, 100));
 }
 
 void PlanetsWidget::initializeGL() {
@@ -75,10 +77,6 @@ PlanetsWidget::~PlanetsWidget(){
 }
 
 void PlanetsWidget::resizeGL(int width, int height) {
-    if(height == 0){
-        height = 1;
-    }
-
     glViewport(0, 0, width, height);
 
     camera.projection.setToIdentity();
