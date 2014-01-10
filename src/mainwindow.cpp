@@ -227,6 +227,10 @@ void MainWindow::on_actionPlanet_Colors_toggled(bool value){
 
 void MainWindow::on_actionHide_Planets_toggled(bool value){
     ui->centralwidget->hidePlanets = value;
+
+    if(value){
+        ui->actionDraw_Paths->setChecked(true);
+    }
 }
 
 void MainWindow::on_generateRandomPushButton_clicked(){
