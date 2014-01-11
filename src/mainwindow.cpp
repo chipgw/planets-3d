@@ -45,6 +45,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->actionFiring_Mode_Settings->setChecked(false);
     ui->actionRandom_Settings->setChecked(false);
+
+    const QStringList &arguments = QApplication::arguments();
+
+    foreach (const QString &argument, arguments) {
+        if(argument != QApplication::applicationFilePath() && ui->centralwidget->universe.load(argument)){
+            break;
+        }
+    }
 }
 
 MainWindow::~MainWindow(){
