@@ -54,16 +54,6 @@
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
-   <widget class="QMenu" name="menuTools">
-    <property name="title">
-     <string>Tools</string>
-    </property>
-    <addaction name="actionNew_Planet"/>
-    <addaction name="actionSpeed_Control"/>
-    <addaction name="actionView_Settings"/>
-    <addaction name="actionFiring_Mode_Settings"/>
-    <addaction name="actionRandom_Settings"/>
-   </widget>
    <widget class="QMenu" name="menuCamera">
     <property name="title">
      <string>Camera</string>
@@ -76,7 +66,6 @@
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuCamera"/>
-   <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -343,7 +332,7 @@
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>General Tools</string>
    </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -776,81 +765,6 @@
     <string>Planet Colors</string>
    </property>
   </action>
-  <action name="actionNew_Planet">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/icons/silk/world_add.png</normaloff>:/icons/silk/world_add.png</iconset>
-   </property>
-   <property name="text">
-    <string>New Planet</string>
-   </property>
-  </action>
-  <action name="actionSpeed_Control">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/icons/silk/control_equalizer_blue.png</normaloff>:/icons/silk/control_equalizer_blue.png</iconset>
-   </property>
-   <property name="text">
-    <string>Speed Control</string>
-   </property>
-  </action>
-  <action name="actionCamera_Location">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/icons/silk/camera.png</normaloff>:/icons/silk/camera.png</iconset>
-   </property>
-   <property name="text">
-    <string>Camera Location</string>
-   </property>
-  </action>
-  <action name="actionView_Settings">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/icons/silk/eye.png</normaloff>:/icons/silk/eye.png</iconset>
-   </property>
-   <property name="text">
-    <string>View Settings</string>
-   </property>
-  </action>
-  <action name="actionFiring_Mode_Settings">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/icons/silk/world_add.png</normaloff>:/icons/silk/world_add.png</iconset>
-   </property>
-   <property name="text">
-    <string>Firing Mode Settings</string>
-   </property>
-  </action>
   <action name="actionInteractive_Orbital_Placement">
    <property name="icon">
     <iconset resource="../resources.qrc">
@@ -869,21 +783,6 @@
    </property>
    <property name="text">
     <string>Grid</string>
-   </property>
-  </action>
-  <action name="actionRandom_Settings">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/icons/silk/world_add.png</normaloff>:/icons/silk/world_add.png</iconset>
-   </property>
-   <property name="text">
-    <string>Random Planet Generator</string>
    </property>
   </action>
   <action name="actionDelete_Escapees">

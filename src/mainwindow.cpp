@@ -32,19 +32,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->centralwidget,              SIGNAL(updateFPSStatusMessage(QString)),        fpsLabel,         SLOT(setText(QString)));
     connect(ui->centralwidget,              SIGNAL(updateAverageFPSStatusMessage(QString)), averagefpsLabel,  SLOT(setText(QString)));
 
-    connect(ui->actionNew_Planet,           SIGNAL(toggled(bool)),              ui->newPlanet_DockWidget,       SLOT(setVisible(bool)));
-    connect(ui->newPlanet_DockWidget,       SIGNAL(visibilityChanged(bool)),    ui->actionNew_Planet,           SLOT(setChecked(bool)));
-    connect(ui->actionSpeed_Control,        SIGNAL(toggled(bool)),              ui->speedControl_DockWidget,    SLOT(setVisible(bool)));
-    connect(ui->speedControl_DockWidget,    SIGNAL(visibilityChanged(bool)),    ui->actionSpeed_Control,        SLOT(setChecked(bool)));
-    connect(ui->actionView_Settings,        SIGNAL(toggled(bool)),              ui->viewSettings_DockWidget,    SLOT(setVisible(bool)));
-    connect(ui->viewSettings_DockWidget,    SIGNAL(visibilityChanged(bool)),    ui->actionView_Settings,        SLOT(setChecked(bool)));
-    connect(ui->actionFiring_Mode_Settings, SIGNAL(toggled(bool)),              ui->firingSettings_DockWidget,  SLOT(setVisible(bool)));
-    connect(ui->firingSettings_DockWidget,  SIGNAL(visibilityChanged(bool)),    ui->actionFiring_Mode_Settings, SLOT(setChecked(bool)));
-    connect(ui->actionRandom_Settings,      SIGNAL(toggled(bool)),              ui->randomSettings_DockWidget,  SLOT(setVisible(bool)));
-    connect(ui->randomSettings_DockWidget,  SIGNAL(visibilityChanged(bool)),    ui->actionRandom_Settings,      SLOT(setChecked(bool)));
+    ui->menubar->insertMenu(ui->menuHelp->menuAction(), createPopupMenu())->setText(tr("Tools"));
 
-    ui->actionFiring_Mode_Settings->setChecked(false);
-    ui->actionRandom_Settings->setChecked(false);
+    ui->firingSettings_DockWidget->hide();
+    ui->randomSettings_DockWidget->hide();
 
     const QStringList &arguments = QApplication::arguments();
 
