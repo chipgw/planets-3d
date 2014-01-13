@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
     a.setApplicationVersion(version::git_revision);
 
     MainWindow w;
-    w.showMaximized();
+    w.show();
 
     return a.exec();
 }

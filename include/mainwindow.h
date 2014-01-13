@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSettings>
 
 class QLabel;
 
@@ -53,6 +54,8 @@ private slots:
 private:
     // the maximum value of the simulation speed dial.
     static const int speeddialmax;
+
+    QSettings settings;
 
     Ui::MainWindow *ui;
 
