@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     const QStringList &arguments = QApplication::arguments();
 
     foreach (const QString &argument, arguments) {
-        if(argument != QApplication::applicationFilePath() && ui->centralwidget->universe.load(argument)){
+        if(QFileInfo(argument).filePath() != QApplication::applicationFilePath() && ui->centralwidget->universe.load(argument)){
             break;
         }
     }
