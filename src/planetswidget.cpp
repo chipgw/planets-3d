@@ -515,7 +515,7 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QRgb &color)
 void PlanetsWidget::updateGrid(){
     gridPoints.clear();
 
-    float bounds = (gridRange - 1) / 2.0f;
+    float bounds = gridRange / 2.0f;
     for(float i = -bounds; i <= bounds; i++){
         gridPoints.append(QVector2D(i,-bounds));
         gridPoints.append(QVector2D(i, bounds));
