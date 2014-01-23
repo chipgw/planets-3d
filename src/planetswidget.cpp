@@ -230,7 +230,7 @@ void PlanetsWidget::paintGL() {
         }
 
         QMatrix4x4 matrix;
-        matrix.scale(pow(4.0f, floor(log10(camera.camera.column(3).length()))));
+        matrix.scale(1 << (int(log10(camera.camera.column(3).lengthSquared())) & ~1));
         shaderColor.setUniformValue("modelMatrix", matrix);
         shaderColor.setUniformValue("color", gridColor);
 
