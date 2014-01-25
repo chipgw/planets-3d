@@ -34,4 +34,4 @@ float Planet::mass() const {
 
 unsigned int Planet::pathLength = 200;
 
-float Planet::pathRecordDistance = 0.2f;
+float Planet::pathRecordDistance = 0.25f;
