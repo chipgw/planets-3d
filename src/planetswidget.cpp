@@ -3,6 +3,10 @@
 #include <qmath.h>
 #include <QMouseEvent>
 
+#ifdef PLANETS3D_USE_QOPENGLTEXTURE
+#include <QOpenGLTexture>
+#endif
+
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this), hidePlanets(false),
     drawGrid(false), gridRange(50), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false),
     framecount(0), placingStep(NotPlacing), refreshRate(16), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f) {

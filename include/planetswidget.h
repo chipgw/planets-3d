@@ -14,7 +14,7 @@ class QMouseEvent;
 #include <QOpenGLShader>
 
 #if QT_VERSION >= 0x050200
-#include <QOpenGLTexture>
+class QOpenGLTexture;
 #define PLANETS3D_USE_QOPENGLTEXTURE
 #endif
 #else
