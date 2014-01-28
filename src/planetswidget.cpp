@@ -8,7 +8,7 @@
 #endif
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this), hidePlanets(false),
-    drawGrid(false), gridRange(32), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false),
+    drawGrid(false), gridRange(32), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false), drawScale(1.0f),
     framecount(0), placingStep(NotPlacing), refreshRate(16), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f) {
 
 #ifndef NDEBUG
@@ -484,7 +484,7 @@ void PlanetsWidget::takeScreenshot(){
 void PlanetsWidget::drawPlanet(const Planet &planet){
     QMatrix4x4 matrix;
     matrix.translate(planet.position);
-    matrix.scale(planet.radius());
+    matrix.scale(planet.radius() * drawScale);
     shaderTexture.setUniformValue("modelMatrix", matrix);
 
     shaderTexture.setAttributeArray("vertex", GL_FLOAT, highResSphere.verts, 3);
@@ -497,7 +497,7 @@ void PlanetsWidget::drawPlanetColor(const Planet &planet, const QRgb &color){
 
     QMatrix4x4 matrix;
     matrix.translate(planet.position);
-    matrix.scale(planet.radius() * 1.05f);
+    matrix.scale(planet.radius() * drawScale * 1.05f);
     shaderColor.setUniformValue("modelMatrix", matrix);
 
     shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts, 3);
@@ -509,7 +509,7 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QRgb &color)
 
     QMatrix4x4 matrix;
     matrix.translate(planet.position);
-    matrix.scale(planet.radius() * 1.05f);
+    matrix.scale(planet.radius() * drawScale * 1.05f);
     shaderColor.setUniformValue("modelMatrix", matrix);
 
     shaderColor.setAttributeArray("vertex", GL_FLOAT, lowResSphere.verts, 3);

@@ -92,6 +92,7 @@ public:
 
     float firingSpeed;
     float firingMass;
+    float drawScale;
     bool drawGrid;
     bool drawPlanetTrails;
     bool drawPlanetColors;

@@ -40,6 +40,7 @@ private slots:
     void on_stepsPerFrameSpinBox_valueChanged(int value);
     void on_trailLengthSpinBox_valueChanged(int value);
     void on_trailRecordDistanceDoubleSpinBox_valueChanged(double value);
+    void on_planetScaleDoubleSpinBox_valueChanged(double value);
 
     void on_firingVelocityDoubleSpinBox_valueChanged(double value);
     void on_firingMassSpinBox_valueChanged(int value);

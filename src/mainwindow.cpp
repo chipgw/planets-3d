@@ -212,6 +212,10 @@ void MainWindow::on_trailLengthSpinBox_valueChanged(int value){
     Planet::pathLength = value;
 }
 
+void MainWindow::on_planetScaleDoubleSpinBox_valueChanged(double value){
+    ui->centralwidget->drawScale = value;
+}
+
 void MainWindow::on_trailRecordDistanceDoubleSpinBox_valueChanged(double value){
     Planet::pathRecordDistance = value * value;
 }
