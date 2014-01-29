@@ -7,6 +7,15 @@
 #include <QOpenGLTexture>
 #endif
 
+int highBit(unsigned int n) {
+    n |= (n >>  1);
+    n |= (n >>  2);
+    n |= (n >>  4);
+    n |= (n >>  8);
+    n |= (n >> 16);
+    return n - (n >> 1);
+}
+
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this), hidePlanets(false),
     drawGrid(false), gridRange(32), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false), drawScale(1.0f),
     framecount(0), placingStep(NotPlacing), refreshRate(16), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f) {
@@ -233,13 +242,32 @@ void PlanetsWidget::paintGL() {
             updateGrid();
         }
 
-        QMatrix4x4 matrix;
-        matrix.scale(1 << (int(log10(camera.camera.column(3).lengthSquared())) & ~1));
-        shaderColor.setUniformValue("modelMatrix", matrix);
-        shaderColor.setUniformValue("color", gridColor);
+        glDepthMask(GL_FALSE);
 
         shaderColor.setAttributeArray("vertex", GL_FLOAT, gridPoints.data(), 2);
+
+        float distance = pow(camera.camera.column(3).lengthSquared(), 1.0f / 3.0f);
+        int nearestPowerOfTwo = highBit(distance);
+        float alphafac = distance / nearestPowerOfTwo - 1.0f;
+
+        QColor color = gridColor;
+        color.setAlphaF(gridColor.alphaF() * alphafac);
+
+        QMatrix4x4 matrix;
+        matrix.scale(nearestPowerOfTwo);
+        shaderColor.setUniformValue("modelMatrix", matrix);
+        shaderColor.setUniformValue("color", color);
+
         glDrawArrays(GL_LINES, 0, gridPoints.size());
+
+        matrix.scale(0.5f);
+        shaderColor.setUniformValue("modelMatrix", matrix);
+        color.setAlphaF(gridColor.alphaF() * (1.0f - alphafac));
+        shaderColor.setUniformValue("color", color);
+
+        glDrawArrays(GL_LINES, 0, gridPoints.size());
+
+        glDepthMask(GL_TRUE);
     }
 
     if(doScreenshot){
