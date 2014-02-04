@@ -51,12 +51,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("state").toByteArray());
     settings.endGroup();
+    settings.beginGroup("Graphics");
+    ui->actionGrid->setChecked(settings.value("DrawGrid").toBool());
+    ui->actionDraw_Paths->setChecked(settings.value("DrawPaths").toBool());
+    settings.endGroup();
 }
 
 MainWindow::~MainWindow(){
     settings.beginGroup("MainWindow");
     settings.setValue("geometry", saveGeometry());
     settings.setValue("state", saveState());
+    settings.endGroup();
+    settings.beginGroup("Graphics");
+    settings.setValue("DrawGrid", ui->actionGrid->isChecked());
+    settings.setValue("DrawPaths", ui->actionDraw_Paths->isChecked());
     settings.endGroup();
 
     delete ui;
