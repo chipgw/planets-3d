@@ -317,7 +317,8 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     case FreePositionZ:
         // set placing Z position
         placing.position.setZ(placing.position.z() + (lastmousepos.y() - e->y()) * 0.1f);
-        break;
+        QCursor::setPos(mapToGlobal(lastmousepos));
+        return;
     case FreeVelocity:
         // set placing velocity
         placingRotation.rotate((lastmousepos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
