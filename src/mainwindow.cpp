@@ -4,6 +4,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QMimeData>
+#include <QUrl>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow),
     settings(QSettings::IniFormat, QSettings::UserScope, QApplication::organizationName(), QApplication::applicationName()) {
@@ -55,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->actionGrid->setChecked(settings.value("DrawGrid").toBool());
     ui->actionDraw_Paths->setChecked(settings.value("DrawPaths").toBool());
     settings.endGroup();
+
+    setAcceptDrops(true);
 }
 
 MainWindow::~MainWindow(){
@@ -260,6 +264,27 @@ void MainWindow::on_generateRandomPushButton_clicked(){
     ui->centralwidget->universe.generateRandom(ui->randomAmountSpinBox->value(), ui->randomRangeDoubleSpinBox->value(),
                                                ui->randomSpeedDoubleSpinBox->value() * PlanetsUniverse::velocityfac,
                                                ui->randomMassDoubleSpinBox->value());
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event){
+    if(event->mimeData()->hasUrls()){
+        foreach(QUrl url, event->mimeData()->urls()){
+            QFileInfo info(url.toLocalFile());
+            if(info.exists()){
+                return event->acceptProposedAction();
+            }
+        }
+    }
+}
+
+void MainWindow::dropEvent(QDropEvent *event){
+    if(event->mimeData()->hasUrls()){
+        foreach(QUrl url, event->mimeData()->urls()){
+            if(ui->centralwidget->universe.load(url.toLocalFile())){
+                return event->acceptProposedAction();
+            }
+        }
+    }
 }
 
 const int MainWindow::speeddialmax = 32;
