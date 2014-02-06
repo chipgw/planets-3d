@@ -82,8 +82,10 @@ void MainWindow::closeEvent(QCloseEvent *e){
         float tmpsimspeed = ui->centralwidget->universe.simspeed;
         ui->centralwidget->universe.simspeed = 0.0f;
 
-        if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
-                                QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::No){
+        int result = QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
+                                          QMessageBox::Yes | QMessageBox::Save | QMessageBox::No, QMessageBox::Yes);
+
+        if(result == QMessageBox::No || (result == QMessageBox::Save && !on_actionSave_Simulation_triggered())){
             ui->centralwidget->universe.simspeed = tmpsimspeed;
             return e->ignore();
         }
@@ -155,18 +157,21 @@ void MainWindow::on_actionOpen_Simulation_triggered(){
     ui->centralwidget->universe.simspeed = tmpsimspeed;
 }
 
-void MainWindow::on_actionSave_Simulation_triggered(){
+bool MainWindow::on_actionSave_Simulation_triggered(){
     float tmpsimspeed = ui->centralwidget->universe.simspeed;
     ui->centralwidget->universe.simspeed = 0.0f;
 
     if(!ui->centralwidget->universe.isEmpty()){
         QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
-        ui->centralwidget->universe.save(filename);
+
+        ui->centralwidget->universe.simspeed = tmpsimspeed;
+        return ui->centralwidget->universe.save(filename);
     }else{
         QMessageBox::warning(this, tr("Error Saving Simulation."), tr("No planets to save!"));
     }
 
     ui->centralwidget->universe.simspeed = tmpsimspeed;
+    return false;
 }
 
 void MainWindow::on_actionFollow_Selection_triggered(){

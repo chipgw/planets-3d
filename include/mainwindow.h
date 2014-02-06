@@ -27,7 +27,7 @@ private slots:
 
     void on_actionNew_Simulation_triggered();
     void on_actionOpen_Simulation_triggered();
-    void on_actionSave_Simulation_triggered();
+    bool on_actionSave_Simulation_triggered();
 
     void on_actionFollow_Selection_triggered();
     void on_actionClear_Follow_triggered();
