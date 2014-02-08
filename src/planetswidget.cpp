@@ -347,7 +347,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
             QVector3D relative = placing.position - universe.getSelected().position;
             placingOrbitalRadius = relative.length();
             placingRotation.setToIdentity();
-            relative.normalize();
+            relative /= placingOrbitalRadius;
             placingRotation.setColumn(0, relative);
             placingRotation.setColumn(1, QVector4D(relative.y(), -relative.x(), 0.0f, 0.0f));
         }
