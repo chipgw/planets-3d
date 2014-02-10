@@ -381,11 +381,13 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
     switch(e->button()){
     case Qt::LeftButton:
-        if(universe.isSelectedValid()){
-            following = universe.selected;
-            followState = Single;
-        }else{
-            followState = FollowNone;
+        if(placingStep == NotPlacing){
+            if(universe.isSelectedValid()){
+                following = universe.selected;
+                followState = Single;
+            }else{
+                followState = FollowNone;
+            }
         }
         break;
     case Qt::MiddleButton:
