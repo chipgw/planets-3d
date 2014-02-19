@@ -7,7 +7,7 @@
 #include <QMimeData>
 #include <QUrl>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow),
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), speedDialMemory(0),
     settings(QSettings::IniFormat, QSettings::UserScope, QApplication::organizationName(), QApplication::applicationName()) {
 
     ui->setupUi(this);
@@ -120,8 +120,9 @@ void MainWindow::on_speed_Dial_valueChanged(int value){
 
 void MainWindow::on_PauseResume_Button_clicked(){
     if(ui->speed_Dial->value() == 0){
-        ui->speed_Dial->setValue(ui->speed_Dial->maximum() / speeddialmax);
+        ui->speed_Dial->setValue(speedDialMemory);
     }else{
+        speedDialMemory = ui->speed_Dial->value();
         ui->speed_Dial->setValue(0);
     }
 }

@@ -55,6 +55,7 @@ private slots:
 private:
     // the maximum value of the simulation speed dial.
     static const int speeddialmax;
+    int speedDialMemory;
 
     QSettings settings;
 
