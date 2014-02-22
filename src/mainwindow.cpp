@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->PauseResume_Button->setFocus();
 
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(ui->actionAbout_Qt, SIGNAL(triggered()), QApplication::instance(), SLOT(aboutQt()));
 
     connect(ui->actionCenter_All,                       SIGNAL(triggered()),        &ui->centralwidget->universe,   SLOT(centerAll()));
     connect(ui->actionDelete,                           SIGNAL(triggered()),        &ui->centralwidget->universe,   SLOT(deleteSelected()));
@@ -79,14 +80,10 @@ MainWindow::~MainWindow(){
 
 void MainWindow::closeEvent(QCloseEvent *e){
     if(!ui->centralwidget->universe.isEmpty()){
-        float tmpsimspeed = ui->centralwidget->universe.simspeed;
-        ui->centralwidget->universe.simspeed = 0.0f;
-
         int result = QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
                                           QMessageBox::Yes | QMessageBox::Save | QMessageBox::No, QMessageBox::Yes);
 
         if(result == QMessageBox::No || (result == QMessageBox::Save && !on_actionSave_Simulation_triggered())){
-            ui->centralwidget->universe.simspeed = tmpsimspeed;
             return e->ignore();
         }
     }
@@ -136,42 +133,25 @@ void MainWindow::on_FastForward_Button_clicked(){
 }
 
 void MainWindow::on_actionNew_Simulation_triggered(){
-    if(!ui->centralwidget->universe.isEmpty()){
-        float tmpsimspeed = ui->centralwidget->universe.simspeed;
-        ui->centralwidget->universe.simspeed = 0.0f;
-
-        if(QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"),
-                                QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
-            ui->centralwidget->universe.deleteAll();
-        }
-        ui->centralwidget->universe.simspeed = tmpsimspeed;
+    if(!ui->centralwidget->universe.isEmpty() && QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"),
+                                                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
+        ui->centralwidget->universe.deleteAll();
     }
 }
 
 void MainWindow::on_actionOpen_Simulation_triggered(){
-    float tmpsimspeed = ui->centralwidget->universe.simspeed;
-    ui->centralwidget->universe.simspeed = 0.0f;
-
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.xml)"));
     ui->centralwidget->universe.load(filename);
-
-    ui->centralwidget->universe.simspeed = tmpsimspeed;
 }
 
 bool MainWindow::on_actionSave_Simulation_triggered(){
-    float tmpsimspeed = ui->centralwidget->universe.simspeed;
-    ui->centralwidget->universe.simspeed = 0.0f;
-
     if(!ui->centralwidget->universe.isEmpty()){
         QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
 
-        ui->centralwidget->universe.simspeed = tmpsimspeed;
         return ui->centralwidget->universe.save(filename);
     }else{
         QMessageBox::warning(this, tr("Error Saving Simulation."), tr("No planets to save!"));
     }
-
-    ui->centralwidget->universe.simspeed = tmpsimspeed;
     return false;
 }
 
@@ -194,9 +174,6 @@ void MainWindow::on_actionWeighted_Average_triggered(){
 }
 
 void MainWindow::on_actionAbout_triggered(){
-    float tmpsimspeed = ui->centralwidget->universe.simspeed;
-    ui->centralwidget->universe.simspeed = 0.0f;
-
     QMessageBox::about(this, tr("About Planets3D"),
                        tr("<html><head/><body>"
                           "<p>Planets3D is a simple 3D gravitational simulator</p>"
@@ -209,17 +186,6 @@ void MainWindow::on_actionAbout_triggered(){
                        .arg(version::git_revision)
                        .arg(version::build_type)
                        .arg(version::compiler));
-
-    ui->centralwidget->universe.simspeed = tmpsimspeed;
-}
-
-void MainWindow::on_actionAbout_Qt_triggered(){
-    float tmpsimspeed = ui->centralwidget->universe.simspeed;
-    ui->centralwidget->universe.simspeed = 0.0f;
-
-    QMessageBox::aboutQt(this);
-
-    ui->centralwidget->universe.simspeed = tmpsimspeed;
 }
 
 void MainWindow::on_stepsPerFrameSpinBox_valueChanged(int value){
@@ -291,6 +257,22 @@ void MainWindow::dropEvent(QDropEvent *event){
             }
         }
     }
+}
+
+bool MainWindow::event(QEvent *event){
+    switch(event->type()) {
+    case QEvent::WindowActivate:
+        if(ui->centralwidget->universe.simspeed <= 0.0f){
+            on_PauseResume_Button_clicked();
+        }
+        break;
+    case QEvent::WindowDeactivate:
+        if(ui->centralwidget->universe.simspeed > 0.0f){
+            on_PauseResume_Button_clicked();
+        }
+        break;
+    }
+    return QMainWindow::event(event);
 }
 
 const int MainWindow::speeddialmax = 32;

@@ -35,7 +35,6 @@ private slots:
     void on_actionWeighted_Average_triggered();
 
     void on_actionAbout_triggered();
-    void on_actionAbout_Qt_triggered();
 
     void on_stepsPerFrameSpinBox_valueChanged(int value);
     void on_trailLengthSpinBox_valueChanged(int value);
@@ -69,6 +68,8 @@ private:
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
+
+    bool event(QEvent *event);
 };
 
 #endif // MAINWINDOW_H
