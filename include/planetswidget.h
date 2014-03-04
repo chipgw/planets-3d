@@ -43,7 +43,12 @@ private:
     };
 
     QOpenGLShaderProgram shaderTexture;
+    int shaderTexture_cameraMatrix, shaderTexture_modelMatrix;
+
     QOpenGLShaderProgram shaderColor;
+    int shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
+
+    const static int vertex, uv;
 
 #ifdef PLANETS3D_USE_QOPENGLTEXTURE
     QOpenGLTexture *texture;
