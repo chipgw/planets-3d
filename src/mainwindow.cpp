@@ -271,6 +271,7 @@ bool MainWindow::event(QEvent *event){
             on_PauseResume_Button_clicked();
         }
         break;
+    default: break;
     }
     return QMainWindow::event(event);
 }
