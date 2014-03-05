@@ -16,9 +16,18 @@ int highBit(unsigned int n) {
     return n - (n >> 1);
 }
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this), hidePlanets(false),
-    drawGrid(false), gridRange(32), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false), drawScale(1.0f),
-    framecount(0), placingStep(NotPlacing), refreshRate(16), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f) {
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this), hidePlanets(false), drawGrid(false),
+    gridRange(32), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false), drawScale(1.0f), framecount(0), placingStep(NotPlacing),
+    refreshRate(16), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f), screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/") {
+
+    if(!screenshotDir.exists()){
+        QDir oldDir = QDir::homePath() + "/Pictures/Planets3D Screenshots/";
+        if(oldDir.exists()){
+            oldDir.rename(oldDir.absolutePath(), screenshotDir.absolutePath());
+        }else{
+            screenshotDir.mkpath(screenshotDir.absolutePath());
+        }
+    }
 
 #ifndef NDEBUG
     refreshRate = 0;
@@ -298,11 +307,7 @@ void PlanetsWidget::paintGL() {
     if(doScreenshot){
         doScreenshot = false;
 
-        QDir dir = QDir::homePath() + "/Pictures/Planets3D Screenshots/";
-        if(!dir.exists()){
-            dir.mkpath(dir.absolutePath());
-        }
-        QString filename = dir.path() + "/shot%1.png";
+        QString filename = screenshotDir.absoluteFilePath("shot%1.png");
         int i = 0;
         while(QFile::exists(filename.arg(++i, 4, 10, QChar('0'))));
         filename = filename.arg(i, 4, 10, QChar('0'));

@@ -6,6 +6,7 @@
 #include "spheregenerator.h"
 #include <QTime>
 #include <QTimer>
+#include <QDir>
 
 class QMouseEvent;
 
@@ -102,6 +103,8 @@ public:
     bool drawPlanetTrails;
     bool drawPlanetColors;
     bool hidePlanets;
+
+    QDir screenshotDir;
 
 signals:
     void updateFPSStatusMessage(const QString &text);
