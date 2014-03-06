@@ -633,6 +633,21 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QToolBar" name="camerToolBar">
+   <property name="windowTitle">
+    <string>Camera Tools</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFollow_Selection"/>
+   <addaction name="actionPlain_Average"/>
+   <addaction name="actionWeighted_Average"/>
+   <addaction name="actionClear_Follow"/>
+  </widget>
   <action name="actionExit">
    <property name="icon">
     <iconset resource="../resources.qrc">
