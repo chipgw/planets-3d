@@ -17,7 +17,10 @@ get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/version.cpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/src/version.cpp" @ONLY)
 
+# files not needed in build, but included so they show up in IDE.
 file(GLOB HEADERS "include/*.h")
+file(GLOB SHADERS "shaders/*")
+
 file(GLOB SOURCES "src/*.cpp")
 file(GLOB FORMS "forms/*.ui")
 set(RESOURCES "resources.qrc")
@@ -41,7 +44,7 @@ else(PLANETS3D_USE_QT4)
     qt5_add_resources(RESOURCES_RCC ${RESOURCES})
 endif(PLANETS3D_USE_QT4)
 
-add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${FORM_HEADERS} ${HEADERS} ${RESOURCES_RCC} ${WINDRES})
+add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${FORM_HEADERS} ${HEADERS} ${RESOURCES_RCC} ${WINDRES} ${SHADERS})
 
 if(PLANETS3D_USE_QT4)
     qt4_use_modules(${PROJECT_NAME} Core Gui OpenGL)
