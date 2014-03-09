@@ -46,10 +46,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleB
 void PlanetsWidget::initializeGL() {
     initializeOpenGLFunctions();
 
-    QOpenGLShader vertexShader(QOpenGLShader::Vertex);
-    vertexShader.compileSourceFile(":/shaders/vertex.vsh");
-
-    shaderTexture.addShader(&vertexShader);
+    shaderTexture.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture.vsh");
     shaderTexture.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture.fsh");
 
     shaderTexture.bindAttributeLocation("vertex", vertex);
@@ -60,7 +57,7 @@ void PlanetsWidget::initializeGL() {
     shaderTexture_cameraMatrix = shaderTexture.uniformLocation("cameraMatrix");
     shaderTexture_modelMatrix = shaderTexture.uniformLocation("modelMatrix");
 
-    shaderColor.addShader(&vertexShader);
+    shaderColor.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/color.vsh");
     shaderColor.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/color.fsh");
 
     shaderColor.bindAttributeLocation("vertex", vertex);

@@ -30,6 +30,7 @@
         <file>textures/planet.png</file>
         <file>shaders/color.fsh</file>
         <file>shaders/texture.fsh</file>
-        <file>shaders/vertex.vsh</file>
+        <file>shaders/color.vsh</file>
+        <file>shaders/texture.vsh</file>
     </qresource>
 </RCC>
