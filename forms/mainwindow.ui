@@ -33,6 +33,7 @@
     </property>
     <addaction name="actionNew_Simulation"/>
     <addaction name="actionOpen_Simulation"/>
+    <addaction name="actionAppend_Simulation"/>
     <addaction name="actionSave_Simulation"/>
     <addaction name="separator"/>
     <addaction name="actionTake_Screenshot"/>
@@ -870,6 +871,11 @@
    </property>
    <property name="text">
     <string>Hide Planets</string>
+   </property>
+  </action>
+  <action name="actionAppend_Simulation">
+   <property name="text">
+    <string>Append Simulation</string>
    </property>
   </action>
  </widget>

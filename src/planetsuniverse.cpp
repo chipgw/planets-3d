@@ -8,7 +8,7 @@
 
 PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20) {}
 
-bool PlanetsUniverse::load(const QString &filename){
+bool PlanetsUniverse::load(const QString &filename, bool clear){
     if(!QFile::exists(filename)){
         QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("file \"%1\" does not exist!").arg(filename));
         return false;
@@ -28,7 +28,9 @@ bool PlanetsUniverse::load(const QString &filename){
         return false;
     }
 
-    deleteAll();
+    if(clear){
+        deleteAll();
+    }
     while(xml.readNextStartElement()) {
         if(xml.name() == "planet"){
             Planet planet;
@@ -72,7 +74,9 @@ bool PlanetsUniverse::load(const QString &filename){
     }
 
     if(xml.hasError()){
-        deleteAll();
+        if(clear){
+            deleteAll();
+        }
         QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("Error in file \"%1\": %2").arg(filename).arg(xml.errorString()));
         return false;
     }
