@@ -9,12 +9,12 @@
 PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20) {}
 
 bool PlanetsUniverse::load(const QString &filename, bool clear){
-    if(!QFile::exists(filename)){
+    QFile file(filename);
+
+    if(!file.exists()){
         QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("file \"%1\" does not exist!").arg(filename));
         return false;
     }
-
-    QFile file(filename);
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
         QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("Unable to open file \"%1\" for reading!").arg(filename));
