@@ -389,8 +389,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
             camera.xrotation += (lastmousepos.y() - e->y()) * 0.2f;
             camera.zrotation += (lastmousepos.x() - e->x()) * 0.2f;
 
-            camera.xrotation = qBound(-90.0f, camera.xrotation, 90.0f);
-            camera.zrotation = fmod(camera.zrotation, 360.0f);
+            camera.bound();
 
             QCursor::setPos(mapToGlobal(lastmousepos));
             setCursor(Qt::SizeAllCursor);
@@ -513,7 +512,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     default:
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;
 
-        camera.distance = qBound(10.0f, camera.distance, 1.0e4f);
+        camera.bound();
         break;
     }
 }

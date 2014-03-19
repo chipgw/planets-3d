@@ -1,7 +1,14 @@
 #include "camera.h"
+#include <qmath.h>
 
 Camera::Camera() {
     reset();
+}
+
+void Camera::bound(){
+    distance = qBound(10.0f, distance, 1.0e4f);
+    xrotation = qBound(-90.0f, xrotation, 90.0f);
+    zrotation = fmod(zrotation, 360.0f);
 }
 
 void Camera::reset(){
