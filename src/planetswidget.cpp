@@ -386,14 +386,19 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         break;
     default:
         if(e->buttons().testFlag(Qt::MiddleButton) || e->buttons().testFlag(Qt::RightButton)){
-            camera.xrotation += (lastmousepos.y() - e->y()) * 0.2f;
-            camera.zrotation += (lastmousepos.x() - e->x()) * 0.2f;
+            if(e->modifiers().testFlag(Qt::ControlModifier)){
+                camera.distance -= (lastmousepos.y() - e->y()) * camera.distance * 1.0e-2f;
+                setCursor(Qt::SizeVerCursor);
+            }else{
+                camera.xrotation += (lastmousepos.y() - e->y()) * 0.2f;
+                camera.zrotation += (lastmousepos.x() - e->x()) * 0.2f;
 
-            camera.bound();
+                camera.bound();
 
-            QCursor::setPos(mapToGlobal(lastmousepos));
-            setCursor(Qt::SizeAllCursor);
-            return;
+                QCursor::setPos(mapToGlobal(lastmousepos));
+                setCursor(Qt::SizeAllCursor);
+                return;
+            }
         }
         break;
     }
