@@ -73,9 +73,6 @@ MainWindow::~MainWindow(){
     settings.endGroup();
 
     delete ui;
-    delete planetCountLabel;
-    delete averagefpsLabel;
-    delete fpsLabel;
 }
 
 void MainWindow::closeEvent(QCloseEvent *e){
@@ -106,7 +103,7 @@ void MainWindow::on_actionClear_Velocity_triggered(){
 void MainWindow::on_speed_Dial_valueChanged(int value){
     ui->centralwidget->universe.simspeed = float(value * speeddialmax) / ui->speed_Dial->maximum();
     ui->speedDisplay_lcdNumber->display(ui->centralwidget->universe.simspeed);
-    if(ui->centralwidget->universe.simspeed <= 0.0f){
+    if(ui->speed_Dial->value() == 0){
         ui->PauseResume_Button->setText(tr("Resume"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
     }else{
