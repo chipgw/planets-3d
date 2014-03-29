@@ -389,6 +389,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
             if(e->modifiers().testFlag(Qt::ControlModifier)){
                 camera.distance -= (lastmousepos.y() - e->y()) * camera.distance * 1.0e-2f;
                 setCursor(Qt::SizeVerCursor);
+                camera.bound();
             }else{
                 camera.xrotation += (lastmousepos.y() - e->y()) * 0.2f;
                 camera.zrotation += (lastmousepos.x() - e->x()) * 0.2f;
