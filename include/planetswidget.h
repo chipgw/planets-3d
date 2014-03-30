@@ -117,6 +117,8 @@ public slots:
     void takeScreenshot();
     void updateGrid();
     void setGridRange(int value);
+    void followNext();
+    void followPrevious();
 
 protected:
     void initializeGL();

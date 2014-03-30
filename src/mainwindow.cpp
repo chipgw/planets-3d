@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->toggleFiringModePushButton,             SIGNAL(toggled(bool)),      ui->centralwidget,              SLOT(enableFiringMode(bool)));
     connect(ui->actionTake_Screenshot,                  SIGNAL(triggered()),        ui->centralwidget,              SLOT(takeScreenshot()));
     connect(ui->gridRangeSpinBox,                       SIGNAL(valueChanged(int)),  ui->centralwidget,              SLOT(setGridRange(int)));
+    connect(ui->actionPrevious_Planet,                  SIGNAL(triggered()),        ui->centralwidget,              SLOT(followPrevious()));
+    connect(ui->actionNext_Planet,                      SIGNAL(triggered()),        ui->centralwidget,              SLOT(followNext()));
 
     ui->statusbar->addPermanentWidget(planetCountLabel = new QLabel("0 planets", ui->statusbar));
     ui->statusbar->addPermanentWidget(fpsLabel = new QLabel(ui->statusbar));

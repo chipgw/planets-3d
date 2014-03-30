@@ -600,6 +600,37 @@ void PlanetsWidget::setGridRange(int value){
     updateGrid();
 }
 
+void PlanetsWidget::followNext(){
+    if(!universe.isEmpty()){
+        followState = Single;
+        PlanetsUniverse::const_iterator current = universe.find(following);
+
+        if(current == universe.end()){
+            current = universe.begin();
+        }else if(++current == universe.end()){
+            current = universe.begin();
+        }
+
+        following = current.key();
+    }
+}
+void PlanetsWidget::followPrevious(){
+    if(!universe.isEmpty()){
+        followState = Single;
+        PlanetsUniverse::const_iterator current = universe.find(following);
+
+        if(current == universe.end()){
+            current = universe.begin();
+        }else if(current == universe.begin()){
+            current = universe.end() - 1;
+        }else{
+            --current;
+        }
+
+        following = current.key();
+    }
+}
+
 const QColor PlanetsWidget::trailColor = QColor(0xcc, 0xff, 0xff, 0xff);
 const QColor PlanetsWidget::gridColor = QColor(0xcc, 0xff, 0xff, 0x66);
 

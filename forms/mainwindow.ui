@@ -63,6 +63,9 @@
     <addaction name="actionPlain_Average"/>
     <addaction name="actionWeighted_Average"/>
     <addaction name="actionClear_Follow"/>
+    <addaction name="separator"/>
+    <addaction name="actionPrevious_Planet"/>
+    <addaction name="actionNext_Planet"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -648,6 +651,8 @@
    <addaction name="actionPlain_Average"/>
    <addaction name="actionWeighted_Average"/>
    <addaction name="actionClear_Follow"/>
+   <addaction name="actionPrevious_Planet"/>
+   <addaction name="actionNext_Planet"/>
   </widget>
   <widget class="QToolBar" name="viewToolBar">
    <property name="windowTitle">
@@ -876,6 +881,16 @@
   <action name="actionAppend_Simulation">
    <property name="text">
     <string>Append Simulation</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Planet">
+   <property name="text">
+    <string>Previous Planet</string>
+   </property>
+  </action>
+  <action name="actionNext_Planet">
+   <property name="text">
+    <string>Next Planet</string>
    </property>
   </action>
  </widget>

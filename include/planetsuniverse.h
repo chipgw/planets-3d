@@ -46,6 +46,7 @@ public:
     typedef QMap<QRgb, Planet>::const_iterator const_iterator;
     inline const_iterator begin() { return planets.constBegin(); }
     inline const_iterator end() { return planets.constEnd(); }
+    inline const_iterator find(const QRgb &key) { return planets.find(key); }
     inline int size() { return planets.size(); }
 
 public slots:
