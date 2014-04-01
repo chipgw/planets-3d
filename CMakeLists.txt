@@ -50,6 +50,7 @@ if(PLANETS3D_USE_QT4)
     qt4_use_modules(${PROJECT_NAME} Core Gui OpenGL)
 else(PLANETS3D_USE_QT4)
     qt5_use_modules(${PROJECT_NAME} OpenGL)
+    target_link_libraries(${PROJECT_NAME} Qt5::WinMain)
 endif(PLANETS3D_USE_QT4)
 
 if(DEFINED Qt5Gui_OPENGL_LIBRARIES)
