@@ -48,8 +48,3 @@ Thumbs.db
 # build directories #
 #####################
 build*
-
-# generated at build time #
-###########################
-src/version.cpp
-Planets3D.rc

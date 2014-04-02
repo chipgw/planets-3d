@@ -15,7 +15,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/")
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/version.cpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/src/version.cpp" @ONLY)
 
 # files not needed in build, but included so they show up in IDE.
 file(GLOB HEADERS "include/*.h")
@@ -25,8 +24,15 @@ file(GLOB SOURCES "src/*.cpp")
 file(GLOB FORMS "forms/*.ui")
 set(RESOURCES "resources.qrc")
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Planets3D.rc.in" "${CMAKE_CURRENT_SOURCE_DIR}/Planets3D.rc" @ONLY)
-set(WINDRES "Planets3D.rc")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/version.cpp" @ONLY)
+list(APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/version.cpp")
+
+if(WIN32)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Planets3D.rc.in" "${CMAKE_CURRENT_BINARY_DIR}/Planets3D.rc" @ONLY)
+    set(WINDRES "${CMAKE_CURRENT_BINARY_DIR}/Planets3D.rc")
+else(WIN32)
+    set(WINDRES "")
+endif(WIN32)
 
 if(PLANETS3D_USE_QT4)
     find_package(Qt4 4.8 REQUIRED QtCore QtGui QtOpenGL)
