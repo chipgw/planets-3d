@@ -4,7 +4,7 @@
 #include "camera.h"
 #include "planetsuniverse.h"
 #include "spheregenerator.h"
-#include <QTime>
+#include <QElapsedTimer>
 #include <QTimer>
 #include <QDir>
 
@@ -61,8 +61,8 @@ private:
     int framecount;
     int refreshRate;
     QTimer timer;
-    QTime frameTime;
-    QTime totalTime;
+    QElapsedTimer frameTime;
+    QElapsedTimer totalTime;
 
     QPoint lastmousepos;
 

@@ -97,7 +97,7 @@ void PlanetsWidget::initializeGL() {
     bindTexture(img);
 #endif
 
-    if(totalTime.isNull()){
+    if(framecount == 0){
         totalTime.start();
         frameTime.start();
     }
@@ -117,10 +117,11 @@ void PlanetsWidget::resizeGL(int width, int height) {
 }
 
 void PlanetsWidget::paintGL() {
-    int delay = frameTime.restart();
+    int delay = frameTime.nsecsElapsed() / 1000;
+    frameTime.start();
 
     if(placingStep == NotPlacing || placingStep == Firing){
-        universe.advance(delay * 1000.0f);
+        universe.advance(delay);
     }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -224,22 +225,22 @@ void PlanetsWidget::paintGL() {
 
                                0.0f, 0.0f, length + 0.4f};
 
-            static const GLubyte indexes[] = {0,  1,  2,       2,  3,  0,
+            static const GLubyte indexes[] = {  0,  1,  2,       2,  3,  0,
 
-                                              1,  0,  5,       4,  5,  0,
-                                              2,  1,  6,       5,  6,  1,
-                                              3,  2,  7,       6,  7,  2,
-                                              0,  3,  4,       7,  4,  3,
+                                                1,  0,  5,       4,  5,  0,
+                                                2,  1,  6,       5,  6,  1,
+                                                3,  2,  7,       6,  7,  2,
+                                                0,  3,  4,       7,  4,  3,
 
-                                              5,  4,  9,       8,  9,  4,
-                                              6,  5, 10,       9, 10,  5,
-                                              7,  6, 11,      10, 11,  6,
-                                              4,  7,  8,      11,  8,  7,
+                                                5,  4,  9,       8,  9,  4,
+                                                6,  5, 10,       9, 10,  5,
+                                                7,  6, 11,      10, 11,  6,
+                                                4,  7,  8,      11,  8,  7,
 
-                                              9,  8, 12,
-                                             10,  9, 12,
-                                             11, 10, 12,
-                                              8, 11, 12};
+                                                9,  8, 12,
+                                               10,  9, 12,
+                                               11, 10, 12,
+                                                8, 11, 12};
 
             shaderColor.setAttributeArray(vertex, GL_FLOAT, verts, 3);
             glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
@@ -315,12 +316,12 @@ void PlanetsWidget::paintGL() {
         }
     }
 
-    timer.start(qMax(0, refreshRate - frameTime.elapsed()));
+    timer.start(qMax(0, refreshRate - int(frameTime.elapsed())));
 
     framecount++;
 
     emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount * 1.0e3f / totalTime.elapsed()));
-    emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e3f / delay));
+    emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e6f / delay));
 }
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){

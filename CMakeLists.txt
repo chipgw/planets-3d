@@ -15,7 +15,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/")
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 
-
 # files not needed in build, but included so they show up in IDE.
 file(GLOB HEADERS "include/*.h")
 file(GLOB SHADERS "shaders/*")
