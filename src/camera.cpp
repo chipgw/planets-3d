@@ -25,3 +25,20 @@ const QMatrix4x4 &Camera::setup(){
     camera.translate(-position);
     return camera;
 }
+
+Ray Camera::getRay(const QPoint &pos, const QSize &window, float startDepth, float endDepth){
+    Ray ray;
+
+    QVector3D windowCoord((2.0f * pos.x())  / window.width()  - 1.0f,
+                          (2.0f * -pos.y()) / window.height() + 1.0f, startDepth);
+
+    QMatrix4x4 inv = camera.inverted();
+
+    ray.origin = inv * windowCoord;
+
+    windowCoord.setZ(endDepth);
+
+    ray.direction = (ray.origin - (inv * windowCoord)).normalized();
+
+    return ray;
+}

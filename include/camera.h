@@ -4,6 +4,10 @@
 #include <QVector3D>
 #include <QMatrix4x4>
 
+struct Ray {
+    QVector3D origin, direction;
+};
+
 class Camera {
 public:
     Camera();
@@ -19,6 +23,8 @@ public:
     void bound();
     void reset();
     const QMatrix4x4 &setup();
+
+    Ray getRay(const QPoint &pos, const QSize &window, float startDepth = 0.0f, float endDepth = 1.0f);
 };
 
 #endif // CAMERA_H

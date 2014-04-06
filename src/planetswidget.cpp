@@ -329,18 +329,9 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     switch(placingStep){
     case FreePositionXY:{
         // set placing position on the XY plane
-        QVector3D windowCoord((2.0f * e->x())  / width()  - 1.0f,
-                              (2.0f * -e->y()) / height() + 1.0f, 0.0f);
+        Ray ray = camera.getRay(e->pos(), size());
 
-        QMatrix4x4 inv = camera.setup().inverted();
-
-        QVector3D origin = inv * windowCoord;
-
-        windowCoord.setZ(1.0f);
-
-        QVector3D ray = origin - (inv * windowCoord);
-
-        placing.position = origin + (ray * ((-origin.z()) / ray.z()));
+        placing.position = ray.origin + (ray.direction * ((-ray.origin.z()) / ray.direction.z()));
         break;
     }
     case FreePositionZ:
@@ -357,18 +348,9 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         return;
     case OrbitalPlanet:
         if(universe.isSelectedValid()){
-            QVector3D windowCoord((2.0f * e->x())  / width()  - 1.0f,
-                                  (2.0f * -e->y()) / height() + 1.0f, 0.0f);
+            Ray ray = camera.getRay(e->pos(), size());
 
-            QMatrix4x4 inv = camera.setup().inverted();
-
-            QVector3D origin = inv * windowCoord;
-
-            windowCoord.setZ(1.0f);
-
-            QVector3D ray = origin - (inv * windowCoord);
-
-            placing.position = origin + (ray * ((universe.getSelected().position.z() - origin.z()) / ray.z()));
+            placing.position = ray.origin + (ray.direction * ((universe.getSelected().position.z() - ray.origin.z()) / ray.direction.z()));
             QVector3D relative = placing.position - universe.getSelected().position;
             placingOrbitalRadius = relative.length();
             placingRotation.setToIdentity();
@@ -445,19 +427,9 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             setCursor(Qt::ArrowCursor);
             break;
         case Firing:{
-            QVector3D windowCoord((2.0f * e->x())  / width()  - 1.0f,
-                                  (2.0f * -e->y()) / height() + 1.0f, 0.96f);
+            Ray ray = camera.getRay(e->pos(), size(), 0.96f, 0.0f);
 
-            QMatrix4x4 inv = camera.setup().inverted();
-
-            QVector3D origin = inv * windowCoord;
-
-            windowCoord.setZ(0.0f);
-
-            QVector3D velocity = origin - (inv * windowCoord);
-
-            universe.addPlanet(Planet(origin, velocity.normalized() * firingSpeed, firingMass));
-
+            universe.addPlanet(Planet(ray.origin, ray.direction * firingSpeed, firingMass));
             break;
         }
         case OrbitalPlanet:
@@ -485,22 +457,13 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             universe.selected = 0;
             float nearest = -std::numeric_limits<float>::max();
 
-            QVector3D windowCoord((2.0f * e->x())  / width()  - 1.0f,
-                                  (2.0f * -e->y()) / height() + 1.0f, 0.0f);
-
-            QMatrix4x4 inv = camera.setup().inverted();
-
-            QVector3D origin = inv * windowCoord;
-
-            windowCoord.setZ(1.0f);
-
-            QVector3D ray = (origin - (inv * windowCoord)).normalized();
+            Ray ray = camera.getRay(e->pos(), size());
 
             for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
                 const Planet &planet = i.value();
 
-                QVector3D difference = planet.position - origin;
-                float dot = QVector3D::dotProduct(difference, ray);
+                QVector3D difference = planet.position - ray.origin;
+                float dot = QVector3D::dotProduct(difference, ray.direction);
                 if(dot > nearest && (difference.lengthSquared() - dot * dot) <= (planet.radius() * planet.radius())) {
                     universe.selected = i.key();
                     nearest = dot;
