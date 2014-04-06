@@ -26,7 +26,7 @@ const QMatrix4x4 &Camera::setup(){
     return camera;
 }
 
-Ray Camera::getRay(const QPoint &pos, const QSize &window, float startDepth, float endDepth){
+Ray Camera::getRay(const QPoint &pos, const QSize &window, bool normalize, float startDepth, float endDepth){
     Ray ray;
 
     QVector3D windowCoord((2.0f * pos.x())  / window.width()  - 1.0f,
@@ -38,7 +38,11 @@ Ray Camera::getRay(const QPoint &pos, const QSize &window, float startDepth, flo
 
     windowCoord.setZ(endDepth);
 
-    ray.direction = (ray.origin - (inv * windowCoord)).normalized();
+    ray.direction = ray.origin - (inv * windowCoord);
+
+    if(normalize){
+        ray.direction.normalize();
+    }
 
     return ray;
 }

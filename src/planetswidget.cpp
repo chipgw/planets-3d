@@ -329,7 +329,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     switch(placingStep){
     case FreePositionXY:{
         // set placing position on the XY plane
-        Ray ray = camera.getRay(e->pos(), size());
+        Ray ray = camera.getRay(e->pos(), size(), false);
 
         placing.position = ray.origin + (ray.direction * ((-ray.origin.z()) / ray.direction.z()));
         break;
@@ -348,7 +348,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         return;
     case OrbitalPlanet:
         if(universe.isSelectedValid()){
-            Ray ray = camera.getRay(e->pos(), size());
+            Ray ray = camera.getRay(e->pos(), size(), false);
 
             placing.position = ray.origin + (ray.direction * ((universe.getSelected().position.z() - ray.origin.z()) / ray.direction.z()));
             QVector3D relative = placing.position - universe.getSelected().position;
@@ -427,7 +427,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             setCursor(Qt::ArrowCursor);
             break;
         case Firing:{
-            Ray ray = camera.getRay(e->pos(), size(), 0.96f, 0.0f);
+            Ray ray = camera.getRay(e->pos(), size(), true, 0.96f, 0.0f);
 
             universe.addPlanet(Planet(ray.origin, ray.direction * firingSpeed, firingMass));
             break;
@@ -457,7 +457,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             universe.selected = 0;
             float nearest = -std::numeric_limits<float>::max();
 
-            Ray ray = camera.getRay(e->pos(), size());
+            Ray ray = camera.getRay(e->pos(), size(), true);
 
             for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
                 const Planet &planet = i.value();

@@ -24,7 +24,7 @@ public:
     void reset();
     const QMatrix4x4 &setup();
 
-    Ray getRay(const QPoint &pos, const QSize &window, float startDepth = 0.0f, float endDepth = 1.0f);
+    Ray getRay(const QPoint &pos, const QSize &window, bool normalize, float startDepth = 0.0f, float endDepth = 1.0f);
 };
 
 #endif // CAMERA_H
