@@ -9,10 +9,15 @@
 
 class PlanetsUniverse : public QObject {
     Q_OBJECT
+
+public:
+    typedef QMap<QRgb, Planet> list_type;
+    typedef list_type::iterator iterator;
+    typedef list_type::const_iterator const_iterator;
+
 private:
-    QMap<QRgb, Planet> planets;
+    list_type planets;
     void sizeChanged();
-    typedef QMap<QRgb, Planet>::iterator planet_iterator;
 
 public:
     // the gravity constant
@@ -43,7 +48,6 @@ public:
     inline bool isSelectedValid() { return planets.contains(selected); }
     inline Planet &getSelected() { return planets[selected]; }
 
-    typedef QMap<QRgb, Planet>::const_iterator const_iterator;
     inline const_iterator begin() { return planets.constBegin(); }
     inline const_iterator end() { return planets.constEnd(); }
     inline const_iterator find(const QRgb &key) { return planets.find(key); }

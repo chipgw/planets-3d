@@ -131,13 +131,13 @@ void PlanetsUniverse::advance(float time){
     time /= stepsPerFrame;
 
     for(int s = 0; s < stepsPerFrame; ++s){
-        for(planet_iterator i = planets.begin(); i != planets.end();){
+        for(iterator i = planets.begin(); i != planets.end();){
             Planet &planet = i.value();
 
             if(planet.mass() <= 0.0f){
                 i = planets.erase(i);
             }else{
-                for(planet_iterator o = i + 1; o != planets.end();){
+                for(iterator o = i + 1; o != planets.end();){
                     Planet &other = o.value();
 
                     QVector3D direction = other.position - planet.position;
@@ -219,7 +219,7 @@ void PlanetsUniverse::deleteEscapees(){
 
     float limits = 1.0e8f;
 
-    for(planet_iterator i = planets.begin(); i != planets.end();){
+    for(iterator i = planets.begin(); i != planets.end();){
         if((i.value().position - averagePosition).lengthSquared() > limits){
             i = planets.erase(i);
         } else{
@@ -251,7 +251,7 @@ void PlanetsUniverse::centerAll(){
     averageVelocity /= totalmass;
 
     if(!averagePosition.isNull() || !averageVelocity.isNull()){
-        for(planet_iterator i = planets.begin(); i != planets.end(); ++i){
+        for(iterator i = planets.begin(); i != planets.end(); ++i){
             Planet &planet = i.value();
 
             planet.position -= averagePosition;
