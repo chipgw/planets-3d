@@ -4,6 +4,7 @@ project(Planets3D)
 cmake_minimum_required(VERSION 2.8)
 
 option(PLANETS3D_USE_QT4 "use Qt 4 rather than Qt 5." OFF)
+option(PLANETS3D_DISABLE_QOPENGLTEXTURE "Don't use QOpenGLTexture even if the system supports it" OFF)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -47,6 +48,10 @@ else(PLANETS3D_USE_QT4)
 
     qt5_wrap_ui(FORM_HEADERS ${FORMS})
     qt5_add_resources(RESOURCES_RCC ${RESOURCES})
+
+    if(PLANETS3D_DISABLE_QOPENGLTEXTURE)
+        add_definitions(-DPLANETS3D_DISABLE_QOPENGLTEXTURE)
+    endif(PLANETS3D_DISABLE_QOPENGLTEXTURE)
 endif(PLANETS3D_USE_QT4)
 
 add_executable(${PROJECT_NAME} WIN32 ${SOURCES} ${FORM_HEADERS} ${HEADERS} ${RESOURCES_RCC} ${WINDRES} ${SHADERS})
