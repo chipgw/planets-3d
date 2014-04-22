@@ -3,7 +3,11 @@
 namespace version{
     const QString git_revision = "@GIT_SHA1@";
 
+#ifdef PLANETS3D_MSVC_CONFIGURATION
+    const QString build_type = PLANETS3D_MSVC_CONFIGURATION;
+#else
     const QString build_type = "@CMAKE_BUILD_TYPE@";
+#endif
 
 #if defined(__clang__)
     const QString compiler = "Clang/LLVM";
