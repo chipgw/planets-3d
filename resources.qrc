@@ -32,5 +32,6 @@
         <file>shaders/texture.fsh</file>
         <file>shaders/color.vsh</file>
         <file>shaders/texture.vsh</file>
+        <file>icons/world.png</file>
     </qresource>
 </RCC>

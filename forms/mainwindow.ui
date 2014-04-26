@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../resources.qrc">
-    <normaloff>:/icons/silk/world.png</normaloff>:/icons/silk/world.png</iconset>
+    <normaloff>:/icons/world.png</normaloff>:/icons/world.png</iconset>
   </property>
   <widget class="PlanetsWidget" name="centralwidget"/>
   <widget class="QMenuBar" name="menubar">
