@@ -131,8 +131,8 @@ protected:
     void wheelEvent(QWheelEvent* e);
 
     void drawPlanet(const Planet &planet);
-    void drawPlanetColor(const Planet &planet, const QRgb &color);
-    void drawPlanetWireframe(const Planet &planet, const QRgb &color = 0xff00ff00);
+    void drawPlanetColor(const Planet &planet, const QColor &color);
+    void drawPlanetWireframe(const Planet &planet, const QColor &color = 0xff00ff00);
 };
 
 #endif // PlanetsWidget_H
