@@ -17,7 +17,7 @@ public:
 };
 
 template <unsigned int slices> Circle<slices>::Circle(){
-    float step = (2 * M_PI) / slices;
+    float step = float(2.0 * M_PI) / slices;
 
     unsigned int currentLine = 0;
 
@@ -49,8 +49,8 @@ public:
 };
 
 template <unsigned int slices, unsigned int stacks> Sphere<slices, stacks>::Sphere(){
-    float vstep = M_PI / stacks;
-    float hstep = (2 * M_PI) / slices;
+    float vstep = float(M_PI) / stacks;
+    float hstep = float(2.0 * M_PI) / slices;
 
     unsigned int currentTriangle = 0;
     unsigned int currentLine = 0;
