@@ -28,4 +28,6 @@ namespace version{
 #else
     const QString compiler = "Unknown";
 #endif
+
+    const QString cmake_version = "@CMAKE_VERSION@";
 }

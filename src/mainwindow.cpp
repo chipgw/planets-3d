@@ -192,10 +192,12 @@ void MainWindow::on_actionAbout_triggered(){
                           "<li>Git sha1: %2</li>"
                           "<li>Build type: %3</li>"
                           "<li>Compiler: %4</li>"
+                          "<li>CMake Version: %5</li>"
                           "</ul></body></html>")
                        .arg(version::git_revision)
                        .arg(version::build_type)
-                       .arg(version::compiler));
+                       .arg(version::compiler)
+                       .arg(version::cmake_version));
 }
 
 void MainWindow::on_stepsPerFrameSpinBox_valueChanged(int value){
