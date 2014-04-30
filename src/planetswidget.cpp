@@ -17,9 +17,11 @@ int highBit(unsigned int n) {
     return n - (n >> 1);
 }
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent), timer(this), hidePlanets(false), drawGrid(false),
-    gridRange(32), drawPlanetTrails(false), drawPlanetColors(false), following(0), doScreenshot(false), drawScale(1.0f), framecount(0), placingStep(NotPlacing),
-    refreshRate(16), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f), screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/") {
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
+    doScreenshot(false), framecount(0), refreshRate(16), timer(this), placingStep(NotPlacing), gridRange(32),
+    following(0), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f), drawScale(1.0f),
+    drawGrid(false), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
+    screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/") {
 
     if(!screenshotDir.exists()){
         QDir oldDir = QDir::homePath() + "/Pictures/Planets3D Screenshots/";

@@ -77,7 +77,7 @@ private:
 
     const static QColor trailColor;
     const static QColor gridColor;
-    unsigned int gridRange;
+    int gridRange;
     QVector<QVector2D> gridPoints;
 
 public:

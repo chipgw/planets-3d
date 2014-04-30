@@ -53,13 +53,13 @@ private slots:
     void on_generateRandomPushButton_clicked();
 
 private:
+    Ui::MainWindow *ui;
+
     // the maximum value of the simulation speed dial.
     static const int speeddialmax;
     int speedDialMemory;
 
     QSettings settings;
-
-    Ui::MainWindow *ui;
 
     QLabel *planetCountLabel;
     QLabel *fpsLabel;
