@@ -11,7 +11,8 @@ class PlanetsUniverse : public QObject {
     Q_OBJECT
 
 public:
-    typedef QMap<QRgb, Planet> list_type;
+    typedef QRgb key_type;
+    typedef QMap<key_type, Planet> list_type;
     typedef list_type::iterator iterator;
     typedef list_type::const_iterator const_iterator;
 
@@ -25,12 +26,12 @@ public:
     // the factor for apparent velocity. (i.e. UI velocity * this = actual velocity, because it would be really really small if done right.)
     static const float velocityfac;
 
-    QRgb selected;
+    key_type selected;
 
     float simspeed;
     int stepsPerFrame;
 
-    QRgb addPlanet(const Planet &planet, QRgb colorhint = 0);
+    key_type addPlanet(const Planet &planet, key_type colorhint = 0);
     void generateRandom(const int &count, const float &range, const float &velocity, const float &mass);
 
     bool save(const QString& filename);
@@ -41,16 +42,16 @@ public:
     void advance(float time);
 
     inline bool isEmpty() { return planets.isEmpty(); }
-    inline bool isValid(const QRgb &key) { return planets.contains(key); }
-    inline void remove(const QRgb &key) { planets.remove(key); sizeChanged(); }
-    inline Planet &operator [] (const QRgb &key) { return planets[key]; }
+    inline bool isValid(const key_type &key) { return planets.contains(key); }
+    inline void remove(const key_type &key) { planets.remove(key); sizeChanged(); }
+    inline Planet &operator [] (const key_type &key) { return planets[key]; }
 
     inline bool isSelectedValid() { return planets.contains(selected); }
     inline Planet &getSelected() { return planets[selected]; }
 
     inline const_iterator begin() { return planets.constBegin(); }
     inline const_iterator end() { return planets.constEnd(); }
-    inline const_iterator find(const QRgb &key) { return planets.find(key); }
+    inline const_iterator find(const key_type &key) { return planets.find(key); }
     inline int size() { return planets.size(); }
 
 public slots:

@@ -93,7 +93,7 @@ public:
 
     PlanetsUniverse universe;
 
-    QRgb following;
+    PlanetsUniverse::key_type following;
     FollowingState followState;
 
     float firingSpeed;

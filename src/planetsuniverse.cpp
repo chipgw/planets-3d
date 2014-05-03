@@ -43,7 +43,7 @@ bool PlanetsUniverse::load(const QString &filename, bool clear){
             Planet planet;
             planet.setMass(GETATTRIBUTE("mass"));
 
-            QRgb color = QColor(xml.attributes().value("color").toString()).rgb();
+            key_type color = QColor(xml.attributes().value("color").toString()).rgb();
 
             while(xml.readNextStartElement()){
                 if(xml.name() == "position"){
@@ -176,7 +176,7 @@ void PlanetsUniverse::advance(float time){
     }
 }
 
-QRgb PlanetsUniverse::addPlanet(const Planet &planet, QRgb colorhint){
+PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type colorhint){
     colorhint |= ~RGB_MASK;
 
     while(planets.contains(colorhint) || (colorhint & RGB_MASK) == 0){
