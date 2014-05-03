@@ -59,7 +59,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     settings.beginGroup("Graphics");
     ui->actionGrid->setChecked(settings.value("DrawGrid").toBool());
     ui->actionDraw_Paths->setChecked(settings.value("DrawPaths").toBool());
+
+    /* These aren't auto-saved, so for the moment they must be manually added to the config file. */
+    if(settings.contains("TrailLength")){
+        ui->trailLengthSpinBox->setValue(settings.value("TrailLength").toInt());
+    }
+    if(settings.contains("TrailDelta")){
+        ui->trailRecordDistanceDoubleSpinBox->setValue(settings.value("TrailDelta").toDouble());
+    }
     settings.endGroup();
+
+    if(settings.contains("StepsPerFrame")){
+        ui->stepsPerFrameSpinBox->setValue(settings.value("StepsPerFrame").toInt());
+    }
 
     setAcceptDrops(true);
 }
