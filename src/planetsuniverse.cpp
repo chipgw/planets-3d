@@ -12,19 +12,19 @@ bool PlanetsUniverse::load(const QString &filename, bool clear){
     QFile file(filename);
 
     if(!file.exists()){
-        QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("file \"%1\" does not exist!").arg(filename));
+        errorMsg = tr("file \"%1\" does not exist!").arg(filename);
         return false;
     }
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-        QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("Unable to open file \"%1\" for reading!").arg(filename));
+        errorMsg = tr("Unable to open file \"%1\" for reading!").arg(filename);
         return false;
     }
 
     QXmlStreamReader xml(&file);
 
     if(!(xml.readNextStartElement() && xml.name() == "planets-3d-universe")){
-        QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("\"%1\" is not a valid universe file!").arg(filename));
+        errorMsg = tr("\"%1\" is not a valid universe file!").arg(filename);
         return false;
     }
 
@@ -69,7 +69,7 @@ bool PlanetsUniverse::load(const QString &filename, bool clear){
         if(clear){
             deleteAll();
         }
-        QMessageBox::warning(NULL, tr("Error loading simulation!"), tr("Error in file \"%1\": %2").arg(filename).arg(xml.errorString()));
+        errorMsg = tr("Error in file \"%1\": %2").arg(filename).arg(xml.errorString());
         return false;
     }
     sizeChanged();
@@ -81,7 +81,7 @@ bool PlanetsUniverse::save(const QString &filename){
     QFile file(filename);
 
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        QMessageBox::warning(NULL, tr("Error saving simulation!"), tr("Unable to open file \"%1\" for writing!").arg(filename));
+        errorMsg = tr("Unable to open file \"%1\" for writing!").arg(filename);
         return false;
     }
 
@@ -118,7 +118,7 @@ bool PlanetsUniverse::save(const QString &filename){
     xml.writeEndDocument();
 
     if(xml.hasError()){
-        QMessageBox::warning(NULL, tr("Error saving simulation!"), tr("Error writing to file \"%1\"!").arg(filename));
+        errorMsg = tr("Error writing to file \"%1\"!").arg(filename);
         return false;
     }
 

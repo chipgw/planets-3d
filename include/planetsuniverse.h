@@ -20,6 +20,8 @@ private:
     list_type planets;
     void sizeChanged();
 
+    QString errorMsg;
+
 public:
     // the gravity constant
     static const float gravityconst;
@@ -53,6 +55,8 @@ public:
     inline const_iterator end() { return planets.constEnd(); }
     inline const_iterator find(const key_type &key) { return planets.find(key); }
     inline int size() { return planets.size(); }
+
+    inline QString getErrorMessage() { return errorMsg; }
 
 public slots:
     void centerAll();
