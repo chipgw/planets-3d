@@ -151,14 +151,14 @@ void MainWindow::on_actionNew_Simulation_triggered(){
 }
 
 void MainWindow::on_actionOpen_Simulation_triggered(){
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.xml)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.xml);;All Files (*.*)"));
     if(!filename.isEmpty() && !ui->centralwidget->universe.load(filename)){
         QMessageBox::warning(NULL, tr("Error loading simulation!"), ui->centralwidget->universe.getErrorMessage());
     }
 }
 
 void MainWindow::on_actionAppend_Simulation_triggered(){
-    QString filename = QFileDialog::getOpenFileName(this, tr("Append Simulation"), "", tr("Simulation files (*.xml)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Append Simulation"), "", tr("Simulation files (*.xml);;All Files (*.*)"));
     if(!filename.isEmpty() && !ui->centralwidget->universe.load(filename, false)){
         QMessageBox::warning(NULL, tr("Error loading simulation!"), ui->centralwidget->universe.getErrorMessage());
     }
