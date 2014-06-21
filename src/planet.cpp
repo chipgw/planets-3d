@@ -6,8 +6,10 @@ Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v) {
 }
 
 void Planet::updatePath(){
-    if(path.isEmpty() || (path.back() - position).lengthSquared() > pathRecordDistance){
+    if(path.size() < 2 || (path[path.size() - 2] - position).lengthSquared() > pathRecordDistance){
         path.append(position);
+    } else {
+        path.back() = position;
     }
 
     if(path.size() > pathLength){
