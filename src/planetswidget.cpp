@@ -321,9 +321,7 @@ void PlanetsWidget::paintGL() {
 
     timer.start(qMax(0, refreshRate - int(frameTime.elapsed())));
 
-    framecount++;
-
-    emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(framecount * 1.0e3f / totalTime.elapsed()));
+    emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(++framecount * 1.0e3f / totalTime.elapsed()));
     emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e6f / delay));
 }
 
@@ -564,7 +562,7 @@ void PlanetsWidget::updateGrid(){
     gridPoints.clear();
 
     float bounds = gridRange / 2.0f;
-    for(float i = -bounds; i <= bounds; i++){
+    for(float i = -bounds; i <= bounds; ++i){
         gridPoints.append(QVector2D(i,-bounds));
         gridPoints.append(QVector2D(i, bounds));
 

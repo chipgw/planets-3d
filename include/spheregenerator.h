@@ -19,7 +19,7 @@ template <unsigned int slices> Circle<slices>::Circle(){
 
     unsigned int currentLine = 0;
 
-    for(unsigned int current = 0; current < slices; current++){
+    for(unsigned int current = 0; current < slices; ++current){
         verts[current][0] = cos(current * step);
         verts[current][1] = sin(current * step);
         verts[current][2] = 0.0f;
@@ -55,11 +55,11 @@ template <unsigned int slices, unsigned int stacks> Sphere<slices, stacks>::Sphe
     unsigned int currentTriangle = 0;
     unsigned int currentLine = 0;
 
-    for(int v = 0; v <= stacks; v++){
+    for(int v = 0; v <= stacks; ++v){
         float z = cos(v * vstep);
         float r = sin(v * vstep);
 
-        for(int h = 0; h <= slices; h++){
+        for(int h = 0; h <= slices; ++h){
             unsigned int w = slices + 1;
             unsigned int current = v * w + h;
 
