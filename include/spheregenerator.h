@@ -55,11 +55,11 @@ template <unsigned int slices, unsigned int stacks> Sphere<slices, stacks>::Sphe
     unsigned int currentTriangle = 0;
     unsigned int currentLine = 0;
 
-    for(int v = 0; v <= stacks; ++v){
+    for(unsigned int v = 0; v <= stacks; ++v){
         float z = cos(v * vstep);
         float r = sin(v * vstep);
 
-        for(int h = 0; h <= slices; ++h){
+        for(unsigned int h = 0; h <= slices; ++h){
             unsigned int w = slices + 1;
             unsigned int current = v * w + h;
 
