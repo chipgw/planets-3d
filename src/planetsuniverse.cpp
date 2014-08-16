@@ -208,7 +208,8 @@ void PlanetsUniverse::deleteEscapees(){
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
 
-    foreach(const Planet &planet, planets){
+    for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
+        const Planet &planet = i.value();
         averagePosition += planet.position * planet.mass();
         averageVelocity += planet.velocity * planet.mass();
         totalmass += planet.mass();
@@ -241,7 +242,8 @@ void PlanetsUniverse::centerAll(){
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
 
-    foreach(const Planet &planet, planets){
+    for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
+        const Planet &planet = i.value();
         averagePosition += planet.position * planet.mass();
         averageVelocity += planet.velocity * planet.mass();
         totalmass += planet.mass();
