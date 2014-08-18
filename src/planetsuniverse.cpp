@@ -234,8 +234,10 @@ void PlanetsUniverse::deleteEscapees(){
 }
 
 void PlanetsUniverse::deleteSelected(){
-    planets.remove(selected);
-    sizeChanged();
+    if(isSelectedValid()){
+        planets.remove(selected);
+        sizeChanged();
+    }
 }
 
 void PlanetsUniverse::centerAll(){
