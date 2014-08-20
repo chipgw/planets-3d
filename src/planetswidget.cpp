@@ -460,11 +460,10 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             Ray ray = camera.getRay(e->pos(), size(), true);
 
             for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-                const Planet &planet = i.value();
 
-                QVector3D difference = planet.position - ray.origin;
+                QVector3D difference = i->position - ray.origin;
                 float dot = QVector3D::dotProduct(difference, ray.direction);
-                if(dot > nearest && (difference.lengthSquared() - dot * dot) <= (planet.radius() * planet.radius())) {
+                if(dot > nearest && (difference.lengthSquared() - dot * dot) <= (i->radius() * i->radius())) {
                     universe.selected = i.key();
                     nearest = dot;
                 }
