@@ -44,9 +44,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->firingSettings_DockWidget->hide();
     ui->randomSettings_DockWidget->hide();
 
-    const QStringList &arguments = QApplication::arguments();
-
-    foreach (const QString &argument, arguments) {
+    foreach (const QString &argument, QApplication::arguments()) {
         if(QFileInfo(argument).filePath() != QApplication::applicationFilePath() && ui->centralwidget->universe.load(argument)){
             break;
         }
