@@ -21,10 +21,10 @@ public:
 
     void updatePath();
 
-    float radius() const;
+    inline float radius() const { return radius_p; }
 
     void setMass(const float &m);
-    float mass() const;
+    inline float mass() const { return mass_p; }
 };
 
 #endif // PLANET_H
