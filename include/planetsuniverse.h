@@ -5,7 +5,7 @@
 #include <QRgb>
 #include <QObject>
 #include <QMap>
-
+#include <random>
 
 class PlanetsUniverse : public QObject {
     Q_OBJECT
@@ -21,6 +21,8 @@ private:
     void sizeChanged();
 
     QString errorMsg;
+
+    std::default_random_engine generator;
 
 public:
     // the gravity constant

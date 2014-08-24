@@ -6,6 +6,12 @@ cmake_minimum_required(VERSION 2.8)
 option(PLANETS3D_USE_QT4 "use Qt 4 rather than Qt 5." OFF)
 option(PLANETS3D_DISABLE_QOPENGLTEXTURE "Don't use QOpenGLTexture even if the system supports it" OFF)
 
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    # add any future MSVC related stuff here.
+endif()
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 

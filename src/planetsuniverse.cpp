@@ -5,8 +5,12 @@
 #include <QColor>
 #include <QMessageBox>
 #include <qmath.h>
+#include <chrono>
 
-PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20) {}
+using std::uniform_int_distribution;
+using std::uniform_real_distribution;
+
+PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20), generator(std::chrono::system_clock::now().time_since_epoch().count()) {}
 
 bool PlanetsUniverse::load(const QString &filename, bool clear){
     QFile file(filename);
@@ -171,10 +175,13 @@ void PlanetsUniverse::advance(float time){
 }
 
 PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type colorhint){
-    colorhint |= ~RGB_MASK;
+    uniform_int_distribution<QRgb> color_gen(0xFF000001, 0xFFFFFFFF);
 
     while(planets.contains(colorhint) || (colorhint & RGB_MASK) == 0){
-        colorhint = qrand() | ~RGB_MASK;
+        colorhint = color_gen(generator);
+    }
+    if(qAlpha(colorhint) < 0xff) {
+        qDebug("oops... %x", colorhint);
     }
 
     planets[colorhint] = planet;
@@ -183,10 +190,14 @@ PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_t
 }
 
 void PlanetsUniverse::generateRandom(const int &count, const float &range, const float &velocity, const float &mass){
+    uniform_real_distribution<float> pos(-range, range);
+    uniform_real_distribution<float> vel(-velocity, velocity);
+    uniform_real_distribution<float> m(1.0f, mass);
+
     for(int i = 0; i < count; ++i){
-        addPlanet(Planet(QVector3D(float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f) * range,
-                         QVector3D(float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f, float(qrand()) / RAND_MAX - 0.5f) * velocity,
-                         (float(qrand()) / RAND_MAX) * mass));
+        addPlanet(Planet(QVector3D(pos(generator), pos(generator), pos(generator)),
+                         QVector3D(vel(generator), vel(generator), vel(generator)),
+                         m(generator)));
     }
 }
 
