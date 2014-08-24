@@ -180,9 +180,6 @@ PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_t
     while(planets.contains(colorhint) || (colorhint & RGB_MASK) == 0){
         colorhint = color_gen(generator);
     }
-    if(qAlpha(colorhint) < 0xff) {
-        qDebug("oops... %x", colorhint);
-    }
 
     planets[colorhint] = planet;
     sizeChanged();
