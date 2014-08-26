@@ -137,8 +137,8 @@ void PlanetsWidget::paintGL() {
             float totalmass = 0.0f;
 
             for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-                camera.position += i.value().position * i.value().mass();
-                totalmass += i.value().mass();
+                camera.position += i->position * i->mass();
+                totalmass += i->mass();
             }
             camera.position /= totalmass;
         }
@@ -148,7 +148,7 @@ void PlanetsWidget::paintGL() {
 
         if(universe.size() != 0){
             for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-                camera.position += i.value().position;
+                camera.position += i->position;
             }
             camera.position /= universe.size();
         }
@@ -194,8 +194,8 @@ void PlanetsWidget::paintGL() {
         shaderColor.setUniformValue(shaderColor_color, trailColor);
 
         for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-            shaderColor.setAttributeArray(vertex, GL_FLOAT, i.value().path.data(), 3);
-            glDrawArrays(GL_LINE_STRIP, 0, i.value().path.size());
+            shaderColor.setAttributeArray(vertex, GL_FLOAT, i->path.data(), 3);
+            glDrawArrays(GL_LINE_STRIP, 0, i->path.size());
         }
     }
 

@@ -222,7 +222,7 @@ void PlanetsUniverse::deleteEscapees(){
     float limits = 1.0e8f;
 
     for(iterator i = planets.begin(); i != planets.end();){
-        if((i.value().position - averagePosition).lengthSquared() > limits){
+        if((i->position - averagePosition).lengthSquared() > limits){
             i = planets.erase(i);
         } else{
             ++i;
