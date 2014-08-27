@@ -189,7 +189,7 @@ PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_t
 void PlanetsUniverse::generateRandom(const int &count, const float &range, const float &velocity, const float &mass){
     uniform_real_distribution<float> pos(-range, range);
     uniform_real_distribution<float> vel(-velocity, velocity);
-    uniform_real_distribution<float> m(1.0f, mass);
+    uniform_real_distribution<float> m(min_mass, mass);
 
     for(int i = 0; i < count; ++i){
         addPlanet(Planet(QVector3D(pos(generator), pos(generator), pos(generator)),
@@ -274,3 +274,6 @@ void PlanetsUniverse::sizeChanged(){
 const float PlanetsUniverse::gravityconst = 6.67e-11f;
 
 const float PlanetsUniverse::velocityfac = 1.0e-5f;
+
+const float PlanetsUniverse::min_mass = 1.0f;
+const float PlanetsUniverse::max_mass = 1.0e9f;

@@ -30,6 +30,10 @@ public:
     // the factor for apparent velocity. (i.e. UI velocity * this = actual velocity, because it would be really really small if done right.)
     static const float velocityfac;
 
+    // UI limits on planet size.
+    static const float min_mass;
+    static const float max_mass;
+
     key_type selected;
 
     float simspeed;

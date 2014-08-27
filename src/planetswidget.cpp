@@ -485,7 +485,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     case FreePositionZ:
     case OrbitalPlanet:
     case OrbitalPlane:
-        placing.setMass(qMax(placing.mass() + e->delta() * placing.mass() * 1.0e-3f, 0.01f));
+        placing.setMass(qBound(PlanetsUniverse::min_mass, placing.mass() + e->delta() * placing.mass() * 1.0e-3f, PlanetsUniverse::max_mass));
         break;
     case FreeVelocity:
         placing.velocity = placingRotation.column(2).toVector3D() * qMax(0.0f, float(placing.velocity.length() + e->delta() * PlanetsUniverse::velocityfac * 1.0e-3f));

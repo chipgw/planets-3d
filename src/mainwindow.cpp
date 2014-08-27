@@ -13,6 +13,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     ui->PauseResume_Button->setFocus();
 
+    ui->newMass_SpinBox->setMinimum(PlanetsUniverse::min_mass);
+    ui->newMass_SpinBox->setMaximum(PlanetsUniverse::max_mass);
+
+    ui->firingMassSpinBox->setMinimum(PlanetsUniverse::min_mass);
+    ui->firingMassSpinBox->setMaximum(PlanetsUniverse::max_mass);
+
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), QApplication::instance(), SLOT(aboutQt()));
 
