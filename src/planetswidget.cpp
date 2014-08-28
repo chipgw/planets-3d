@@ -18,7 +18,7 @@ int highBit(unsigned int n) {
 }
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
-    doScreenshot(false), framecount(0), refreshRate(16), timer(this), placingStep(NotPlacing), gridRange(32),
+    doScreenshot(false), frameCount(0), refreshRate(16), timer(this), placingStep(NotPlacing), gridRange(32),
     following(0), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f), drawScale(1.0f),
     drawGrid(false), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/") {
@@ -100,7 +100,7 @@ void PlanetsWidget::initializeGL() {
     bindTexture(img);
 #endif
 
-    if(framecount == 0){
+    if(frameCount == 0){
         totalTime.start();
         frameTime.start();
     }
@@ -226,7 +226,7 @@ void PlanetsWidget::paintGL() {
                               -0.2f,-0.2f, length,
                               -0.2f, 0.2f, length,
 
-                               0.0f, 0.0f, length + 0.4f};
+                               0.0f, 0.0f, length + 0.4f };
 
             static const GLubyte indexes[] = {  0,  1,  2,       2,  3,  0,
 
@@ -243,7 +243,7 @@ void PlanetsWidget::paintGL() {
                                                 9,  8, 12,
                                                10,  9, 12,
                                                11, 10, 12,
-                                                8, 11, 12};
+                                                8, 11, 12 };
 
             shaderColor.setAttributeArray(vertex, GL_FLOAT, verts, 3);
             glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
@@ -321,7 +321,7 @@ void PlanetsWidget::paintGL() {
 
     timer.start(qMax(0, refreshRate - int(frameTime.elapsed())));
 
-    emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(++framecount * 1.0e3f / totalTime.elapsed()));
+    emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(++frameCount * 1.0e3f / totalTime.elapsed()));
     emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e6f / delay));
 }
 
@@ -336,15 +336,15 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     }
     case FreePositionZ:
         // set placing Z position
-        placing.position.setZ(placing.position.z() + (lastmousepos.y() - e->y()) * 0.1f);
-        QCursor::setPos(mapToGlobal(lastmousepos));
+        placing.position.setZ(placing.position.z() + (lastMousePos.y() - e->y()) * 0.1f);
+        QCursor::setPos(mapToGlobal(lastMousePos));
         return;
     case FreeVelocity:
         // set placing velocity
-        placingRotation.rotate((lastmousepos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
-        placingRotation.rotate((lastmousepos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
+        placingRotation.rotate((lastMousePos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
+        placingRotation.rotate((lastMousePos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
         placing.velocity = placingRotation.column(2).toVector3D() * placing.velocity.length();
-        QCursor::setPos(mapToGlobal(lastmousepos));
+        QCursor::setPos(mapToGlobal(lastMousePos));
         return;
     case OrbitalPlanet:
         if(universe.isSelectedValid()){
@@ -361,33 +361,33 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         break;
     case OrbitalPlane:
         if(universe.isSelectedValid()){
-            placingRotation.rotate((lastmousepos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
-            placingRotation.rotate((lastmousepos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
+            placingRotation.rotate((lastMousePos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
+            placingRotation.rotate((lastMousePos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
             placing.position = universe.getSelected().position + placingRotation.column(0).toVector3D() * placingOrbitalRadius;
-            QCursor::setPos(mapToGlobal(lastmousepos));
+            QCursor::setPos(mapToGlobal(lastMousePos));
             return;
         }
         break;
     default:
         if(e->buttons().testFlag(Qt::MiddleButton) || e->buttons().testFlag(Qt::RightButton)){
             if(e->modifiers().testFlag(Qt::ControlModifier)){
-                camera.distance -= (lastmousepos.y() - e->y()) * camera.distance * 1.0e-2f;
+                camera.distance -= (lastMousePos.y() - e->y()) * camera.distance * 1.0e-2f;
                 setCursor(Qt::SizeVerCursor);
                 camera.bound();
             }else{
-                camera.xrotation += (lastmousepos.y() - e->y()) * 0.2f;
-                camera.zrotation += (lastmousepos.x() - e->x()) * 0.2f;
+                camera.xrotation += (lastMousePos.y() - e->y()) * 0.2f;
+                camera.zrotation += (lastMousePos.x() - e->x()) * 0.2f;
 
                 camera.bound();
 
-                QCursor::setPos(mapToGlobal(lastmousepos));
+                QCursor::setPos(mapToGlobal(lastMousePos));
                 setCursor(Qt::SizeAllCursor);
                 return;
             }
         }
         break;
     }
-    lastmousepos = e->pos();
+    lastMousePos = e->pos();
 }
 
 void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
@@ -488,7 +488,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
         placing.setMass(qBound(PlanetsUniverse::min_mass, placing.mass() + e->delta() * placing.mass() * 1.0e-3f, PlanetsUniverse::max_mass));
         break;
     case FreeVelocity:
-        placing.velocity = placingRotation.column(2).toVector3D() * qMax(0.0f, float(placing.velocity.length() + e->delta() * PlanetsUniverse::velocityfac * 1.0e-3f));
+        placing.velocity = placingRotation.column(2).toVector3D() * qMax(0.0f, float(placing.velocity.length()) + e->delta() * PlanetsUniverse::velocityfac * 1.0e-3f);
         break;
     default:
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;

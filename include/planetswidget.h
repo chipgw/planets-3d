@@ -58,13 +58,13 @@ private:
     Camera camera;
     bool doScreenshot;
 
-    int framecount;
+    int frameCount;
     int refreshRate;
     QTimer timer;
     QElapsedTimer frameTime;
     QElapsedTimer totalTime;
 
-    QPoint lastmousepos;
+    QPoint lastMousePos;
 
     PlacingStep placingStep;
     Planet placing;

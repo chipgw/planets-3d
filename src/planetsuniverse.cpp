@@ -186,15 +186,15 @@ PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_t
     return colorhint;
 }
 
-void PlanetsUniverse::generateRandom(const int &count, const float &range, const float &velocity, const float &mass){
-    uniform_real_distribution<float> pos(-range, range);
-    uniform_real_distribution<float> vel(-velocity, velocity);
-    uniform_real_distribution<float> m(min_mass, mass);
+void PlanetsUniverse::generateRandom(const int &count, const float &positionRange, const float &maxVelocity, const float &maxMass){
+    uniform_real_distribution<float> position(-positionRange, positionRange);
+    uniform_real_distribution<float> velocity(-maxVelocity, maxVelocity);
+    uniform_real_distribution<float> mass(min_mass, maxMass);
 
     for(int i = 0; i < count; ++i){
-        addPlanet(Planet(QVector3D(pos(generator), pos(generator), pos(generator)),
-                         QVector3D(vel(generator), vel(generator), vel(generator)),
-                         m(generator)));
+        addPlanet(Planet(QVector3D(position(generator), position(generator), position(generator)),
+                         QVector3D(velocity(generator), velocity(generator), velocity(generator)),
+                         mass(generator)));
     }
 }
 

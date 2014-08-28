@@ -40,7 +40,7 @@ public:
     int stepsPerFrame;
 
     key_type addPlanet(const Planet &planet, key_type colorhint = 0);
-    void generateRandom(const int &count, const float &range, const float &velocity, const float &mass);
+    void generateRandom(const int &count, const float &positionRange, const float &maxVelocity, const float &maxMass);
 
     bool save(const QString& filename);
     bool load(const QString& filename, bool clear = true);
