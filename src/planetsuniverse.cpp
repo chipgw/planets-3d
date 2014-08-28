@@ -141,7 +141,7 @@ void PlanetsUniverse::advance(float time){
                     QVector3D direction = o->position - i->position;
                     float distancesqr = direction.lengthSquared();
 
-                    if(distancesqr < pow((i->radius() + o->radius()) * 0.8f, 2)){
+                    if(distancesqr < pow(i->radius() + o->radius(), 2)){
                         i->position = o->position * o->mass() + i->position * i->mass();
                         i->velocity = o->velocity * o->mass() + i->velocity * i->mass();
                         i->setMass(i->mass() + o->mass());
