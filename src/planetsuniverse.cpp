@@ -219,7 +219,7 @@ void PlanetsUniverse::deleteEscapees(){
     averagePosition /= totalmass;
     averageVelocity /= totalmass;
 
-    float limits = 1.0e8f;
+    float limits = 1.0e12f;
 
     for(iterator i = planets.begin(); i != planets.end();){
         if((i->position - averagePosition).lengthSquared() > limits){
