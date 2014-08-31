@@ -3,12 +3,20 @@
 
 #include <qmath.h>
 
+struct Vertex {
+    float position[3];
+    float normal[3];
+    float tangent[3];
+    float uv[2];
+    float padding;
+};
+
 template <unsigned int slices> class Circle {
 public:
     static const unsigned int vertexCount = slices;
     static const unsigned int lineCount = slices * 2;
 
-    float verts[vertexCount][3];
+    Vertex verts[vertexCount];
     unsigned int lines[lineCount];
 
     Circle();
@@ -20,9 +28,9 @@ template <unsigned int slices> Circle<slices>::Circle(){
     unsigned int currentLine = 0;
 
     for(unsigned int current = 0; current < slices; ++current){
-        verts[current][0] = cos(current * step);
-        verts[current][1] = sin(current * step);
-        verts[current][2] = 0.0f;
+        verts[current].position[0] = cos(current * step);
+        verts[current].position[1] = sin(current * step);
+        verts[current].position[2] = 0.0f;
 
         if(current == (slices - 1)){
             lines[currentLine++] = current;
@@ -40,8 +48,7 @@ public:
     static const unsigned int triangleCount = slices * stacks * 6;
     static const unsigned int lineCount = slices * stacks * 4;
 
-    float verts[vertexCount][3];
-    float uv[vertexCount][2];
+    Vertex verts[vertexCount];
     unsigned int triangles[triangleCount];
     unsigned int lines[lineCount];
 
@@ -63,12 +70,12 @@ template <unsigned int slices, unsigned int stacks> Sphere<slices, stacks>::Sphe
             unsigned int w = slices + 1;
             unsigned int current = v * w + h;
 
-            verts[current][0] = cos(h * hstep) * r;
-            verts[current][1] = sin(h * hstep) * r;
-            verts[current][2] = z;
+            verts[current].position[0] = cos(h * hstep) * r;
+            verts[current].position[1] = sin(h * hstep) * r;
+            verts[current].position[2] = z;
 
-            uv[current][0] = float(h) / float(slices);
-            uv[current][1] = 1.0f - float(v) / float(stacks);
+            verts[current].uv[0] = float(h) / float(slices);
+            verts[current].uv[1] = 1.0f - float(v) / float(stacks);
 
             if(h != slices && v != stacks){
                 triangles[currentTriangle++] = current;
