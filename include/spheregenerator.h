@@ -74,6 +74,10 @@ template <unsigned int slices, unsigned int stacks> Sphere<slices, stacks>::Sphe
             verts[current].position[1] = sin(h * hstep) * r;
             verts[current].position[2] = z;
 
+            verts[current].normal[0] = verts[current].position[0];
+            verts[current].normal[1] = verts[current].position[1];
+            verts[current].normal[2] = verts[current].position[2];
+
             verts[current].uv[0] = float(h) / float(slices);
             verts[current].uv[1] = 1.0f - float(v) / float(stacks);
 
