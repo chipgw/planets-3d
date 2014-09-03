@@ -137,8 +137,8 @@ void PlanetsWidget::paintGL() {
             float totalmass = 0.0f;
 
             for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-                camera.position += i->position * i->mass();
-                totalmass += i->mass();
+                camera.position += i->second.position * i->second.mass();
+                totalmass += i->second.mass();
             }
             camera.position /= totalmass;
         }
@@ -148,7 +148,7 @@ void PlanetsWidget::paintGL() {
 
         if(universe.size() != 0){
             for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-                camera.position += i->position;
+                camera.position += i->second.position;
             }
             camera.position /= universe.size();
         }
@@ -172,7 +172,7 @@ void PlanetsWidget::paintGL() {
         shaderTexture.enableAttributeArray(uv);
 
         for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-            drawPlanet(i.value());
+            drawPlanet(i->second);
         }
 
         shaderTexture.disableAttributeArray(uv);
@@ -183,7 +183,7 @@ void PlanetsWidget::paintGL() {
 
     if(drawPlanetColors){
         for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-            drawPlanetWireframe(i.value(), i.key());
+            drawPlanetWireframe(i->second, i->first);
         }
     }else if(!hidePlanets && universe.isSelectedValid()){
         drawPlanetWireframe(universe.getSelected());
@@ -194,8 +194,8 @@ void PlanetsWidget::paintGL() {
         shaderColor.setUniformValue(shaderColor_color, trailColor);
 
         for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-            shaderColor.setAttributeArray(vertex, GL_FLOAT, i->path.data(), 3);
-            glDrawArrays(GL_LINE_STRIP, 0, i->path.size());
+            shaderColor.setAttributeArray(vertex, GL_FLOAT, i->second.path.data(), 3);
+            glDrawArrays(GL_LINE_STRIP, 0, i->second.path.size());
         }
     }
 
@@ -461,10 +461,10 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 
             for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
 
-                QVector3D difference = i->position - ray.origin;
+                QVector3D difference = i->second.position - ray.origin;
                 float dot = QVector3D::dotProduct(difference, ray.direction);
-                if(dot > nearest && (difference.lengthSquared() - dot * dot) <= (i->radius() * i->radius())) {
-                    universe.selected = i.key();
+                if(dot > nearest && (difference.lengthSquared() - dot * dot) <= (i->second.radius() * i->second.radius())) {
+                    universe.selected = i->first;
                     nearest = dot;
                 }
             }
@@ -586,7 +586,7 @@ void PlanetsWidget::followNext(){
             current = universe.begin();
         }
 
-        following = current.key();
+        following = current->first;
     }
 }
 void PlanetsWidget::followPrevious(){
@@ -596,13 +596,14 @@ void PlanetsWidget::followPrevious(){
 
         if(current == universe.end()){
             current = universe.begin();
-        }else if(current == universe.begin()){
-            current = universe.end() - 1;
         }else{
+            if(current == universe.begin()){
+                current = universe.end();
+            }
             --current;
         }
 
-        following = current.key();
+        following = current->first;
     }
 }
 

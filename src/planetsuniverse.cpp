@@ -96,22 +96,22 @@ bool PlanetsUniverse::save(const QString &filename){
     xml.writeStartDocument();
     xml.writeStartElement("planets-3d-universe");
 
-    for(const_iterator i = planets.constBegin(); i != planets.constEnd(); ++i){
+    for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
         xml.writeStartElement("planet"); {
-            xml.writeAttribute("mass", QString::number(i->mass()));
+            xml.writeAttribute("mass", QString::number(i->second.mass()));
 
-            xml.writeAttribute("color", QColor(i.key() & RGB_MASK).name());
+            xml.writeAttribute("color", QColor(i->first & RGB_MASK).name());
 
             xml.writeStartElement("position"); {
-                xml.writeAttribute("x", QString::number(i->position.x()));
-                xml.writeAttribute("y", QString::number(i->position.y()));
-                xml.writeAttribute("z", QString::number(i->position.z()));
+                xml.writeAttribute("x", QString::number(i->second.position.x()));
+                xml.writeAttribute("y", QString::number(i->second.position.y()));
+                xml.writeAttribute("z", QString::number(i->second.position.z()));
             } xml.writeEndElement();
 
             xml.writeStartElement("velocity"); {
-                xml.writeAttribute("x", QString::number(i->velocity.x() / velocityfac));
-                xml.writeAttribute("y", QString::number(i->velocity.y() / velocityfac));
-                xml.writeAttribute("z", QString::number(i->velocity.z() / velocityfac));
+                xml.writeAttribute("x", QString::number(i->second.velocity.x() / velocityfac));
+                xml.writeAttribute("y", QString::number(i->second.velocity.y() / velocityfac));
+                xml.writeAttribute("z", QString::number(i->second.velocity.z() / velocityfac));
             } xml.writeEndElement();
         } xml.writeEndElement();
     }
@@ -134,36 +134,38 @@ void PlanetsUniverse::advance(float time){
 
     for(int s = 0; s < stepsPerFrame; ++s){
         for(iterator i = planets.begin(); i != planets.end();){
-            if(i->mass() <= 0.0f){
+            if(i->second.mass() <= 0.0f){
                 i = planets.erase(i);
             }else{
-                for(iterator o = i + 1; o != planets.end();){
-                    QVector3D direction = o->position - i->position;
+                iterator o = i;
+                ++o;
+                for(;o != planets.end();){
+                    QVector3D direction = o->second.position - i->second.position;
                     float distancesqr = direction.lengthSquared();
 
-                    if(distancesqr < pow(i->radius() + o->radius(), 2)){
-                        i->position = o->position * o->mass() + i->position * i->mass();
-                        i->velocity = o->velocity * o->mass() + i->velocity * i->mass();
-                        i->setMass(i->mass() + o->mass());
-                        i->position /= i->mass();
-                        i->velocity /= i->mass();
-                        if(o.key() == selected){
-                            selected = i.key();
+                    if(distancesqr < pow(i->second.radius() + o->second.radius(), 2)){
+                        i->second.position = o->second.position * o->second.mass() + i->second.position * i->second.mass();
+                        i->second.velocity = o->second.velocity * o->second.mass() + i->second.velocity * i->second.mass();
+                        i->second.setMass(i->second.mass() + o->second.mass());
+                        i->second.position /= i->second.mass();
+                        i->second.velocity /= i->second.mass();
+                        if(o->first == selected){
+                            selected = i->first;
                         }
-                        i->path.clear();
+                        i->second.path.clear();
                         o = planets.erase(o);
                     }else{
                         direction.normalize();
-                        direction *= gravityconst * ((o->mass() * i->mass()) / distancesqr) * time;
+                        direction *= gravityconst * ((o->second.mass() * i->second.mass()) / distancesqr) * time;
 
-                        i->velocity += direction / i->mass();
-                        o->velocity -= direction / o->mass();
+                        i->second.velocity += direction / i->second.mass();
+                        o->second.velocity -= direction / o->second.mass();
                         ++o;
                     }
                 }
 
-                i->position += i->velocity * time;
-                i->updatePath();
+                i->second.position += i->second.velocity * time;
+                i->second.updatePath();
 
                 ++i;
             }
@@ -177,7 +179,7 @@ void PlanetsUniverse::advance(float time){
 PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type colorhint){
     uniform_int_distribution<QRgb> color_gen(0xFF000001, 0xFFFFFFFF);
 
-    while(planets.contains(colorhint) || (colorhint & RGB_MASK) == 0){
+    while(planets.count(colorhint) > 0 || (colorhint & RGB_MASK) == 0){
         colorhint = color_gen(generator);
     }
 
@@ -210,10 +212,10 @@ void PlanetsUniverse::deleteEscapees(){
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
 
-    for(const_iterator i = planets.constBegin(); i != planets.constEnd(); ++i){
-        averagePosition += i->position * i->mass();
-        averageVelocity += i->velocity * i->mass();
-        totalmass += i->mass();
+    for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
+        averagePosition += i->second.position * i->second.mass();
+        averageVelocity += i->second.velocity * i->second.mass();
+        totalmass += i->second.mass();
     }
 
     averagePosition /= totalmass;
@@ -222,7 +224,7 @@ void PlanetsUniverse::deleteEscapees(){
     float limits = 1.0e12f;
 
     for(iterator i = planets.begin(); i != planets.end();){
-        if((i->position - averagePosition).lengthSquared() > limits){
+        if((i->second.position - averagePosition).lengthSquared() > limits){
             i = planets.erase(i);
         } else{
             ++i;
@@ -236,7 +238,7 @@ void PlanetsUniverse::deleteEscapees(){
 
 void PlanetsUniverse::deleteSelected(){
     if(isSelectedValid()){
-        planets.remove(selected);
+        planets.erase(selected);
         sizeChanged();
     }
 }
@@ -245,10 +247,10 @@ void PlanetsUniverse::centerAll(){
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
 
-    for(const_iterator i = planets.constBegin(); i != planets.constEnd(); ++i){
-        averagePosition += i->position * i->mass();
-        averageVelocity += i->velocity * i->mass();
-        totalmass += i->mass();
+    for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
+        averagePosition += i->second.position * i->second.mass();
+        averageVelocity += i->second.velocity * i->second.mass();
+        totalmass += i->second.mass();
     }
 
     averagePosition /= totalmass;
@@ -256,9 +258,9 @@ void PlanetsUniverse::centerAll(){
 
     if(!averagePosition.isNull() || !averageVelocity.isNull()){
         for(iterator i = planets.begin(); i != planets.end(); ++i){
-            i->position -= averagePosition;
-            i->velocity -= averageVelocity;
-            i->path.clear();
+            i->second.position -= averagePosition;
+            i->second.velocity -= averageVelocity;
+            i->second.path.clear();
         }
     }
 }

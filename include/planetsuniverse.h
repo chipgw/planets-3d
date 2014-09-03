@@ -4,7 +4,7 @@
 #include "planet.h"
 #include <QRgb>
 #include <QObject>
-#include <QMap>
+#include <map>
 #include <random>
 
 class PlanetsUniverse : public QObject {
@@ -12,7 +12,7 @@ class PlanetsUniverse : public QObject {
 
 public:
     typedef QRgb key_type;
-    typedef QMap<key_type, Planet> list_type;
+    typedef std::map<key_type, Planet> list_type;
     typedef list_type::iterator iterator;
     typedef list_type::const_iterator const_iterator;
 
@@ -49,16 +49,16 @@ public:
 
     void advance(float time);
 
-    inline bool isEmpty() { return planets.isEmpty(); }
-    inline bool isValid(const key_type &key) { return planets.contains(key); }
-    inline void remove(const key_type &key) { planets.remove(key); sizeChanged(); }
+    inline bool isEmpty() { return planets.size() == 0; }
+    inline bool isValid(const key_type &key) { return planets.count(key); }
+    inline void remove(const key_type &key) { planets.erase(key); sizeChanged(); }
     inline Planet &operator [] (const key_type &key) { return planets[key]; }
 
-    inline bool isSelectedValid() { return planets.contains(selected); }
+    inline bool isSelectedValid() { return planets.count(selected); }
     inline Planet &getSelected() { return planets[selected]; }
 
-    inline const_iterator begin() { return planets.constBegin(); }
-    inline const_iterator end() { return planets.constEnd(); }
+    inline const_iterator begin() { return planets.cbegin(); }
+    inline const_iterator end() { return planets.cend(); }
     inline const_iterator find(const key_type &key) { return planets.find(key); }
     inline int size() { return planets.size(); }
 
