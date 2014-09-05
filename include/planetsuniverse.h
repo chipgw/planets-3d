@@ -18,7 +18,6 @@ public:
 
 private:
     list_type planets;
-    void sizeChanged();
 
     QString errorMsg;
 
@@ -51,7 +50,7 @@ public:
 
     inline bool isEmpty() { return planets.size() == 0; }
     inline bool isValid(const key_type &key) { return planets.count(key); }
-    inline void remove(const key_type &key) { planets.erase(key); sizeChanged(); }
+    inline void remove(const key_type &key) { planets.erase(key); }
     inline Planet &operator [] (const key_type &key) { return planets[key]; }
 
     inline bool isSelectedValid() { return planets.count(selected); }
@@ -69,9 +68,6 @@ public slots:
     void deleteAll();
     void deleteEscapees();
     void deleteSelected();
-
-signals:
-    void updatePlanetCountMessage(const QString &text);
 };
 
 #endif // PLANETSUNIVERSE_H

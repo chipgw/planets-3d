@@ -76,7 +76,6 @@ bool PlanetsUniverse::load(const QString &filename, bool clear){
         errorMsg = tr("Error in file \"%1\": %2").arg(filename).arg(xml.errorString());
         return false;
     }
-    sizeChanged();
 
     return true;
 }
@@ -128,7 +127,6 @@ bool PlanetsUniverse::save(const QString &filename){
 }
 
 void PlanetsUniverse::advance(float time){
-    int planetcount = planets.size();
     time *= simspeed;
     time /= stepsPerFrame;
 
@@ -171,9 +169,6 @@ void PlanetsUniverse::advance(float time){
             }
         }
     }
-    if(planetcount != planets.size()){
-        sizeChanged();
-    }
 }
 
 PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type colorhint){
@@ -184,7 +179,6 @@ PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_t
     }
 
     planets[colorhint] = planet;
-    sizeChanged();
     return colorhint;
 }
 
@@ -203,12 +197,9 @@ void PlanetsUniverse::generateRandom(const int &count, const float &positionRang
 void PlanetsUniverse::deleteAll(){
     planets.clear();
     selected = 0;
-    sizeChanged();
 }
 
 void PlanetsUniverse::deleteEscapees(){
-    int planetcount = planets.size();
-
     QVector3D averagePosition, averageVelocity;
     float totalmass = 0.0f;
 
@@ -230,16 +221,11 @@ void PlanetsUniverse::deleteEscapees(){
             ++i;
         }
     }
-
-    if(planetcount != planets.size()){
-        sizeChanged();
-    }
 }
 
 void PlanetsUniverse::deleteSelected(){
     if(isSelectedValid()){
         planets.erase(selected);
-        sizeChanged();
     }
 }
 
@@ -262,14 +248,6 @@ void PlanetsUniverse::centerAll(){
             i->second.velocity -= averageVelocity;
             i->second.path.clear();
         }
-    }
-}
-
-void PlanetsUniverse::sizeChanged(){
-    if(planets.size() == 1){
-        emit updatePlanetCountMessage(tr("1 planet"));
-    }else{
-        emit updatePlanetCountMessage(tr("%1 planets").arg(planets.size()));
     }
 }
 
