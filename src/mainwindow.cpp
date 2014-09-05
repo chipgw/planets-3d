@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionPrevious_Planet,                  SIGNAL(triggered()),        ui->centralwidget,              SLOT(followPrevious()));
     connect(ui->actionNext_Planet,                      SIGNAL(triggered()),        ui->centralwidget,              SLOT(followNext()));
 
-    ui->statusbar->addPermanentWidget(planetCountLabel = new QLabel("0 planets", ui->statusbar));
+    ui->statusbar->addPermanentWidget(planetCountLabel = new QLabel(ui->statusbar));
     ui->statusbar->addPermanentWidget(fpsLabel = new QLabel(ui->statusbar));
     ui->statusbar->addPermanentWidget(averagefpsLabel = new QLabel(ui->statusbar));
     fpsLabel->setFixedWidth(120);
