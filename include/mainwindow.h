@@ -53,6 +53,17 @@ private slots:
     void on_generateRandomPushButton_clicked();
 
 private:
+    const static QString categoryMainWindow;
+    const static QString categoryGraphics;
+    const static QString settingGeometry;
+    const static QString settingState;
+    const static QString settingDrawGrid;
+    const static QString settingDrawPaths;
+    const static QString settingGridDimensions;
+    const static QString settingTrailLength;
+    const static QString settingTrailDelta;
+    const static QString settingStepsPerFrame;
+
     Ui::MainWindow *ui;
 
     // the maximum value of the simulation speed dial.

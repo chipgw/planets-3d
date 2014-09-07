@@ -56,38 +56,41 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
     }
 
-    settings.beginGroup("MainWindow");
-    restoreGeometry(settings.value("geometry").toByteArray());
-    restoreState(settings.value("state").toByteArray());
+    settings.beginGroup(categoryMainWindow);
+    restoreGeometry(settings.value(settingGeometry).toByteArray());
+    restoreState(settings.value(settingState).toByteArray());
     settings.endGroup();
-    settings.beginGroup("Graphics");
-    ui->actionGrid->setChecked(settings.value("DrawGrid").toBool());
-    ui->actionDraw_Paths->setChecked(settings.value("DrawPaths").toBool());
+    settings.beginGroup(categoryGraphics);
+    ui->actionGrid->setChecked(settings.value(settingDrawGrid).toBool());
+    ui->actionDraw_Paths->setChecked(settings.value(settingDrawPaths).toBool());
 
     /* These aren't auto-saved, so for the moment they must be manually added to the config file. */
-    if(settings.contains("TrailLength")){
-        ui->trailLengthSpinBox->setValue(settings.value("TrailLength").toInt());
+    if(settings.contains(settingGridDimensions)){
+        ui->gridRangeSpinBox->setValue(settings.value(settingGridDimensions).toInt());
     }
-    if(settings.contains("TrailDelta")){
-        ui->trailRecordDistanceDoubleSpinBox->setValue(settings.value("TrailDelta").toDouble());
+    if(settings.contains(settingTrailLength)){
+        ui->trailLengthSpinBox->setValue(settings.value(settingTrailLength).toInt());
+    }
+    if(settings.contains(settingTrailDelta)){
+        ui->trailRecordDistanceDoubleSpinBox->setValue(settings.value(settingTrailDelta).toDouble());
     }
     settings.endGroup();
 
-    if(settings.contains("StepsPerFrame")){
-        ui->stepsPerFrameSpinBox->setValue(settings.value("StepsPerFrame").toInt());
+    if(settings.contains(settingStepsPerFrame)){
+        ui->stepsPerFrameSpinBox->setValue(settings.value(settingStepsPerFrame).toInt());
     }
 
     setAcceptDrops(true);
 }
 
 MainWindow::~MainWindow(){
-    settings.beginGroup("MainWindow");
-    settings.setValue("geometry", saveGeometry());
-    settings.setValue("state", saveState());
+    settings.beginGroup(categoryMainWindow);
+    settings.setValue(settingGeometry, saveGeometry());
+    settings.setValue(settingState, saveState());
     settings.endGroup();
-    settings.beginGroup("Graphics");
-    settings.setValue("DrawGrid", ui->actionGrid->isChecked());
-    settings.setValue("DrawPaths", ui->actionDraw_Paths->isChecked());
+    settings.beginGroup(categoryGraphics);
+    settings.setValue(settingDrawGrid, ui->actionGrid->isChecked());
+    settings.setValue(settingDrawPaths, ui->actionDraw_Paths->isChecked());
     settings.endGroup();
 
     delete ui;
@@ -308,3 +311,14 @@ bool MainWindow::event(QEvent *event){
 }
 
 const int MainWindow::speeddialmax = 32;
+
+const QString MainWindow::categoryMainWindow =      "MainWindow";
+const QString MainWindow::categoryGraphics =        "Graphics";
+const QString MainWindow::settingGeometry =         "geometry";
+const QString MainWindow::settingState =            "state";
+const QString MainWindow::settingDrawGrid =         "DrawGrid";
+const QString MainWindow::settingDrawPaths =        "DrawPaths";
+const QString MainWindow::settingGridDimensions =   "GridDimensions";
+const QString MainWindow::settingTrailLength =      "TrailLength";
+const QString MainWindow::settingTrailDelta =       "TrailDelta";
+const QString MainWindow::settingStepsPerFrame =    "StepsPerFrame";
