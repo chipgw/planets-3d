@@ -56,8 +56,10 @@ public:
     inline bool isSelectedValid() { return planets.count(selected); }
     inline Planet &getSelected() { return planets[selected]; }
 
-    inline const_iterator begin() { return planets.cbegin(); }
-    inline const_iterator end() { return planets.cend(); }
+    inline iterator begin() { return planets.begin(); }
+    inline iterator end() { return planets.end(); }
+    inline const_iterator cbegin() { return planets.cbegin(); }
+    inline const_iterator cend() { return planets.cend(); }
     inline const_iterator find(const key_type &key) { return planets.find(key); }
     inline int size() { return planets.size(); }
 
