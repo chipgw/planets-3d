@@ -136,9 +136,9 @@ void PlanetsWidget::paintGL() {
         if(universe.size() != 0){
             float totalmass = 0.0f;
 
-            for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-                camera.position += i->second.position * i->second.mass();
-                totalmass += i->second.mass();
+            for(const auto& i : universe){
+                camera.position += i.second.position * i.second.mass();
+                totalmass += i.second.mass();
             }
             camera.position /= totalmass;
         }
@@ -147,8 +147,8 @@ void PlanetsWidget::paintGL() {
         camera.position = QVector3D();
 
         if(universe.size() != 0){
-            for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-                camera.position += i->second.position;
+            for(const auto& i : universe){
+                camera.position += i.second.position;
             }
             camera.position /= universe.size();
         }
@@ -171,8 +171,8 @@ void PlanetsWidget::paintGL() {
 
         shaderTexture.enableAttributeArray(uv);
 
-        for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-            drawPlanet(i->second);
+        for(const auto& i : universe){
+            drawPlanet(i.second);
         }
 
         shaderTexture.disableAttributeArray(uv);
@@ -182,8 +182,8 @@ void PlanetsWidget::paintGL() {
     shaderColor.setUniformValue(shaderColor_cameraMatrix, camera.camera);
 
     if(drawPlanetColors){
-        for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-            drawPlanetWireframe(i->second, i->first);
+        for(const auto& i : universe){
+            drawPlanetWireframe(i.second, i.first);
         }
     }else if(!hidePlanets && universe.isSelectedValid()){
         drawPlanetWireframe(universe.getSelected());
@@ -193,9 +193,9 @@ void PlanetsWidget::paintGL() {
         shaderColor.setUniformValue(shaderColor_modelMatrix, QMatrix4x4());
         shaderColor.setUniformValue(shaderColor_color, trailColor);
 
-        for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
-            shaderColor.setAttributeArray(vertex, GL_FLOAT, i->second.path.data(), 3);
-            glDrawArrays(GL_LINE_STRIP, 0, i->second.path.size());
+        for(const auto& i : universe){
+            shaderColor.setAttributeArray(vertex, GL_FLOAT, i.second.path.data(), 3);
+            glDrawArrays(GL_LINE_STRIP, 0, i.second.path.size());
         }
     }
 
@@ -465,12 +465,12 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 
             Ray ray = camera.getRay(e->pos(), size(), true);
 
-            for(PlanetsUniverse::const_iterator i = universe.begin(); i != universe.end(); ++i){
+            for(const auto& i : universe){
 
-                QVector3D difference = i->second.position - ray.origin;
+                QVector3D difference = i.second.position - ray.origin;
                 float dot = QVector3D::dotProduct(difference, ray.direction);
-                if(dot > nearest && (difference.lengthSquared() - dot * dot) <= (i->second.radius() * i->second.radius())) {
-                    universe.selected = i->first;
+                if(dot > nearest && (difference.lengthSquared() - dot * dot) <= (i.second.radius() * i.second.radius())) {
+                    universe.selected = i.first;
                     nearest = dot;
                 }
             }
@@ -586,10 +586,10 @@ void PlanetsWidget::followNext(){
         followState = Single;
         PlanetsUniverse::const_iterator current = universe.find(following);
 
-        if(current == universe.end()){
-            current = universe.begin();
-        }else if(++current == universe.end()){
-            current = universe.begin();
+        if(current == universe.cend()){
+            current = universe.cbegin();
+        }else if(++current == universe.cend()){
+            current = universe.cbegin();
         }
 
         following = current->first;
@@ -600,11 +600,11 @@ void PlanetsWidget::followPrevious(){
         followState = Single;
         PlanetsUniverse::const_iterator current = universe.find(following);
 
-        if(current == universe.end()){
-            current = universe.begin();
+        if(current == universe.cend()){
+            current = universe.cbegin();
         }else{
-            if(current == universe.begin()){
-                current = universe.end();
+            if(current == universe.cbegin()){
+                current = universe.cend();
             }
             --current;
         }
