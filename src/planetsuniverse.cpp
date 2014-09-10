@@ -196,7 +196,7 @@ void PlanetsUniverse::generateRandom(const int &count, const float &positionRang
 
 void PlanetsUniverse::deleteAll(){
     planets.clear();
-    selected = 0;
+    resetSelected();
 }
 
 void PlanetsUniverse::deleteEscapees(){

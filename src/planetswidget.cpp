@@ -460,7 +460,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             setCursor(Qt::ArrowCursor);
             break;
         default:
-            universe.selected = 0;
+            universe.resetSelected();
             float nearest = -std::numeric_limits<float>::max();
 
             Ray ray = camera.getRay(e->pos(), size(), true);
@@ -506,13 +506,13 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
 
 void PlanetsWidget::beginInteractiveCreation(){
     placingStep = FreePositionXY;
-    universe.selected = 0;
+    universe.resetSelected();
 }
 
 void PlanetsWidget::enableFiringMode(bool enable){
     if(enable){
         placingStep = Firing;
-        universe.selected = 0;
+        universe.resetSelected();
     }else if(placingStep == Firing){
         placingStep = NotPlacing;
     }

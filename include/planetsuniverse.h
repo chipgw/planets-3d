@@ -55,6 +55,7 @@ public:
 
     inline bool isSelectedValid() { return planets.count(selected); }
     inline Planet &getSelected() { return planets[selected]; }
+    inline void resetSelected() { selected = 0; }
 
     inline iterator begin() { return planets.begin(); }
     inline iterator end() { return planets.end(); }
