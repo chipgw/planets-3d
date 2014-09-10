@@ -1,12 +1,13 @@
 #include "planet.h"
 #include <qmath.h>
+#include <glm/gtx/norm.hpp>
 
-Planet::Planet(QVector3D p, QVector3D v, float m) : position(p), velocity(v) {
+Planet::Planet(glm::vec3 p, glm::vec3 v, float m) : position(p), velocity(v) {
     setMass(m);
 }
 
 void Planet::updatePath(){
-    if(path.size() < 2 || (path[path.size() - 2] - position).lengthSquared() > pathRecordDistance){
+    if(path.size() < 2 || glm::distance2(path[path.size() - 2], position) > pathRecordDistance){
         path.push_back(position);
     } else {
         path.back() = position;

@@ -3,6 +3,11 @@
 #include <qmath.h>
 #include <QMouseEvent>
 #include <limits>
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/norm.hpp>
 
 #ifdef PLANETS3D_USE_QOPENGLTEXTURE
 #include <QOpenGLTexture>
@@ -36,7 +41,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleB
     refreshRate = 0;
 #endif
 
-    placing.velocity.setY(PlanetsUniverse::velocityfac);
+    placing.velocity.y = PlanetsUniverse::velocityfac;
 
     setMouseTracking(true);
 
@@ -115,8 +120,7 @@ PlanetsWidget::~PlanetsWidget(){
 void PlanetsWidget::resizeGL(int width, int height) {
     glViewport(0, 0, width, height);
 
-    camera.projection.setToIdentity();
-    camera.projection.perspective(45.0f, float(width) / float(height), 0.1f, 1.0e6f);
+    camera.projection = glm::perspective(45.0f, float(width) / float(height), 0.1f, 1.0e6f);
 }
 
 void PlanetsWidget::paintGL() {
@@ -131,7 +135,7 @@ void PlanetsWidget::paintGL() {
 
     switch(followState){
     case WeightedAverage:
-        camera.position = QVector3D();
+        camera.position = glm::vec3();
 
         if(universe.size() != 0){
             float totalmass = 0.0f;
@@ -144,7 +148,7 @@ void PlanetsWidget::paintGL() {
         }
         break;
     case PlainAverage:
-        camera.position = QVector3D();
+        camera.position = glm::vec3();
 
         if(universe.size() != 0){
             for(const auto& i : universe){
@@ -159,14 +163,14 @@ void PlanetsWidget::paintGL() {
             break;
         }
     default:
-        camera.position = QVector3D();
+        camera.position = glm::vec3();
     }
 
     camera.setup();
 
     if(!hidePlanets){
         shaderTexture.bind();
-        shaderTexture.setUniformValue(shaderTexture_cameraMatrix, camera.camera);
+        glUniformMatrix4fv(shaderTexture_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
         shaderTexture.setUniformValue(shaderTexture_modelMatrix, QMatrix4x4());
 
         shaderTexture.enableAttributeArray(uv);
@@ -179,7 +183,7 @@ void PlanetsWidget::paintGL() {
     }
 
     shaderColor.bind();
-    shaderColor.setUniformValue(shaderColor_cameraMatrix, camera.camera);
+    glUniformMatrix4fv(shaderColor_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
 
     if(drawPlanetColors){
         for(const auto& i : universe){
@@ -201,14 +205,13 @@ void PlanetsWidget::paintGL() {
 
     switch(placingStep){
     case FreeVelocity:{
-        float length = placing.velocity.length() / PlanetsUniverse::velocityfac;
+        float length = glm::length(placing.velocity) / PlanetsUniverse::velocityfac;
 
         if(length > 0.0f){
-            QMatrix4x4 matrix;
-            matrix.translate(placing.position);
-            matrix.scale(placing.radius());
+            glm::mat4 matrix = glm::translate(placing.position);
+            matrix = glm::scale(matrix, glm::vec3(placing.radius()));
             matrix *= placingRotation;
-            shaderColor.setUniformValue(shaderColor_modelMatrix, matrix);
+            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
             shaderColor.setUniformValue(shaderColor_color, trailColor);
 
             float verts[] = {  0.1f, 0.1f, 0.0f,
@@ -256,11 +259,10 @@ void PlanetsWidget::paintGL() {
     case OrbitalPlane:
     case OrbitalPlanet:
         if(universe.isSelectedValid() && placingOrbitalRadius > 0.0f){
-            QMatrix4x4 matrix;
-            matrix.translate(universe.getSelected().position);
-            matrix.scale(placingOrbitalRadius);
+            glm::mat4 matrix = glm::translate(universe.getSelected().position);
+            matrix = glm::scale(matrix, glm::vec3(placingOrbitalRadius));
             matrix *= placingRotation;
-            shaderColor.setUniformValue(shaderColor_modelMatrix, matrix);
+            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
             shaderColor.setUniformValue(shaderColor_color, trailColor);
 
             shaderColor.setAttributeArray(vertex, GL_FLOAT, circle.verts, 3, sizeof(Vertex));
@@ -281,7 +283,7 @@ void PlanetsWidget::paintGL() {
 
         shaderColor.setAttributeArray(vertex, GL_FLOAT, gridPoints.data(), 2);
 
-        float distance = pow(camera.camera.column(3).lengthSquared(), 1.0f / 3.0f);
+        float distance = pow(glm::length2(camera.camera[3]), 1.0f / 3.0f);
         int nearestPowerOfTwo = highBit(distance);
         float alphafac = distance / nearestPowerOfTwo - 1.0f;
 
@@ -337,39 +339,40 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         // set placing position on the XY plane
         Ray ray = camera.getRay(e->pos(), size(), false);
 
-        placing.position = ray.origin + (ray.direction * ((-ray.origin.z()) / ray.direction.z()));
+        placing.position = ray.origin + (ray.direction * ((-ray.origin.z) / ray.direction.z));
         break;
     }
     case FreePositionZ:
         // set placing Z position
-        placing.position.setZ(placing.position.z() + (lastMousePos.y() - e->y()) * 0.1f);
+        placing.position.z += (lastMousePos.y() - e->y()) * 0.1f;
         QCursor::setPos(mapToGlobal(lastMousePos));
         return;
     case FreeVelocity:
         // set placing velocity
-        placingRotation.rotate((lastMousePos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
-        placingRotation.rotate((lastMousePos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
-        placing.velocity = placingRotation.column(2).toVector3D() * placing.velocity.length();
+        placingRotation *= glm::rotate((lastMousePos.x() - e->x()) * 0.05f, glm::vec3(1.0f, 0.0f, 0.0f));
+        placingRotation *= glm::rotate((lastMousePos.y() - e->y()) * 0.05f, glm::vec3(0.0f, 1.0f, 0.0f));
+        placing.velocity = glm::vec3(placingRotation[2]) * glm::length(placing.velocity);
         QCursor::setPos(mapToGlobal(lastMousePos));
         return;
     case OrbitalPlanet:
         if(universe.isSelectedValid()){
             Ray ray = camera.getRay(e->pos(), size(), false);
 
-            placing.position = ray.origin + (ray.direction * ((universe.getSelected().position.z() - ray.origin.z()) / ray.direction.z()));
-            QVector3D relative = placing.position - universe.getSelected().position;
-            placingOrbitalRadius = relative.length();
-            placingRotation.setToIdentity();
+            placing.position = ray.origin + (ray.direction * ((universe.getSelected().position.z - ray.origin.z) / ray.direction.z));
+            glm::vec3 relative = placing.position - universe.getSelected().position;
+            placingOrbitalRadius = glm::length(relative);
             relative /= placingOrbitalRadius;
-            placingRotation.setColumn(0, relative);
-            placingRotation.setColumn(1, QVector4D(relative.y(), -relative.x(), 0.0f, 0.0f));
+            placingRotation = glm::mat4(glm::vec4(relative, 0.0f),
+                                        glm::vec4(relative.y, -relative.x, 0.0f, 0.0f),
+                                        glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),
+                                        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         }
         break;
     case OrbitalPlane:
         if(universe.isSelectedValid()){
-            placingRotation.rotate((lastMousePos.x() - e->x()) * 0.05f, 1.0f, 0.0f, 0.0f);
-            placingRotation.rotate((lastMousePos.y() - e->y()) * 0.05f, 0.0f, 1.0f, 0.0f);
-            placing.position = universe.getSelected().position + placingRotation.column(0).toVector3D() * placingOrbitalRadius;
+            placingRotation *= glm::rotate((lastMousePos.x() - e->x()) * 0.05f, glm::vec3(1.0f, 0.0f, 0.0f));
+            placingRotation *= glm::rotate((lastMousePos.y() - e->y()) * 0.05f, glm::vec3(0.0f, 1.0f, 0.0f));
+            placing.position = universe.getSelected().position + glm::vec3(placingRotation[0] * placingOrbitalRadius);
             QCursor::setPos(mapToGlobal(lastMousePos));
             return;
         }
@@ -428,7 +431,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             break;
         case FreeVelocity:
             placingStep = NotPlacing;
-            placing.velocity = placingRotation.column(2).toVector3D() * placing.velocity.length();
+            placing.velocity = glm::vec3(placingRotation[2]) * glm::length(placing.velocity);
             universe.selected = universe.addPlanet(placing);
             setCursor(Qt::ArrowCursor);
             break;
@@ -451,7 +454,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             if(universe.isSelectedValid()){
                 Planet &selected = universe.getSelected();
                 float speed = sqrt((selected.mass() * selected.mass() * PlanetsUniverse::gravityconst) / ((selected.mass() + placing.mass()) * placingOrbitalRadius));
-                QVector3D velocity = placingRotation.column(1).toVector3D() * speed;
+                glm::vec3 velocity = glm::vec3(placingRotation[1]) * speed;
                 universe.selected = universe.addPlanet(Planet(placing.position, selected.velocity + velocity, placing.mass()));
                 selected.velocity -= velocity * (placing.mass() / selected.mass());
             }
@@ -467,9 +470,9 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 
             for(const auto& i : universe){
 
-                QVector3D difference = i.second.position - ray.origin;
-                float dot = QVector3D::dotProduct(difference, ray.direction);
-                if(dot > nearest && (difference.lengthSquared() - dot * dot) <= (i.second.radius() * i.second.radius())) {
+                glm::vec3 difference = i.second.position - ray.origin;
+                float dot = glm::dot(difference, ray.direction);
+                if(dot > nearest && (glm::length2(difference) - dot * dot) <= (i.second.radius() * i.second.radius())) {
                     universe.selected = i.first;
                     nearest = dot;
                 }
@@ -494,7 +497,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
         placing.setMass(qBound(PlanetsUniverse::min_mass, placing.mass() + e->delta() * placing.mass() * 1.0e-3f, PlanetsUniverse::max_mass));
         break;
     case FreeVelocity:
-        placing.velocity = placingRotation.column(2).toVector3D() * qMax(0.0f, float(placing.velocity.length()) + e->delta() * PlanetsUniverse::velocityfac * 1.0e-3f);
+        placing.velocity = glm::vec3(placingRotation[2]) * qMax(0.0f, glm::length(placing.velocity) + e->delta() * PlanetsUniverse::velocityfac * 1.0e-3f);
         break;
     default:
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;
@@ -529,10 +532,9 @@ void PlanetsWidget::takeScreenshot(){
 }
 
 void PlanetsWidget::drawPlanet(const Planet &planet){
-    QMatrix4x4 matrix;
-    matrix.translate(planet.position);
-    matrix.scale(planet.radius() * drawScale);
-    shaderTexture.setUniformValue(shaderTexture_modelMatrix, matrix);
+    glm::mat4 matrix = glm::translate(planet.position);
+    matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
+    glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
     shaderTexture.setAttributeArray(vertex, GL_FLOAT, highResSphere.verts, 3, sizeof(Vertex));
     shaderTexture.setAttributeArray(uv, GL_FLOAT, highResSphere.verts[0].uv, 2, sizeof(Vertex));
@@ -542,10 +544,9 @@ void PlanetsWidget::drawPlanet(const Planet &planet){
 void PlanetsWidget::drawPlanetColor(const Planet &planet, const QColor &color){
     shaderColor.setUniformValue(shaderColor_color, color);
 
-    QMatrix4x4 matrix;
-    matrix.translate(planet.position);
-    matrix.scale(planet.radius() * drawScale * 1.05f);
-    shaderColor.setUniformValue(shaderColor_modelMatrix, matrix);
+    glm::mat4 matrix = glm::translate(planet.position);
+    matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale * 1.05f));
+    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
     shaderColor.setAttributeArray(vertex, GL_FLOAT, lowResSphere.verts, 3, sizeof(Vertex));
     glDrawElements(GL_TRIANGLES, lowResSphere.triangleCount, GL_UNSIGNED_INT, lowResSphere.triangles);
@@ -554,10 +555,9 @@ void PlanetsWidget::drawPlanetColor(const Planet &planet, const QColor &color){
 void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QColor &color){
     shaderColor.setUniformValue(shaderColor_color, color);
 
-    QMatrix4x4 matrix;
-    matrix.translate(planet.position);
-    matrix.scale(planet.radius() * drawScale * 1.05f);
-    shaderColor.setUniformValue(shaderColor_modelMatrix, matrix);
+    glm::mat4 matrix = glm::translate(planet.position);
+    matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale * 1.05f));
+    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
     shaderColor.setAttributeArray(vertex, GL_FLOAT, lowResSphere.verts, 3, sizeof(Vertex));
     glDrawElements(GL_LINES, lowResSphere.lineCount, GL_UNSIGNED_INT, lowResSphere.lines);

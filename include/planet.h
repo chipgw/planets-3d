@@ -2,7 +2,7 @@
 #define PLANET_H
 
 #include <vector>
-#include <QVector3D>
+#include <glm/vec3.hpp>
 
 class Planet {
 private:
@@ -10,12 +10,12 @@ private:
     float radius_p;
 
 public:
-    Planet(QVector3D p = QVector3D(), QVector3D v = QVector3D(), float m = 100.0f);
+    Planet(glm::vec3 p = glm::vec3(), glm::vec3 v = glm::vec3(), float m = 100.0f);
 
-    QVector3D position;
-    QVector3D velocity;
+    glm::vec3 position;
+    glm::vec3 velocity;
 
-    std::vector<QVector3D> path;
+    std::vector<glm::vec3> path;
     static int pathLength;
     static float pathRecordDistance;
 

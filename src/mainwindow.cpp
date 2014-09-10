@@ -110,14 +110,14 @@ void MainWindow::closeEvent(QCloseEvent *e){
 
 void MainWindow::on_createPlanet_PushButton_clicked(){
     ui->centralwidget->universe.selected = ui->centralwidget->universe.addPlanet(
-                Planet(QVector3D(ui->newPosX_SpinBox->value(),      ui->newPosY_SpinBox->value(),      ui->newPosZ_SpinBox->value()),
-                       QVector3D(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * PlanetsUniverse::velocityfac,
+                Planet(glm::vec3(ui->newPosX_SpinBox->value(),      ui->newPosY_SpinBox->value(),      ui->newPosZ_SpinBox->value()),
+                       glm::vec3(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * PlanetsUniverse::velocityfac,
                        ui->newMass_SpinBox->value()));
 }
 
 void MainWindow::on_actionClear_Velocity_triggered(){
     if(ui->centralwidget->universe.isSelectedValid()){
-        ui->centralwidget->universe.getSelected().velocity = QVector3D();
+        ui->centralwidget->universe.getSelected().velocity = glm::vec3();
     }
 }
 

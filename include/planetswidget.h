@@ -68,7 +68,7 @@ private:
 
     PlacingStep placingStep;
     Planet placing;
-    QMatrix4x4 placingRotation;
+    glm::mat4 placingRotation;
     float placingOrbitalRadius;
 
     const static Sphere<64, 32> highResSphere;

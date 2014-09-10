@@ -1,28 +1,30 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <QVector3D>
-#include <QMatrix4x4>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+#include <QSize>
+#include <QPoint>
 
 struct Ray {
-    QVector3D origin, direction;
+    glm::vec3 origin, direction;
 };
 
 class Camera {
 public:
     Camera();
 
-    QVector3D position;
+    glm::vec3 position;
     float distance;
     float xrotation;
     float zrotation;
 
-    QMatrix4x4 projection;
-    QMatrix4x4 camera;
+    glm::mat4 projection;
+    glm::mat4 camera;
 
     void bound();
     void reset();
-    const QMatrix4x4 &setup();
+    const glm::mat4 &setup();
 
     Ray getRay(const QPoint &pos, const QSize &window, bool normalize, float startDepth = 0.0f, float endDepth = 1.0f);
 };

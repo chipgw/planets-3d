@@ -1,5 +1,7 @@
 #include "camera.h"
 #include <qmath.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 Camera::Camera() {
     reset();
@@ -17,31 +19,29 @@ void Camera::reset(){
     zrotation = 0.0f;
 }
 
-const QMatrix4x4 &Camera::setup(){
-    camera = projection;
-    camera.translate(0.0f, 0.0f, -distance);
-    camera.rotate(xrotation - 90.0f, QVector3D(1.0f, 0.0f, 0.0f));
-    camera.rotate(zrotation, QVector3D(0.0f, 0.0f, 1.0f));
-    camera.translate(-position);
+const glm::mat4 &Camera::setup(){
+    camera = glm::translate(projection, glm::vec3(0.0f, 0.0f, -distance));
+    camera = glm::rotate(camera, xrotation - 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+    camera = glm::rotate(camera, zrotation, glm::vec3(0.0f, 0.0f, 1.0f));
+    camera = glm::translate(camera, -position);
     return camera;
 }
 
 Ray Camera::getRay(const QPoint &pos, const QSize &window, bool normalize, float startDepth, float endDepth){
     Ray ray;
 
-    QVector3D windowCoord((2.0f * pos.x())  / window.width()  - 1.0f,
-                          (2.0f * -pos.y()) / window.height() + 1.0f, startDepth);
+    glm::mat4 model;
+    glm::vec3 windowCoord(pos.x(), window.height() - pos.y(), startDepth);
+    glm::vec4 viewport(0.0f, 0.0f, window.width(), window.height());
 
-    QMatrix4x4 inv = camera.inverted();
+    ray.origin = glm::unProject(windowCoord, model, camera, viewport);
 
-    ray.origin = inv * windowCoord;
+    windowCoord.z = endDepth;
 
-    windowCoord.setZ(endDepth);
-
-    ray.direction = ray.origin - (inv * windowCoord);
+    ray.direction = ray.origin - glm::unProject(windowCoord, model, camera, viewport);
 
     if(normalize){
-        ray.direction.normalize();
+        ray.direction = glm::normalize(ray.direction);
     }
 
     return ray;

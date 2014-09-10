@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include <qmath.h>
 #include <chrono>
+#include <glm/gtx/norm.hpp>
+#include <glm/gtx/vector_query.hpp>
 
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
@@ -51,14 +53,10 @@ bool PlanetsUniverse::load(const QString &filename, bool clear){
 
             while(xml.readNextStartElement()){
                 if(xml.name() == "position"){
-                    planet.position.setX(GETATTRIBUTE("x"));
-                    planet.position.setY(GETATTRIBUTE("y"));
-                    planet.position.setZ(GETATTRIBUTE("z"));
+                    planet.position = glm::vec3(GETATTRIBUTE("x"), GETATTRIBUTE("y"), GETATTRIBUTE("z"));
                     xml.readNext();
                 }else if(xml.name() == "velocity"){
-                    planet.velocity.setX(GETATTRIBUTE("x") * velocityfac);
-                    planet.velocity.setY(GETATTRIBUTE("y") * velocityfac);
-                    planet.velocity.setZ(GETATTRIBUTE("z") * velocityfac);
+                    planet.velocity = glm::vec3(GETATTRIBUTE("x"), GETATTRIBUTE("y"), GETATTRIBUTE("z")) * velocityfac;
                     xml.readNext();
                 }
             }
@@ -102,15 +100,15 @@ bool PlanetsUniverse::save(const QString &filename){
             xml.writeAttribute("color", QColor(i->first & RGB_MASK).name());
 
             xml.writeStartElement("position"); {
-                xml.writeAttribute("x", QString::number(i->second.position.x()));
-                xml.writeAttribute("y", QString::number(i->second.position.y()));
-                xml.writeAttribute("z", QString::number(i->second.position.z()));
+                xml.writeAttribute("x", QString::number(i->second.position.x));
+                xml.writeAttribute("y", QString::number(i->second.position.y));
+                xml.writeAttribute("z", QString::number(i->second.position.z));
             } xml.writeEndElement();
 
             xml.writeStartElement("velocity"); {
-                xml.writeAttribute("x", QString::number(i->second.velocity.x() / velocityfac));
-                xml.writeAttribute("y", QString::number(i->second.velocity.y() / velocityfac));
-                xml.writeAttribute("z", QString::number(i->second.velocity.z() / velocityfac));
+                xml.writeAttribute("x", QString::number(i->second.velocity.x / velocityfac));
+                xml.writeAttribute("y", QString::number(i->second.velocity.y / velocityfac));
+                xml.writeAttribute("z", QString::number(i->second.velocity.z / velocityfac));
             } xml.writeEndElement();
         } xml.writeEndElement();
     }
@@ -138,8 +136,8 @@ void PlanetsUniverse::advance(float time){
                 iterator o = i;
                 ++o;
                 for(;o != planets.end();){
-                    QVector3D direction = o->second.position - i->second.position;
-                    float distancesqr = direction.lengthSquared();
+                    glm::vec3 direction = o->second.position - i->second.position;
+                    float distancesqr = glm::length2(direction);
 
                     if(distancesqr < pow(i->second.radius() + o->second.radius(), 2)){
                         i->second.position = o->second.position * o->second.mass() + i->second.position * i->second.mass();
@@ -153,7 +151,7 @@ void PlanetsUniverse::advance(float time){
                         i->second.path.clear();
                         o = planets.erase(o);
                     }else{
-                        direction.normalize();
+                        direction = glm::normalize(direction);
                         direction *= gravityconst * ((o->second.mass() * i->second.mass()) / distancesqr) * time;
 
                         i->second.velocity += direction / i->second.mass();
@@ -188,8 +186,8 @@ void PlanetsUniverse::generateRandom(const int &count, const float &positionRang
     uniform_real_distribution<float> mass(min_mass, maxMass);
 
     for(int i = 0; i < count; ++i){
-        addPlanet(Planet(QVector3D(position(generator), position(generator), position(generator)),
-                         QVector3D(velocity(generator), velocity(generator), velocity(generator)),
+        addPlanet(Planet(glm::vec3(position(generator), position(generator), position(generator)),
+                         glm::vec3(velocity(generator), velocity(generator), velocity(generator)),
                          mass(generator)));
     }
 }
@@ -200,7 +198,7 @@ void PlanetsUniverse::deleteAll(){
 }
 
 void PlanetsUniverse::deleteEscapees(){
-    QVector3D averagePosition, averageVelocity;
+    glm::vec3 averagePosition, averageVelocity;
     float totalmass = 0.0f;
 
     for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
@@ -215,7 +213,7 @@ void PlanetsUniverse::deleteEscapees(){
     float limits = 1.0e12f;
 
     for(iterator i = planets.begin(); i != planets.end();){
-        if((i->second.position - averagePosition).lengthSquared() > limits){
+        if(glm::distance2(i->second.position, averagePosition) > limits){
             i = planets.erase(i);
         } else{
             ++i;
@@ -230,7 +228,7 @@ void PlanetsUniverse::deleteSelected(){
 }
 
 void PlanetsUniverse::centerAll(){
-    QVector3D averagePosition, averageVelocity;
+    glm::vec3 averagePosition, averageVelocity;
     float totalmass = 0.0f;
 
     for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
@@ -242,7 +240,9 @@ void PlanetsUniverse::centerAll(){
     averagePosition /= totalmass;
     averageVelocity /= totalmass;
 
-    if(!averagePosition.isNull() || !averageVelocity.isNull()){
+    float epsilon = std::numeric_limits<float>::epsilon();
+
+    if(!glm::isNull(averagePosition, epsilon) || !glm::isNull(averageVelocity, epsilon)){
         for(iterator i = planets.begin(); i != planets.end(); ++i){
             i->second.position -= averagePosition;
             i->second.velocity -= averageVelocity;
