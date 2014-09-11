@@ -78,7 +78,7 @@ private:
     const static QColor trailColor;
     const static QColor gridColor;
     int gridRange;
-    QVector<QVector2D> gridPoints;
+    std::vector<float> gridPoints;
 
 public:
     enum FollowingState{

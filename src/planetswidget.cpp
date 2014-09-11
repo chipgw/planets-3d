@@ -275,7 +275,7 @@ void PlanetsWidget::paintGL() {
     }
 
     if(drawGrid){
-        if(gridPoints.size() != gridRange * 4){
+        if(gridPoints.size() != (gridRange + 1) * 8){
             updateGrid();
         }
 
@@ -295,14 +295,14 @@ void PlanetsWidget::paintGL() {
         shaderColor.setUniformValue(shaderColor_modelMatrix, matrix);
         shaderColor.setUniformValue(shaderColor_color, color);
 
-        glDrawArrays(GL_LINES, 0, gridPoints.size());
+        glDrawArrays(GL_LINES, 0, gridPoints.size() / 2);
 
         matrix.scale(0.5f);
         shaderColor.setUniformValue(shaderColor_modelMatrix, matrix);
         color.setAlphaF(gridColor.alphaF() * (1.0f - alphafac));
         shaderColor.setUniformValue(shaderColor_color, color);
 
-        glDrawArrays(GL_LINES, 0, gridPoints.size());
+        glDrawArrays(GL_LINES, 0, gridPoints.size() / 2);
 
         glDepthMask(GL_TRUE);
     }
@@ -568,11 +568,11 @@ void PlanetsWidget::updateGrid(){
 
     float bounds = gridRange / 2.0f;
     for(float i = -bounds; i <= bounds; ++i){
-        gridPoints.append(QVector2D(i,-bounds));
-        gridPoints.append(QVector2D(i, bounds));
+        gridPoints.push_back(i); gridPoints.push_back(-bounds);
+        gridPoints.push_back(i); gridPoints.push_back( bounds);
 
-        gridPoints.append(QVector2D(-bounds, i));
-        gridPoints.append(QVector2D( bounds, i));
+        gridPoints.push_back(-bounds); gridPoints.push_back(i);
+        gridPoints.push_back( bounds); gridPoints.push_back(i);
     }
 }
 
