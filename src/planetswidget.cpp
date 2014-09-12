@@ -1,6 +1,5 @@
 #include "planetswidget.h"
 #include <QDir>
-#include <qmath.h>
 #include <QMouseEvent>
 #include <limits>
 #include <glm/glm.hpp>
@@ -321,7 +320,7 @@ void PlanetsWidget::paintGL() {
         }
     }
 
-    timer.start(qMax(0, refreshRate - int(frameTime.elapsed())));
+    timer.start(glm::max(0, refreshRate - int(frameTime.elapsed())));
 
     emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(++frameCount * 1.0e3f / totalTime.elapsed()));
     emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e6f / delay));
@@ -494,7 +493,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     case FreePositionZ:
     case OrbitalPlanet:
     case OrbitalPlane:
-        placing.setMass(qBound(PlanetsUniverse::min_mass, placing.mass() + e->delta() * placing.mass() * 1.0e-3f, PlanetsUniverse::max_mass));
+        placing.setMass(glm::clamp(placing.mass() + e->delta() * placing.mass() * 1.0e-3f, PlanetsUniverse::min_mass, PlanetsUniverse::max_mass));
         break;
     case FreeVelocity:
         placing.velocity = glm::vec3(placingRotation[2]) * qMax(0.0f, glm::length(placing.velocity) + e->delta() * PlanetsUniverse::velocityfac * 1.0e-3f);

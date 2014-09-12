@@ -1,5 +1,4 @@
 #include "camera.h"
-#include <qmath.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -8,9 +7,9 @@ Camera::Camera() {
 }
 
 void Camera::bound(){
-    distance = qBound(10.0f, distance, 1.0e4f);
-    xrotation = qBound(-90.0f, xrotation, 90.0f);
-    zrotation = fmod(zrotation, 360.0f);
+    distance = glm::clamp(distance, 10.0f, 1.0e4f);
+    xrotation = glm::clamp(xrotation, -90.0f, 90.0f);
+    zrotation = glm::mod(zrotation, 360.0f);
 }
 
 void Camera::reset(){

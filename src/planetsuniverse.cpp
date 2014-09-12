@@ -3,8 +3,6 @@
 #include <QXmlStreamWriter>
 #include <QFile>
 #include <QColor>
-#include <QMessageBox>
-#include <qmath.h>
 #include <chrono>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_query.hpp>
@@ -139,7 +137,7 @@ void PlanetsUniverse::advance(float time){
                     glm::vec3 direction = o->second.position - i->second.position;
                     float distancesqr = glm::length2(direction);
 
-                    if(distancesqr < pow(i->second.radius() + o->second.radius(), 2)){
+                    if(distancesqr < glm::pow(i->second.radius() + o->second.radius(), 2.0f)){
                         i->second.position = o->second.position * o->second.mass() + i->second.position * i->second.mass();
                         i->second.velocity = o->second.velocity * o->second.mass() + i->second.velocity * i->second.mass();
                         i->second.setMass(i->second.mass() + o->second.mass());

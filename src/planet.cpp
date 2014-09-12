@@ -1,5 +1,4 @@
 #include "planet.h"
-#include <qmath.h>
 #include <glm/gtx/norm.hpp>
 
 Planet::Planet(glm::vec3 p, glm::vec3 v, float m) : position(p), velocity(v) {
@@ -23,7 +22,7 @@ void Planet::setMass(const float &m){
     radius_p = 0.0f;
 
     if(m > 0.0f){
-        radius_p = pow((3.0f * m / 4.0f) * M_PI, 1.0f / 3.0f);
+        radius_p = glm::pow((3.0f * m / 4.0f) * glm::pi<float>(), 1.0f / 3.0f);
     }
 }
 
