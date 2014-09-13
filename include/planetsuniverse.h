@@ -7,9 +7,7 @@
 #include <map>
 #include <random>
 
-class PlanetsUniverse : public QObject {
-    Q_OBJECT
-
+class PlanetsUniverse {
 public:
     typedef QRgb key_type;
     typedef std::map<key_type, Planet> list_type;
@@ -66,7 +64,6 @@ public:
 
     inline QString getErrorMessage() { return errorMsg; }
 
-public slots:
     void centerAll();
     void deleteAll();
     void deleteEscapees();

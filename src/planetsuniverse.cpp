@@ -16,19 +16,19 @@ bool PlanetsUniverse::load(const QString &filename, bool clear){
     QFile file(filename);
 
     if(!file.exists()){
-        errorMsg = tr("file \"%1\" does not exist!").arg(filename);
+        errorMsg = "file \"" + filename + "\" does not exist!";
         return false;
     }
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-        errorMsg = tr("Unable to open file \"%1\" for reading!").arg(filename);
+        errorMsg = "Unable to open file \"" + filename + "\" for reading!";
         return false;
     }
 
     QXmlStreamReader xml(&file);
 
     if(!(xml.readNextStartElement() && xml.name() == "planets-3d-universe")){
-        errorMsg = tr("\"%1\" is not a valid universe file!").arg(filename);
+        errorMsg = "\"" + filename + "\" is not a valid universe file!";
         return false;
     }
 
@@ -69,7 +69,7 @@ bool PlanetsUniverse::load(const QString &filename, bool clear){
         if(clear){
             deleteAll();
         }
-        errorMsg = tr("Error in file \"%1\": %2").arg(filename).arg(xml.errorString());
+        errorMsg = "Error in file \"" + filename + "\": " + xml.errorString();
         return false;
     }
 
@@ -80,7 +80,7 @@ bool PlanetsUniverse::save(const QString &filename){
     QFile file(filename);
 
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        errorMsg = tr("Unable to open file \"%1\" for writing!").arg(filename);
+        errorMsg = "Unable to open file \"" + filename + "\" for writing!";
         return false;
     }
 
@@ -115,7 +115,7 @@ bool PlanetsUniverse::save(const QString &filename){
     xml.writeEndDocument();
 
     if(xml.hasError()){
-        errorMsg = tr("Error writing to file \"%1\"!").arg(filename);
+        errorMsg = "Error writing to file \"" + filename + "\"!";
         return false;
     }
 

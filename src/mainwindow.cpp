@@ -22,9 +22,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), QApplication::instance(), SLOT(aboutQt()));
 
-    connect(ui->actionCenter_All,                       SIGNAL(triggered()),        &ui->centralwidget->universe,   SLOT(centerAll()));
-    connect(ui->actionDelete,                           SIGNAL(triggered()),        &ui->centralwidget->universe,   SLOT(deleteSelected()));
-    connect(ui->actionDelete_Escapees,                  SIGNAL(triggered()),        &ui->centralwidget->universe,   SLOT(deleteEscapees()));
     connect(ui->actionInteractive_Planet_Placement,     SIGNAL(triggered()),        ui->centralwidget,              SLOT(beginInteractiveCreation()));
     connect(ui->actionInteractive_Planet_Placement,     SIGNAL(triggered(bool)),    ui->toggleFiringModePushButton, SLOT(setChecked(bool)));
     connect(ui->actionInteractive_Orbital_Placement,    SIGNAL(triggered()),        ui->centralwidget,              SLOT(beginOrbitalCreation()));
@@ -119,6 +116,18 @@ void MainWindow::on_actionClear_Velocity_triggered(){
     if(ui->centralwidget->universe.isSelectedValid()){
         ui->centralwidget->universe.getSelected().velocity = glm::vec3();
     }
+}
+
+void MainWindow::on_actionCenter_All_triggered(){
+    ui->centralwidget->universe.centerAll();
+}
+
+void MainWindow::on_actionDelete_Escapees_triggered(){
+    ui->centralwidget->universe.deleteEscapees();
+}
+
+void MainWindow::on_actionDelete_triggered(){
+    ui->centralwidget->universe.deleteSelected();
 }
 
 void MainWindow::on_speed_Dial_valueChanged(int value){
