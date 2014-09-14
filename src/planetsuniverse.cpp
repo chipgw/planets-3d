@@ -12,8 +12,8 @@ using std::uniform_real_distribution;
 
 PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20), generator(std::chrono::system_clock::now().time_since_epoch().count()) {}
 
-bool PlanetsUniverse::load(const QString &filename, bool clear){
-    QFile file(filename);
+bool PlanetsUniverse::load(const std::string &filename, bool clear){
+    QFile file(filename.c_str());
 
     if(!file.exists()){
         errorMsg = "file \"" + filename + "\" does not exist!";
@@ -69,15 +69,15 @@ bool PlanetsUniverse::load(const QString &filename, bool clear){
         if(clear){
             deleteAll();
         }
-        errorMsg = "Error in file \"" + filename + "\": " + xml.errorString();
+        errorMsg = "Error in file \"" + filename + "\": " + xml.errorString().toStdString();
         return false;
     }
 
     return true;
 }
 
-bool PlanetsUniverse::save(const QString &filename){
-    QFile file(filename);
+bool PlanetsUniverse::save(const std::string &filename){
+    QFile file(filename.c_str());
 
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
         errorMsg = "Unable to open file \"" + filename + "\" for writing!";

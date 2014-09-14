@@ -2,14 +2,14 @@
 #define PLANETSUNIVERSE_H
 
 #include "planet.h"
-#include <QRgb>
-#include <QObject>
 #include <map>
 #include <random>
+#include <string>
+#include <cstdint>
 
 class PlanetsUniverse {
 public:
-    typedef QRgb key_type;
+    typedef uint32_t key_type;
     typedef std::map<key_type, Planet> list_type;
     typedef list_type::iterator iterator;
     typedef list_type::const_iterator const_iterator;
@@ -17,7 +17,7 @@ public:
 private:
     list_type planets;
 
-    QString errorMsg;
+    std::string errorMsg;
 
     std::default_random_engine generator;
 
@@ -39,8 +39,8 @@ public:
     key_type addPlanet(const Planet &planet, key_type colorhint = 0);
     void generateRandom(const int &count, const float &positionRange, const float &maxVelocity, const float &maxMass);
 
-    bool save(const QString& filename);
-    bool load(const QString& filename, bool clear = true);
+    bool save(const std::string& filename);
+    bool load(const std::string& filename, bool clear = true);
 
     PlanetsUniverse();
 
@@ -62,7 +62,7 @@ public:
     inline const_iterator find(const key_type &key) { return planets.find(key); }
     inline int size() { return planets.size(); }
 
-    inline QString getErrorMessage() { return errorMsg; }
+    inline std::string getErrorMessage() { return errorMsg; }
 
     void centerAll();
     void deleteAll();
