@@ -168,7 +168,7 @@ void PlanetsUniverse::advance(float time){
 }
 
 PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type colorhint){
-    uniform_int_distribution<QRgb> color_gen(0xFF000001, 0xFFFFFFFF);
+    uniform_int_distribution<key_type> color_gen(0xFF000001, 0xFFFFFFFF);
 
     while(planets.count(colorhint) > 0 || (colorhint & RGB_MASK) == 0){
         colorhint = color_gen(generator);
