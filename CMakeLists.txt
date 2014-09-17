@@ -91,3 +91,7 @@ else(DEFINED Qt5Gui_OPENGL_LIBRARIES)
     include_directories(${OPENGL_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
 endif(DEFINED Qt5Gui_OPENGL_LIBRARIES)
+
+find_package(TinyXML REQUIRED)
+include_directories(${TINYXML_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${TINYXML_LIBRARIES})

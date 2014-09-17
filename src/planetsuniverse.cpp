@@ -1,11 +1,14 @@
 #include "include/planetsuniverse.h"
-#include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QFile>
 #include <QColor>
 #include <chrono>
+#include <tinyxml.h>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_query.hpp>
+#include <cstdio>
+
+#define RGB_MASK 0x00ffffff
 
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
@@ -13,64 +16,45 @@ using std::uniform_real_distribution;
 PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20), generator(std::chrono::system_clock::now().time_since_epoch().count()) {}
 
 bool PlanetsUniverse::load(const std::string &filename, bool clear){
-    QFile file(filename.c_str());
+    TiXmlDocument doc(filename);
 
-    if(!file.exists()){
-        errorMsg = "file \"" + filename + "\" does not exist!";
+    if(!doc.LoadFile()){
+        errorMsg =  "Unable to load file \"" + filename + "\"!\n" + doc.ErrorDesc();
         return false;
     }
 
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-        errorMsg = "Unable to open file \"" + filename + "\" for reading!";
-        return false;
-    }
-
-    QXmlStreamReader xml(&file);
-
-    if(!(xml.readNextStartElement() && xml.name() == "planets-3d-universe")){
+    TiXmlElement* root = doc.FirstChildElement("planets-3d-universe");
+    if(root == nullptr){
         errorMsg = "\"" + filename + "\" is not a valid universe file!";
         return false;
     }
-
-#if QT_VERSION >= 0x050100
-#define GETATTRIBUTE(A) xml.attributes().value(A).toFloat()
-#else
-#define GETATTRIBUTE(A) xml.attributes().value(A).toString().toFloat()
-#endif
 
     if(clear){
         deleteAll();
     }
 
-    while(xml.readNextStartElement()) {
-        if(xml.name() == "planet"){
+    for(TiXmlElement* element = root->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()){
+        if(element->ValueStr() == "planet"){
             Planet planet;
-            planet.setMass(GETATTRIBUTE("mass"));
+            planet.setMass(std::stof(element->Attribute("mass")));
 
-            key_type color = QColor(xml.attributes().value("color").toString()).rgb();
+            key_type color = 0;
 
-            while(xml.readNextStartElement()){
-                if(xml.name() == "position"){
-                    planet.position = glm::vec3(GETATTRIBUTE("x"), GETATTRIBUTE("y"), GETATTRIBUTE("z"));
-                    xml.readNext();
-                }else if(xml.name() == "velocity"){
-                    planet.velocity = glm::vec3(GETATTRIBUTE("x"), GETATTRIBUTE("y"), GETATTRIBUTE("z")) * velocityfac;
-                    xml.readNext();
+            try{
+                std::string colorStr = element->Attribute("color");
+                colorStr.replace(0, 1, "");
+                color = std::stoul(colorStr, nullptr, 16);
+            } catch(std::exception) { /* Just ignore if it doesn't work. It isn't that critical. */ }
+
+            for(TiXmlElement* sub = element->FirstChildElement(); sub != nullptr; sub = sub->NextSiblingElement()){
+                if(sub->ValueStr() == "position"){
+                    planet.position = glm::vec3(std::stof(sub->Attribute("x")), std::stof(sub->Attribute("y")), std::stof(sub->Attribute("z")));
+                }else if(sub->ValueStr() == "velocity"){
+                    planet.velocity = glm::vec3(std::stof(sub->Attribute("x")), std::stof(sub->Attribute("y")), std::stof(sub->Attribute("z"))) * velocityfac;
                 }
             }
             addPlanet(planet, color);
-            xml.readNext();
         }
-    }
-
-#undef GETATTRIBUTE
-
-    if(xml.hasError()){
-        if(clear){
-            deleteAll();
-        }
-        errorMsg = "Error in file \"" + filename + "\": " + xml.errorString().toStdString();
-        return false;
     }
 
     return true;
