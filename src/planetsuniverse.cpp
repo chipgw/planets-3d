@@ -1,7 +1,4 @@
 #include "include/planetsuniverse.h"
-#include <QXmlStreamWriter>
-#include <QFile>
-#include <QColor>
 #include <chrono>
 #include <tinyxml.h>
 #include <glm/gtx/norm.hpp>
@@ -61,45 +58,45 @@ bool PlanetsUniverse::load(const std::string &filename, bool clear){
 }
 
 bool PlanetsUniverse::save(const std::string &filename){
-    QFile file(filename.c_str());
+    TiXmlDocument doc;
 
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        errorMsg = "Unable to open file \"" + filename + "\" for writing!";
-        return false;
-    }
+    doc.LinkEndChild(new TiXmlDeclaration("1.0", "", ""));
 
-    QXmlStreamWriter xml(&file);
-
-    xml.setAutoFormatting(true);
-
-    xml.writeStartDocument();
-    xml.writeStartElement("planets-3d-universe");
+    TiXmlElement* root = new TiXmlElement("planets-3d-universe");
 
     for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
-        xml.writeStartElement("planet"); {
-            xml.writeAttribute("mass", QString::number(i->second.mass()));
+        TiXmlElement* planet = new TiXmlElement("planet");
+        planet->SetAttribute("mass", std::to_string(i->second.mass()));
 
-            xml.writeAttribute("color", QColor(i->first & RGB_MASK).name());
+        // Puts uint32_t key into hexadecimal format #RRGGBB (No need to save alpha, as that's always 0xff)
+        const char* hex = "0123456789abcdef";
+        planet->SetAttribute("color", std::string{'#',
+                                                  hex[i->first >> 20 & 0xf],
+                                                  hex[i->first >> 16 & 0xf],
+                                                  hex[i->first >> 12 & 0xf],
+                                                  hex[i->first >>  8 & 0xf],
+                                                  hex[i->first >>  4 & 0xf],
+                                                  hex[i->first       & 0xf]});
 
-            xml.writeStartElement("position"); {
-                xml.writeAttribute("x", QString::number(i->second.position.x));
-                xml.writeAttribute("y", QString::number(i->second.position.y));
-                xml.writeAttribute("z", QString::number(i->second.position.z));
-            } xml.writeEndElement();
+        TiXmlElement* position = new TiXmlElement("position");
+        position->SetAttribute("x", std::to_string(i->second.position.x));
+        position->SetAttribute("y", std::to_string(i->second.position.y));
+        position->SetAttribute("z", std::to_string(i->second.position.z));
+        planet->LinkEndChild(position);
 
-            xml.writeStartElement("velocity"); {
-                xml.writeAttribute("x", QString::number(i->second.velocity.x / velocityfac));
-                xml.writeAttribute("y", QString::number(i->second.velocity.y / velocityfac));
-                xml.writeAttribute("z", QString::number(i->second.velocity.z / velocityfac));
-            } xml.writeEndElement();
-        } xml.writeEndElement();
+        TiXmlElement* velocity = new TiXmlElement("velocity");
+        velocity->SetAttribute("x", std::to_string(i->second.velocity.x / velocityfac));
+        velocity->SetAttribute("y", std::to_string(i->second.velocity.y / velocityfac));
+        velocity->SetAttribute("z", std::to_string(i->second.velocity.z / velocityfac));
+        planet->LinkEndChild(velocity);
+
+        root->LinkEndChild(planet);
     }
-    xml.writeEndElement();
 
-    xml.writeEndDocument();
+    doc.LinkEndChild(root);
 
-    if(xml.hasError()){
-        errorMsg = "Error writing to file \"" + filename + "\"!";
+    if(!doc.SaveFile(filename)){
+        errorMsg = doc.ErrorDesc();
         return false;
     }
 
