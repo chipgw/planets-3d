@@ -535,8 +535,8 @@ void PlanetsWidget::drawPlanet(const Planet &planet){
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
     glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-    shaderTexture.setAttributeArray(vertex, GL_FLOAT, highResSphere.verts, 3, sizeof(Vertex));
-    shaderTexture.setAttributeArray(uv, GL_FLOAT, highResSphere.verts[0].uv, 2, sizeof(Vertex));
+    shaderTexture.setAttributeArray(vertex, GL_FLOAT, glm::value_ptr(highResSphere.verts[0].position), 3, sizeof(Vertex));
+    shaderTexture.setAttributeArray(uv, GL_FLOAT, glm::value_ptr(highResSphere.verts[0].uv), 2, sizeof(Vertex));
     glDrawElements(GL_TRIANGLES, highResSphere.triangleCount, GL_UNSIGNED_INT, highResSphere.triangles);
 }
 
@@ -547,7 +547,7 @@ void PlanetsWidget::drawPlanetColor(const Planet &planet, const QColor &color){
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale * 1.05f));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-    shaderColor.setAttributeArray(vertex, GL_FLOAT, lowResSphere.verts, 3, sizeof(Vertex));
+    shaderColor.setAttributeArray(vertex, GL_FLOAT, glm::value_ptr(lowResSphere.verts[0].position), 3, sizeof(Vertex));
     glDrawElements(GL_TRIANGLES, lowResSphere.triangleCount, GL_UNSIGNED_INT, lowResSphere.triangles);
 }
 
@@ -558,7 +558,7 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QColor &colo
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale * 1.05f));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-    shaderColor.setAttributeArray(vertex, GL_FLOAT, lowResSphere.verts, 3, sizeof(Vertex));
+    shaderColor.setAttributeArray(vertex, GL_FLOAT, glm::value_ptr(lowResSphere.verts[0].position), 3, sizeof(Vertex));
     glDrawElements(GL_LINES, lowResSphere.lineCount, GL_UNSIGNED_INT, lowResSphere.lines);
 }
 

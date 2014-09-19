@@ -1,13 +1,14 @@
 #ifndef SPHEREGENERATOR_H
 #define SPHEREGENERATOR_H
 
-#include <qmath.h>
+#include <glm/glm.hpp>
+#include <glm/gtx/constants.hpp>
 
 struct Vertex {
-    float position[3];
-    float normal[3];
-    float tangent[3];
-    float uv[2];
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec3 tangent;
+    glm::vec2 uv;
     float padding;
 };
 
@@ -23,13 +24,13 @@ public:
 };
 
 template <unsigned int slices> Circle<slices>::Circle(){
-    float step = float(2.0 * M_PI) / slices;
+    float step = (2.0f * glm::pi<float>()) / slices;
 
     unsigned int currentLine = 0;
 
     for(unsigned int current = 0; current < slices; ++current){
-        verts[current].position[0] = cos(current * step);
-        verts[current].position[1] = sin(current * step);
+        verts[current].position[0] = glm::cos(current * step);
+        verts[current].position[1] = glm::sin(current * step);
         verts[current].position[2] = 0.0f;
 
         if(current == (slices - 1)){
@@ -56,30 +57,28 @@ public:
 };
 
 template <unsigned int slices, unsigned int stacks> Sphere<slices, stacks>::Sphere(){
-    float vstep = float(M_PI) / stacks;
-    float hstep = float(2.0 * M_PI) / slices;
+    float vstep = glm::pi<float>() / stacks;
+    float hstep = (2.0f * glm::pi<float>()) / slices;
 
     unsigned int currentTriangle = 0;
     unsigned int currentLine = 0;
 
     for(unsigned int v = 0; v <= stacks; ++v){
-        float z = cos(v * vstep);
-        float r = sin(v * vstep);
+        float z = glm::cos(v * vstep);
+        float r = glm::sin(v * vstep);
 
         for(unsigned int h = 0; h <= slices; ++h){
             unsigned int w = slices + 1;
             unsigned int current = v * w + h;
 
-            verts[current].position[0] = cos(h * hstep) * r;
-            verts[current].position[1] = sin(h * hstep) * r;
-            verts[current].position[2] = z;
+            verts[current].position.x = glm::cos(h * hstep) * r;
+            verts[current].position.y = glm::sin(h * hstep) * r;
+            verts[current].position.z = z;
 
-            verts[current].normal[0] = verts[current].position[0];
-            verts[current].normal[1] = verts[current].position[1];
-            verts[current].normal[2] = verts[current].position[2];
+            verts[current].normal = verts[current].position;
 
-            verts[current].uv[0] = float(h) / float(slices);
-            verts[current].uv[1] = 1.0f - float(v) / float(stacks);
+            verts[current].uv.x = float(h) / float(slices);
+            verts[current].uv.y = 1.0f - float(v) / float(stacks);
 
             if(h != slices && v != stacks){
                 triangles[currentTriangle++] = current;
