@@ -1,13 +1,11 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#include <QString>
-
 namespace version{
-    extern const QString git_revision;
-    extern const QString build_type;
-    extern const QString compiler;
-    extern const QString cmake_version;
+    extern const char* git_revision;
+    extern const char* build_type;
+    extern const char* compiler;
+    extern const char* cmake_version;
 }
 
 #endif // VERSION_H
