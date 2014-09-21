@@ -336,7 +336,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     switch(placingStep){
     case FreePositionXY:{
         // set placing position on the XY plane
-        Ray ray = camera.getRay(e->pos(), size(), false);
+        Ray ray = camera.getRay(e->pos().x(), e->pos().y(), width(), height(), false);
 
         placing.position = ray.origin + (ray.direction * ((-ray.origin.z) / ray.direction.z));
         break;
@@ -355,7 +355,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
         return;
     case OrbitalPlanet:
         if(universe.isSelectedValid()){
-            Ray ray = camera.getRay(e->pos(), size(), false);
+            Ray ray = camera.getRay(e->pos().x(), e->pos().y(), width(), height(), false);
 
             placing.position = ray.origin + (ray.direction * ((universe.getSelected().position.z - ray.origin.z) / ray.direction.z));
             glm::vec3 relative = placing.position - universe.getSelected().position;
@@ -435,7 +435,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             setCursor(Qt::ArrowCursor);
             break;
         case Firing:{
-            Ray ray = camera.getRay(e->pos(), size(), true, 0.96f, 0.0f);
+            Ray ray = camera.getRay(e->pos().x(), e->pos().y(), width(), height(), true, 0.96f, 0.0f);
 
             universe.addPlanet(Planet(ray.origin, ray.direction * firingSpeed, firingMass));
             break;
@@ -465,10 +465,9 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             universe.resetSelected();
             float nearest = -std::numeric_limits<float>::max();
 
-            Ray ray = camera.getRay(e->pos(), size(), true);
+            Ray ray = camera.getRay(e->pos().x(), e->pos().y(), width(), height(), true);
 
             for(const auto& i : universe){
-
                 glm::vec3 difference = i.second.position - ray.origin;
                 float dot = glm::dot(difference, ray.direction);
                 if(dot > nearest && (glm::length2(difference) - dot * dot) <= (i.second.radius() * i.second.radius())) {

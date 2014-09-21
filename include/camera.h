@@ -3,8 +3,6 @@
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
-#include <QSize>
-#include <QPoint>
 
 struct Ray {
     glm::vec3 origin, direction;
@@ -26,7 +24,7 @@ public:
     void reset();
     const glm::mat4 &setup();
 
-    Ray getRay(const QPoint &pos, const QSize &window, bool normalize, float startDepth = 0.0f, float endDepth = 1.0f);
+    Ray getRay(const int &posX, const int &posY, const int &windowW, const int &windowH, bool normalize, float startDepth = 0.0f, float endDepth = 1.0f);
 };
 
 #endif // CAMERA_H
