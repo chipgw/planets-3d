@@ -23,7 +23,7 @@ int highBit(unsigned int n) {
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
     doScreenshot(false), frameCount(0), refreshRate(16), timer(this), placingStep(NotPlacing), gridRange(32),
-    following(0), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f), drawScale(1.0f),
+    firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f), drawScale(1.0f), camera(universe),
     drawGrid(false), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/") {
 
@@ -131,39 +131,6 @@ void PlanetsWidget::paintGL() {
     }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    switch(followState){
-    case WeightedAverage:
-        camera.position = glm::vec3();
-
-        if(universe.size() != 0){
-            float totalmass = 0.0f;
-
-            for(const auto& i : universe){
-                camera.position += i.second.position * i.second.mass();
-                totalmass += i.second.mass();
-            }
-            camera.position /= totalmass;
-        }
-        break;
-    case PlainAverage:
-        camera.position = glm::vec3();
-
-        if(universe.size() != 0){
-            for(const auto& i : universe){
-                camera.position += i.second.position;
-            }
-            camera.position /= universe.size();
-        }
-        break;
-    case Single:
-        if(universe.isValid(following)){
-            camera.position = universe[following].position;
-            break;
-        }
-    default:
-        camera.position = glm::vec3();
-    }
 
     camera.setup();
 
@@ -403,10 +370,9 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
     case Qt::LeftButton:
         if(placingStep == NotPlacing){
             if(universe.isSelectedValid()){
-                following = universe.selected;
-                followState = Single;
+                camera.followSelection();
             }else{
-                followState = FollowNone;
+                camera.clearFollow();
             }
         }
         break;
@@ -580,35 +546,27 @@ void PlanetsWidget::setGridRange(int value){
 }
 
 void PlanetsWidget::followNext(){
-    if(!universe.isEmpty()){
-        followState = Single;
-        PlanetsUniverse::const_iterator current = universe.find(following);
-
-        if(current == universe.cend()){
-            current = universe.cbegin();
-        }else if(++current == universe.cend()){
-            current = universe.cbegin();
-        }
-
-        following = current->first;
-    }
+    camera.followNext();
 }
+
 void PlanetsWidget::followPrevious(){
-    if(!universe.isEmpty()){
-        followState = Single;
-        PlanetsUniverse::const_iterator current = universe.find(following);
+    camera.followPrevious();
+}
 
-        if(current == universe.cend()){
-            current = universe.cbegin();
-        }else{
-            if(current == universe.cbegin()){
-                current = universe.cend();
-            }
-            --current;
-        }
+void PlanetsWidget::followSelection(){
+    camera.followSelection();
+}
 
-        following = current->first;
-    }
+void PlanetsWidget::clearFollow(){
+    camera.clearFollow();
+}
+
+void PlanetsWidget::followPlainAverage(){
+    camera.followPlainAverage();
+}
+
+void PlanetsWidget::followWeightedAverage(){
+    camera.followWeightedAverage();
 }
 
 const QColor PlanetsWidget::trailColor = QColor(0xcc, 0xff, 0xff, 0xff);

@@ -34,11 +34,6 @@ private slots:
     void on_actionAppend_Simulation_triggered();
     bool on_actionSave_Simulation_triggered();
 
-    void on_actionFollow_Selection_triggered();
-    void on_actionClear_Follow_triggered();
-    void on_actionPlain_Average_triggered();
-    void on_actionWeighted_Average_triggered();
-
     void on_actionAbout_triggered();
 
     void on_stepsPerFrameSpinBox_valueChanged(int value);

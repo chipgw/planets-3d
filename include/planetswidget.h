@@ -81,20 +81,10 @@ private:
     std::vector<float> gridPoints;
 
 public:
-    enum FollowingState{
-        FollowNone,
-        Single,
-        PlainAverage,
-        WeightedAverage
-    };
-
     PlanetsWidget(QWidget *parent = 0);
     ~PlanetsWidget();
 
     PlanetsUniverse universe;
-
-    PlanetsUniverse::key_type following;
-    FollowingState followState;
 
     float firingSpeed;
     float firingMass;
@@ -120,6 +110,10 @@ public slots:
     void setGridRange(int value);
     void followNext();
     void followPrevious();
+    void followSelection();
+    void clearFollow();
+    void followPlainAverage();
+    void followWeightedAverage();
 
 protected:
     void initializeGL();

@@ -30,6 +30,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->gridRangeSpinBox,                       SIGNAL(valueChanged(int)),  ui->centralwidget,              SLOT(setGridRange(int)));
     connect(ui->actionPrevious_Planet,                  SIGNAL(triggered()),        ui->centralwidget,              SLOT(followPrevious()));
     connect(ui->actionNext_Planet,                      SIGNAL(triggered()),        ui->centralwidget,              SLOT(followNext()));
+    connect(ui->actionFollow_Selection,                 SIGNAL(triggered()),        ui->centralwidget,              SLOT(followSelection()));
+    connect(ui->actionClear_Follow,                     SIGNAL(triggered()),        ui->centralwidget,              SLOT(clearFollow()));
+    connect(ui->actionPlain_Average,                    SIGNAL(triggered()),        ui->centralwidget,              SLOT(followPlainAverage()));
+    connect(ui->actionWeighted_Average,                 SIGNAL(triggered()),        ui->centralwidget,              SLOT(followWeightedAverage()));
 
     ui->statusbar->addPermanentWidget(planetCountLabel = new QLabel(ui->statusbar));
     ui->statusbar->addPermanentWidget(fpsLabel = new QLabel(ui->statusbar));
@@ -194,24 +198,6 @@ bool MainWindow::on_actionSave_Simulation_triggered(){
         QMessageBox::warning(this, tr("Error Saving Simulation."), tr("No planets to save!"));
     }
     return false;
-}
-
-void MainWindow::on_actionFollow_Selection_triggered(){
-    ui->centralwidget->following = ui->centralwidget->universe.selected;
-    ui->centralwidget->followState = PlanetsWidget::Single;
-}
-
-void MainWindow::on_actionClear_Follow_triggered(){
-    ui->centralwidget->following = 0;
-    ui->centralwidget->followState = PlanetsWidget::FollowNone;
-}
-
-void MainWindow::on_actionPlain_Average_triggered(){
-    ui->centralwidget->followState = PlanetsWidget::PlainAverage;
-}
-
-void MainWindow::on_actionWeighted_Average_triggered(){
-    ui->centralwidget->followState = PlanetsWidget::WeightedAverage;
 }
 
 void MainWindow::on_actionAbout_triggered(){
