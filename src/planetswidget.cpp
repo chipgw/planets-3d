@@ -401,7 +401,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
             setCursor(Qt::ArrowCursor);
             break;
         case Firing:{
-            Ray ray = camera.getRay(e->pos().x(), e->pos().y(), width(), height(), true, 0.96f, 0.0f);
+            Ray ray = camera.getRay(e->pos().x(), e->pos().y(), width(), height(), true);
 
             universe.addPlanet(Planet(ray.origin, ray.direction * firingSpeed, firingMass));
             break;
