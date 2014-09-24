@@ -3,6 +3,7 @@
 #include <tinyxml.h>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_query.hpp>
+#include <glm/gtx/fast_square_root.hpp>
 #include <cstdio>
 
 #define RGB_MASK 0x00ffffff
@@ -112,8 +113,7 @@ void PlanetsUniverse::advance(float time){
             if(i->second.mass() <= 0.0f){
                 i = planets.erase(i);
             }else{
-                iterator o = i;
-                ++o;
+                iterator o = i; ++o;
                 for(;o != planets.end();){
                     glm::vec3 direction = o->second.position - i->second.position;
                     float distancesqr = glm::length2(direction);
@@ -130,8 +130,7 @@ void PlanetsUniverse::advance(float time){
                         i->second.path.clear();
                         o = planets.erase(o);
                     }else{
-                        direction = glm::normalize(direction);
-                        direction *= gravityconst * ((o->second.mass() * i->second.mass()) / distancesqr) * time;
+                        direction *= gravityconst * time * ((o->second.mass() * i->second.mass()) / distancesqr) * glm::fastInverseSqrt(distancesqr);
 
                         i->second.velocity += direction / i->second.mass();
                         o->second.velocity -= direction / o->second.mass();
