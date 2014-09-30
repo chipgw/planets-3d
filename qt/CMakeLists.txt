@@ -12,8 +12,8 @@ file(GLOB QT_HEADERS "${Planets3D_qt_SOURCE_DIR}/include/*.h")
 file(GLOB QT_SHADERS "${Planets3D_qt_SOURCE_DIR}/shaders/*")
 
 file(GLOB QT_SOURCES "${Planets3D_qt_SOURCE_DIR}/src/*.cpp")
-file(GLOB FORMS "${Planets3D_qt_SOURCE_DIR}/forms/*.ui")
-set(RESOURCES "${Planets3D_qt_SOURCE_DIR}/resources.qrc")
+file(GLOB QT_FORMS "${Planets3D_qt_SOURCE_DIR}/forms/*.ui")
+set(QT_RESOURCES "${Planets3D_qt_SOURCE_DIR}/resources.qrc")
 
 
 if(PLANETS3D_QT4)
