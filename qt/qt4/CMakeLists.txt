@@ -11,4 +11,4 @@ add_executable(${PROJECT_NAME} WIN32 ${QT_SOURCES} ${QT_FORM_CODE} ${QT_HEADERS}
 
 qt4_use_modules(${PROJECT_NAME} Core Gui OpenGL)
 
-target_link_libraries(${PROJECT_NAME} Planets3D ${TINYXML_LIBRARIES} ${OPENGL_gl_LIBRARY})
+target_link_libraries(${PROJECT_NAME} Planets3D ${OPENGL_gl_LIBRARY})

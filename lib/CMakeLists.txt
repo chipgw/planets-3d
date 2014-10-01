@@ -13,3 +13,4 @@ list(APPEND LIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/version.cpp")
 
 add_library(${PROJECT_NAME} ${LIB_SOURCES} ${LIB_HEADERS})
 
+target_link_libraries(${PROJECT_NAME} ${TINYXML_LIBRARIES})

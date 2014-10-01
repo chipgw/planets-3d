@@ -32,9 +32,7 @@ endif(WIN32)
 
 if(DEFINED Qt5Gui_OPENGL_LIBRARIES)
     include_directories(${Qt5Gui_OPENGL_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME} ${Qt5Gui_OPENGL_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME} ${Qt5Gui_OPENGL_LIBRARIES} Planets3D)
 else(DEFINED Qt5Gui_OPENGL_LIBRARIES)
-    target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
+    target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY} Planets3D)
 endif(DEFINED Qt5Gui_OPENGL_LIBRARIES)
-
-target_link_libraries(${PROJECT_NAME} Planets3D ${TINYXML_LIBRARIES})
