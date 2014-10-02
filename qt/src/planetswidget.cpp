@@ -4,7 +4,6 @@
 #include <limits>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 
@@ -22,8 +21,8 @@ int highBit(unsigned int n) {
 }
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
-    doScreenshot(false), frameCount(0), refreshRate(16), timer(this), placingStep(NotPlacing), gridRange(32),
-    firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f), drawScale(1.0f), camera(universe),
+    doScreenshot(false), frameCount(0), refreshRate(16), timer(this), gridRange(32), placing(universe),
+    drawScale(1.0f), camera(universe),
     drawGrid(false), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/") {
 
@@ -39,8 +38,6 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleB
 #ifndef NDEBUG
     refreshRate = 0;
 #endif
-
-    placing.velocity.y = PlanetsUniverse::velocityfac;
 
     setMouseTracking(true);
 
@@ -126,7 +123,7 @@ void PlanetsWidget::paintGL() {
     int delay = frameTime.nsecsElapsed() / 1000;
     frameTime.start();
 
-    if(placingStep == NotPlacing || placingStep == Firing){
+    if(placing.step == PlacingInterface::NotPlacing || placing.step == PlacingInterface::Firing){
         universe.advance(delay);
     }
 
@@ -169,14 +166,14 @@ void PlanetsWidget::paintGL() {
         }
     }
 
-    switch(placingStep){
-    case FreeVelocity:{
-        float length = glm::length(placing.velocity) / PlanetsUniverse::velocityfac;
+    switch(placing.step){
+    case PlacingInterface::FreeVelocity:{
+        float length = glm::length(placing.planet.velocity) / PlanetsUniverse::velocityfac;
 
         if(length > 0.0f){
-            glm::mat4 matrix = glm::translate(placing.position);
-            matrix = glm::scale(matrix, glm::vec3(placing.radius()));
-            matrix *= placingRotation;
+            glm::mat4 matrix = glm::translate(placing.planet.position);
+            matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
+            matrix *= placing.rotation;
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
             shaderColor.setUniformValue(shaderColor_color, trailColor);
 
@@ -218,23 +215,23 @@ void PlanetsWidget::paintGL() {
             glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
         }
     }
-    case FreePositionXY:
-    case FreePositionZ:
-        drawPlanetWireframe(placing);
+    case PlacingInterface::FreePositionXY:
+    case PlacingInterface::FreePositionZ:
+        drawPlanetWireframe(placing.planet);
         break;
-    case OrbitalPlane:
-    case OrbitalPlanet:
-        if(universe.isSelectedValid() && placingOrbitalRadius > 0.0f){
+    case PlacingInterface::OrbitalPlane:
+    case PlacingInterface::OrbitalPlanet:
+        if(universe.isSelectedValid() && placing.orbitalRadius > 0.0f){
             glm::mat4 matrix = glm::translate(universe.getSelected().position);
-            matrix = glm::scale(matrix, glm::vec3(placingOrbitalRadius));
-            matrix *= placingRotation;
+            matrix = glm::scale(matrix, glm::vec3(placing.orbitalRadius));
+            matrix *= placing.rotation;
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
             shaderColor.setUniformValue(shaderColor_color, trailColor);
 
             shaderColor.setAttributeArray(vertex, GL_FLOAT, circle.verts, 3, sizeof(Vertex));
             glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
 
-            drawPlanetWireframe(placing);
+            drawPlanetWireframe(placing.planet);
         }
         break;
     default: break;
@@ -300,75 +297,38 @@ void PlanetsWidget::paintGL() {
 }
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
-    switch(placingStep){
-    case FreePositionXY:{
-        // set placing position on the XY plane
-        Ray ray = camera.getRay(e->pos().x(), e->pos().y(), width(), height(), false);
+    glm::ivec2 delta(lastMousePos.x() - e->x(), lastMousePos.y() - e->y());
 
-        placing.position = ray.origin + (ray.direction * ((-ray.origin.z) / ray.direction.z));
-        break;
-    }
-    case FreePositionZ:
-        // set placing Z position
-        placing.position.z += (lastMousePos.y() - e->y()) * 0.1f;
-        QCursor::setPos(mapToGlobal(lastMousePos));
-        return;
-    case FreeVelocity:
-        // set placing velocity
-        placingRotation *= glm::rotate((lastMousePos.x() - e->x()) * 0.05f, glm::vec3(1.0f, 0.0f, 0.0f));
-        placingRotation *= glm::rotate((lastMousePos.y() - e->y()) * 0.05f, glm::vec3(0.0f, 1.0f, 0.0f));
-        placing.velocity = glm::vec3(placingRotation[2]) * glm::length(placing.velocity);
-        QCursor::setPos(mapToGlobal(lastMousePos));
-        return;
-    case OrbitalPlanet:
-        if(universe.isSelectedValid()){
-            Ray ray = camera.getRay(e->pos().x(), e->pos().y(), width(), height(), false);
+    bool holdCursor = false;
 
-            placing.position = ray.origin + (ray.direction * ((universe.getSelected().position.z - ray.origin.z) / ray.direction.z));
-            glm::vec3 relative = placing.position - universe.getSelected().position;
-            placingOrbitalRadius = glm::length(relative);
-            relative /= placingOrbitalRadius;
-            placingRotation = glm::mat4(glm::vec4(relative, 0.0f),
-                                        glm::vec4(relative.y, -relative.x, 0.0f, 0.0f),
-                                        glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),
-                                        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        }
-        break;
-    case OrbitalPlane:
-        if(universe.isSelectedValid()){
-            placingRotation *= glm::rotate((lastMousePos.x() - e->x()) * 0.05f, glm::vec3(1.0f, 0.0f, 0.0f));
-            placingRotation *= glm::rotate((lastMousePos.y() - e->y()) * 0.05f, glm::vec3(0.0f, 1.0f, 0.0f));
-            placing.position = universe.getSelected().position + glm::vec3(placingRotation[0] * placingOrbitalRadius);
-            QCursor::setPos(mapToGlobal(lastMousePos));
-            return;
-        }
-        break;
-    default:
+    if(!placing.handleMouseMove(glm::ivec2(e->x(), e->y()), delta, width(), height(), camera, holdCursor)){
         if(e->buttons().testFlag(Qt::MiddleButton) || e->buttons().testFlag(Qt::RightButton)){
             if(e->modifiers().testFlag(Qt::ControlModifier)){
                 camera.distance -= (lastMousePos.y() - e->y()) * camera.distance * 1.0e-2f;
                 setCursor(Qt::SizeVerCursor);
                 camera.bound();
             }else{
-                camera.xrotation += (lastMousePos.y() - e->y()) * 0.2f;
-                camera.zrotation += (lastMousePos.x() - e->x()) * 0.2f;
+                camera.xrotation += delta.y * 0.2f;
+                camera.zrotation += delta.x * 0.2f;
 
                 camera.bound();
 
-                QCursor::setPos(mapToGlobal(lastMousePos));
                 setCursor(Qt::SizeAllCursor);
-                return;
+                holdCursor = true;
             }
         }
-        break;
     }
-    lastMousePos = e->pos();
+    if(holdCursor){
+        QCursor::setPos(mapToGlobal(lastMousePos));
+    } else {
+        lastMousePos = e->pos();
+    }
 }
 
 void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
     switch(e->button()){
     case Qt::LeftButton:
-        if(placingStep == NotPlacing){
+        if(placing.step == PlacingInterface::NotPlacing){
             if(universe.isSelectedValid()){
                 camera.followSelection();
             }else{
@@ -386,52 +346,12 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
 
 void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     if(e->button() == Qt::LeftButton){
-        switch(placingStep){
-        case FreePositionXY:
-            placingStep = FreePositionZ;
-            setCursor(Qt::BlankCursor);
-            break;
-        case FreePositionZ:
-            placingStep = FreeVelocity;
-            break;
-        case FreeVelocity:
-            placingStep = NotPlacing;
-            placing.velocity = glm::vec3(placingRotation[2]) * glm::length(placing.velocity);
-            universe.selected = universe.addPlanet(placing);
-            setCursor(Qt::ArrowCursor);
-            break;
-        case Firing:{
-            Ray ray = camera.getRay(e->pos().x(), e->pos().y(), width(), height(), true);
-
-            universe.addPlanet(Planet(ray.origin, ray.direction * firingSpeed, firingMass));
-            break;
-        }
-        case OrbitalPlanet:
-            if(universe.isSelectedValid()){
-                placingStep = OrbitalPlane;
-                setCursor(Qt::BlankCursor);
-                break;
-            }
-            placingOrbitalRadius = 0.0f;
-            placingStep = NotPlacing;
-            break;
-        case OrbitalPlane:
-            if(universe.isSelectedValid()){
-                Planet &selected = universe.getSelected();
-                float speed = sqrt((selected.mass() * selected.mass() * PlanetsUniverse::gravityconst) / ((selected.mass() + placing.mass()) * placingOrbitalRadius));
-                glm::vec3 velocity = glm::vec3(placingRotation[1]) * speed;
-                universe.selected = universe.addPlanet(Planet(placing.position, selected.velocity + velocity, placing.mass()));
-                selected.velocity -= velocity * (placing.mass() / selected.mass());
-            }
-            placingOrbitalRadius = 0.0f;
-            placingStep = NotPlacing;
-            setCursor(Qt::ArrowCursor);
-            break;
-        default:
+        glm::ivec2 pos(e->x(), e->y());
+        if(!placing.handleMouseClick(pos, width(), height(), camera)){
             universe.resetSelected();
             float nearest = -std::numeric_limits<float>::max();
 
-            Ray ray = camera.getRay(e->pos().x(), e->pos().y(), width(), height(), true);
+            Ray ray = camera.getRay(pos, width(), height(), true);
 
             for(const auto& i : universe){
                 glm::vec3 difference = i.second.position - ray.origin;
@@ -441,7 +361,6 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
                     nearest = dot;
                 }
             }
-            break;
         }
     }
 }
@@ -453,42 +372,23 @@ void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
 }
 
 void PlanetsWidget::wheelEvent(QWheelEvent* e){
-    switch(placingStep){
-    case FreePositionXY:
-    case FreePositionZ:
-    case OrbitalPlanet:
-    case OrbitalPlane:
-        placing.setMass(glm::clamp(placing.mass() + e->delta() * placing.mass() * 1.0e-3f, PlanetsUniverse::min_mass, PlanetsUniverse::max_mass));
-        break;
-    case FreeVelocity:
-        placing.velocity = glm::vec3(placingRotation[2]) * qMax(0.0f, glm::length(placing.velocity) + e->delta() * PlanetsUniverse::velocityfac * 1.0e-3f);
-        break;
-    default:
+    if(!placing.handleMouseWheel(e->delta())){
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;
 
         camera.bound();
-        break;
     }
 }
 
 void PlanetsWidget::beginInteractiveCreation(){
-    placingStep = FreePositionXY;
-    universe.resetSelected();
+    placing.beginInteractiveCreation();
 }
 
 void PlanetsWidget::enableFiringMode(bool enable){
-    if(enable){
-        placingStep = Firing;
-        universe.resetSelected();
-    }else if(placingStep == Firing){
-        placingStep = NotPlacing;
-    }
+    placing.enableFiringMode(enable);
 }
 
 void PlanetsWidget::beginOrbitalCreation(){
-    if(universe.isSelectedValid()){
-        placingStep = OrbitalPlanet;
-    }
+    placing.beginOrbitalCreation();
 }
 
 void PlanetsWidget::takeScreenshot(){

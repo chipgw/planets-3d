@@ -234,11 +234,11 @@ void MainWindow::on_trailRecordDistanceDoubleSpinBox_valueChanged(double value){
 }
 
 void MainWindow::on_firingVelocityDoubleSpinBox_valueChanged(double value){
-    ui->centralwidget->firingSpeed = value * PlanetsUniverse::velocityfac;
+    ui->centralwidget->placing.firingSpeed = value * PlanetsUniverse::velocityfac;
 }
 
 void MainWindow::on_firingMassSpinBox_valueChanged(int value){
-    ui->centralwidget->firingMass = value;
+    ui->centralwidget->placing.firingMass = value;
 }
 
 void MainWindow::on_actionGrid_toggled(bool value){

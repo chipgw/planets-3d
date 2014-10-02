@@ -44,7 +44,7 @@ public:
     void followPlainAverage();
     void followWeightedAverage();
 
-    Ray getRay(const int &posX, const int &posY, const int &windowW, const int &windowH, bool normalize, float startDepth = 0.9f, float endDepth = 0.0f);
+    Ray getRay(const glm::ivec2 pos, const int &windowW, const int &windowH, bool normalize, float startDepth = 0.9f, float endDepth = 0.0f) const;
 };
 
 #endif // CAMERA_H

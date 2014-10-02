@@ -1,7 +1,7 @@
 #ifndef PlanetsWidget_H
 #define PlanetsWidget_H
 
-#include "camera.h"
+#include "placinginterface.h"
 #include "planetsuniverse.h"
 #include "spheregenerator.h"
 #include <QElapsedTimer>
@@ -33,16 +33,6 @@ class QOpenGLTexture;
 class PlanetsWidget : public QGLWidget, public QOpenGLFunctions {
     Q_OBJECT
 private:
-    enum PlacingStep{
-        NotPlacing,
-        FreePositionXY,
-        FreePositionZ,
-        FreeVelocity,
-        Firing,
-        OrbitalPlanet,
-        OrbitalPlane
-    };
-
     QOpenGLShaderProgram shaderTexture;
     int shaderTexture_cameraMatrix, shaderTexture_modelMatrix;
 
@@ -66,11 +56,6 @@ private:
 
     QPoint lastMousePos;
 
-    PlacingStep placingStep;
-    Planet placing;
-    glm::mat4 placingRotation;
-    float placingOrbitalRadius;
-
     const static Sphere<64, 32> highResSphere;
     const static Sphere<32, 16> lowResSphere;
     const static Circle<64> circle;
@@ -86,8 +71,8 @@ public:
 
     PlanetsUniverse universe;
 
-    float firingSpeed;
-    float firingMass;
+    PlacingInterface placing;
+
     float drawScale;
     bool drawGrid;
     bool drawPlanetTrails;

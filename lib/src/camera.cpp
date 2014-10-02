@@ -59,11 +59,11 @@ const glm::mat4 &Camera::setup(){
     return camera;
 }
 
-Ray Camera::getRay(const int &posX, const int &posY, const int &windowW, const int &windowH, bool normalize, float startDepth, float endDepth){
+Ray Camera::getRay(const glm::ivec2 pos, const int &windowW, const int &windowH, bool normalize, float startDepth, float endDepth) const {
     Ray ray;
 
     glm::mat4 model;
-    glm::vec3 windowCoord(posX, windowH - posY, startDepth);
+    glm::vec3 windowCoord(pos.x, windowH - pos.y, startDepth);
     glm::vec4 viewport(0.0f, 0.0f, windowW, windowH);
 
     ray.origin = glm::unProject(windowCoord, model, camera, viewport);
