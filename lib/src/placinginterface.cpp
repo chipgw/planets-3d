@@ -7,7 +7,7 @@ PlacingInterface::PlacingInterface(PlanetsUniverse &u) : universe(u), firingSpee
     planet.velocity.y = PlanetsUniverse::velocityfac;
 }
 
-bool PlacingInterface::handleMouseMove(glm::ivec2 pos, glm::vec2 delta, const int &windowW, const int &windowH, const Camera &camera, bool &holdMouse){
+bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &delta, const int &windowW, const int &windowH, const Camera &camera, bool &holdMouse){
     switch(step){
     case FreePositionXY:{
         // set placing position on the XY plane
@@ -58,7 +58,7 @@ bool PlacingInterface::handleMouseMove(glm::ivec2 pos, glm::vec2 delta, const in
     return false;
 }
 
-bool PlacingInterface::handleMouseClick(glm::ivec2 pos, const int &windowW, const int &windowH, const Camera &camera){
+bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const int &windowW, const int &windowH, const Camera &camera){
     switch(step){
     case FreePositionXY:
         step = FreePositionZ;

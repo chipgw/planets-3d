@@ -304,7 +304,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
     if(!placing.handleMouseMove(glm::ivec2(e->x(), e->y()), delta, width(), height(), camera, holdCursor)){
         if(e->buttons().testFlag(Qt::MiddleButton) || e->buttons().testFlag(Qt::RightButton)){
             if(e->modifiers().testFlag(Qt::ControlModifier)){
-                camera.distance -= (lastMousePos.y() - e->y()) * camera.distance * 1.0e-2f;
+                camera.distance -= delta.y * camera.distance * 1.0e-2f;
                 setCursor(Qt::SizeVerCursor);
                 camera.bound();
             }else{

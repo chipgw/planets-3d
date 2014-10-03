@@ -59,7 +59,7 @@ const glm::mat4 &Camera::setup(){
     return camera;
 }
 
-Ray Camera::getRay(const glm::ivec2 pos, const int &windowW, const int &windowH, bool normalize, float startDepth, float endDepth) const {
+Ray Camera::getRay(const glm::ivec2 &pos, const int &windowW, const int &windowH, bool normalize, float startDepth, float endDepth) const {
     Ray ray;
 
     glm::mat4 model;
