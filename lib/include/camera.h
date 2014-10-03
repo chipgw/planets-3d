@@ -45,6 +45,7 @@ public:
     void followWeightedAverage();
 
     Ray getRay(const glm::ivec2 &pos, const int &windowW, const int &windowH, bool normalize, float startDepth = 0.9f, float endDepth = 0.0f) const;
+    PlanetsUniverse::key_type selectUnder(const glm::ivec2 &pos, const int &windowW, const int &windowH);
 };
 
 #endif // CAMERA_H

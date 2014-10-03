@@ -1,6 +1,7 @@
 #include "camera.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/norm.hpp>
 
 Camera::Camera(PlanetsUniverse &u) : universe(u) {
     reset();
@@ -78,6 +79,23 @@ Ray Camera::getRay(const glm::ivec2 &pos, const int &windowW, const int &windowH
 
     return ray;
 }
+
+PlanetsUniverse::key_type Camera::selectUnder(const glm::ivec2 &pos, const int &windowW, const int &windowH){
+    universe.resetSelected();
+    float nearest = -std::numeric_limits<float>::max();
+
+    Ray ray = getRay(pos, windowW, windowH, true);
+
+    for(const auto& i : universe){
+        glm::vec3 difference = i.second.position - ray.origin;
+        float dot = glm::dot(difference, ray.direction);
+        if(dot > nearest && (glm::length2(difference) - dot * dot) <= (i.second.radius() * i.second.radius())) {
+            universe.selected = i.first;
+            nearest = dot;
+        }
+    }
+}
+
 void Camera::followNext(){
     if(!universe.isEmpty()){
         followingState = Single;

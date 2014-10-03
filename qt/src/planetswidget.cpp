@@ -348,19 +348,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     if(e->button() == Qt::LeftButton){
         glm::ivec2 pos(e->x(), e->y());
         if(!placing.handleMouseClick(pos, width(), height(), camera)){
-            universe.resetSelected();
-            float nearest = -std::numeric_limits<float>::max();
-
-            Ray ray = camera.getRay(pos, width(), height(), true);
-
-            for(const auto& i : universe){
-                glm::vec3 difference = i.second.position - ray.origin;
-                float dot = glm::dot(difference, ray.direction);
-                if(dot > nearest && (glm::length2(difference) - dot * dot) <= (i.second.radius() * i.second.radius())) {
-                    universe.selected = i.first;
-                    nearest = dot;
-                }
-            }
+            camera.selectUnder(pos, width(), height());
         }
     }
 }
