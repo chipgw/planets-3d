@@ -1,8 +1,0 @@
-Planets3D is a 3D gravitational simulator inspired by Planets (planets.homedns.org)
-
-Build using CMake (www.cmake.org)
-
-Dependencies:
-Qt 4.8 or 5 (qt-project.org) (Qt 5 must be 5.1 or later or desktop OpenGL build, to use Qt 4.8 enable option PLANETS3D_USE_QT4)
-GLM (glm.g-truc.net/)
-TinyXml (www.grinninglizard.com/tinyxml/)
