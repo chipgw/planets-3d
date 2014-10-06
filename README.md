@@ -22,8 +22,8 @@ License
 [MIT License]
 
 
-[CMake]:www.cmake.org
-[Qt]:qt-project.org
-[GLM]:glm.g-truc.net/
-[TinyXml]:www.grinninglizard.com/tinyxml/
-[MIT License]:https://github.com/chipgw/planets-3d/blob/master/LICENSE
+[CMake]:http://www.cmake.org
+[Qt]:http://qt-project.org
+[GLM]:http://glm.g-truc.net/
+[TinyXml]:http://www.grinninglizard.com/tinyxml/
+[MIT License]:LICENSE
