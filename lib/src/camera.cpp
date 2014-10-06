@@ -20,43 +20,41 @@ void Camera::reset(){
 }
 
 const glm::mat4 &Camera::setup(){
+    glm::vec3 finalPos;
+
     switch(followingState){
     case WeightedAverage:
-        position = glm::vec3();
-
         if(universe.size() != 0){
             float totalmass = 0.0f;
 
             for(const auto& i : universe){
-                position += i.second.position * i.second.mass();
+                finalPos += i.second.position * i.second.mass();
                 totalmass += i.second.mass();
             }
-            position /= totalmass;
+            finalPos /= totalmass;
         }
         break;
     case PlainAverage:
-        position = glm::vec3();
-
         if(universe.size() != 0){
             for(const auto& i : universe){
-                position += i.second.position;
+                finalPos += i.second.position;
             }
-            position /= universe.size();
+            finalPos /= universe.size();
         }
         break;
     case Single:
         if(universe.isValid(following)){
-            position = universe[following].position;
+            finalPos = universe[following].position;
             break;
         }
     default:
-        position = glm::vec3();
+        finalPos = position;
     }
 
     camera = glm::translate(projection, glm::vec3(0.0f, 0.0f, -distance));
     camera = glm::rotate(camera, xrotation - 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
     camera = glm::rotate(camera, zrotation, glm::vec3(0.0f, 0.0f, 1.0f));
-    camera = glm::translate(camera, -position);
+    camera = glm::translate(camera, -finalPos);
     return camera;
 }
 
