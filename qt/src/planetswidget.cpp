@@ -116,7 +116,7 @@ PlanetsWidget::~PlanetsWidget(){
 void PlanetsWidget::resizeGL(int width, int height) {
     glViewport(0, 0, width, height);
 
-    camera.projection = glm::perspective(45.0f, float(width) / float(height), 0.1f, 1.0e6f);
+    camera.resizeViewport(width, height);
 }
 
 void PlanetsWidget::paintGL() {

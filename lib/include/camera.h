@@ -35,6 +35,7 @@ public:
 
     void bound();
     void reset();
+    void resizeViewport(const float &width, const float &height);
     const glm::mat4 &setup();
 
     Ray getRay(const glm::ivec2 &pos, const int &windowW, const int &windowH, bool normalize, float startDepth = 0.9f, float endDepth = 0.0f) const;

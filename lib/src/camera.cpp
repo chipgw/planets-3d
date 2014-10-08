@@ -19,6 +19,10 @@ void Camera::reset(){
     zrotation = 0.0f;
 }
 
+void Camera::resizeViewport(const float &width, const float &height){
+    projection = glm::perspective(45.0f, width / height, 0.1f, 1.0e6f);
+}
+
 const glm::mat4 &Camera::setup(){
     glm::vec3 finalPos;
 
