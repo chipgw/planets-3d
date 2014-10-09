@@ -87,18 +87,20 @@ signals:
     void updatePlanetCountMessage(const QString &text);
 
 public slots:
-    void beginInteractiveCreation();
-    void enableFiringMode(bool enable);
-    void beginOrbitalCreation();
-    void takeScreenshot();
+    void beginInteractiveCreation(){ placing.beginInteractiveCreation(); }
+    void enableFiringMode(bool enable){ placing.enableFiringMode(enable); }
+    void beginOrbitalCreation(){ placing.beginOrbitalCreation(); }
+    void takeScreenshot(){ doScreenshot = true; }
+
     void updateGrid();
     void setGridRange(int value);
-    void followNext();
-    void followPrevious();
-    void followSelection();
-    void clearFollow();
-    void followPlainAverage();
-    void followWeightedAverage();
+
+    void followNext() { camera.followNext(); }
+    void followPrevious() { camera.followPrevious(); }
+    void followSelection() { camera.followSelection(); }
+    void clearFollow() { camera.clearFollow(); }
+    void followPlainAverage() { camera.followPlainAverage(); }
+    void followWeightedAverage() { camera.followWeightedAverage(); }
 
 protected:
     void initializeGL();

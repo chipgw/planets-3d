@@ -367,22 +367,6 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     }
 }
 
-void PlanetsWidget::beginInteractiveCreation(){
-    placing.beginInteractiveCreation();
-}
-
-void PlanetsWidget::enableFiringMode(bool enable){
-    placing.enableFiringMode(enable);
-}
-
-void PlanetsWidget::beginOrbitalCreation(){
-    placing.beginOrbitalCreation();
-}
-
-void PlanetsWidget::takeScreenshot(){
-    doScreenshot = true;
-}
-
 void PlanetsWidget::drawPlanet(const Planet &planet){
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
@@ -431,30 +415,6 @@ void PlanetsWidget::updateGrid(){
 void PlanetsWidget::setGridRange(int value){
     gridRange = value;
     updateGrid();
-}
-
-void PlanetsWidget::followNext(){
-    camera.followNext();
-}
-
-void PlanetsWidget::followPrevious(){
-    camera.followPrevious();
-}
-
-void PlanetsWidget::followSelection(){
-    camera.followSelection();
-}
-
-void PlanetsWidget::clearFollow(){
-    camera.clearFollow();
-}
-
-void PlanetsWidget::followPlainAverage(){
-    camera.followPlainAverage();
-}
-
-void PlanetsWidget::followWeightedAverage(){
-    camera.followWeightedAverage();
 }
 
 const QColor PlanetsWidget::trailColor = QColor(0xcc, 0xff, 0xff, 0xff);
