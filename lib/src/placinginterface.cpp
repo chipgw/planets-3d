@@ -116,11 +116,7 @@ bool PlacingInterface::handleMouseWheel(float delta){
         planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) + delta * PlanetsUniverse::velocityfac * 1.0e-3f);
         return true;
     }
-}
-
-void PlacingInterface::beginInteractiveCreation(){
-    step = FreePositionXY;
-    universe.resetSelected();
+    return false;
 }
 
 void PlacingInterface::enableFiringMode(bool enable){
@@ -129,11 +125,5 @@ void PlacingInterface::enableFiringMode(bool enable){
         universe.resetSelected();
     }else if(step == Firing){
         step = NotPlacing;
-    }
-}
-
-void PlacingInterface::beginOrbitalCreation(){
-    if(universe.isSelectedValid()){
-        step = OrbitalPlanet;
     }
 }

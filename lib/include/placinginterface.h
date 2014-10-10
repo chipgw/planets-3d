@@ -30,9 +30,9 @@ public:
     bool handleMouseClick(const glm::ivec2 &pos, const int &windowW, const int &windowH, const Camera &camera);
     bool handleMouseWheel(float delta);
 
-    void beginInteractiveCreation();
     void enableFiringMode(bool enable);
-    void beginOrbitalCreation();
+    void beginInteractiveCreation(){ step = FreePositionXY; universe.resetSelected(); }
+    void beginOrbitalCreation(){ if(universe.isSelectedValid()) step = OrbitalPlanet; }
 
     PlacingInterface(PlanetsUniverse &universe);
 };
