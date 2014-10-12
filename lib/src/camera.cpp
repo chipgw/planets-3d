@@ -96,6 +96,8 @@ PlanetsUniverse::key_type Camera::selectUnder(const glm::ivec2 &pos, const int &
             nearest = dot;
         }
     }
+
+	return universe.selected;
 }
 
 void Camera::followNext(){

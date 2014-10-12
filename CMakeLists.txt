@@ -41,7 +41,7 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
 
 find_package(TinyXML REQUIRED)
-include_directories(${TINYXML_INCLUDE_DIRS})
+include_directories(${TINYXML_INCLUDE_DIR})
 
 add_subdirectory(lib)
 
