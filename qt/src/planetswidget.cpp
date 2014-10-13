@@ -313,13 +313,13 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
                 camera.bound();
 
-                setCursor(Qt::SizeAllCursor);
                 holdCursor = true;
             }
         }
     }
     if(holdCursor){
         QCursor::setPos(mapToGlobal(lastMousePos));
+        setCursor(Qt::BlankCursor);
     } else {
         lastMousePos = e->pos();
     }
@@ -354,9 +354,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e){
 }
 
 void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
-    if(e->button() == Qt::MiddleButton || e->button() == Qt::RightButton){
-        setCursor(Qt::ArrowCursor);
-    }
+    setCursor(Qt::ArrowCursor);
 }
 
 void PlanetsWidget::wheelEvent(QWheelEvent* e){
