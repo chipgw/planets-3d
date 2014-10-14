@@ -47,11 +47,11 @@ public:
     void advance(float time);
 
     inline bool isEmpty() { return planets.size() == 0; }
-    inline bool isValid(const key_type &key) { return planets.count(key); }
+    inline bool isValid(const key_type &key) { return planets.count(key) > 0; }
     inline void remove(const key_type &key) { planets.erase(key); }
     inline Planet &operator [] (const key_type &key) { return planets[key]; }
 
-    inline bool isSelectedValid() { return planets.count(selected); }
+    inline bool isSelectedValid() { return planets.count(selected) > 0; }
     inline Planet &getSelected() { return planets[selected]; }
     inline void resetSelected() { selected = 0; }
 
@@ -60,7 +60,7 @@ public:
     inline const_iterator cbegin() { return planets.cbegin(); }
     inline const_iterator cend() { return planets.cend(); }
     inline const_iterator find(const key_type &key) { return planets.find(key); }
-    inline int size() { return planets.size(); }
+    inline list_type::size_type size() { return planets.size(); }
 
     inline std::string getErrorMessage() { return errorMsg; }
 

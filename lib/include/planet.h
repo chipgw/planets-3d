@@ -16,7 +16,7 @@ public:
     glm::vec3 velocity;
 
     std::vector<glm::vec3> path;
-    static int pathLength;
+    static std::vector<glm::vec3>::size_type pathLength;
     static float pathRecordDistance;
 
     void updatePath();

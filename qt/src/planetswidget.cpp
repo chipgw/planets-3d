@@ -162,7 +162,7 @@ void PlanetsWidget::paintGL() {
 
         for(const auto& i : universe){
             shaderColor.setAttributeArray(vertex, GL_FLOAT, i.second.path.data(), 3);
-            glDrawArrays(GL_LINE_STRIP, 0, i.second.path.size());
+            glDrawArrays(GL_LINE_STRIP, 0, GLsizei(i.second.path.size()));
         }
     }
 
@@ -258,14 +258,14 @@ void PlanetsWidget::paintGL() {
         shaderColor.setUniformValue(shaderColor_modelMatrix, matrix);
         shaderColor.setUniformValue(shaderColor_color, color);
 
-        glDrawArrays(GL_LINES, 0, gridPoints.size() / 2);
+        glDrawArrays(GL_LINES, 0, GLsizei(gridPoints.size() / 2));
 
         matrix.scale(0.5f);
         shaderColor.setUniformValue(shaderColor_modelMatrix, matrix);
         color.setAlphaF(gridColor.alphaF() * (1.0f - alphafac));
         shaderColor.setUniformValue(shaderColor_color, color);
 
-        glDrawArrays(GL_LINES, 0, gridPoints.size() / 2);
+        glDrawArrays(GL_LINES, 0, GLsizei(gridPoints.size() / 2));
 
         glDepthMask(GL_TRUE);
     }

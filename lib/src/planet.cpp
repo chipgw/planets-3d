@@ -26,6 +26,6 @@ void Planet::setMass(const float &m){
     }
 }
 
-int Planet::pathLength = 200;
+std::vector<glm::vec3>::size_type Planet::pathLength = 200;
 
 float Planet::pathRecordDistance = 0.25f;
