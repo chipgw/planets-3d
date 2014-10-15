@@ -11,7 +11,7 @@
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
 
-PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20), generator(unsigned int(std::chrono::system_clock::now().time_since_epoch().count())) {}
+PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20), generator(std::chrono::system_clock::now().time_since_epoch().count()) {}
 
 bool PlanetsUniverse::load(const std::string &filename, bool clear){
     TiXmlDocument doc(filename);
