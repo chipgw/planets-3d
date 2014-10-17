@@ -15,6 +15,12 @@ file(GLOB QT_SOURCES "${Planets3D_qt_SOURCE_DIR}/src/*.cpp")
 file(GLOB QT_FORMS "${Planets3D_qt_SOURCE_DIR}/forms/*.ui")
 set(QT_RESOURCES "${Planets3D_qt_SOURCE_DIR}/resources.qrc")
 
+if(WIN32)
+    set(QT_WINDRES "${CMAKE_CURRENT_BINARY_DIR}/Planets3D.rc")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Planets3D.rc.in" "${QT_WINDRES}" @ONLY)
+else(WIN32)
+    set(QT_WINDRES "")
+endif(WIN32)
 
 if(PLANETS3D_QT4)
     add_subdirectory(qt4)
