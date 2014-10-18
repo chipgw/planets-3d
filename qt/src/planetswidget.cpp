@@ -7,10 +7,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 
-#ifdef PLANETS3D_USE_QOPENGLTEXTURE
-#include <QOpenGLTexture>
-#endif
-
 int highBit(unsigned int n) {
     n |= (n >>  1);
     n |= (n >>  2);
@@ -92,25 +88,12 @@ void PlanetsWidget::initializeGL() {
 
     QImage img(":/textures/planet.png");
 
-#ifdef PLANETS3D_USE_QOPENGLTEXTURE
-    texture = new QOpenGLTexture(img.mirrored());
-    texture->setMagnificationFilter(QOpenGLTexture::Linear);
-    texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-    texture->bind();
-#else
     bindTexture(img);
-#endif
 
     if(frameCount == 0){
         totalTime.start();
         frameTime.start();
     }
-}
-
-PlanetsWidget::~PlanetsWidget(){
-#ifdef PLANETS3D_USE_QOPENGLTEXTURE
-    delete texture;
-#endif
 }
 
 void PlanetsWidget::resizeGL(int width, int height) {

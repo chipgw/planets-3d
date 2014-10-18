@@ -14,10 +14,6 @@ class QMouseEvent;
 #include <QOpenGLFunctions>
 #include <QOpenGLShader>
 
-#if QT_VERSION >= 0x050200 && !defined(PLANETS3D_DISABLE_QOPENGLTEXTURE)
-class QOpenGLTexture;
-#define PLANETS3D_USE_QOPENGLTEXTURE
-#endif
 #else
 #include <QGLFunctions>
 #include <QGLShader>
@@ -41,10 +37,6 @@ private:
 
     const static int vertex, uv;
 
-#ifdef PLANETS3D_USE_QOPENGLTEXTURE
-    QOpenGLTexture *texture;
-#endif
-
     Camera camera;
     bool doScreenshot;
 
@@ -67,7 +59,6 @@ private:
 
 public:
     PlanetsWidget(QWidget *parent = 0);
-    ~PlanetsWidget();
 
     PlanetsUniverse universe;
 

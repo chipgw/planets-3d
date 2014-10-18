@@ -1,8 +1,6 @@
 project(Planets3D_qt5)
 cmake_minimum_required(VERSION 2.8)
 
-option(PLANETS3D_DISABLE_QOPENGLTEXTURE "Don't use QOpenGLTexture even if the system supports it" OFF)
-
 # Silences warnings about the policy not being set.
 # We still manually link to Qt5::WinMain to support older versions of CMake.
 # As far as I can tell there is no harm in doing both.
