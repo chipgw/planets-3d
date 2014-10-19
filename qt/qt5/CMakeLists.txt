@@ -1,5 +1,5 @@
 project(Planets3D_qt5)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.11)
 
 # Silences warnings about the policy not being set.
 # We still manually link to Qt5::WinMain to support older versions of CMake.

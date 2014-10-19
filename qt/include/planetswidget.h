@@ -13,7 +13,6 @@ class QMouseEvent;
 #if QT_VERSION >= 0x050000
 #include <QOpenGLFunctions>
 #include <QOpenGLShader>
-
 #else
 #include <QGLFunctions>
 #include <QGLShader>
