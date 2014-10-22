@@ -229,7 +229,7 @@ void PlanetsWidget::paintGL() {
 
         shaderColor.setAttributeArray(vertex, GL_FLOAT, gridPoints.data(), 2);
 
-        float distance = pow(glm::length2(camera.camera[3]), 1.0f / 3.0f);
+        float distance = std::cbrt(glm::length2(camera.camera[3]));
         int nearestPowerOfTwo = highBit(distance);
         float alphafac = distance / nearestPowerOfTwo - 1.0f;
 

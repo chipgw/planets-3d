@@ -22,7 +22,7 @@ void Planet::setMass(const float &m){
     radius_p = 0.0f;
 
     if(m > 0.0f){
-        radius_p = glm::pow((3.0f * m / 4.0f) * glm::pi<float>(), 1.0f / 3.0f);
+        radius_p = std::cbrt((3.0f * m / 4.0f) * glm::pi<float>());
     }
 }
 
