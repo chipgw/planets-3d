@@ -65,9 +65,9 @@ public:
     inline std::string getErrorMessage() const { return errorMsg; }
 
     void centerAll();
-    void deleteAll();
+    void deleteAll() { planets.clear(); resetSelected(); }
     void deleteEscapees();
-    void deleteSelected();
+    void deleteSelected() { if(isSelectedValid()) planets.erase(selected); }
 };
 
 #endif // PLANETSUNIVERSE_H

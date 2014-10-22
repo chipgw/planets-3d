@@ -132,21 +132,3 @@ void Camera::followPrevious(){
         following = current->first;
     }
 }
-
-void Camera::followSelection(){
-    following = universe.selected;
-    followingState = Single;
-}
-
-void Camera::clearFollow(){
-    following = 0;
-    followingState = FollowNone;
-}
-
-void Camera::followPlainAverage(){
-    followingState = PlainAverage;
-}
-
-void Camera::followWeightedAverage(){
-    followingState = WeightedAverage;
-}

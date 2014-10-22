@@ -170,11 +170,6 @@ void PlanetsUniverse::generateRandom(const int &count, const float &positionRang
     }
 }
 
-void PlanetsUniverse::deleteAll(){
-    planets.clear();
-    resetSelected();
-}
-
 void PlanetsUniverse::deleteEscapees(){
     glm::vec3 averagePosition, averageVelocity;
     float totalmass = 0.0f;
@@ -196,12 +191,6 @@ void PlanetsUniverse::deleteEscapees(){
         } else{
             ++i;
         }
-    }
-}
-
-void PlanetsUniverse::deleteSelected(){
-    if(isSelectedValid()){
-        planets.erase(selected);
     }
 }
 

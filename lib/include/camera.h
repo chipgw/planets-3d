@@ -43,10 +43,10 @@ public:
 
     void followPrevious();
     void followNext();
-    void followSelection();
-    void clearFollow();
-    void followPlainAverage();
-    void followWeightedAverage();
+    void followSelection() { following = universe.selected; followingState = Single; }
+    void clearFollow() { following = 0; followingState = FollowNone; }
+    void followPlainAverage() { followingState = PlainAverage; }
+    void followWeightedAverage() { followingState = WeightedAverage; }
 };
 
 #endif // CAMERA_H
