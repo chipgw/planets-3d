@@ -9,18 +9,18 @@ Camera::Camera(PlanetsUniverse &u) : universe(u) {
 
 void Camera::bound(){
     distance = glm::clamp(distance, 10.0f, 1.0e4f);
-    xrotation = glm::clamp(xrotation, -90.0f, 90.0f);
-    zrotation = glm::mod(zrotation, 360.0f);
+    xrotation = glm::clamp(xrotation, -glm::half_pi<float>(), glm::half_pi<float>());
+    zrotation = glm::mod(zrotation, glm::pi<float>() * 2.0f);
 }
 
 void Camera::reset(){
     distance = 100.0f;
-    xrotation = 45.0f;
+    xrotation = glm::quarter_pi<float>();
     zrotation = 0.0f;
 }
 
 void Camera::resizeViewport(const float &width, const float &height){
-    projection = glm::perspective(45.0f, width / height, 0.1f, 1.0e6f);
+    projection = glm::perspective(glm::quarter_pi<float>(), width / height, 0.1f, 1.0e6f);
 }
 
 const glm::mat4 &Camera::setup(){
@@ -56,7 +56,7 @@ const glm::mat4 &Camera::setup(){
     }
 
     camera = glm::translate(projection, glm::vec3(0.0f, 0.0f, -distance));
-    camera = glm::rotate(camera, xrotation - 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+    camera = glm::rotate(camera, xrotation - glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
     camera = glm::rotate(camera, zrotation, glm::vec3(0.0f, 0.0f, 1.0f));
     camera = glm::translate(camera, -finalPos);
     return camera;

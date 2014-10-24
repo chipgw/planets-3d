@@ -291,8 +291,8 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
                 setCursor(Qt::SizeVerCursor);
                 camera.bound();
             }else{
-                camera.xrotation += delta.y * 0.2f;
-                camera.zrotation += delta.x * 0.2f;
+                camera.xrotation += delta.y * 0.01f;
+                camera.zrotation += delta.x * 0.01f;
 
                 camera.bound();
 

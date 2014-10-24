@@ -26,6 +26,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 
+
 if(${CMAKE_GENERATOR} MATCHES "Visual Studio*")
     add_definitions(-DPLANETS3D_MSVC_CONFIGURATION="$(ConfigurationName)")
 endif()
@@ -35,6 +36,9 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 
 find_package(TinyXML REQUIRED)
 include_directories(${TINYXML_INCLUDE_DIR})
+
+# Because GLM keeps warning me that using degrees is depreciated.
+add_definitions(-DGLM_FORCE_RADIANS)
 
 add_subdirectory(lib)
 

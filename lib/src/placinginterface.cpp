@@ -24,8 +24,8 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
         return true;
     case FreeVelocity:
         // set placing velocity
-        rotation *= glm::rotate(delta.x * 0.05f, glm::vec3(1.0f, 0.0f, 0.0f));
-        rotation *= glm::rotate(delta.y * 0.05f, glm::vec3(0.0f, 1.0f, 0.0f));
+        rotation *= glm::rotate(delta.x * 1.0e-3f, glm::vec3(1.0f, 0.0f, 0.0f));
+        rotation *= glm::rotate(delta.y * 1.0e-3f, glm::vec3(0.0f, 1.0f, 0.0f));
         planet.velocity = glm::vec3(rotation[2]) * glm::length(planet.velocity);
         holdMouse = true;
         return true;
@@ -47,8 +47,8 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
         break;
     case OrbitalPlane:
         if(universe.isSelectedValid()){
-            rotation *= glm::rotate(delta.x * 0.05f, glm::vec3(1.0f, 0.0f, 0.0f));
-            rotation *= glm::rotate(delta.y * 0.05f, glm::vec3(0.0f, 1.0f, 0.0f));
+            rotation *= glm::rotate(delta.x * 1.0e-3f, glm::vec3(1.0f, 0.0f, 0.0f));
+            rotation *= glm::rotate(delta.y * 1.0e-3f, glm::vec3(0.0f, 1.0f, 0.0f));
             planet.position = universe.getSelected().position + glm::vec3(rotation[0] * orbitalRadius);
             holdMouse = true;
             return true;
