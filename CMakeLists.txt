@@ -7,9 +7,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directo
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directory for executables.")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directory for static libraries.")
 
-# TODO - Make SDL interface.
-# option(PLANETS3D_SDL "Build SDL Interface Executable" OFF)
-
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
@@ -41,5 +38,7 @@ include_directories(${TINYXML_INCLUDE_DIR})
 add_definitions(-DGLM_FORCE_RADIANS)
 
 add_subdirectory(lib)
+
+add_subdirectory(sdl)
 
 add_subdirectory(qt)

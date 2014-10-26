@@ -1,0 +1,45 @@
+#
+# this module look for SDL2_image (http://www.libsdl.org) support
+# it will define the following values
+#
+# SDL2_IMAGE_INCLUDE_DIR  = where SDL_image.h can be found
+# SDL2_IMAGE_LIBRARY      = the library to link against SDL2_image
+# SDL2_IMAGE_FOUND        = set to 1 if SDL2_image is found
+#
+
+IF(SDL2_IMAGE_INCLUDE_DIRS)
+
+  FIND_PATH(SDL2_IMAGE_INCLUDE_DIR SDL2/SDL_image.h ${SDL2_IMAGE_INCLUDE_DIRS})
+  FIND_LIBRARY(SDL2_IMAGE_LIBRARY SDL2_image ${SDL2_IMAGE_LIBRARY_DIRS})
+
+ELSE(SDL2_IMAGE_INCLUDE_DIRS)
+
+  SET(TRIAL_LIBRARY_PATHS
+    $ENV{SDL2_IMAGE_HOME}/lib
+    /usr/lib
+    /usr/local/lib
+    /sw/lib
+  ) 
+  SET(TRIAL_INCLUDE_PATHS
+    $ENV{SDL2_IMAGE_HOME}/include/SDL2
+    /usr/include/SDL2
+    /usr/local/include/SDL2
+    /sw/include/SDL2
+  ) 
+
+  FIND_LIBRARY(SDL2_IMAGE_LIBRARY SDL2_image ${TRIAL_LIBRARY_PATHS})
+  FIND_PATH(SDL_IMAGE_INCLUDE_DIR SDL_image.h ${TRIAL_INCLUDE_PATHS})
+
+ENDIF(SDL2_IMAGE_INCLUDE_DIRS)
+
+IF(SDL2_IMAGE_INCLUDE_DIR AND SDL2_IMAGE_LIBRARY)
+  SET(SDL2_IMAGE_FOUND 1 CACHE BOOL "Found SDL2_image library")
+ELSE(SDL2_IMAGE_INCLUDE_DIR AND SDL2_IMAGE_LIBRARY)
+  SET(SDL2_IMAGE_FOUND 0 CACHE BOOL "Not fount SDL2_image library")
+ENDIF(SDL2_IMAGE_INCLUDE_DIR AND SDL2_IMAGE_LIBRARY)
+
+MARK_AS_ADVANCED(
+  SDL2_IMAGE_INCLUDE_DIR
+  SDL2_IMAGE_LIBRARY
+  SDL2_IMAGE_FOUND
+)
