@@ -1,12 +1,29 @@
 #include "planetswindow.h"
+#include "shaders.h"
 
-/* TODO - get opengl pointers properly on Windows */
-#define GL_GLEXT_PROTOTYPES
-#include <GL/glcorearb.h>
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/norm.hpp>
 
 PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe) {
-    /* TODO - I'm not sure which version of OpenGL I want yet... */
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    initSDL();
+    initGL();
+
+    for(int i = 0; i < argc; ++i) {
+        if(universe.load(argv[i])) break;
+    }
+}
+
+PlanetsWindow::~PlanetsWindow(){
+    SDL_GL_DeleteContext(contextSDL);
+    SDL_DestroyWindow(windowSDL);
+
+    SDL_Quit();
+}
+
+bool PlanetsWindow::initSDL(){
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) == -1) {
@@ -34,11 +51,122 @@ PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera
     SDL_ShowCursor(SDL_ENABLE);
 }
 
-PlanetsWindow::~PlanetsWindow(){
-    SDL_GL_DeleteContext(contextSDL);
-    SDL_DestroyWindow(windowSDL);
+bool PlanetsWindow::initGL(){
+    SDL_GL_MakeCurrent(windowSDL, contextSDL);
 
-    SDL_Quit();
+    initShaders();
+
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearDepthf(1.0f);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+#ifdef GL_LINE_SMOOTH
+    glEnable(GL_LINE_SMOOTH);
+#endif
+
+    glEnableVertexAttribArray(vertex);
+}
+
+GLuint compileShader(const char *source, GLenum shaderType){
+    GLuint shader = glCreateShader(shaderType);
+
+    glShaderSource(shader, 1, (const GLchar**)&source, 0);
+
+    glCompileShader(shader);
+
+    int isCompiled,maxLength;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+
+    if(maxLength > 1){
+        char *infoLog = new char[maxLength];
+
+        glGetShaderInfoLog(shader, maxLength, &maxLength, infoLog);
+
+        if(isCompiled == GL_FALSE) {
+            printf("ERROR: failed to compile shader!\n\tLog: %s", infoLog);
+            delete[] infoLog;
+
+            return 0;
+        }else{
+            printf("INFO: succesfully compiled shader.\n\tLog: %s", infoLog);
+            delete[] infoLog;
+        }
+    }else{
+        if(isCompiled == GL_FALSE) {
+            printf("ERROR: failed to compile shader! No log availible.");
+            return 0;
+        }
+    }
+    return shader;
+}
+
+int linkShaderProgram(GLuint vsh, GLuint fsh){
+    GLuint program = glCreateProgram();
+
+    glAttachShader(program, vsh);
+    glAttachShader(program, fsh);
+
+    glLinkProgram(program);
+
+    int isLinked, maxLength;
+    glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+
+    if(maxLength > 1){
+        char *infoLog = new char[maxLength];
+
+        glGetProgramInfoLog(program, maxLength, &maxLength, infoLog);
+
+        if(isLinked == GL_FALSE){
+            printf("ERROR: failed to link shader program!\n\tLog: %s", infoLog);
+            delete[] infoLog;
+
+            return 0;
+        }else{
+            printf("INFO: succesfully linked shader.\n\tLog: %s", infoLog);
+            delete[] infoLog;
+        }
+    }else{
+        if(isLinked == GL_FALSE){
+            printf("ERROR: failed to link shader program! No log availible.");
+            return 0;
+        }
+    }
+
+    return program;
+}
+
+bool PlanetsWindow::initShaders(){
+    shaderColor_vsh = compileShader(color_vertex_src,     GL_VERTEX_SHADER);
+    shaderColor_fsh = compileShader(color_fragment_src,   GL_FRAGMENT_SHADER);
+    shaderColor = linkShaderProgram(shaderColor_vsh, shaderColor_fsh);
+
+    glUseProgram(shaderColor);
+    shaderColor_color = glGetUniformLocation(shaderColor, "color");
+    shaderColor_cameraMatrix = glGetUniformLocation(shaderColor, "cameraMatrix");
+    shaderColor_modelMatrix = glGetUniformLocation(shaderColor, "modelMatrix");
+
+    glBindAttribLocation(shaderColor, vertex, "vertex");
+
+    shaderTexture_vsh = compileShader(texture_vertex_src,   GL_VERTEX_SHADER);
+    shaderTexture_fsh = compileShader(texture_fragment_src, GL_FRAGMENT_SHADER);
+    shaderTexture = linkShaderProgram(shaderTexture_vsh, shaderTexture_fsh);
+
+    glUseProgram(shaderTexture);
+    shaderTexture_cameraMatrix = glGetUniformLocation(shaderTexture, "cameraMatrix");
+    shaderTexture_modelMatrix = glGetUniformLocation(shaderTexture, "modelMatrix");
+
+    glBindAttribLocation(shaderTexture, vertex, "vertex");
+    glBindAttribLocation(shaderTexture, uv, "uv");
 }
 
 int PlanetsWindow::run(){
@@ -58,7 +186,26 @@ int PlanetsWindow::run(){
 }
 
 void PlanetsWindow::paint(){
+    SDL_GL_MakeCurrent(windowSDL, contextSDL);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    camera.setup();
+
+    glUseProgram(shaderColor);
+
+    glUniformMatrix4fv(shaderColor_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
+    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+
+    glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+
+//    glEnableVertexAttribArray(uv);
+
+    for(const auto& i : universe){
+        drawPlanet(i.second);
+    }
+
+//    glDisableVertexAttribArray(uv);
 
     /* TODO - implement */
 }
@@ -123,3 +270,20 @@ void PlanetsWindow::onResized(uint32_t width, uint32_t height){
     camera.resizeViewport(width, height);
 }
 
+void PlanetsWindow::drawPlanet(const Planet &planet){
+    glm::mat4 matrix = glm::translate(planet.position);
+    matrix = glm::scale(matrix, glm::vec3(planet.radius()));
+    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(highResSphere.verts[0].position));
+//    glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(highResSphere.verts[0].uv));
+    glDrawElements(GL_TRIANGLES, highResSphere.triangleCount, GL_UNSIGNED_INT, highResSphere.triangles);
+}
+
+const Sphere<64, 32> PlanetsWindow::highResSphere = Sphere<64, 32>();
+const Sphere<32, 16> PlanetsWindow::lowResSphere  = Sphere<32, 16>();
+
+const Circle<64> PlanetsWindow::circle = Circle<64>();
+
+const GLuint PlanetsWindow::vertex = 0;
+const GLuint PlanetsWindow::uv     = 1;
