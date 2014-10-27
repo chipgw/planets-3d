@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->firingSettings_DockWidget->hide();
     ui->randomSettings_DockWidget->hide();
 
-    foreach (const QString &argument, QApplication::arguments()) {
+    for(const QString &argument : QApplication::arguments()){
         if(QFileInfo(argument).filePath() != QApplication::applicationFilePath() && ui->centralwidget->universe.load(argument.toStdString())){
             break;
         }
@@ -269,7 +269,7 @@ void MainWindow::on_generateRandomPushButton_clicked(){
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event){
     if(event->mimeData()->hasUrls()){
-        foreach(QUrl url, event->mimeData()->urls()){
+        for(const QUrl& url : event->mimeData()->urls()){
             QFileInfo info(url.toLocalFile());
             if(info.exists()){
                 return event->acceptProposedAction();
@@ -280,7 +280,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event){
 
 void MainWindow::dropEvent(QDropEvent *event){
     if(event->mimeData()->hasUrls()){
-        foreach(QUrl url, event->mimeData()->urls()){
+        for(const QUrl& url : event->mimeData()->urls()){
             if(ui->centralwidget->universe.load(url.toLocalFile().toStdString())){
                 return event->acceptProposedAction();
             }

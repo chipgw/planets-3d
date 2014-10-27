@@ -109,12 +109,13 @@ void PlanetsUniverse::advance(float time){
     time /= stepsPerFrame;
 
     for(int s = 0; s < stepsPerFrame; ++s){
-        for(iterator i = planets.begin(); i != planets.end();){
+        iterator i = planets.begin();
+        while(i != planets.end()){
             if(i->second.mass() <= 0.0f){
                 i = planets.erase(i);
             }else{
                 iterator o = i; ++o;
-                for(;o != planets.end();){
+                while(o != planets.end()){
                     glm::vec3 direction = o->second.position - i->second.position;
                     float distancesqr = glm::length2(direction);
 
