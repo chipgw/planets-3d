@@ -1,6 +1,7 @@
 #include "planetswindow.h"
 #include "shaders.h"
 
+#include <chrono>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -12,6 +13,10 @@ PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera
 
     for(int i = 0; i < argc; ++i) {
         if(universe.load(argv[i])) break;
+    }
+
+    if(universe.size() == 0){
+        universe.generateRandom(100, 1.0e3f, 1.0f, 100.0f);
     }
 }
 
@@ -170,17 +175,32 @@ bool PlanetsWindow::initShaders(){
 }
 
 int PlanetsWindow::run(){
+    std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+    std::chrono::high_resolution_clock::time_point last_time = std::chrono::high_resolution_clock::now();
+
     while(running) {
+        std::chrono::high_resolution_clock::time_point current = std::chrono::high_resolution_clock::now();
+        int64_t delay = std::chrono::duration_cast<std::chrono::microseconds>(current - last_time).count();
+        last_time = current;
+
         doEvents();
 
         if(placing.step == PlacingInterface::NotPlacing || placing.step == PlacingInterface::Firing){
-//            universe.advance(delay);
+            universe.advance(delay);
         }
 
         paint();
 
         SDL_GL_SwapWindow(windowSDL);
+
+        ++totalFrames;
     }
+
+    std::chrono::high_resolution_clock::time_point current = std::chrono::high_resolution_clock::now();
+    printf("Total Time: %f seconds.\n", (std::chrono::duration_cast<std::chrono::microseconds>(current - start_time).count() * 1.0e-6f));
+    printf("Total Frames: %i.\n", totalFrames);
+    printf("Average Draw Time: %fms.\n", (std::chrono::duration_cast<std::chrono::microseconds>(current - start_time).count() * 1.0e-3f) / float(totalFrames));
+    printf("Average Framerate: %f fps.\n", (1.0f / (std::chrono::duration_cast<std::chrono::microseconds>(current - start_time).count() / float(totalFrames))) * 1.0e6f);
 
     return 0;
 }

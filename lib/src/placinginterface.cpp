@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
-PlacingInterface::PlacingInterface(PlanetsUniverse &u) : universe(u), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f) {
+PlacingInterface::PlacingInterface(PlanetsUniverse &u) : universe(u), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f), step(NotPlacing) {
     planet.velocity.y = PlanetsUniverse::velocityfac;
 }
 

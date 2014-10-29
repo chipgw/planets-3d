@@ -51,6 +51,8 @@ class PlanetsWindow{
 
     void drawPlanet(const Planet &planet);
 
+    uintmax_t totalFrames;
+
 public:
     PlanetsWindow(int argc, char* argv[]);
     ~PlanetsWindow();
