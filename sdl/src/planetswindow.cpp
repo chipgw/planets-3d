@@ -265,11 +265,40 @@ void PlanetsWindow::doEvents(){
             }
             break;
         case SDL_MOUSEWHEEL:
+            if(!placing.handleMouseWheel(event.wheel.y)){
+                camera.distance -= event.wheel.y * camera.distance * 0.1f;
 
+                camera.bound();
+            }
             break;
         case SDL_MOUSEBUTTONUP:
             if(event.button.button == SDL_BUTTON_LEFT){
+                glm::ivec2 pos(event.button.x, event.button.y);
+                if(!placing.handleMouseClick(pos, windowWidth, windowHeight, camera)){
+                    camera.selectUnder(pos, windowWidth, windowHeight);
+                }
+            }
+            break;
+        case SDL_MOUSEMOTION:
+            glm::ivec2 delta(event.motion.xrel, event.motion.yrel);
 
+            bool holdCursor = false;
+
+            if(!placing.handleMouseMove(glm::ivec2(event.motion.x, event.motion.y), delta, windowWidth, windowHeight, camera, holdCursor)){
+                if(event.motion.state & SDL_BUTTON_MMASK){
+                    camera.distance -= delta.y * camera.distance * 1.0e-2f;
+                    camera.bound();
+                }else if(event.motion.state & SDL_BUTTON_RMASK){
+                    camera.xrotation += delta.y * 0.01f;
+                    camera.zrotation += delta.x * 0.01f;
+
+                    camera.bound();
+
+                    holdCursor = true;
+                }
+            }
+            if(holdCursor){
+                /* TODO - hold the cursor in place */
             }
             break;
         }
