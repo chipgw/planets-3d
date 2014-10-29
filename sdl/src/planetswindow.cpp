@@ -7,7 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 
-PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe) {
+PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe), totalFrames(0) {
     initSDL();
     initGL();
 
@@ -175,6 +175,8 @@ bool PlanetsWindow::initShaders(){
 }
 
 int PlanetsWindow::run(){
+    running = true;
+
     std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
     std::chrono::high_resolution_clock::time_point last_time = std::chrono::high_resolution_clock::now();
 
