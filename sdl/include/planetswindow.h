@@ -38,11 +38,15 @@ class PlanetsWindow{
     const static Sphere<32, 16> lowResSphere;
     const static Circle<64> circle;
 
+    GLuint planetTexture;
+
     void doEvents();
 
     bool initSDL();
     bool initGL();
     bool initShaders();
+
+    GLuint loadTexture(const char* filename);
 
     void paint();
 

@@ -6,6 +6,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
+#include <SDL_image.h>
 
 PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe), totalFrames(0) {
     initSDL();
@@ -78,6 +79,33 @@ bool PlanetsWindow::initGL(){
 #endif
 
     glEnableVertexAttribArray(vertex);
+
+    planetTexture = loadTexture("planet.png");
+}
+
+GLuint PlanetsWindow::loadTexture(const char* filename){
+    SDL_Surface* image = IMG_Load(filename);
+
+    if(image == nullptr){
+        printf("Failed to load texture! Error: %s\n", IMG_GetError());
+        return 0;
+    }
+
+    SDL_Surface* converted = SDL_ConvertSurface(image, SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 0);
+    SDL_FreeSurface(image);
+
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, converted->w, converted->h, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, converted->pixels);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    SDL_FreeSurface(converted);
+
+    return texture;
 }
 
 GLuint compileShader(const char *source, GLenum shaderType){
@@ -214,20 +242,18 @@ void PlanetsWindow::paint(){
 
     camera.setup();
 
-    glUseProgram(shaderColor);
+    glUseProgram(shaderTexture);
 
-    glUniformMatrix4fv(shaderColor_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
-    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+    glUniformMatrix4fv(shaderTexture_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
+    glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 
-    glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-
-//    glEnableVertexAttribArray(uv);
+    glEnableVertexAttribArray(uv);
 
     for(const auto& i : universe){
         drawPlanet(i.second);
     }
 
-//    glDisableVertexAttribArray(uv);
+    glDisableVertexAttribArray(uv);
 
     /* TODO - implement */
 }
@@ -324,10 +350,10 @@ void PlanetsWindow::onResized(uint32_t width, uint32_t height){
 void PlanetsWindow::drawPlanet(const Planet &planet){
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius()));
-    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+    glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
     glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(highResSphere.verts[0].position));
-//    glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(highResSphere.verts[0].uv));
+    glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(highResSphere.verts[0].uv));
     glDrawElements(GL_TRIANGLES, highResSphere.triangleCount, GL_UNSIGNED_INT, highResSphere.triangles);
 }
 

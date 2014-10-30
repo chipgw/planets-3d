@@ -401,8 +401,8 @@ void PlanetsWidget::setGridRange(int value){
 const QColor PlanetsWidget::trailColor = QColor(0xcc, 0xff, 0xff, 0xff);
 const QColor PlanetsWidget::gridColor = QColor(0xcc, 0xff, 0xff, 0x66);
 
-const Sphere<64, 32> PlanetsWidget::highResSphere = Sphere<64, 32>();
-const Sphere<32, 16> PlanetsWidget::lowResSphere  = Sphere<32, 16>();
+const Sphere<64, 32> PlanetsWidget::highResSphere = Sphere<64, 32>(true);
+const Sphere<32, 16> PlanetsWidget::lowResSphere  = Sphere<32, 16>(true);
 
 const Circle<64> PlanetsWidget::circle = Circle<64>();
 
