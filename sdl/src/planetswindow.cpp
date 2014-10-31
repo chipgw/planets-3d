@@ -1,6 +1,7 @@
 #include "planetswindow.h"
 #include "shaders.h"
 
+#include <algorithm>
 #include <chrono>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -28,7 +29,7 @@ PlanetsWindow::~PlanetsWindow(){
     SDL_Quit();
 }
 
-bool PlanetsWindow::initSDL(){
+void PlanetsWindow::initSDL(){
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
@@ -57,8 +58,19 @@ bool PlanetsWindow::initSDL(){
     SDL_ShowCursor(SDL_ENABLE);
 }
 
-bool PlanetsWindow::initGL(){
+void PlanetsWindow::initGL(){
     SDL_GL_MakeCurrent(windowSDL, contextSDL);
+
+#ifdef PLANETS3D_WITH_GLEW
+    GLuint glewstatus = glewInit();
+    if(glewstatus != GLEW_OK){
+        printf("GLEW ERROR: %s", glewGetErrorString(glewstatus));
+        abort();
+    }
+    if(!GLEW_VERSION_4_0){
+        printf("WARNING: OpenGL 4.0 support NOT detected, things probably won't work.");
+    }
+#endif
 
     initShaders();
 
@@ -178,7 +190,7 @@ int linkShaderProgram(GLuint vsh, GLuint fsh){
     return program;
 }
 
-bool PlanetsWindow::initShaders(){
+void PlanetsWindow::initShaders(){
     shaderColor_vsh = compileShader(color_vertex_src,     GL_VERTEX_SHADER);
     shaderColor_fsh = compileShader(color_fragment_src,   GL_FRAGMENT_SHADER);
     shaderColor = linkShaderProgram(shaderColor_vsh, shaderColor_fsh);

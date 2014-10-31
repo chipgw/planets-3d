@@ -10,9 +10,13 @@
 #include "spheregenerator.h"
 #include <SDL.h>
 
+#ifdef PLANETS3D_WITH_GLEW
+#include <GL/glew.h>
+#else
 /* TODO - get opengl pointers properly on Windows */
 #define GL_GLEXT_PROTOTYPES
 #include <GL/glcorearb.h>
+#endif
 
 class PlanetsWindow{
     PlanetsUniverse universe;
@@ -42,9 +46,9 @@ class PlanetsWindow{
 
     void doEvents();
 
-    bool initSDL();
-    bool initGL();
-    bool initShaders();
+    void initSDL();
+    void initGL();
+    void initShaders();
 
     GLuint loadTexture(const char* filename);
 
