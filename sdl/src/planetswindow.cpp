@@ -267,6 +267,15 @@ void PlanetsWindow::paint(){
 
     glDisableVertexAttribArray(uv);
 
+    glUseProgram(shaderColor);
+
+    glUniformMatrix4fv(shaderColor_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
+    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+
+    if(universe.isSelectedValid()){
+        drawPlanetWireframe(universe.getSelected());
+    }
+
     /* TODO - implement */
 }
 
@@ -367,6 +376,28 @@ void PlanetsWindow::drawPlanet(const Planet &planet){
     glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(highResSphere.verts[0].position));
     glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(highResSphere.verts[0].uv));
     glDrawElements(GL_TRIANGLES, highResSphere.triangleCount, GL_UNSIGNED_INT, highResSphere.triangles);
+}
+
+void PlanetsWindow::drawPlanetColor(const Planet &planet, const uint32_t &color){
+    glUniform4fv(shaderColor_color, 1, glm::value_ptr(uintColorToVec4(color)));
+
+    glm::mat4 matrix = glm::translate(planet.position);
+    matrix = glm::scale(matrix, glm::vec3(planet.radius() * 1.05f));
+    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(lowResSphere.verts[0].position));
+    glDrawElements(GL_TRIANGLES, lowResSphere.triangleCount, GL_UNSIGNED_INT, lowResSphere.triangles);
+}
+
+void PlanetsWindow::drawPlanetWireframe(const Planet &planet, const uint32_t &color){
+    glUniform4fv(shaderColor_color, 1, glm::value_ptr(uintColorToVec4(color)));
+
+    glm::mat4 matrix = glm::translate(planet.position);
+    matrix = glm::scale(matrix, glm::vec3(planet.radius() * 1.05f));
+    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(lowResSphere.verts[0].position));
+    glDrawElements(GL_LINES, lowResSphere.lineCount, GL_UNSIGNED_INT, lowResSphere.lines);
 }
 
 const Sphere<64, 32> PlanetsWindow::highResSphere = Sphere<64, 32>();

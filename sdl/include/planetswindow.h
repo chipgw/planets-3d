@@ -58,6 +58,10 @@ class PlanetsWindow{
     void onResized(uint32_t width, uint32_t height);
 
     void drawPlanet(const Planet &planet);
+    void drawPlanetColor(const Planet &planet, const uint32_t& color);
+    void drawPlanetWireframe(const Planet &planet, const uint32_t& color = 0xff00ff00);
+
+    glm::vec4 uintColorToVec4(const uint32_t& color) { return glm::vec4((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff, color >> 24) / 256.0f; }
 
     uintmax_t totalFrames;
 
