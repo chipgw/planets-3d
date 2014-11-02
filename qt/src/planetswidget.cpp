@@ -341,7 +341,7 @@ void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
 }
 
 void PlanetsWidget::wheelEvent(QWheelEvent* e){
-    if(!placing.handleMouseWheel(e->delta())){
+    if(!placing.handleMouseWheel(e->delta() * 1.0e-3f)){
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;
 
         camera.bound();

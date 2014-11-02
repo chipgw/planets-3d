@@ -110,10 +110,10 @@ bool PlacingInterface::handleMouseWheel(float delta){
     case FreePositionZ:
     case OrbitalPlanet:
     case OrbitalPlane:
-        planet.setMass(glm::clamp(planet.mass() + delta * planet.mass() * 1.0e-3f, PlanetsUniverse::min_mass, PlanetsUniverse::max_mass));
+        planet.setMass(glm::clamp(planet.mass() + delta * planet.mass(), PlanetsUniverse::min_mass, PlanetsUniverse::max_mass));
         return true;
     case FreeVelocity:
-        planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) + delta * PlanetsUniverse::velocityfac * 1.0e-3f);
+        planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) + delta * PlanetsUniverse::velocityfac);
         return true;
     }
     return false;

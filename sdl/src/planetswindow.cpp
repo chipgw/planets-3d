@@ -314,7 +314,7 @@ void PlanetsWindow::doEvents(){
             }
             break;
         case SDL_MOUSEWHEEL:
-            if(!placing.handleMouseWheel(event.wheel.y)){
+            if(!placing.handleMouseWheel(event.wheel.y * 0.2f)){
                 camera.distance -= event.wheel.y * camera.distance * 0.1f;
 
                 camera.bound();
@@ -329,7 +329,8 @@ void PlanetsWindow::doEvents(){
             }
             break;
         case SDL_MOUSEMOTION:
-            glm::ivec2 delta(event.motion.xrel, event.motion.yrel);
+            /* yrel is inverted compared to the delta calculated in Qt. */
+            glm::ivec2 delta(event.motion.xrel, -event.motion.yrel);
 
             bool holdCursor = false;
 
