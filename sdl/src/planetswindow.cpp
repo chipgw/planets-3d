@@ -407,6 +407,8 @@ void PlanetsWindow::doEvents(){
                     camera.selectUnder(pos, windowWidth, windowHeight);
                 }
             }
+            /* Always show cursor when mouse button is released. */
+            SDL_SetRelativeMouseMode(SDL_FALSE);
             break;
         case SDL_MOUSEMOTION:
             /* yrel is inverted compared to the delta calculated in Qt. */
@@ -427,9 +429,7 @@ void PlanetsWindow::doEvents(){
                     holdCursor = true;
                 }
             }
-            if(holdCursor){
-                /* TODO - hold the cursor in place */
-            }
+            SDL_SetRelativeMouseMode(SDL_bool(holdCursor));
             break;
         }
     }
