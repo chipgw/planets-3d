@@ -276,6 +276,78 @@ void PlanetsWindow::paint(){
         drawPlanetWireframe(universe.getSelected());
     }
 
+    glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
+
+    switch(placing.step){
+    case PlacingInterface::FreeVelocity:{
+        float length = glm::length(placing.planet.velocity) / PlanetsUniverse::velocityfac;
+
+        if(length > 0.0f){
+            glm::mat4 matrix = glm::translate(placing.planet.position);
+            matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
+            matrix *= placing.rotation;
+            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+            float verts[] = {  0.1f, 0.1f, 0.0f,
+                               0.1f,-0.1f, 0.0f,
+                              -0.1f,-0.1f, 0.0f,
+                              -0.1f, 0.1f, 0.0f,
+
+                               0.1f, 0.1f, length,
+                               0.1f,-0.1f, length,
+                              -0.1f,-0.1f, length,
+                              -0.1f, 0.1f, length,
+
+                               0.2f, 0.2f, length,
+                               0.2f,-0.2f, length,
+                              -0.2f,-0.2f, length,
+                              -0.2f, 0.2f, length,
+
+                               0.0f, 0.0f, length + 0.4f };
+
+            static const GLubyte indexes[] = {  0,  1,  2,       2,  3,  0,
+
+                                                1,  0,  5,       4,  5,  0,
+                                                2,  1,  6,       5,  6,  1,
+                                                3,  2,  7,       6,  7,  2,
+                                                0,  3,  4,       7,  4,  3,
+
+                                                5,  4,  9,       8,  9,  4,
+                                                6,  5, 10,       9, 10,  5,
+                                                7,  6, 11,      10, 11,  6,
+                                                4,  7,  8,      11,  8,  7,
+
+                                                9,  8, 12,
+                                               10,  9, 12,
+                                               11, 10, 12,
+                                                8, 11, 12 };
+
+            glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, verts);
+            glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
+        }
+    }
+    case PlacingInterface::FreePositionXY:
+    case PlacingInterface::FreePositionZ:
+        drawPlanetWireframe(placing.planet);
+        break;
+    case PlacingInterface::OrbitalPlane:
+    case PlacingInterface::OrbitalPlanet:
+        if(universe.isSelectedValid() && placing.orbitalRadius > 0.0f){
+            glm::mat4 matrix = glm::translate(universe.getSelected().position);
+            matrix = glm::scale(matrix, glm::vec3(placing.orbitalRadius));
+            matrix *= placing.rotation;
+            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+            glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(circle.verts[0].position));
+            glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
+
+            drawPlanetWireframe(placing.planet);
+        }
+        break;
+    default: break;
+    }
+
+
     /* TODO - implement */
 }
 
@@ -298,8 +370,16 @@ void PlanetsWindow::doEvents(){
             onClose();
             break;
         case SDL_KEYDOWN:
-            if(event.key.keysym.sym == SDLK_ESCAPE){
+            switch (event.key.keysym.sym){
+            case SDLK_ESCAPE:
                 onClose();
+                break;
+            case SDLK_p:
+                placing.beginInteractiveCreation();
+                break;
+            case SDLK_o:
+                placing.beginOrbitalCreation();
+                break;
             }
             break;
         case SDL_WINDOWEVENT:
