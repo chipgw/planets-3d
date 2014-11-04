@@ -380,6 +380,12 @@ void PlanetsWindow::doEvents(){
             case SDLK_o:
                 placing.beginOrbitalCreation();
                 break;
+            case SDLK_c:
+                universe.centerAll();
+                break;
+            case SDLK_DELETE:
+                universe.deleteSelected();
+                break;
             }
             break;
         case SDL_WINDOWEVENT:
