@@ -278,6 +278,15 @@ void PlanetsWindow::paint(){
 
     glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
 
+    if(drawTrails){
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+
+        for(const auto& i : universe){
+            glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, i.second.path.data());
+            glDrawArrays(GL_LINE_STRIP, 0, GLsizei(i.second.path.size()));
+        }
+    }
+
     switch(placing.step){
     case PlacingInterface::FreeVelocity:{
         float length = glm::length(placing.planet.velocity) / PlanetsUniverse::velocityfac;
@@ -385,6 +394,9 @@ void PlanetsWindow::doEvents(){
                 break;
             case SDLK_DELETE:
                 universe.deleteSelected();
+                break;
+            case SDLK_t:
+                drawTrails = !drawTrails;
                 break;
             }
             break;

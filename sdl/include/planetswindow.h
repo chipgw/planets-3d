@@ -29,6 +29,8 @@ class PlanetsWindow{
     bool fullscreen;
     bool running;
 
+    bool drawTrails;
+
     uint32_t windowWidth;
     uint32_t windowHeight;
 
