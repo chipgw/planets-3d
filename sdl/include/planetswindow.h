@@ -30,6 +30,10 @@ class PlanetsWindow{
     bool running;
 
     bool drawTrails;
+    bool drawGrid;
+    int gridRange;
+    std::vector<float> gridPoints;
+    glm::vec4 gridColor;
 
     uint32_t windowWidth;
     uint32_t windowHeight;
@@ -45,6 +49,8 @@ class PlanetsWindow{
     const static Circle<64> circle;
 
     GLuint planetTexture;
+
+    void updateGrid();
 
     void doEvents();
 

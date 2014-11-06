@@ -9,7 +9,17 @@
 #include <glm/gtx/norm.hpp>
 #include <SDL_image.h>
 
-PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe), totalFrames(0) {
+int highBit(unsigned int n) {
+    n |= (n >>  1);
+    n |= (n >>  2);
+    n |= (n >>  4);
+    n |= (n >>  8);
+    n |= (n >> 16);
+    return n - (n >> 1);
+}
+
+PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe), totalFrames(0),
+    gridRange(32), gridColor(0.8f, 1.0f, 1.0f, 0.4f), drawGrid(false), drawTrails(false) {
     initSDL();
     initGL();
 
@@ -276,7 +286,6 @@ void PlanetsWindow::paint(){
         drawPlanetWireframe(universe.getSelected());
     }
 
-    glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
 
     if(drawTrails){
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
@@ -356,6 +365,35 @@ void PlanetsWindow::paint(){
     default: break;
     }
 
+    if(drawGrid){
+        if(gridPoints.size() != (gridRange + 1) * 8){
+            updateGrid();
+        }
+
+        glDepthMask(GL_FALSE);
+
+        glVertexAttribPointer(vertex, 2, GL_FLOAT, GL_FALSE, 0, gridPoints.data());
+
+        float distance = std::cbrt(glm::length2(camera.camera[3]));
+        int nearestPowerOfTwo = highBit(distance);
+        float alphafac = distance / nearestPowerOfTwo - 1.0f;
+
+        glm::vec4 color = gridColor;
+        color.a *= alphafac;
+
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(nearestPowerOfTwo))));
+        glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
+
+        glDrawArrays(GL_LINES, 0, GLsizei(gridPoints.size() / 2));
+
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(nearestPowerOfTwo / 2))));
+        color.a = gridColor.a * (1.0f - alphafac);
+        glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
+
+        glDrawArrays(GL_LINES, 0, GLsizei(gridPoints.size() / 2));
+
+        glDepthMask(GL_TRUE);
+    }
 
     /* TODO - implement */
 }
@@ -397,6 +435,9 @@ void PlanetsWindow::doEvents(){
                 break;
             case SDLK_t:
                 drawTrails = !drawTrails;
+                break;
+            case SDLK_g:
+                drawGrid = !drawGrid;
                 break;
             }
             break;
@@ -497,6 +538,19 @@ void PlanetsWindow::drawPlanetWireframe(const Planet &planet, const uint32_t &co
 
     glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(lowResSphere.verts[0].position));
     glDrawElements(GL_LINES, lowResSphere.lineCount, GL_UNSIGNED_INT, lowResSphere.lines);
+}
+
+void PlanetsWindow::updateGrid(){
+    gridPoints.clear();
+
+    float bounds = gridRange / 2.0f;
+    for(float i = -bounds; i <= bounds; ++i){
+        gridPoints.push_back(i); gridPoints.push_back(-bounds);
+        gridPoints.push_back(i); gridPoints.push_back( bounds);
+
+        gridPoints.push_back(-bounds); gridPoints.push_back(i);
+        gridPoints.push_back( bounds); gridPoints.push_back(i);
+    }
 }
 
 const Sphere<64, 32> PlanetsWindow::highResSphere = Sphere<64, 32>();
