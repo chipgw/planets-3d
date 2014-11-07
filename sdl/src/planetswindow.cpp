@@ -292,6 +292,7 @@ void PlanetsWindow::paint(){
         drawPlanetWireframe(universe.getSelected());
     }
 
+    glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
 
     if(drawTrails){
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
