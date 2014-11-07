@@ -26,6 +26,8 @@ class PlanetsWindow{
     SDL_Window *windowSDL;
     SDL_GLContext contextSDL;
 
+    SDL_GameController* controller;
+
     bool fullscreen;
     bool running;
 
@@ -53,6 +55,7 @@ class PlanetsWindow{
     void updateGrid();
 
     void doEvents();
+    void doControllerAxisInput(int64_t delay);
 
     void initSDL();
     void initGL();

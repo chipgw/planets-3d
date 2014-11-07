@@ -19,7 +19,7 @@ int highBit(unsigned int n) {
 }
 
 PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe), totalFrames(0),
-    gridRange(32), gridColor(0.8f, 1.0f, 1.0f, 0.4f), drawGrid(false), drawTrails(false) {
+    gridRange(32), gridColor(0.8f, 1.0f, 1.0f, 0.4f), drawGrid(false), drawTrails(false), controller(nullptr) {
     initSDL();
     initGL();
 
@@ -66,6 +66,8 @@ void PlanetsWindow::initSDL(){
 
     /* TODO - I may want to handle the cursor myself... */
     SDL_ShowCursor(SDL_ENABLE);
+
+    SDL_GameControllerEventState(SDL_ENABLE);
 }
 
 void PlanetsWindow::initGL(){
@@ -235,6 +237,7 @@ int PlanetsWindow::run(){
         int64_t delay = std::chrono::duration_cast<std::chrono::microseconds>(current - last_time).count();
         last_time = current;
 
+        doControllerAxisInput(delay);
         doEvents();
 
         if(placing.step == PlacingInterface::NotPlacing || placing.step == PlacingInterface::Firing){
@@ -246,6 +249,9 @@ int PlanetsWindow::run(){
         SDL_GL_SwapWindow(windowSDL);
 
         ++totalFrames;
+
+        /* so anything that was written to console gets written */
+        fflush(stdout);
     }
 
     std::chrono::high_resolution_clock::time_point current = std::chrono::high_resolution_clock::now();
@@ -452,6 +458,22 @@ void PlanetsWindow::doEvents(){
                 break;
             }
             break;
+        case SDL_CONTROLLERDEVICEADDED:
+            SDL_GameControllerOpen(event.cdevice.which);
+            break;
+        case SDL_CONTROLLERBUTTONUP:
+            if(controller == nullptr || event.cbutton.button == SDL_CONTROLLER_BUTTON_GUIDE){
+                controller = SDL_GameControllerOpen(event.cbutton.which);
+            }
+            if(event.cbutton.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller))){
+                switch(event.cbutton.button){
+                case SDL_CONTROLLER_BUTTON_BACK:
+                    onClose();
+                    break;
+                /* TODO - Use other buttons */
+                }
+            }
+            break;
         case SDL_MOUSEWHEEL:
             if(!placing.handleMouseWheel(event.wheel.y * 0.2f)){
                 camera.distance -= event.wheel.y * camera.distance * 0.1f;
@@ -490,6 +512,32 @@ void PlanetsWindow::doEvents(){
             }
             SDL_SetRelativeMouseMode(SDL_bool(holdCursor));
             break;
+        }
+    }
+}
+
+void PlanetsWindow::doControllerAxisInput(int64_t delay){
+    if(controller != nullptr){
+        glm::vec2 right(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX),
+                        SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY));
+
+        right /= std::numeric_limits<Sint16>::max();
+
+        if(glm::length2(right) > 0.1f) {
+            camera.xrotation += right.y * delay * 1.0e-6f;
+            camera.zrotation += right.x * delay * 1.0e-6f;
+        }
+
+        camera.bound();
+
+        /* TODO - use left stick input for placing stuff. */
+        glm::vec2 left(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX),
+                       SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY));
+
+        left /= std::numeric_limits<Sint16>::max();
+
+        if(glm::length2(left) > 0.1f) {
+            camera.position += glm::vec3(glm::vec4(left.x, 0.0f, -left.y, 0.0f) * camera.camera) * float(delay) * 1.0e-4f;
         }
     }
 }
