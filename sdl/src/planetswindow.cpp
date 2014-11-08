@@ -9,6 +9,8 @@
 #include <glm/gtx/norm.hpp>
 #include <SDL_image.h>
 
+const int16_t triggerDeadzone = 16;
+
 int highBit(unsigned int n) {
     n |= (n >>  1);
     n |= (n >>  2);
@@ -19,7 +21,8 @@ int highBit(unsigned int n) {
 }
 
 PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe), totalFrames(0),
-    gridRange(32), gridColor(0.8f, 1.0f, 1.0f, 0.4f), drawGrid(false), drawTrails(false), controller(nullptr) {
+    gridRange(32), gridColor(0.8f, 1.0f, 1.0f, 0.4f), drawGrid(false), drawTrails(false), controller(nullptr),
+    speedTriggerInUse(false), speedTriggerLast(0) {
     initSDL();
     initGL();
 
@@ -471,7 +474,27 @@ void PlanetsWindow::doEvents(){
                 case SDL_CONTROLLER_BUTTON_BACK:
                     onClose();
                     break;
-                /* TODO - Use other buttons */
+                case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
+                    camera.reset();
+                    break;
+                case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+                    camera.position = glm::vec3();
+                    break;
+                case SDL_CONTROLLER_BUTTON_A:
+                    /* TODO - Provide feedback as to where exactly the center of the screen is. */
+                    camera.selectUnder(glm::ivec2(windowWidth / 2, windowHeight / 2), windowWidth, windowHeight);
+                    break;
+                case SDL_CONTROLLER_BUTTON_X:
+                    universe.deleteSelected();
+                    break;
+                case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+                    /* If trigger is not being held down pause/resume. */
+                    if(speedTriggerLast < triggerDeadzone){
+                        universe.simspeed = universe.simspeed <= 0.0f ? 1.0f : 0.0f;
+                    }
+                    /* If the trigger is being held down lock to current speed. */
+                    speedTriggerInUse = false;
+                    break;
                 }
             }
             break;
@@ -540,6 +563,17 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
         if(glm::length2(left) > 0.1f) {
             camera.position += glm::vec3(glm::vec4(left.x, 0.0f, -left.y, 0.0f) * camera.camera) * float(delay) * 1.0e-4f;
         }
+
+        int16_t speedTriggerCurrent = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+
+        /* if the trigger has gone from disengaged (< deadzone) to engaged (> deadzone) we enable using it as speed input. */
+        if(speedTriggerInUse || (speedTriggerCurrent > triggerDeadzone && speedTriggerLast <= triggerDeadzone)){
+            universe.simspeed = float(speedTriggerCurrent * 32) / std::numeric_limits<Sint16>::max();
+
+            speedTriggerInUse = true;
+        }
+
+        speedTriggerLast = speedTriggerCurrent;
     }
 }
 

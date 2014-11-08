@@ -27,6 +27,8 @@ class PlanetsWindow{
     SDL_GLContext contextSDL;
 
     SDL_GameController* controller;
+    bool speedTriggerInUse;
+    int16_t speedTriggerLast;
 
     bool fullscreen;
     bool running;
