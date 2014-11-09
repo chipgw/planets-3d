@@ -495,6 +495,22 @@ void PlanetsWindow::doEvents(){
                     /* If the trigger is being held down lock to current speed. */
                     speedTriggerInUse = false;
                     break;
+                case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                    camera.followPrevious();
+                    break;
+                case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                    camera.followPrevious();
+                    break;
+                case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                    camera.clearFollow();
+                    break;
+                case SDL_CONTROLLER_BUTTON_DPAD_UP:
+                    if(camera.followingState == Camera::WeightedAverage){
+                        camera.followPlainAverage();
+                    } else {
+                        camera.followWeightedAverage();
+                    }
+                    break;
                 }
             }
             break;
