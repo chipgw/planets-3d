@@ -405,6 +405,21 @@ void PlanetsWindow::paint(){
         glDepthMask(GL_TRUE);
     }
 
+    if(controller != nullptr){
+        glDisable(GL_DEPTH_TEST);
+
+        glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f)));
+
+        glm::mat4 matrix = glm::translate(camera.position);
+        matrix = glm::scale(matrix, glm::vec3(camera.distance * 1.0e-3f));
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+        glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(lowResSphere.verts[0].position));
+        glDrawElements(GL_TRIANGLES, lowResSphere.triangleCount, GL_UNSIGNED_INT, lowResSphere.triangles);
+
+        glEnable(GL_DEPTH_TEST);
+    }
+
     /* TODO - implement */
 }
 
@@ -481,7 +496,6 @@ void PlanetsWindow::doEvents(){
                     camera.position = glm::vec3();
                     break;
                 case SDL_CONTROLLER_BUTTON_A:
-                    /* TODO - Provide feedback as to where exactly the center of the screen is. */
                     camera.selectUnder(glm::ivec2(windowWidth / 2, windowHeight / 2), windowWidth, windowHeight);
                     break;
                 case SDL_CONTROLLER_BUTTON_X:
