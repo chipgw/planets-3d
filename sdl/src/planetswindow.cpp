@@ -598,7 +598,8 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
 
         /* if the trigger has gone from disengaged (< deadzone) to engaged (> deadzone) we enable using it as speed input. */
         if(speedTriggerInUse || (speedTriggerCurrent > triggerDeadzone && speedTriggerLast <= triggerDeadzone)){
-            universe.simspeed = float(speedTriggerCurrent * 32) / std::numeric_limits<Sint16>::max();
+            universe.simspeed = float(speedTriggerCurrent * 8) / std::numeric_limits<Sint16>::max();
+            universe.simspeed *= universe.simspeed;
 
             speedTriggerInUse = true;
         }
