@@ -30,6 +30,9 @@ public:
     bool handleMouseClick(const glm::ivec2 &pos, const int &windowW, const int &windowH, const Camera &camera);
     bool handleMouseWheel(float delta);
 
+    /* Will change the camera position! */
+    bool handleAnalogStick(const glm::vec2 &pos, Camera &camera, const int64_t &delay);
+
     void enableFiringMode(bool enable);
     void beginInteractiveCreation(){ step = FreePositionXY; universe.resetSelected(); }
     void beginOrbitalCreation(){ if(universe.isSelectedValid()) step = OrbitalPlanet; }

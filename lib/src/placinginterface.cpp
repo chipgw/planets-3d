@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 PlacingInterface::PlacingInterface(PlanetsUniverse &u) : universe(u), firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f), step(NotPlacing) {
     planet.velocity.y = PlanetsUniverse::velocityfac;
@@ -115,6 +116,60 @@ bool PlacingInterface::handleMouseWheel(float delta){
     case FreeVelocity:
         planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) + delta * PlanetsUniverse::velocityfac);
         return true;
+    }
+    return false;
+}
+
+bool PlacingInterface::handleAnalogStick(const glm::vec2 &pos, Camera &camera, const int64_t& delay){
+    switch(step){
+    case FreePositionXY:
+        /* Set placing position on XY plane. */
+        planet.position += glm::rotateZ(glm::vec3(pos.x, -pos.y, 0.0f) * (delay * 1.0e-4f), -camera.zrotation);
+        camera.position = planet.position;
+        return true;
+    case FreePositionZ:
+        /* Set placing position on Z axis. */
+        planet.position.z -= pos.y * delay * 1.0e-4f;
+        camera.position = planet.position;
+        return true;
+    case FreeVelocity:
+        /* Rotate initial velocity. */
+        rotation *= glm::rotate(pos.x * delay * 1.0e-5f, glm::vec3(1.0f, 0.0f, 0.0f));
+        rotation *= glm::rotate(pos.y * delay * 1.0e-5f, glm::vec3(0.0f, 1.0f, 0.0f));
+        planet.velocity = glm::vec3(rotation[2]) * glm::length(planet.velocity);
+        return true;
+    case OrbitalPlanet:
+        if(universe.isSelectedValid()){
+            /* In this step the planet is locked at the same z coord as the one it's orbiting. */
+            planet.position.z = universe.getSelected().position.z;
+
+            /* Set placing position on XY plane. */
+            planet.position += glm::rotateZ(glm::vec3(pos.x, -pos.y, 0.0f) * (delay * 1.0e-4f), -camera.zrotation);
+            camera.position = planet.position;
+
+            /* Calculate the radius and rotation matrix from the planet's position */
+            glm::vec3 relative = planet.position - universe.getSelected().position;
+            orbitalRadius = glm::length(relative);
+            relative /= orbitalRadius;
+            rotation = glm::mat4(glm::vec4(relative, 0.0f),
+                                        glm::vec4(relative.y, -relative.x, 0.0f, 0.0f),
+                                        glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),
+                                        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            return true;
+        }
+        break;
+    case OrbitalPlane:
+        if(universe.isSelectedValid()){
+            /* TODO - this doesn't work as well as it did with the mouse, need to find a better method */
+            rotation *= glm::rotate(pos.x * delay * 1.0e-5f, glm::vec3(1.0f, 0.0f, 0.0f));
+            rotation *= glm::rotate(pos.y * delay * 1.0e-5f, glm::vec3(0.0f, 1.0f, 0.0f));
+            planet.position = universe.getSelected().position + glm::vec3(rotation[0] * orbitalRadius);
+
+            /* Center the camera on the selected planet for this step. */
+            camera.position = universe.getSelected().position;
+            return true;
+        }
+        break;
     }
     return false;
 }

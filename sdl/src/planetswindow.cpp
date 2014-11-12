@@ -485,6 +485,8 @@ void PlanetsWindow::doEvents(){
                 controller = SDL_GameControllerOpen(event.cbutton.which);
             }
             if(event.cbutton.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller))){
+                glm::ivec2 centerScreen(windowWidth / 2, windowHeight / 2);
+
                 switch(event.cbutton.button){
                 case SDL_CONTROLLER_BUTTON_BACK:
                     onClose();
@@ -496,10 +498,20 @@ void PlanetsWindow::doEvents(){
                     camera.position = glm::vec3();
                     break;
                 case SDL_CONTROLLER_BUTTON_A:
-                    camera.selectUnder(glm::ivec2(windowWidth / 2, windowHeight / 2), windowWidth, windowHeight);
+                    /* TODO - there should probably be a seperate function for this... */
+                    if(!placing.handleMouseClick(centerScreen, windowWidth, windowHeight, camera)){
+                        camera.selectUnder(centerScreen, windowWidth, windowHeight);
+                    }
                     break;
                 case SDL_CONTROLLER_BUTTON_X:
                     universe.deleteSelected();
+                    break;
+                case SDL_CONTROLLER_BUTTON_Y:
+                    if(universe.isSelectedValid()){
+                        placing.beginOrbitalCreation();
+                    }else{
+                        placing.beginInteractiveCreation();
+                    }
                     break;
                 case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
                     /* If trigger is not being held down pause/resume. */
@@ -584,13 +596,12 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
 
         camera.bound();
 
-        /* TODO - use left stick input for placing stuff. */
         glm::vec2 left(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX),
                        SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY));
 
         left /= std::numeric_limits<Sint16>::max();
 
-        if(glm::length2(left) > 0.1f) {
+        if(glm::length2(left) > 0.1f && !placing.handleAnalogStick(left, camera, delay)){
             camera.position += glm::vec3(glm::vec4(left.x, 0.0f, -left.y, 0.0f) * camera.camera) * float(delay) * 1.0e-4f;
         }
 
