@@ -120,7 +120,21 @@ bool PlacingInterface::handleMouseWheel(float delta){
     return false;
 }
 
-bool PlacingInterface::handleAnalogStick(const glm::vec2 &pos, Camera &camera, const int64_t& delay){
+bool PlacingInterface::handleAnalogStick(const glm::vec2 &pos, const bool& modifier, Camera &camera, const int64_t& delay){
+    if(modifier){
+        float y = pos.y * (delay * 1.0e-5f);
+        switch(step){
+        case FreePositionXY:
+        case FreePositionZ:
+        case OrbitalPlanet:
+        case OrbitalPlane:
+            planet.setMass(glm::clamp(planet.mass() - y * planet.mass(), PlanetsUniverse::min_mass, PlanetsUniverse::max_mass));
+            return true;
+        case FreeVelocity:
+            planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) - y * PlanetsUniverse::velocityfac);
+            return true;
+        }
+    }
     switch(step){
     case FreePositionXY:
         /* Set placing position on XY plane. */
