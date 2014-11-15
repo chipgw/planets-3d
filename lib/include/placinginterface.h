@@ -31,7 +31,7 @@ public:
     bool handleMouseWheel(float delta);
 
     /* Will change the camera position! */
-    bool handleAnalogStick(const glm::vec2 &pos, const bool &modifier, Camera &camera, const int64_t &delay);
+    bool handleAnalogStick(const glm::vec2 &pos, const bool &modifier, Camera &camera);
 
     void enableFiringMode(bool enable);
     void beginInteractiveCreation(){ step = FreePositionXY; universe.resetSelected(); }

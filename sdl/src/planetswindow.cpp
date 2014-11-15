@@ -585,19 +585,21 @@ void PlanetsWindow::doEvents(){
 void PlanetsWindow::doControllerAxisInput(int64_t delay){
     /* TODO - lots of magic numbers in this function... */
     if(controller != nullptr){
+        float fac = delay * 1.0e-6f;
+
         glm::vec2 right(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX),
                         SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY));
 
-        right /= std::numeric_limits<Sint16>::max();
+        right *= fac / std::numeric_limits<Sint16>::max();
 
         bool rsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
 
-        if(glm::length2(right) > 0.1f) {
+        if(glm::length2(right) > (0.1f * fac)) {
             if(rsMod){
-                camera.distance += right.y * delay * camera.distance * 1.0e-5f;
+                camera.distance += right.y * camera.distance;
             }else{
-                camera.xrotation += right.y * delay * 1.0e-6f;
-                camera.zrotation += right.x * delay * 1.0e-6f;
+                camera.xrotation += right.y;
+                camera.zrotation += right.x;
             }
         }
 
@@ -606,15 +608,15 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
         glm::vec2 left(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX),
                        SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY));
 
-        left /= std::numeric_limits<Sint16>::max();
+        left *= fac / std::numeric_limits<Sint16>::max();
 
         bool lsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
 
-        if(glm::length2(left) > 0.1f && !placing.handleAnalogStick(left, lsMod, camera, delay)){
+        if(glm::length2(left) > (0.1f * fac) && !placing.handleAnalogStick(left, lsMod, camera)){
             if(lsMod){
-                camera.distance += left.y * delay * camera.distance * 1.0e-5f;
+                camera.distance += left.y * camera.distance;
             }else{
-                camera.position += glm::vec3(glm::vec4(left.x, 0.0f, -left.y, 0.0f) * camera.camera) * float(delay) * 1.0e-4f;
+                camera.position += glm::vec3(glm::vec4(left.x, 0.0f, -left.y, 0.0f) * camera.camera) * camera.distance;
             }
         }
 
