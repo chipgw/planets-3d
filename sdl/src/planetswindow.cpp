@@ -594,7 +594,7 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
 
         bool rsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
 
-        if(glm::length2(right) > (0.1f * fac)) {
+        if(glm::length2(right) > (0.1f * fac * fac)) {
             if(rsMod){
                 camera.distance += right.y * camera.distance;
             }else{
@@ -612,7 +612,7 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
 
         bool lsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
 
-        if(glm::length2(left) > (0.1f * fac) && !placing.handleAnalogStick(left, lsMod, camera)){
+        if(glm::length2(left) > (0.1f * fac * fac) && !placing.handleAnalogStick(left, lsMod, camera)){
             if(lsMod){
                 camera.distance += left.y * camera.distance;
             }else{
