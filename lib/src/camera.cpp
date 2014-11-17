@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
 
-Camera::Camera(PlanetsUniverse &u) : universe(u) {
+Camera::Camera(PlanetsUniverse &u) : universe(u), followingState(FollowNone) {
     reset();
 }
 

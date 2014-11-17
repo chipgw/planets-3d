@@ -405,7 +405,7 @@ void PlanetsWindow::paint(){
         glDepthMask(GL_TRUE);
     }
 
-    if(controller != nullptr && placing.step == PlacingInterface::NotPlacing){
+    if(controller != nullptr && placing.step == PlacingInterface::NotPlacing && camera.followingState == Camera::FollowNone){
         glDisable(GL_DEPTH_TEST);
 
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f)));
