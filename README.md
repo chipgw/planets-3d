@@ -12,8 +12,8 @@ For Qt interface:
 * [Qt] 4.8 or 5 (Qt 5 must be 5.1 or later or desktop OpenGL build)
 
 For SDL interface:
-* [SDL] (2.0)
-* [SDL_image]
+* [SDL] 2.0 or greater.
+* [SDL_image] 2.0 or greater.
 
 Building
 --------
