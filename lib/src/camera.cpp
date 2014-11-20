@@ -24,41 +24,39 @@ void Camera::resizeViewport(const float &width, const float &height){
 }
 
 const glm::mat4 &Camera::setup(){
-    glm::vec3 finalPos;
-
     switch(followingState){
     case WeightedAverage:
         if(universe.size() != 0){
-            float totalmass = 0.0f;
+            position = glm::vec3();
+            float totalMass = 0.0f;
 
             for(const auto& i : universe){
-                finalPos += i.second.position * i.second.mass();
-                totalmass += i.second.mass();
+                position += i.second.position * i.second.mass();
+                totalMass += i.second.mass();
             }
-            finalPos /= totalmass;
+            position /= totalMass;
         }
         break;
     case PlainAverage:
         if(universe.size() != 0){
+            position = glm::vec3();
             for(const auto& i : universe){
-                finalPos += i.second.position;
+                position += i.second.position;
             }
-            finalPos /= universe.size();
+            position /= universe.size();
         }
         break;
     case Single:
         if(universe.isValid(following)){
-            finalPos = universe[following].position;
+            position = universe[following].position;
             break;
         }
-    default:
-        finalPos = position;
     }
 
     camera = glm::translate(projection, glm::vec3(0.0f, 0.0f, -distance));
     camera = glm::rotate(camera, xrotation - glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
     camera = glm::rotate(camera, zrotation, glm::vec3(0.0f, 0.0f, 1.0f));
-    camera = glm::translate(camera, -finalPos);
+    camera = glm::translate(camera, -position);
     return camera;
 }
 

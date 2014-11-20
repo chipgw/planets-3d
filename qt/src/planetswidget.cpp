@@ -316,6 +316,7 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
                 camera.followSelection();
             }else{
                 camera.clearFollow();
+                camera.position = glm::vec3();
             }
         }
         break;

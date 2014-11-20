@@ -88,7 +88,7 @@ public slots:
     void followNext() { camera.followNext(); }
     void followPrevious() { camera.followPrevious(); }
     void followSelection() { camera.followSelection(); }
-    void clearFollow() { camera.clearFollow(); }
+    void clearFollow() { camera.clearFollow(); camera.position = glm::vec3(); }
     void followPlainAverage() { camera.followPlainAverage(); }
     void followWeightedAverage() { camera.followWeightedAverage(); }
 
