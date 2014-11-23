@@ -20,6 +20,9 @@ void Camera::reset(){
 }
 
 void Camera::resizeViewport(const float &width, const float &height){
+    windowW = width;
+    windowH = height;
+
     projection = glm::perspective(glm::quarter_pi<float>(), width / height, 0.1f, 1.0e6f);
 }
 
@@ -60,7 +63,7 @@ const glm::mat4 &Camera::setup(){
     return camera;
 }
 
-Ray Camera::getRay(const glm::ivec2 &pos, const int &windowW, const int &windowH, bool normalize, float startDepth, float endDepth) const {
+Ray Camera::getRay(const glm::ivec2 &pos, bool normalize, float startDepth, float endDepth) const {
     Ray ray;
 
     glm::mat4 model;
@@ -80,11 +83,11 @@ Ray Camera::getRay(const glm::ivec2 &pos, const int &windowW, const int &windowH
     return ray;
 }
 
-PlanetsUniverse::key_type Camera::selectUnder(const glm::ivec2 &pos, const int &windowW, const int &windowH){
+PlanetsUniverse::key_type Camera::selectUnder(const glm::ivec2 &pos){
     universe.resetSelected();
     float nearest = -std::numeric_limits<float>::max();
 
-    Ray ray = getRay(pos, windowW, windowH, true);
+    Ray ray = getRay(pos, true);
 
     for(const auto& i : universe){
         glm::vec3 difference = i.second.position - ray.origin;

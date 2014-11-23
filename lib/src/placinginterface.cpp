@@ -8,11 +8,11 @@ PlacingInterface::PlacingInterface(PlanetsUniverse &u) : universe(u), firingSpee
     planet.velocity.y = PlanetsUniverse::velocityfac;
 }
 
-bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &delta, const int &windowW, const int &windowH, const Camera &camera, bool &holdMouse){
+bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &delta, const Camera &camera, bool &holdMouse){
     switch(step){
     case FreePositionXY:{
         // set placing position on the XY plane
-        Ray ray = camera.getRay(pos, windowW, windowH, false);
+        Ray ray = camera.getRay(pos, false);
 
         planet.position = ray.origin + (ray.direction * ((-ray.origin.z) / ray.direction.z));
         holdMouse = false;
@@ -32,7 +32,7 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
         return true;
     case OrbitalPlanet:
         if(universe.isSelectedValid()){
-            Ray ray = camera.getRay(pos, windowW, windowH, false);
+            Ray ray = camera.getRay(pos, false);
 
             planet.position = ray.origin + (ray.direction * ((universe.getSelected().position.z - ray.origin.z) / ray.direction.z));
             glm::vec3 relative = planet.position - universe.getSelected().position;
@@ -59,7 +59,7 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
     return false;
 }
 
-bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const int &windowW, const int &windowH, const Camera &camera){
+bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const Camera &camera){
     switch(step){
     case FreePositionXY:
         step = FreePositionZ;
@@ -73,7 +73,7 @@ bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const int &window
         universe.selected = universe.addPlanet(planet);
         return true;
     case Firing:{
-        Ray ray = camera.getRay(pos, windowW, windowH, true);
+        Ray ray = camera.getRay(pos, true);
 
         universe.addPlanet(Planet(ray.origin, ray.direction * firingSpeed, firingMass));
         return true;

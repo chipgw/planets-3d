@@ -284,7 +284,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 
     bool holdCursor = false;
 
-    if(!placing.handleMouseMove(glm::ivec2(e->x(), e->y()), delta, width(), height(), camera, holdCursor)){
+    if(!placing.handleMouseMove(glm::ivec2(e->x(), e->y()), delta, camera, holdCursor)){
         if(e->buttons().testFlag(Qt::MiddleButton) || e->buttons().testFlag(Qt::RightButton)){
             if(e->modifiers().testFlag(Qt::ControlModifier)){
                 camera.distance -= delta.y * camera.distance * 1.0e-2f;
@@ -331,8 +331,8 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
 void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     if(e->button() == Qt::LeftButton){
         glm::ivec2 pos(e->x(), e->y());
-        if(!placing.handleMouseClick(pos, width(), height(), camera)){
-            camera.selectUnder(pos, width(), height());
+        if(!placing.handleMouseClick(pos, camera)){
+            camera.selectUnder(pos);
         }
     }
 }

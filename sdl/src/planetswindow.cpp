@@ -499,8 +499,8 @@ void PlanetsWindow::doEvents(){
                     break;
                 case SDL_CONTROLLER_BUTTON_A:
                     /* TODO - there should probably be a seperate function for this... */
-                    if(!placing.handleMouseClick(centerScreen, windowWidth, windowHeight, camera)){
-                        camera.selectUnder(centerScreen, windowWidth, windowHeight);
+                    if(!placing.handleMouseClick(centerScreen, camera)){
+                        camera.selectUnder(centerScreen);
                     }
                     break;
                 case SDL_CONTROLLER_BUTTON_X:
@@ -550,8 +550,8 @@ void PlanetsWindow::doEvents(){
         case SDL_MOUSEBUTTONUP:
             if(event.button.button == SDL_BUTTON_LEFT){
                 glm::ivec2 pos(event.button.x, event.button.y);
-                if(!placing.handleMouseClick(pos, windowWidth, windowHeight, camera)){
-                    camera.selectUnder(pos, windowWidth, windowHeight);
+                if(!placing.handleMouseClick(pos, camera)){
+                    camera.selectUnder(pos);
                 }
             }
             /* Always show cursor when mouse button is released. */
@@ -563,7 +563,7 @@ void PlanetsWindow::doEvents(){
 
             bool holdCursor = false;
 
-            if(!placing.handleMouseMove(glm::ivec2(event.motion.x, event.motion.y), delta, windowWidth, windowHeight, camera, holdCursor)){
+            if(!placing.handleMouseMove(glm::ivec2(event.motion.x, event.motion.y), delta, camera, holdCursor)){
                 if(event.motion.state & SDL_BUTTON_MMASK){
                     camera.distance -= delta.y * camera.distance * 1.0e-2f;
                     camera.bound();

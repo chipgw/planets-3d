@@ -12,6 +12,8 @@ struct Ray {
 class Camera {
     PlanetsUniverse &universe;
 
+    float windowW, windowH;
+
 public:
     enum FollowingState{
         FollowNone,
@@ -38,8 +40,8 @@ public:
     void resizeViewport(const float &width, const float &height);
     const glm::mat4 &setup();
 
-    Ray getRay(const glm::ivec2 &pos, const int &windowW, const int &windowH, bool normalize, float startDepth = 0.9f, float endDepth = 0.0f) const;
-    PlanetsUniverse::key_type selectUnder(const glm::ivec2 &pos, const int &windowW, const int &windowH);
+    Ray getRay(const glm::ivec2 &pos, bool normalize, float startDepth = 0.9f, float endDepth = 0.0f) const;
+    PlanetsUniverse::key_type selectUnder(const glm::ivec2 &pos);
 
     void followPrevious();
     void followNext();

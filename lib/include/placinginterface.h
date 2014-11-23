@@ -26,8 +26,8 @@ public:
     float firingSpeed;
     float firingMass;
 
-    bool handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &delta, const int &windowW, const int &windowH, const Camera &camera, bool &holdMouse);
-    bool handleMouseClick(const glm::ivec2 &pos, const int &windowW, const int &windowH, const Camera &camera);
+    bool handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &delta, const Camera &camera, bool &holdMouse);
+    bool handleMouseClick(const glm::ivec2 &pos, const Camera &camera);
     bool handleMouseWheel(float delta);
 
     /* Will change the camera position! */
