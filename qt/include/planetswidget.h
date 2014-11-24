@@ -4,6 +4,7 @@
 #include "placinginterface.h"
 #include "planetsuniverse.h"
 #include "spheregenerator.h"
+#include "grid.h"
 #include <QElapsedTimer>
 #include <QTimer>
 #include <QDir>
@@ -52,9 +53,6 @@ private:
     const static Circle<64> circle;
 
     const static QColor trailColor;
-    const static QColor gridColor;
-    int gridRange;
-    std::vector<float> gridPoints;
 
 public:
     PlanetsWidget(QWidget *parent = 0);
@@ -63,8 +61,9 @@ public:
 
     PlacingInterface placing;
 
+    Grid grid;
+
     float drawScale;
-    bool drawGrid;
     bool drawPlanetTrails;
     bool drawPlanetColors;
     bool hidePlanets;
@@ -82,7 +81,6 @@ public slots:
     void beginOrbitalCreation(){ placing.beginOrbitalCreation(); }
     void takeScreenshot(){ doScreenshot = true; }
 
-    void updateGrid();
     void setGridRange(int value);
 
     void followNext() { camera.followNext(); }

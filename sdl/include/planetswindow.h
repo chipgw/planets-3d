@@ -8,6 +8,7 @@
 #include "planetsuniverse.h"
 #include "placinginterface.h"
 #include "spheregenerator.h"
+#include "grid.h"
 #include <SDL.h>
 
 #ifdef PLANETS3D_WITH_GLEW
@@ -34,10 +35,8 @@ class PlanetsWindow{
     bool running;
 
     bool drawTrails;
-    bool drawGrid;
-    int gridRange;
-    std::vector<float> gridPoints;
-    glm::vec4 gridColor;
+
+    Grid grid;
 
     uint32_t windowWidth;
     uint32_t windowHeight;

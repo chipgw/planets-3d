@@ -242,7 +242,7 @@ void MainWindow::on_firingMassSpinBox_valueChanged(int value){
 }
 
 void MainWindow::on_actionGrid_toggled(bool value){
-    ui->centralwidget->drawGrid = value;
+    ui->centralwidget->grid.draw = value;
 }
 
 void MainWindow::on_actionDraw_Paths_toggled(bool value){

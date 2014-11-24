@@ -7,19 +7,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 
-int highBit(unsigned int n) {
-    n |= (n >>  1);
-    n |= (n >>  2);
-    n |= (n >>  4);
-    n |= (n >>  8);
-    n |= (n >> 16);
-    return n - (n >> 1);
-}
-
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
-    doScreenshot(false), frameCount(0), refreshRate(16), timer(this), gridRange(32), placing(universe),
-    drawScale(1.0f), camera(universe),
-    drawGrid(false), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
+    doScreenshot(false), frameCount(0), refreshRate(16), timer(this), placing(universe), drawScale(1.0f),
+    camera(universe), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/") {
 
     if(!screenshotDir.exists()){
@@ -220,35 +210,29 @@ void PlanetsWidget::paintGL() {
     default: break;
     }
 
-    if(drawGrid){
-        if(gridPoints.size() != (gridRange + 1) * 8){
-            updateGrid();
-        }
+    if(grid.draw){
+        grid.update(camera.camera);
 
         glDepthMask(GL_FALSE);
 
-        shaderColor.setAttributeArray(vertex, GL_FLOAT, gridPoints.data(), 2);
+        shaderColor.setAttributeArray(vertex, GL_FLOAT, grid.points.data(), 2);
 
-        float distance = std::cbrt(glm::length2(camera.camera[3]));
-        int nearestPowerOfTwo = highBit(distance);
-        float alphafac = distance / nearestPowerOfTwo - 1.0f;
-
-        QColor color = gridColor;
-        color.setAlphaF(gridColor.alphaF() * alphafac);
+        glm::vec4 color = grid.color;
+        color.a *= grid.alphafac;
 
         QMatrix4x4 matrix;
-        matrix.scale(nearestPowerOfTwo);
+        matrix.scale(grid.scale);
         shaderColor.setUniformValue(shaderColor_modelMatrix, matrix);
-        shaderColor.setUniformValue(shaderColor_color, color);
+        glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
 
-        glDrawArrays(GL_LINES, 0, GLsizei(gridPoints.size() / 2));
+        glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
 
         matrix.scale(0.5f);
         shaderColor.setUniformValue(shaderColor_modelMatrix, matrix);
-        color.setAlphaF(gridColor.alphaF() * (1.0f - alphafac));
-        shaderColor.setUniformValue(shaderColor_color, color);
+        color.a = grid.color.a - color.a;
+        glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
 
-        glDrawArrays(GL_LINES, 0, GLsizei(gridPoints.size() / 2));
+        glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
 
         glDepthMask(GL_TRUE);
     }
@@ -381,26 +365,11 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QColor &colo
     glDrawElements(GL_LINES, lowResSphere.lineCount, GL_UNSIGNED_INT, lowResSphere.lines);
 }
 
-void PlanetsWidget::updateGrid(){
-    gridPoints.clear();
-
-    float bounds = gridRange / 2.0f;
-    for(float i = -bounds; i <= bounds; ++i){
-        gridPoints.push_back(i); gridPoints.push_back(-bounds);
-        gridPoints.push_back(i); gridPoints.push_back( bounds);
-
-        gridPoints.push_back(-bounds); gridPoints.push_back(i);
-        gridPoints.push_back( bounds); gridPoints.push_back(i);
-    }
-}
-
 void PlanetsWidget::setGridRange(int value){
-    gridRange = value;
-    updateGrid();
+    grid.range = value;
 }
 
 const QColor PlanetsWidget::trailColor = QColor(0xcc, 0xff, 0xff, 0xff);
-const QColor PlanetsWidget::gridColor = QColor(0xcc, 0xff, 0xff, 0x66);
 
 const Sphere<64, 32> PlanetsWidget::highResSphere = Sphere<64, 32>(true);
 const Sphere<32, 16> PlanetsWidget::lowResSphere  = Sphere<32, 16>(true);
