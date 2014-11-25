@@ -40,7 +40,7 @@ public:
     void resizeViewport(const float &width, const float &height);
     const glm::mat4 &setup();
 
-    Ray getRay(const glm::ivec2 &pos, bool normalize, float startDepth = 0.9f, float endDepth = 0.0f) const;
+    Ray getRay(const glm::ivec2 &pos, float startDepth = 0.9f, float endDepth = 0.0f) const;
     PlanetsUniverse::key_type selectUnder(const glm::ivec2 &pos);
 
     void followPrevious();

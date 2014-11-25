@@ -63,7 +63,7 @@ const glm::mat4 &Camera::setup(){
     return camera;
 }
 
-Ray Camera::getRay(const glm::ivec2 &pos, bool normalize, float startDepth, float endDepth) const {
+Ray Camera::getRay(const glm::ivec2 &pos, float startDepth, float endDepth) const {
     Ray ray;
 
     glm::mat4 model;
@@ -74,11 +74,7 @@ Ray Camera::getRay(const glm::ivec2 &pos, bool normalize, float startDepth, floa
 
     windowCoord.z = endDepth;
 
-    ray.direction = ray.origin - glm::unProject(windowCoord, model, camera, viewport);
-
-    if(normalize){
-        ray.direction = glm::normalize(ray.direction);
-    }
+    ray.direction = glm::normalize(ray.origin - glm::unProject(windowCoord, model, camera, viewport));
 
     return ray;
 }
@@ -87,7 +83,7 @@ PlanetsUniverse::key_type Camera::selectUnder(const glm::ivec2 &pos){
     universe.resetSelected();
     float nearest = -std::numeric_limits<float>::max();
 
-    Ray ray = getRay(pos, true);
+    Ray ray = getRay(pos);
 
     for(const auto& i : universe){
         glm::vec3 difference = i.second.position - ray.origin;

@@ -12,7 +12,7 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
     switch(step){
     case FreePositionXY:{
         // set placing position on the XY plane
-        Ray ray = camera.getRay(pos, false);
+        Ray ray = camera.getRay(pos);
 
         planet.position = ray.origin + (ray.direction * ((-ray.origin.z) / ray.direction.z));
         holdMouse = false;
@@ -32,7 +32,7 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
         return true;
     case OrbitalPlanet:
         if(universe.isSelectedValid()){
-            Ray ray = camera.getRay(pos, false);
+            Ray ray = camera.getRay(pos);
 
             planet.position = ray.origin + (ray.direction * ((universe.getSelected().position.z - ray.origin.z) / ray.direction.z));
             glm::vec3 relative = planet.position - universe.getSelected().position;
@@ -73,7 +73,7 @@ bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const Camera &cam
         universe.selected = universe.addPlanet(planet);
         return true;
     case Firing:{
-        Ray ray = camera.getRay(pos, true);
+        Ray ray = camera.getRay(pos);
 
         universe.addPlanet(Planet(ray.origin, ray.direction * firingSpeed, firingMass));
         return true;
