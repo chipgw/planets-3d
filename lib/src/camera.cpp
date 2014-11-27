@@ -20,8 +20,7 @@ void Camera::reset(){
 }
 
 void Camera::resizeViewport(const float &width, const float &height){
-    windowW = width;
-    windowH = height;
+    viewport = glm::vec4(0.0f, 0.0f, width, height);
 
     projection = glm::perspective(glm::quarter_pi<float>(), width / height, 0.1f, 1.0e6f);
 }
@@ -67,8 +66,7 @@ Ray Camera::getRay(const glm::ivec2 &pos, float startDepth, float endDepth) cons
     Ray ray;
 
     glm::mat4 model;
-    glm::vec3 windowCoord(pos.x, windowH - pos.y, startDepth);
-    glm::vec4 viewport(0.0f, 0.0f, windowW, windowH);
+    glm::vec3 windowCoord(pos.x, viewport.w - pos.y, startDepth);
 
     ray.origin = glm::unProject(windowCoord, model, camera, viewport);
 

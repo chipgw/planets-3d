@@ -12,7 +12,7 @@ struct Ray {
 class Camera {
     PlanetsUniverse &universe;
 
-    float windowW, windowH;
+    glm::vec4 viewport;
 
 public:
     enum FollowingState{
