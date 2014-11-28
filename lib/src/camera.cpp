@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
 
-Camera::Camera(PlanetsUniverse &u) : universe(u), followingState(FollowNone) {
+Camera::Camera(PlanetsUniverse &u) : universe(u)  {
     reset();
 }
 
@@ -17,6 +17,8 @@ void Camera::reset(){
     distance = 100.0f;
     xrotation = glm::quarter_pi<float>();
     zrotation = 0.0f;
+    clearFollow();
+    position = glm::vec3();
 }
 
 void Camera::resizeViewport(const float &width, const float &height){
