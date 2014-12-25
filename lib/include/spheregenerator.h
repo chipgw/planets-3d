@@ -2,7 +2,7 @@
 #define SPHEREGENERATOR_H
 
 #include <glm/glm.hpp>
-#include <glm/gtx/constants.hpp>
+#include <glm/gtc/constants.hpp>
 
 struct Vertex {
     glm::vec3 position;
