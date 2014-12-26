@@ -1,5 +1,4 @@
-#ifndef PLANETSUNIVERSE_H
-#define PLANETSUNIVERSE_H
+#pragma once
 
 #include "planet.h"
 #include <map>
@@ -22,12 +21,12 @@ private:
     std::default_random_engine generator;
 
 public:
-    // the gravity constant
+    /* the gravity constant */
     static const float gravityconst;
-    // the factor for apparent velocity. (i.e. UI velocity * this = actual velocity, because it would be really really small if done right.)
+    /* the factor for apparent velocity. (i.e. UI velocity * this = actual velocity, because it would be really really small if done right.) */
     static const float velocityfac;
 
-    // UI limits on planet size.
+    /* UI limits on planet size. */
     static const float min_mass;
     static const float max_mass;
 
@@ -69,5 +68,3 @@ public:
     void deleteEscapees();
     void deleteSelected() { if(isSelectedValid()) planets.erase(selected); }
 };
-
-#endif // PLANETSUNIVERSE_H

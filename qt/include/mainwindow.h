@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 #include <QSettings>
@@ -65,7 +64,7 @@ private:
 
     Ui::MainWindow *ui;
 
-    // the maximum value of the simulation speed dial.
+    /* the maximum value of the simulation speed dial. */
     static const int speeddialmax;
     int speedDialMemory;
 
@@ -82,5 +81,3 @@ private:
 
     bool event(QEvent *event);
 };
-
-#endif // MAINWINDOW_H

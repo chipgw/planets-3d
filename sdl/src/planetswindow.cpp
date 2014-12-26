@@ -465,10 +465,13 @@ void PlanetsWindow::doEvents(){
             SDL_GameControllerOpen(event.cdevice.which);
             break;
         case SDL_CONTROLLERBUTTONUP:
+            /* if we haven't picked a controller yet, use this one. */
             if(controller == nullptr || event.cbutton.button == SDL_CONTROLLER_BUTTON_GUIDE){
                 controller = SDL_GameControllerOpen(event.cbutton.which);
             }
+            /* Ignore events from other controllers. */
             if(event.cbutton.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller))){
+                /* When simulating mouse events we use the center of the screen (in pixels). */
                 glm::ivec2 centerScreen(windowWidth / 2, windowHeight / 2);
 
                 switch(event.cbutton.button){
@@ -625,11 +628,12 @@ void PlanetsWindow::onClose(){
 }
 
 void PlanetsWindow::onResized(uint32_t width, uint32_t height){
+    /* Store the width and height for later use. */
     windowWidth = width;
     windowHeight = height;
 
+    /* Resize the viewport and camera. */
     glViewport(0, 0, width, height);
-
     camera.resizeViewport(width, height);
 }
 

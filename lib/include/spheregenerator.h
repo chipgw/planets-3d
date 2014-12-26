@@ -1,5 +1,4 @@
-#ifndef SPHEREGENERATOR_H
-#define SPHEREGENERATOR_H
+#pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
@@ -99,5 +98,3 @@ template <unsigned int slices, unsigned int stacks> Sphere<slices, stacks>::Sphe
         }
     }
 }
-
-#endif // SPHEREGENERATOR_H

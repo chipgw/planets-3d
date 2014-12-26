@@ -1,5 +1,4 @@
-#ifndef GRID_H
-#define GRID_H
+#pragma once
 
 #include <vector>
 #include <glm/glm.hpp>
@@ -20,5 +19,3 @@ public:
     void update(const glm::mat4 &camera);
     void toggle() { draw = !draw; }
 };
-
-#endif // GRID_H

@@ -69,7 +69,7 @@ bool PlanetsUniverse::save(const std::string &filename){
         TiXmlElement* planet = new TiXmlElement("planet");
         planet->SetAttribute("mass", std::to_string(i->second.mass()));
 
-        // Puts uint32_t key into hexadecimal format #RRGGBB (No need to save alpha, as that's always 0xff)
+        /* Puts uint32_t key into hexadecimal format #RRGGBB (No need to save alpha, as that's always 0xff) */
         const char* hex = "0123456789abcdef";
         planet->SetAttribute("color", std::string{'#',
                                                   hex[i->first >> 20 & 0xf],

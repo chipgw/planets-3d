@@ -1,5 +1,4 @@
-#ifndef PLANET_H
-#define PLANET_H
+#pragma once
 
 #include <vector>
 #include <glm/vec3.hpp>
@@ -26,5 +25,3 @@ public:
     void setMass(const float &m);
     inline float mass() const { return mass_p; }
 };
-
-#endif // PLANET_H

@@ -11,7 +11,7 @@ PlacingInterface::PlacingInterface(PlanetsUniverse &u) : universe(u), firingSpee
 bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &delta, const Camera &camera, bool &holdMouse){
     switch(step){
     case FreePositionXY:{
-        // set placing position on the XY plane
+        /* Set placing position on the XY plane. */
         Ray ray = camera.getRay(pos);
 
         planet.position = ray.origin + (ray.direction * ((-ray.origin.z) / ray.direction.z));
@@ -19,12 +19,12 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
         return true;
     }
     case FreePositionZ:
-        // set placing Z position
+        /* Set placing Z position. */
         planet.position.z += delta.y * 0.1f;
         holdMouse = true;
         return true;
     case FreeVelocity:
-        // set placing velocity
+        /* Set placing velocity. */
         rotation *= glm::rotate(delta.x * 1.0e-3f, glm::vec3(1.0f, 0.0f, 0.0f));
         rotation *= glm::rotate(delta.y * 1.0e-3f, glm::vec3(0.0f, 1.0f, 0.0f));
         planet.velocity = glm::vec3(rotation[2]) * glm::length(planet.velocity);

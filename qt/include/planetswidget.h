@@ -1,5 +1,4 @@
-#ifndef PLANETSWIDGET_H
-#define PLANETSWIDGET_H
+#pragma once
 
 #include "placinginterface.h"
 #include "planetsuniverse.h"
@@ -104,5 +103,3 @@ protected:
     void drawPlanetColor(const Planet &planet, const QColor &color);
     void drawPlanetWireframe(const Planet &planet, const QColor &color = 0xff00ff00);
 };
-
-#endif // PLANETSWIDGET_H

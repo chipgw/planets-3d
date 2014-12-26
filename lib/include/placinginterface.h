@@ -1,5 +1,4 @@
-#ifndef PLACINGINTERFACE_H
-#define PLACINGINTERFACE_H
+#pragma once
 
 #include <planet.h>
 #include <camera.h>
@@ -39,5 +38,3 @@ public:
 
     PlacingInterface(PlanetsUniverse &universe);
 };
-
-#endif // PLACINGINTERFACE_H

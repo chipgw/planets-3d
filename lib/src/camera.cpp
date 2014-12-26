@@ -67,7 +67,9 @@ const glm::mat4 &Camera::setup(){
 Ray Camera::getRay(const glm::ivec2 &pos, float startDepth, float endDepth) const {
     Ray ray;
 
+    /* There is no model matrix, just use identity. */
     glm::mat4 model;
+    /* viewport.z = width and viewport.w = height. */
     glm::vec3 windowCoord(pos.x, viewport.w - pos.y, startDepth);
 
     ray.origin = glm::unProject(windowCoord, model, camera, viewport);
@@ -85,6 +87,7 @@ PlanetsUniverse::key_type Camera::selectUnder(const glm::ivec2 &pos){
 
     Ray ray = getRay(pos);
 
+    /* go through each planet and see if the ray intersects it. */
     for(const auto& i : universe){
         glm::vec3 difference = i.second.position - ray.origin;
         float dot = glm::dot(difference, ray.direction);
@@ -103,11 +106,14 @@ void Camera::followNext(){
         PlanetsUniverse::const_iterator current = universe.find(following);
 
         if(current == universe.cend()){
+            /* If the planet was not found, start at the beginning. */
             current = universe.cbegin();
         }else if(++current == universe.cend()){
+            /* If the planet was the last planet in the list, start at the beginning. */
             current = universe.cbegin();
         }
 
+        /* Get the key back from the iterator. */
         following = current->first;
     }
 }
@@ -118,14 +124,17 @@ void Camera::followPrevious(){
         PlanetsUniverse::const_iterator current = universe.find(following);
 
         if(current == universe.cend()){
+            /* If the planet was not found, start at the beginning. */
             current = universe.cbegin();
         }else{
+            /* If the planet was the first planet in the list, start at the end. */
             if(current == universe.cbegin()){
                 current = universe.cend();
             }
             --current;
         }
 
+        /* Get the key back from the iterator. */
         following = current->first;
     }
 }

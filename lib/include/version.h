@@ -1,5 +1,4 @@
-#ifndef VERSION_H
-#define VERSION_H
+#pragma once
 
 namespace version{
     extern const char* git_revision;
@@ -7,5 +6,3 @@ namespace version{
     extern const char* compiler;
     extern const char* cmake_version;
 }
-
-#endif // VERSION_H
