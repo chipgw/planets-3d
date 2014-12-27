@@ -13,7 +13,7 @@ int highBit(unsigned int n) {
 Grid::Grid() : range(32), color(0.8f, 1.0f, 1.0f, 0.4f), draw(false){ /* Nuthin. */ }
 
 void Grid::update(const glm::mat4& camera){
-    if(points.size() != (range + 1) * 8){
+    if(points.size() != (range + 1) * 4){
         points.clear();
 
         float bounds = range / 2.0f;
