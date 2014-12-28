@@ -17,6 +17,7 @@ class QMouseEvent;
 #include <QGLFunctions>
 #include <QGLShader>
 
+/* All of these have the same API as the new 5.X versions. */
 #define QOpenGLShader               QGLShader
 #define QOpenGLShaderProgram        QGLShaderProgram
 #define QOpenGLFunctions            QGLFunctions
@@ -37,14 +38,23 @@ private:
     const static int vertex, uv;
 
     Camera camera;
+
+    /* If true paintGL will save a screenshot after rendering a frame. */
     bool doScreenshot;
 
+    /* Total amount of frames drawn since the creation of the widget. */
     int frameCount;
+    /* The desired refresh rate, in milliseconds. */
     int refreshRate;
+
+    /* This timer updates the frame after the refresh interval has passed. */
     QTimer timer;
+    /* Time since the start of the frame. */
     QElapsedTimer frameTime;
+    /* Total amount of time the widget has been running. */
     QElapsedTimer totalTime;
 
+    /* The position of the mouse cursor last mouse movement event. */
     QPoint lastMousePos;
 
     const static Sphere<64, 32> highResSphere;

@@ -28,7 +28,7 @@ class PlanetsWindow{
     SDL_Window *windowSDL;
     SDL_GLContext contextSDL;
 
-    /* The currently active gamepag. */
+    /* The currently active gamepad. */
     SDL_GameController* controller;
 
     /* Are we using the speed trigger?

@@ -16,6 +16,9 @@ public:
     float scale;
     float alphafac;
 
+    /* Update all contained generated data. */
     void update(const glm::mat4 &camera);
+
+    /* Toggle drawing the grid. */
     void toggle() { draw = !draw; }
 };
