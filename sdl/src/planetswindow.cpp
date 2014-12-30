@@ -580,7 +580,7 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
 
         right *= fac / std::numeric_limits<Sint16>::max();
 
-        bool rsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
+        bool rsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) != 0;
 
         if(glm::length2(right) > stickDeadzone) {
             if(rsMod){
@@ -598,7 +598,7 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
 
         left *= fac / std::numeric_limits<Sint16>::max();
 
-        bool lsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
+        bool lsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER) != 0;
 
         if(glm::length2(left) > stickDeadzone && !placing.handleAnalogStick(left, lsMod, camera)){
             if(lsMod){

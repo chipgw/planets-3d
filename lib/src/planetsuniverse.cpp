@@ -148,15 +148,15 @@ void PlanetsUniverse::advance(float time){
     }
 }
 
-PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type colorhint){
+PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type keyHint){
     uniform_int_distribution<key_type> color_gen(0xFF000001, 0xFFFFFFFF);
 
-    while(planets.count(colorhint) > 0 || (colorhint & RGB_MASK) == 0){
-        colorhint = color_gen(generator);
+    while(planets.count(keyHint) > 0 || (keyHint & RGB_MASK) == 0){
+        keyHint = color_gen(generator);
     }
 
-    planets[colorhint] = planet;
-    return colorhint;
+    planets[keyHint] = planet;
+    return keyHint;
 }
 
 void PlanetsUniverse::generateRandom(const int &count, const float &positionRange, const float &maxVelocity, const float &maxMass){
