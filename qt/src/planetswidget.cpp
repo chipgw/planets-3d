@@ -12,6 +12,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleB
     camera(universe), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/") {
 
+    /* The screenshot directory I used to use. Someday I'll remove this movement code... */
     if(!screenshotDir.exists()){
         QDir oldDir = QDir::homePath() + "/Pictures/Planets3D Screenshots/";
         if(oldDir.exists()){
@@ -22,60 +23,77 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleB
     }
 
 #ifndef NDEBUG
+    /* Don't cap framerate for debug builds. (Note: your GPU might do it anyway...) */ */
     refreshRate = 0;
 #endif
 
+    /* We want mouse movement events. */
     setMouseTracking(true);
 
+    /* set up the timer for adding frames to the event queue. */
     timer.setSingleShot(true);
     connect(&timer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
+    /* Don't let people make the widget really small. */
     setMinimumSize(QSize(100, 100));
 }
 
 void PlanetsWidget::initializeGL() {
     initializeOpenGLFunctions();
 
+    /* Load the shaders from the qrc. */
     shaderTexture.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture.vsh");
     shaderTexture.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture.fsh");
 
+    /* Bind the attribute handles. */
     shaderTexture.bindAttributeLocation("vertex", vertex);
     shaderTexture.bindAttributeLocation("uv", uv);
 
     shaderTexture.link();
 
+    /* Get the uniform values */
     shaderTexture_cameraMatrix = shaderTexture.uniformLocation("cameraMatrix");
     shaderTexture_modelMatrix = shaderTexture.uniformLocation("modelMatrix");
 
+    /* Load the shaders from the qrc. */
     shaderColor.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/color.vsh");
     shaderColor.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/color.fsh");
 
+    /* Bind the attribute handle. */
     shaderColor.bindAttributeLocation("vertex", vertex);
 
     shaderColor.link();
 
+    /* Get the uniform values */
     shaderColor_cameraMatrix = shaderColor.uniformLocation("cameraMatrix");
     shaderColor_modelMatrix = shaderColor.uniformLocation("modelMatrix");
     shaderColor_color = shaderColor.uniformLocation("color");
 
+    /* Clear to black with depth of 1.0 */
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClearDepthf(1.0f);
 
+    /* Set and enable depth test function. */
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
+    /* Cull back faces. */
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
+    /* Enable alpha blending. */
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    /* If the platform has GL_LINE_SMOOTH use it. */
 #ifdef GL_LINE_SMOOTH
     glEnable(GL_LINE_SMOOTH);
 #endif
 
+    /* This vertex attribute should always be enabled. */
     shaderColor.enableAttributeArray(vertex);
 
+    /* The one and only texture. */
     QImage img(":/textures/planet.png");
 
     bindTexture(img);
@@ -213,6 +231,7 @@ void PlanetsWidget::paintGL() {
     if(grid.draw){
         grid.update(camera.camera);
 
+        /* The grid doesn't write to the depth buffer. */
         glDepthMask(GL_FALSE);
 
         shaderColor.setAttributeArray(vertex, GL_FLOAT, grid.points.data(), 2);
@@ -295,6 +314,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
 void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
     switch(e->button()){
     case Qt::LeftButton:
+        /* Double clicking the left button while not placing sets or clears the planet currently being followed. */
         if(placing.step == PlacingInterface::NotPlacing){
             if(universe.isSelectedValid()){
                 camera.followSelection();
@@ -306,6 +326,7 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
         break;
     case Qt::MiddleButton:
     case Qt::RightButton:
+        /* Double clicking the middle or right button resets the camera. */
         camera.reset();
         break;
     default: break;
@@ -363,10 +384,6 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QColor &colo
 
     shaderColor.setAttributeArray(vertex, GL_FLOAT, glm::value_ptr(lowResSphere.verts[0].position), 3, sizeof(Vertex));
     glDrawElements(GL_LINES, lowResSphere.lineCount, GL_UNSIGNED_INT, lowResSphere.lines);
-}
-
-void PlanetsWidget::setGridRange(int value){
-    grid.range = value;
 }
 
 const QColor PlanetsWidget::trailColor = QColor(0xcc, 0xff, 0xff, 0xff);

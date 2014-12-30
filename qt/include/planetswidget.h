@@ -29,12 +29,15 @@ class QMouseEvent;
 class PlanetsWidget : public QGLWidget, public QOpenGLFunctions {
     Q_OBJECT
 private:
+    /* GL shader and uniform handles for texture shader. */
     QOpenGLShaderProgram shaderTexture;
     int shaderTexture_cameraMatrix, shaderTexture_modelMatrix;
 
+    /* GL shader and uniform handles for color shader. */
     QOpenGLShaderProgram shaderColor;
     int shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
 
+    /* GL vertex attribute handles. */
     const static int vertex, uv;
 
     Camera camera;
@@ -72,26 +75,35 @@ public:
 
     Grid grid;
 
+    /* Scale to draw the planets at. 1.0 is the default scale. */
     float drawScale;
+    /* Do we draw trails? */
     bool drawPlanetTrails;
+    /* Do we draw wireframe colors? */
     bool drawPlanetColors;
+    /* Do we hide the textured planet spheres? */
     bool hidePlanets;
 
+    /* Where we save screenshots to. */
     QDir screenshotDir;
 
 signals:
+    /* Update the statusbar messages. */
     void updateFPSStatusMessage(const QString &text);
     void updateAverageFPSStatusMessage(const QString &text);
     void updatePlanetCountMessage(const QString &text);
 
 public slots:
+    /* Slots for placing functions. */
     void beginInteractiveCreation(){ placing.beginInteractiveCreation(); }
     void enableFiringMode(bool enable){ placing.enableFiringMode(enable); }
     void beginOrbitalCreation(){ placing.beginOrbitalCreation(); }
+
     void takeScreenshot(){ doScreenshot = true; }
 
-    void setGridRange(int value);
+    void setGridRange(int value) { grid.range = value; }
 
+    /* Slots for camera functions. */
     void followNext() { camera.followNext(); }
     void followPrevious() { camera.followPrevious(); }
     void followSelection() { camera.followSelection(); }
@@ -100,15 +112,19 @@ public slots:
     void followWeightedAverage() { camera.followWeightedAverage(); }
 
 protected:
+    /* Overriden from GLWidget. */
     void initializeGL();
     void resizeGL(int width, int height);
     void paintGL();
+
+    /* Mouse event functions, these pass data to the PlacingInterface. */
     void mouseMoveEvent(QMouseEvent* e);
     void mousePressEvent(QMouseEvent* e);
     void mouseReleaseEvent(QMouseEvent* e);
     void mouseDoubleClickEvent(QMouseEvent* e);
     void wheelEvent(QWheelEvent* e);
 
+    /* Various planet drawing functions, mostly the same as in the SDL interface. */
     void drawPlanet(const Planet &planet);
     void drawPlanetColor(const Planet &planet, const QColor &color);
     void drawPlanetWireframe(const Planet &planet, const QColor &color = 0xff00ff00);

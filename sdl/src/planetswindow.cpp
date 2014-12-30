@@ -243,10 +243,11 @@ int PlanetsWindow::run(){
 
         ++totalFrames;
 
-        /* so anything that was written to console gets written */
+        /* So anything that was written to console gets written. */
         fflush(stdout);
     }
 
+    /* Output stats to the console. */
     std::chrono::high_resolution_clock::time_point current = std::chrono::high_resolution_clock::now();
     printf("Total Time: %f seconds.\n", (std::chrono::duration_cast<std::chrono::microseconds>(current - start_time).count() * 1.0e-6f));
     printf("Total Frames: %i.\n", totalFrames);
@@ -403,14 +404,13 @@ void PlanetsWindow::paint(){
 
         glEnable(GL_DEPTH_TEST);
     }
-
-    /* TODO - implement */
 }
 
 void PlanetsWindow::toggleFullscreen(){
     fullscreen = !fullscreen;
 
     if(fullscreen){
+        /* We want the native desktop resolution for fullscreen mode. */
         SDL_DisplayMode mode;
         SDL_GetDesktopDisplayMode(0, &mode);
         SDL_SetWindowDisplayMode(windowSDL, &mode);
@@ -465,7 +465,7 @@ void PlanetsWindow::doEvents(){
             SDL_GameControllerOpen(event.cdevice.which);
             break;
         case SDL_CONTROLLERBUTTONUP:
-            /* if we haven't picked a controller yet, use this one. */
+            /* If we haven't picked a controller yet, use this one. */
             if(controller == nullptr || event.cbutton.button == SDL_CONTROLLER_BUTTON_GUIDE){
                 controller = SDL_GameControllerOpen(event.cbutton.which);
             }
@@ -610,7 +610,7 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
 
         int16_t speedTriggerCurrent = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
 
-        /* if the trigger has gone from disengaged (< deadzone) to engaged (> deadzone) we enable using it as speed input. */
+        /* If the trigger has gone from disengaged (< deadzone) to engaged (> deadzone) we enable using it as speed input. */
         if(speedTriggerInUse || (speedTriggerCurrent > triggerDeadzone && speedTriggerLast <= triggerDeadzone)){
             universe.simspeed = float(speedTriggerCurrent * 8) / std::numeric_limits<Sint16>::max();
             universe.simspeed *= universe.simspeed;
