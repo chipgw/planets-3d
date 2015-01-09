@@ -5,6 +5,7 @@
 #include <random>
 #include <string>
 #include <cstdint>
+#include <glm/mat4x4.hpp>
 
 class PlanetsUniverse {
 public:
@@ -41,6 +42,7 @@ public:
     /* Make new planets. */
     key_type addPlanet(const Planet &planet, key_type keyHint = 0);
     void generateRandom(const int &count, const float &positionRange, const float &maxVelocity, const float &maxMass);
+    key_type addOrbital(Planet &around, const float &radius, const float &mass, const glm::mat4 &plane);
 
     /* Load and save from an XML file. Sets error string and returns false on an error. */
     bool save(const std::string& filename);

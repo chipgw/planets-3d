@@ -88,11 +88,7 @@ bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const Camera &cam
         break;
     case OrbitalPlane:
         if(universe.isSelectedValid()){
-            Planet &selected = universe.getSelected();
-            float speed = sqrt((selected.mass() * selected.mass() * PlanetsUniverse::gravityconst) / ((selected.mass() + planet.mass()) * orbitalRadius));
-            glm::vec3 velocity = glm::vec3(rotation[1]) * speed;
-            universe.selected = universe.addPlanet(Planet(planet.position, selected.velocity + velocity, planet.mass()));
-            selected.velocity -= velocity * (planet.mass() / selected.mass());
+            universe.addOrbital(universe.getSelected(), orbitalRadius, planet.mass(), rotation);
 
             orbitalRadius = 0.0f;
             step = NotPlacing;

@@ -171,6 +171,24 @@ void PlanetsUniverse::generateRandom(const int &count, const float &positionRang
     }
 }
 
+/* TODO - This function currently does not account for other planets.
+ * Doing so would be very complicated. IDK if it'd even be possible... I'll have to look into it sometime. */
+PlanetsUniverse::key_type PlanetsUniverse::addOrbital(Planet &around, const float &radius, const float &mass, const glm::mat4& plane){
+    /* Calculate the speed based on gravitational force and distance. */
+    float speed = sqrt((around.mass() * around.mass() * gravityconst) / ((around.mass() + mass) * radius));
+
+    /* Velocity is the y column of the plane matrix * speed. */
+    glm::vec3 velocity = glm::vec3(plane[1]) * speed;
+
+    /* The x column is the relative position of the orbiting planet. */
+    key_type planet = addPlanet(Planet(around.position + glm::vec3(plane[0]) * radius, around.velocity + velocity, mass));
+
+    /* Apply force on the planet being orbited in the opposite direction of the resulting planets velocity. */
+    around.velocity -= velocity * (mass / around.mass());
+
+    return planet;
+}
+
 void PlanetsUniverse::deleteEscapees(){
     glm::vec3 averagePosition, averageVelocity;
     float totalmass = 0.0f;
