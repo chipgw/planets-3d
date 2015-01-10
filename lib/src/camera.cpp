@@ -83,17 +83,20 @@ Ray Camera::getRay(const glm::ivec2 &pos, float startDepth, float endDepth) cons
 
 PlanetsUniverse::key_type Camera::selectUnder(const glm::ivec2 &pos){
     universe.resetSelected();
-    float nearest = -std::numeric_limits<float>::max();
+    float nearest = std::numeric_limits<float>::max();
 
     Ray ray = getRay(pos);
 
-    /* go through each planet and see if the ray intersects it. */
+    /* Go through each planet and see if the ray intersects it. */
     for(const auto& i : universe){
         glm::vec3 difference = i.second.position - ray.origin;
         float dot = glm::dot(difference, ray.direction);
-        if(dot > nearest && (glm::length2(difference) - dot * dot) <= (i.second.radius() * i.second.radius())) {
+        float distance = glm::length2(difference);
+        /* dot * distance is the closest the ray gets to the planet's center point.
+         * Comparing to the planet radius tells whether or not it intersects. */
+        if(distance < nearest && (distance - dot * dot) <= (i.second.radius() * i.second.radius())) {
             universe.selected = i.first;
-            nearest = dot;
+            nearest = distance;
         }
     }
 
