@@ -572,17 +572,23 @@ void PlanetsWindow::doEvents(){
 void PlanetsWindow::doControllerAxisInput(int64_t delay){
     /* TODO - lots of magic numbers in this function... */
     if(controller != nullptr){
-        float fac = delay * 1.0e-6f;
-        float stickDeadzone = 0.1f * fac * fac;
+        /* We only need it as a float, might as well not call and convert it repeatedly... */
+        const float int16_max = std::numeric_limits<Sint16>::max();
+        /* As we compare to length2 we need to use the square of Sint16's maximum value. */
+        const float stickDeadzone = 0.1f * int16_max * int16_max;
+
+        /* Multiply analog stick value by this to map from int16_max to delay converted to seconds. */
+        float stickFac = delay * 1.0e-6f / int16_max;
 
         glm::vec2 right(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX),
                         SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY));
 
-        right *= fac / std::numeric_limits<Sint16>::max();
-
-        bool rsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) != 0;
-
         if(glm::length2(right) > stickDeadzone) {
+            /* Map values to the proper range. */
+            right *= stickFac;
+
+            bool rsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) != 0;
+
             if(rsMod){
                 camera.distance += right.y * camera.distance;
             }else{
@@ -596,15 +602,19 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
         glm::vec2 left(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX),
                        SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY));
 
-        left *= fac / std::numeric_limits<Sint16>::max();
+        if(glm::length2(left) > stickDeadzone){
+            /* Map values to the proper range. */
+            left *= stickFac;
 
-        bool lsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER) != 0;
+            bool lsMod = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER) != 0;
 
-        if(glm::length2(left) > stickDeadzone && !placing.handleAnalogStick(left, lsMod, camera)){
-            if(lsMod){
-                camera.distance += left.y * camera.distance;
-            }else{
-                camera.position += glm::vec3(glm::vec4(left.x, 0.0f, -left.y, 0.0f) * camera.camera) * camera.distance;
+            if(!placing.handleAnalogStick(left, lsMod, camera)){
+                /* If the camera is following something stick is used only for zoom. */
+                if(lsMod || camera.followingState != Camera::FollowNone){
+                    camera.distance += left.y * camera.distance;
+                }else{
+                    camera.position += glm::vec3(glm::vec4(left.x, 0.0f, -left.y, 0.0f) * camera.camera) * camera.distance;
+                }
             }
         }
 
@@ -612,7 +622,7 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
 
         /* If the trigger has gone from disengaged (< deadzone) to engaged (> deadzone) we enable using it as speed input. */
         if(speedTriggerInUse || (speedTriggerCurrent > triggerDeadzone && speedTriggerLast <= triggerDeadzone)){
-            universe.simspeed = float(speedTriggerCurrent * 8) / std::numeric_limits<Sint16>::max();
+            universe.simspeed = float(speedTriggerCurrent * 8) / int16_max;
             universe.simspeed *= universe.simspeed;
 
             speedTriggerInUse = true;
