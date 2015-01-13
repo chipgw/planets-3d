@@ -436,6 +436,9 @@ void PlanetsWindow::doEvents(){
             case SDLK_o:
                 placing.beginOrbitalCreation();
                 break;
+            case SDLK_m:
+                universe.generateRandomOrbital(1, universe.selected);
+                break;
             case SDLK_c:
                 universe.centerAll();
                 break;

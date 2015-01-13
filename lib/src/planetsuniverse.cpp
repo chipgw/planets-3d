@@ -4,6 +4,8 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_query.hpp>
 #include <glm/gtx/fast_square_root.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtc/random.hpp>
 #include <cstdio>
 
 #define RGB_MASK 0x00ffffff
@@ -189,18 +191,45 @@ PlanetsUniverse::key_type PlanetsUniverse::addOrbital(Planet &around, const floa
     return planet;
 }
 
+void PlanetsUniverse::generateRandomOrbital(const int &count, key_type target){
+    /* We need a planet to orbit around. */
+    if(!isEmpty()){
+        /* Ensure we have a valid target planet, if none was provided select at random. */
+        if(!isValid(target)){
+            uniform_int_distribution<list_type::size_type> random_n(0, size() - 1);
+            auto iter = begin();
+            std::advance(iter, random_n(generator));
+            target = iter->first;
+        }
+
+        Planet &around = planets[target];
+
+        uniform_real_distribution<float> angle(-glm::pi<float>(), glm::pi<float>());
+        uniform_real_distribution<float> radius(around.radius() * 1.5f, around.radius() * 80.0f);
+        uniform_real_distribution<float> mass(min_mass, around.mass() * 0.2f);
+
+        for(int i = 0; i < count; ++i){
+            glm::mat4 plane;
+            /* This is sort of a cheap way of making a random orbit plane. */
+            plane *= glm::rotate(angle(generator), glm::sphericalRand(1.0f));
+            plane *= glm::rotate(angle(generator), glm::sphericalRand(1.0f));
+            addOrbital(around, radius(generator), mass(generator), plane);
+        }
+    }
+}
+
 void PlanetsUniverse::deleteEscapees(){
     glm::vec3 averagePosition, averageVelocity;
-    float totalmass = 0.0f;
+    float totalMass = 0.0f;
 
     for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
         averagePosition += i->second.position * i->second.mass();
         averageVelocity += i->second.velocity * i->second.mass();
-        totalmass += i->second.mass();
+        totalMass += i->second.mass();
     }
 
-    averagePosition /= totalmass;
-    averageVelocity /= totalmass;
+    averagePosition /= totalMass;
+    averageVelocity /= totalMass;
 
     float limits = 1.0e12f;
 
