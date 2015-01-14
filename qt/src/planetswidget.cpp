@@ -23,7 +23,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleB
     }
 
 #ifndef NDEBUG
-    /* Don't cap framerate for debug builds. (Note: your GPU might do it anyway...) */ */
+    /* Don't cap framerate for debug builds. (Note: your GPU might do it anyway...) */
     refreshRate = 0;
 #endif
 
