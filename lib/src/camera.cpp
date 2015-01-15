@@ -53,8 +53,8 @@ const glm::mat4 &Camera::setup(){
     case Single:
         if(universe.isValid(following)){
             position = universe[following].position;
-            break;
         }
+        break;
     }
 
     camera = glm::translate(projection, glm::vec3(0.0f, 0.0f, -distance));

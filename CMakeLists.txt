@@ -34,9 +34,6 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 find_package(TinyXML REQUIRED)
 include_directories(${TINYXML_INCLUDE_DIR})
 
-# Because GLM keeps warning me that using degrees is depreciated.
-add_definitions(-DGLM_FORCE_RADIANS)
-
 add_subdirectory(lib)
 
 add_subdirectory(sdl)

@@ -46,7 +46,8 @@ void PlanetsWindow::initSDL(){
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    windowSDL = SDL_CreateWindow("Planets3D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
+    windowSDL = SDL_CreateWindow("Planets3D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600,
+                                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
 
     if (!windowSDL){
         printf("ERROR: Unable to create window!");
@@ -196,36 +197,41 @@ int linkShaderProgram(GLuint vsh, GLuint fsh){
 }
 
 void PlanetsWindow::initShaders(){
+    /* Compile the flat color shader included in shaders.h as const char*. */
     shaderColor_vsh = compileShader(color_vertex_src,     GL_VERTEX_SHADER);
     shaderColor_fsh = compileShader(color_fragment_src,   GL_FRAGMENT_SHADER);
     shaderColor = linkShaderProgram(shaderColor_vsh, shaderColor_fsh);
 
+    /* Get the uniform locations from color shader. */
     glUseProgram(shaderColor);
-    shaderColor_color = glGetUniformLocation(shaderColor, "color");
-    shaderColor_cameraMatrix = glGetUniformLocation(shaderColor, "cameraMatrix");
-    shaderColor_modelMatrix = glGetUniformLocation(shaderColor, "modelMatrix");
+    shaderColor_color           = glGetUniformLocation(shaderColor, "color");
+    shaderColor_cameraMatrix    = glGetUniformLocation(shaderColor, "cameraMatrix");
+    shaderColor_modelMatrix     = glGetUniformLocation(shaderColor, "modelMatrix");
 
     glBindAttribLocation(shaderColor, vertex, "vertex");
 
+    /* Compile the textured shader included in shaders.h as const char*. */
     shaderTexture_vsh = compileShader(texture_vertex_src,   GL_VERTEX_SHADER);
     shaderTexture_fsh = compileShader(texture_fragment_src, GL_FRAGMENT_SHADER);
     shaderTexture = linkShaderProgram(shaderTexture_vsh, shaderTexture_fsh);
 
+    /* Get the uniform locations from the texture shader. */
     glUseProgram(shaderTexture);
-    shaderTexture_cameraMatrix = glGetUniformLocation(shaderTexture, "cameraMatrix");
-    shaderTexture_modelMatrix = glGetUniformLocation(shaderTexture, "modelMatrix");
+    shaderTexture_cameraMatrix  = glGetUniformLocation(shaderTexture, "cameraMatrix");
+    shaderTexture_modelMatrix   = glGetUniformLocation(shaderTexture, "modelMatrix");
 
     glBindAttribLocation(shaderTexture, vertex, "vertex");
-    glBindAttribLocation(shaderTexture, uv, "uv");
+    glBindAttribLocation(shaderTexture, uv,     "uv");
 }
 
 int PlanetsWindow::run(){
     running = true;
 
     std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-    std::chrono::high_resolution_clock::time_point last_time = std::chrono::high_resolution_clock::now();
+    std::chrono::high_resolution_clock::time_point last_time = start_time;
 
     while(running) {
+        /* Figure out how long the last frame took to render & display, in microseconds. */
         std::chrono::high_resolution_clock::time_point current = std::chrono::high_resolution_clock::now();
         int64_t delay = std::chrono::duration_cast<std::chrono::microseconds>(current - last_time).count();
         last_time = current;
@@ -233,6 +239,7 @@ int PlanetsWindow::run(){
         doControllerAxisInput(delay);
         doEvents();
 
+        /* Don't advance if we're placing. */
         if(placing.step == PlacingInterface::NotPlacing || placing.step == PlacingInterface::Firing){
             universe.advance(delay);
         }
@@ -254,41 +261,46 @@ int PlanetsWindow::run(){
     printf("Average Draw Time: %fms.\n", (std::chrono::duration_cast<std::chrono::microseconds>(current - start_time).count() * 1.0e-3f) / float(totalFrames));
     printf("Average Framerate: %f fps.\n", (1.0f / (std::chrono::duration_cast<std::chrono::microseconds>(current - start_time).count() / float(totalFrames))) * 1.0e6f);
 
+    /* TODO - There might be some places where we should return something other than 0. (i.e. on a fatal error.)
+     * If not why should this return anything? */
     return 0;
 }
 
 void PlanetsWindow::paint(){
+    /* Make sure we're using the right GL context and clear the window. */
     SDL_GL_MakeCurrent(windowSDL, contextSDL);
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     camera.setup();
 
+    /* We only use the texture shader and uv's for drawing the textured planets. */
     glUseProgram(shaderTexture);
+    glEnableVertexAttribArray(uv);
 
     glUniformMatrix4fv(shaderTexture_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
     glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
-
-    glEnableVertexAttribArray(uv);
 
     for(const auto& i : universe){
         drawPlanet(i.second);
     }
 
+    /* Now the texture shader and uv's don't get used until next frame. */
     glDisableVertexAttribArray(uv);
-
     glUseProgram(shaderColor);
 
     glUniformMatrix4fv(shaderColor_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 
+    /* Draw a green wireframe sphere around the selected planet if there is one. */
     if(universe.isSelectedValid()){
         drawPlanetWireframe(universe.getSelected());
     }
 
+    /* This color is used for trails, the velocity arrow when free placing, and the orbit circle when placing orbital. */
     glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
 
     if(drawTrails){
+        /* There is no model matrix for drawing trails, they're in world space, just use identity. */
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 
         for(const auto& i : universe){
