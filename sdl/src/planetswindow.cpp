@@ -463,6 +463,20 @@ void PlanetsWindow::doEvents(){
             case SDLK_g:
                 grid.toggle();
                 break;
+            case SDLK_KP_PLUS:
+                if(universe.simspeed <= 0.0f){
+                    universe.simspeed = 1.0f;
+                }else if(universe.simspeed < 64.0f){
+                    universe.simspeed *= 2.0f;
+                }
+                break;
+            case SDLK_KP_MINUS:
+                if(universe.simspeed <= 1.0f){
+                    universe.simspeed = 0.0f;
+                }else{
+                    universe.simspeed *= 0.5f;
+                }
+                break;
             }
             break;
         case SDL_WINDOWEVENT:
