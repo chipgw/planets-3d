@@ -438,52 +438,16 @@ void PlanetsWindow::doEvents(){
             onClose();
             break;
         case SDL_KEYDOWN:
-            switch (event.key.keysym.sym){
-            case SDLK_ESCAPE:
-                onClose();
-                break;
-            case SDLK_p:
-                placing.beginInteractiveCreation();
-                break;
-            case SDLK_o:
-                placing.beginOrbitalCreation();
-                break;
-            case SDLK_m:
-                universe.generateRandomOrbital(1, universe.selected);
-                break;
-            case SDLK_c:
-                universe.centerAll();
-                break;
-            case SDLK_DELETE:
-                universe.deleteSelected();
-                break;
-            case SDLK_t:
-                drawTrails = !drawTrails;
-                break;
-            case SDLK_g:
-                grid.toggle();
-                break;
-            case SDLK_KP_PLUS:
-                if(universe.simspeed <= 0.0f){
-                    universe.simspeed = 1.0f;
-                }else if(universe.simspeed < 64.0f){
-                    universe.simspeed *= 2.0f;
-                }
-                break;
-            case SDLK_KP_MINUS:
-                if(universe.simspeed <= 1.0f){
-                    universe.simspeed = 0.0f;
-                }else{
-                    universe.simspeed *= 0.5f;
-                }
-                break;
-            }
+            doKeyPress(event.key.keysym);
             break;
         case SDL_WINDOWEVENT:
             switch(event.window.event){
             case SDL_WINDOWEVENT_RESIZED:
+                /* We don't want anyone resizing the window with a width or height of 0. */
                 if(event.window.data1 < 1 || event.window.data2 < 1){
                     SDL_SetWindowSize(windowSDL, std::max(event.window.data1, 1), std::max(event.window.data2, 1));
+                    /* The above call will cause a new SDL_WINDOWEVENT_RESIZED event,
+                     * so we break here and call onResized() from that event. */
                     break;
                 }
                 onResized(event.window.data1, event.window.data2);
@@ -491,6 +455,7 @@ void PlanetsWindow::doEvents(){
             }
             break;
         case SDL_CONTROLLERDEVICEADDED:
+            /* This will allow us to recieve events from the controller. */
             SDL_GameControllerOpen(event.cdevice.which);
             break;
         case SDL_CONTROLLERBUTTONUP:
@@ -500,60 +465,7 @@ void PlanetsWindow::doEvents(){
             }
             /* Ignore events from other controllers. */
             if(event.cbutton.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller))){
-                /* When simulating mouse events we use the center of the screen (in pixels). */
-                glm::ivec2 centerScreen(windowWidth / 2, windowHeight / 2);
-
-                switch(event.cbutton.button){
-                case SDL_CONTROLLER_BUTTON_BACK:
-                    onClose();
-                    break;
-                case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
-                    camera.reset();
-                    break;
-                case SDL_CONTROLLER_BUTTON_LEFTSTICK:
-                    camera.position = glm::vec3();
-                    break;
-                case SDL_CONTROLLER_BUTTON_A:
-                    /* TODO - there should probably be a seperate function for this... */
-                    if(!placing.handleMouseClick(centerScreen, camera)){
-                        camera.selectUnder(centerScreen);
-                    }
-                    break;
-                case SDL_CONTROLLER_BUTTON_X:
-                    universe.deleteSelected();
-                    break;
-                case SDL_CONTROLLER_BUTTON_Y:
-                    if(universe.isSelectedValid()){
-                        placing.beginOrbitalCreation();
-                    }else{
-                        placing.beginInteractiveCreation();
-                    }
-                    break;
-                case SDL_CONTROLLER_BUTTON_B:
-                    /* If trigger is not being held down pause/resume. */
-                    if(speedTriggerLast < triggerDeadzone){
-                        universe.simspeed = universe.simspeed <= 0.0f ? 1.0f : 0.0f;
-                    }
-                    /* If the trigger is being held down lock to current speed. */
-                    speedTriggerInUse = false;
-                    break;
-                case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-                    camera.followPrevious();
-                    break;
-                case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-                    camera.followPrevious();
-                    break;
-                case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-                    camera.clearFollow();
-                    break;
-                case SDL_CONTROLLER_BUTTON_DPAD_UP:
-                    if(camera.followingState == Camera::WeightedAverage){
-                        camera.followPlainAverage();
-                    } else {
-                        camera.followWeightedAverage();
-                    }
-                    break;
-                }
+                doControllerButtonPress(event.cbutton.button);
             }
             break;
         case SDL_MOUSEWHEEL:
@@ -595,6 +507,106 @@ void PlanetsWindow::doEvents(){
             SDL_SetRelativeMouseMode(SDL_bool(holdCursor));
             break;
         }
+    }
+}
+
+void PlanetsWindow::doKeyPress(const SDL_Keysym &key){
+    switch(key.sym){
+    case SDLK_ESCAPE:
+        onClose();
+        break;
+    case SDLK_p:
+        placing.beginInteractiveCreation();
+        break;
+    case SDLK_o:
+        placing.beginOrbitalCreation();
+        break;
+    case SDLK_m:
+        universe.generateRandomOrbital(1, universe.selected);
+        break;
+    case SDLK_c:
+        universe.centerAll();
+        break;
+    case SDLK_DELETE:
+        universe.deleteSelected();
+        break;
+    case SDLK_t:
+        drawTrails = !drawTrails;
+        break;
+    case SDLK_g:
+        grid.toggle();
+        break;
+    case SDLK_KP_PLUS:
+        if(universe.simspeed <= 0.0f){
+            universe.simspeed = 1.0f;
+        }else if(universe.simspeed < 64.0f){
+            universe.simspeed *= 2.0f;
+        }
+        break;
+    case SDLK_KP_MINUS:
+        if(universe.simspeed <= 1.0f){
+            universe.simspeed = 0.0f;
+        }else{
+            universe.simspeed *= 0.5f;
+        }
+        break;
+    }
+}
+
+void PlanetsWindow::doControllerButtonPress(const Uint8 &button){
+    /* When simulating mouse events we use the center of the screen (in pixels). */
+    glm::ivec2 centerScreen(windowWidth / 2, windowHeight / 2);
+
+    switch(button){
+    case SDL_CONTROLLER_BUTTON_BACK:
+        onClose();
+        break;
+    case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
+        camera.reset();
+        break;
+    case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+        camera.position = glm::vec3();
+        break;
+    case SDL_CONTROLLER_BUTTON_A:
+        /* TODO - there should probably be a seperate function for this... */
+        if(!placing.handleMouseClick(centerScreen, camera)){
+            camera.selectUnder(centerScreen);
+        }
+        break;
+    case SDL_CONTROLLER_BUTTON_X:
+        universe.deleteSelected();
+        break;
+    case SDL_CONTROLLER_BUTTON_Y:
+        if(universe.isSelectedValid()){
+            placing.beginOrbitalCreation();
+        }else{
+            placing.beginInteractiveCreation();
+        }
+        break;
+    case SDL_CONTROLLER_BUTTON_B:
+        /* If trigger is not being held down pause/resume. */
+        if(speedTriggerLast < triggerDeadzone){
+            universe.simspeed = universe.simspeed <= 0.0f ? 1.0f : 0.0f;
+        }
+        /* If the trigger is being held down lock to current speed. */
+        speedTriggerInUse = false;
+        break;
+    case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+        camera.followPrevious();
+        break;
+    case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+        camera.followPrevious();
+        break;
+    case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+        camera.clearFollow();
+        break;
+    case SDL_CONTROLLER_BUTTON_DPAD_UP:
+        if(camera.followingState == Camera::WeightedAverage){
+            camera.followPlainAverage();
+        } else {
+            camera.followWeightedAverage();
+        }
+        break;
     }
 }
 
