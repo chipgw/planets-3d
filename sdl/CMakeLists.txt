@@ -23,9 +23,9 @@ if(PLANETS3D_SDL)
     include_directories(${SDL2_INCLUDE_DIR})
     target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY})
 
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    if(MSVC)
         target_link_libraries(${PROJECT_NAME} ${SDL2MAIN_LIBRARY})
-    endif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    endif(MSVC)
 
     find_package(SDL2_image REQUIRED)
     include_directories(${SDL2_IMAGE_INCLUDE_DIR})
