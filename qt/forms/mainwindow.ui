@@ -57,7 +57,7 @@
    </widget>
    <widget class="QMenu" name="menuCamera">
     <property name="title">
-     <string>Camera</string>
+     <string>&amp;Camera</string>
     </property>
     <addaction name="actionFollow_Selection"/>
     <addaction name="actionPlain_Average"/>
@@ -75,7 +75,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="newPlanet_DockWidget">
    <property name="windowTitle">
-    <string>New Planet</string>
+    <string>&amp;New Planet</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -273,7 +273,7 @@
   </widget>
   <widget class="QDockWidget" name="speedControl_DockWidget">
    <property name="windowTitle">
-    <string>Speed Control</string>
+    <string>Speed Contro&amp;l</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -357,7 +357,7 @@
   </widget>
   <widget class="QDockWidget" name="viewSettings_DockWidget">
    <property name="windowTitle">
-    <string>View Settings</string>
+    <string>&amp;View Settings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -475,7 +475,7 @@
   </widget>
   <widget class="QDockWidget" name="firingSettings_DockWidget">
    <property name="windowTitle">
-    <string>Firing Mode Settings</string>
+    <string>Firing &amp;Mode Settings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -534,7 +534,7 @@
   </widget>
   <widget class="QDockWidget" name="randomSettings_DockWidget">
    <property name="windowTitle">
-    <string>Random Planet Generator</string>
+    <string>&amp;Random Planet Generator</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -685,7 +685,7 @@
      <normaloff>:/icons/silk/cross.png</normaloff>:/icons/silk/cross.png</iconset>
    </property>
    <property name="text">
-    <string>Exit</string>
+    <string>&amp;Exit</string>
    </property>
    <property name="shortcut">
     <string>Esc</string>
@@ -697,7 +697,7 @@
      <normaloff>:/icons/silk/camera.png</normaloff>:/icons/silk/camera.png</iconset>
    </property>
    <property name="text">
-    <string>Take Screenshot</string>
+    <string>&amp;Take Screenshot</string>
    </property>
    <property name="shortcut">
     <string>F12</string>
@@ -732,7 +732,7 @@
      <normaloff>:/icons/silk/asterisk_yellow.png</normaloff>:/icons/silk/asterisk_yellow.png</iconset>
    </property>
    <property name="text">
-    <string>New Simulation</string>
+    <string>&amp;New Simulation</string>
    </property>
    <property name="toolTip">
     <string>Start a new simulation with no planets</string>
@@ -770,7 +770,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Draw Paths</string>
+    <string>&amp;Draw Paths</string>
    </property>
   </action>
   <action name="actionOpen_Simulation">
@@ -779,7 +779,7 @@
      <normaloff>:/icons/silk/folder.png</normaloff>:/icons/silk/folder.png</iconset>
    </property>
    <property name="text">
-    <string>Open Simulation</string>
+    <string>&amp;Open Simulation</string>
    </property>
    <property name="toolTip">
     <string>Open Simulation</string>
@@ -794,7 +794,7 @@
      <normaloff>:/icons/silk/disk.png</normaloff>:/icons/silk/disk.png</iconset>
    </property>
    <property name="text">
-    <string>Save Simulation</string>
+    <string>&amp;Save Simulation</string>
    </property>
    <property name="toolTip">
     <string>Save Simulation</string>
@@ -809,7 +809,7 @@
      <normaloff>:/icons/silk/information.png</normaloff>:/icons/silk/information.png</iconset>
    </property>
    <property name="text">
-    <string>About</string>
+    <string>&amp;About</string>
    </property>
    <property name="shortcut">
     <string>F1</string>
@@ -817,7 +817,7 @@
   </action>
   <action name="actionAbout_Qt">
    <property name="text">
-    <string>About Qt</string>
+    <string>About &amp;Qt</string>
    </property>
   </action>
   <action name="actionPlanet_Colors">
@@ -825,7 +825,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Planet Colors</string>
+    <string>&amp;Planet Colors</string>
    </property>
   </action>
   <action name="actionInteractive_Orbital_Placement">
@@ -845,7 +845,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Grid</string>
+    <string>&amp;Grid</string>
    </property>
   </action>
   <action name="actionDelete_Escapees">
@@ -862,22 +862,22 @@
   </action>
   <action name="actionFollow_Selection">
    <property name="text">
-    <string>Follow Selection</string>
+    <string>&amp;Follow Selection</string>
    </property>
   </action>
   <action name="actionPlain_Average">
    <property name="text">
-    <string>Plain Average</string>
+    <string>&amp;Plain Average</string>
    </property>
   </action>
   <action name="actionWeighted_Average">
    <property name="text">
-    <string>Weighted Average</string>
+    <string>&amp;Weighted Average</string>
    </property>
   </action>
   <action name="actionClear_Follow">
    <property name="text">
-    <string>Clear Follow</string>
+    <string>&amp;Clear Follow</string>
    </property>
   </action>
   <action name="actionHide_Planets">
@@ -885,22 +885,22 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Hide Planets</string>
+    <string>&amp;Hide Planets</string>
    </property>
   </action>
   <action name="actionAppend_Simulation">
    <property name="text">
-    <string>Append Simulation</string>
+    <string>&amp;Append Simulation</string>
    </property>
   </action>
   <action name="actionPrevious_Planet">
    <property name="text">
-    <string>Previous Planet</string>
+    <string>P&amp;revious Planet</string>
    </property>
   </action>
   <action name="actionNext_Planet">
    <property name="text">
-    <string>Next Planet</string>
+    <string>&amp;Next Planet</string>
    </property>
   </action>
  </widget>
