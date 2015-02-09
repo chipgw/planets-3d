@@ -261,10 +261,23 @@ void MainWindow::on_actionHide_Planets_toggled(bool value){
     }
 }
 
+void MainWindow::on_randomOrbitalCheckBox_toggled(bool checked){
+    ui->randomRangeDoubleSpinBox->setEnabled(!checked);
+    ui->randomMassDoubleSpinBox->setEnabled(!checked);
+    ui->randomSpeedDoubleSpinBox->setEnabled(!checked);
+}
+
 void MainWindow::on_generateRandomPushButton_clicked(){
-    ui->centralwidget->universe.generateRandom(ui->randomAmountSpinBox->value(), ui->randomRangeDoubleSpinBox->value(),
-                                               ui->randomSpeedDoubleSpinBox->value() * PlanetsUniverse::velocityfac,
-                                               ui->randomMassDoubleSpinBox->value());
+    if(ui->randomOrbitalCheckBox->isChecked()){
+        if(ui->centralwidget->universe.isEmpty())
+            QMessageBox::warning(this, tr("Can't generate planets!"), tr("Nothing for new planets to orbit around!"));
+        else
+            ui->centralwidget->universe.generateRandomOrbital(ui->randomAmountSpinBox->value(), ui->centralwidget->universe.selected);
+    }else{
+        ui->centralwidget->universe.generateRandom(ui->randomAmountSpinBox->value(), ui->randomRangeDoubleSpinBox->value(),
+                                                   ui->randomSpeedDoubleSpinBox->value() * PlanetsUniverse::velocityfac,
+                                                   ui->randomMassDoubleSpinBox->value());
+    }
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event){

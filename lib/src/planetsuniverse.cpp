@@ -244,18 +244,18 @@ void PlanetsUniverse::deleteEscapees(){
 
 void PlanetsUniverse::centerAll(){
     glm::vec3 averagePosition, averageVelocity;
-    float totalmass = 0.0f;
+    float totalMass = 0.0f;
 
     for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
         averagePosition += i->second.position * i->second.mass();
         averageVelocity += i->second.velocity * i->second.mass();
-        totalmass += i->second.mass();
+        totalMass += i->second.mass();
     }
 
-    averagePosition /= totalmass;
-    averageVelocity /= totalmass;
+    averagePosition /= totalMass;
+    averageVelocity /= totalMass;
 
-    float epsilon = std::numeric_limits<float>::epsilon();
+    float epsilon = glm::epsilon<float>();
 
     if(!glm::isNull(averagePosition, epsilon) || !glm::isNull(averageVelocity, epsilon)){
         for(iterator i = planets.begin(); i != planets.end(); ++i){
