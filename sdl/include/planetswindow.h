@@ -100,7 +100,9 @@ class PlanetsWindow{
     void drawPlanetWireframe(const Planet &planet, const uint32_t& color = 0xff00ff00);
 
     /* Convert a 0xAARRGGBB color value to a float-based vec4. */
-    glm::vec4 uintColorToVec4(const uint32_t& color) { return glm::vec4((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff, color >> 24) / 256.0f; }
+    glm::vec4 uintColorToVec4(const uint32_t& color) {
+        return glm::vec4((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff, color >> 24) / 256.0f;
+    }
 
     /* Total amount of frames drawn since window creation. */
     uintmax_t totalFrames;

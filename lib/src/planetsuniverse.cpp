@@ -13,7 +13,8 @@
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
 
-PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20), generator(std::chrono::system_clock::now().time_since_epoch().count()) {}
+PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20),
+    generator(std::chrono::system_clock::now().time_since_epoch().count()) {}
 
 bool PlanetsUniverse::load(const std::string &filename, bool clear){
     TiXmlDocument doc(filename);
@@ -48,9 +49,13 @@ bool PlanetsUniverse::load(const std::string &filename, bool clear){
 
             for(TiXmlElement* sub = element->FirstChildElement(); sub != nullptr; sub = sub->NextSiblingElement()){
                 if(sub->ValueStr() == "position"){
-                    planet.position = glm::vec3(std::stof(sub->Attribute("x")), std::stof(sub->Attribute("y")), std::stof(sub->Attribute("z")));
+                    planet.position = glm::vec3(std::stof(sub->Attribute("x")),
+                                                std::stof(sub->Attribute("y")),
+                                                std::stof(sub->Attribute("z")));
                 }else if(sub->ValueStr() == "velocity"){
-                    planet.velocity = glm::vec3(std::stof(sub->Attribute("x")), std::stof(sub->Attribute("y")), std::stof(sub->Attribute("z"))) * velocityfac;
+                    planet.velocity = glm::vec3(std::stof(sub->Attribute("x")),
+                                                std::stof(sub->Attribute("y")),
+                                                std::stof(sub->Attribute("z"))) * velocityfac;
                 }
             }
             addPlanet(planet, color);
