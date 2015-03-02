@@ -10,23 +10,12 @@
 
 class QMouseEvent;
 
-#if QT_VERSION >= 0x050000
 #include <QOpenGLFunctions>
 #include <QOpenGLShader>
-#else
-#include <QGLFunctions>
-#include <QGLShader>
+#include <QOpenGLTexture>
+#include <QOpenGLWidget>
 
-/* All of these have the same API as the new 5.X versions. */
-#define QOpenGLShader               QGLShader
-#define QOpenGLShaderProgram        QGLShaderProgram
-#define QOpenGLFunctions            QGLFunctions
-#define initializeOpenGLFunctions   initializeGLFunctions
-#endif
-
-#include <QGLWidget>
-
-class PlanetsWidget : public QGLWidget, public QOpenGLFunctions {
+class PlanetsWidget : public QOpenGLWidget, public QOpenGLFunctions {
     Q_OBJECT
 private:
     /* GL shader and uniform handles for texture shader. */
@@ -39,6 +28,8 @@ private:
 
     /* GL vertex attribute handles. */
     const static int vertex, uv;
+
+    QOpenGLTexture* texture;
 
     Camera camera;
 
@@ -67,7 +58,7 @@ private:
     const static QColor trailColor;
 
 public:
-    PlanetsWidget(QWidget *parent = 0);
+    PlanetsWidget(QWidget *parent = nullptr);
 
     PlanetsUniverse universe;
 

@@ -7,7 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent),
     doScreenshot(false), frameCount(0), refreshRate(16), timer(this), placing(universe), drawScale(1.0f),
     camera(universe), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/") {
@@ -32,7 +32,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleB
 
     /* set up the timer for adding frames to the event queue. */
     timer.setSingleShot(true);
-    connect(&timer, SIGNAL(timeout()), this, SLOT(updateGL()));
+    connect(&timer, SIGNAL(timeout()), this, SLOT(repaint()));
 
     /* Don't let people make the widget really small. */
     setMinimumSize(QSize(100, 100));
@@ -96,7 +96,7 @@ void PlanetsWidget::initializeGL() {
     /* The one and only texture. */
     QImage img(":/textures/planet.png");
 
-    bindTexture(img);
+    texture = new QOpenGLTexture(img);
 
     if(frameCount == 0){
         totalTime.start();
@@ -264,7 +264,7 @@ void PlanetsWidget::paintGL() {
         while(QFile::exists(filename.arg(++i, 4, 10, QChar('0'))));
         filename = filename.arg(i, 4, 10, QChar('0'));
 
-        QImage img = grabFrameBuffer();
+        QImage img = grabFramebuffer();
         if(!img.isNull() && img.save(filename)){
             qDebug("Screenshot saved to: %s", qPrintable(filename));
         }
