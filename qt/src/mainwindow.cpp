@@ -283,8 +283,7 @@ void MainWindow::on_generateRandomPushButton_clicked(){
 void MainWindow::dragEnterEvent(QDragEnterEvent *event){
     if(event->mimeData()->hasUrls()){
         for(const QUrl& url : event->mimeData()->urls()){
-            QFileInfo info(url.toLocalFile());
-            if(info.exists()){
+            if(QFile::exists(url.toLocalFile())){
                 return event->acceptProposedAction();
             }
         }

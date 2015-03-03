@@ -32,7 +32,7 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent),
 
     /* set up the timer for adding frames to the event queue. */
     timer.setSingleShot(true);
-    connect(&timer, SIGNAL(timeout()), this, SLOT(repaint()));
+    connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
 
     /* Don't let people make the widget really small. */
     setMinimumSize(QSize(100, 100));
@@ -96,7 +96,7 @@ void PlanetsWidget::initializeGL() {
     /* The one and only texture. */
     QImage img(":/textures/planet.png");
 
-    texture = new QOpenGLTexture(img);
+    texture = new QOpenGLTexture(img.mirrored());
 
     if(frameCount == 0){
         totalTime.start();
@@ -128,6 +128,8 @@ void PlanetsWidget::paintGL() {
         shaderTexture.setUniformValue(shaderTexture_modelMatrix, QMatrix4x4());
 
         shaderTexture.enableAttributeArray(uv);
+
+        texture->bind();
 
         for(const auto& i : universe){
             drawPlanet(i.second);

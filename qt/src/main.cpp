@@ -5,6 +5,8 @@
 int main(int argc, char *argv[]){
     QApplication a(argc, argv);
 
+    a.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+
     a.setOrganizationName("chipgw");
     a.setApplicationName("Planets3D");
     a.setApplicationVersion(version::git_revision);
