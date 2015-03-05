@@ -19,21 +19,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->firingMassSpinBox->setMinimum(PlanetsUniverse::min_mass);
     ui->firingMassSpinBox->setMaximum(PlanetsUniverse::max_mass);
 
-    connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
-    connect(ui->actionAbout_Qt, SIGNAL(triggered()), QApplication::instance(), SLOT(aboutQt()));
+    connect(ui->actionExit, &QAction::triggered, this, &QMainWindow::close);
+    connect(ui->actionAbout_Qt, &QAction::triggered, QApplication::instance(), &QApplication::aboutQt);
 
-    connect(ui->actionInteractive_Planet_Placement,     SIGNAL(triggered()),        ui->centralwidget,              SLOT(beginInteractiveCreation()));
-    connect(ui->actionInteractive_Planet_Placement,     SIGNAL(triggered(bool)),    ui->toggleFiringModePushButton, SLOT(setChecked(bool)));
-    connect(ui->actionInteractive_Orbital_Placement,    SIGNAL(triggered()),        ui->centralwidget,              SLOT(beginOrbitalCreation()));
-    connect(ui->toggleFiringModePushButton,             SIGNAL(toggled(bool)),      ui->centralwidget,              SLOT(enableFiringMode(bool)));
-    connect(ui->actionTake_Screenshot,                  SIGNAL(triggered()),        ui->centralwidget,              SLOT(takeScreenshot()));
-    connect(ui->gridRangeSpinBox,                       SIGNAL(valueChanged(int)),  ui->centralwidget,              SLOT(setGridRange(int)));
-    connect(ui->actionPrevious_Planet,                  SIGNAL(triggered()),        ui->centralwidget,              SLOT(followPrevious()));
-    connect(ui->actionNext_Planet,                      SIGNAL(triggered()),        ui->centralwidget,              SLOT(followNext()));
-    connect(ui->actionFollow_Selection,                 SIGNAL(triggered()),        ui->centralwidget,              SLOT(followSelection()));
-    connect(ui->actionClear_Follow,                     SIGNAL(triggered()),        ui->centralwidget,              SLOT(clearFollow()));
-    connect(ui->actionPlain_Average,                    SIGNAL(triggered()),        ui->centralwidget,              SLOT(followPlainAverage()));
-    connect(ui->actionWeighted_Average,                 SIGNAL(triggered()),        ui->centralwidget,              SLOT(followWeightedAverage()));
+    connect(ui->actionInteractive_Planet_Placement,     &QAction::triggered,    ui->toggleFiringModePushButton, &QPushButton::setChecked);
+    connect(ui->actionInteractive_Orbital_Placement,    &QAction::triggered,    ui->toggleFiringModePushButton, &QPushButton::setChecked);
+    connect(ui->actionInteractive_Planet_Placement,     &QAction::triggered,    ui->centralwidget, &PlanetsWidget::beginInteractiveCreation);
+    connect(ui->actionInteractive_Orbital_Placement,    &QAction::triggered,    ui->centralwidget, &PlanetsWidget::beginOrbitalCreation);
+    connect(ui->toggleFiringModePushButton,             &QPushButton::toggled,  ui->centralwidget, &PlanetsWidget::enableFiringMode);
+    connect(ui->actionTake_Screenshot,                  &QAction::triggered,    ui->centralwidget, &PlanetsWidget::takeScreenshot);
+    connect(ui->actionPrevious_Planet,                  &QAction::triggered,    ui->centralwidget, &PlanetsWidget::followPrevious);
+    connect(ui->actionNext_Planet,                      &QAction::triggered,    ui->centralwidget, &PlanetsWidget::followNext);
+    connect(ui->actionFollow_Selection,                 &QAction::triggered,    ui->centralwidget, &PlanetsWidget::followSelection);
+    connect(ui->actionClear_Follow,                     &QAction::triggered,    ui->centralwidget, &PlanetsWidget::clearFollow);
+    connect(ui->actionPlain_Average,                    &QAction::triggered,    ui->centralwidget, &PlanetsWidget::followPlainAverage);
+    connect(ui->actionWeighted_Average,                 &QAction::triggered,    ui->centralwidget, &PlanetsWidget::followWeightedAverage);
+
+    connect(ui->gridRangeSpinBox, SIGNAL(valueChanged(int)), ui->centralwidget, SLOT(setGridRange(int)));
 
     ui->statusbar->addPermanentWidget(planetCountLabel = new QLabel(ui->statusbar));
     ui->statusbar->addPermanentWidget(fpsLabel = new QLabel(ui->statusbar));
@@ -42,9 +44,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     planetCountLabel->setFixedWidth(120);
     averagefpsLabel->setFixedWidth(160);
 
-    connect(ui->centralwidget, SIGNAL(updatePlanetCountMessage(QString)),      planetCountLabel, SLOT(setText(QString)));
-    connect(ui->centralwidget, SIGNAL(updateFPSStatusMessage(QString)),        fpsLabel,         SLOT(setText(QString)));
-    connect(ui->centralwidget, SIGNAL(updateAverageFPSStatusMessage(QString)), averagefpsLabel,  SLOT(setText(QString)));
+    connect(ui->centralwidget, &PlanetsWidget::updatePlanetCountMessage,      planetCountLabel, &QLabel::setText);
+    connect(ui->centralwidget, &PlanetsWidget::updateFPSStatusMessage,        fpsLabel,         &QLabel::setText);
+    connect(ui->centralwidget, &PlanetsWidget::updateAverageFPSStatusMessage, averagefpsLabel,  &QLabel::setText);
 
     ui->menubar->insertMenu(ui->menuHelp->menuAction(), createPopupMenu())->setText(tr("Tools"));
 

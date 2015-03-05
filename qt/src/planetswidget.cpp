@@ -99,7 +99,7 @@ void PlanetsWidget::initializeGL() {
     /* The one and only texture. */
     QImage img(":/textures/planet.png");
 
-    texture = new QOpenGLTexture(img.mirrored());
+    texture = new QOpenGLTexture(img);
 
     /* Begin vertex/index buffer allocation. */
 
