@@ -10,7 +10,10 @@
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent),
     doScreenshot(false), frameCount(0), refreshRate(16), timer(this), placing(universe), drawScale(1.0f),
     camera(universe), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
-    screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/") {
+    screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/"),
+    highResSphereLines(QOpenGLBuffer::IndexBuffer), highResSphereTris(QOpenGLBuffer::IndexBuffer),
+    lowResSphereLines(QOpenGLBuffer::IndexBuffer), lowResSphereTris(QOpenGLBuffer::IndexBuffer),
+    circleLines(QOpenGLBuffer::IndexBuffer) {
 
     /* The screenshot directory I used to use. Someday I'll remove this movement code... */
     if(!screenshotDir.exists()){
@@ -97,6 +100,54 @@ void PlanetsWidget::initializeGL() {
     QImage img(":/textures/planet.png");
 
     texture = new QOpenGLTexture(img.mirrored());
+
+    /* Begin vertex/index buffer allocation. */
+
+    const static Sphere<64, 32> highResSphere;
+    const static Sphere<32, 16> lowResSphere;
+    const static Circle<64> circle;
+
+    highResSphereVerts.create();
+    highResSphereVerts.bind();
+    highResSphereVerts.allocate(highResSphere.verts, highResSphere.vertexCount * sizeof(Vertex));
+
+    highResSphereTris.create();
+    highResSphereTris.bind();
+    highResSphereTris.allocate(highResSphere.triangles, highResSphere.triangleCount * sizeof(unsigned int));
+    highResSphereTriCount = highResSphere.triangleCount;
+
+    highResSphereLines.create();
+    highResSphereLines.bind();
+    highResSphereLines.allocate(highResSphere.lines, highResSphere.lineCount * sizeof(unsigned int));
+    highResSphereLineCount = highResSphere.lineCount;
+
+    lowResSphereVerts.create();
+    lowResSphereVerts.bind();
+    lowResSphereVerts.allocate(lowResSphere.verts, lowResSphere.vertexCount * sizeof(Vertex));
+
+    lowResSphereTris.create();
+    lowResSphereTris.bind();
+    lowResSphereTris.allocate(lowResSphere.triangles, lowResSphere.triangleCount * sizeof(unsigned int));
+    lowResSphereTriCount = lowResSphere.triangleCount;
+
+    lowResSphereLines.create();
+    lowResSphereLines.bind();
+    lowResSphereLines.allocate(lowResSphere.lines, lowResSphere.lineCount * sizeof(unsigned int));
+    lowResSphereLineCount = lowResSphere.lineCount;
+
+    circleVerts.create();
+    circleVerts.bind();
+    circleVerts.allocate(circle.verts, circle.vertexCount * sizeof(Vertex));
+
+    circleLines.create();
+    circleLines.bind();
+    circleLines.allocate(circle.lines, circle.lineCount * sizeof(unsigned int));
+    circleLineCount = circle.lineCount;
+
+    QOpenGLBuffer::release(QOpenGLBuffer::VertexBuffer);
+    QOpenGLBuffer::release(QOpenGLBuffer::IndexBuffer);
+
+    /* End vertex/index buffer allocation. */
 
     if(frameCount == 0){
         totalTime.start();
@@ -221,8 +272,14 @@ void PlanetsWidget::paintGL() {
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
             shaderColor.setUniformValue(shaderColor_color, trailColor);
 
-            shaderColor.setAttributeArray(vertex, GL_FLOAT, circle.verts, 3, sizeof(Vertex));
-            glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
+            circleVerts.bind();
+            circleLines.bind();
+
+            shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
+            glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
+
+            circleVerts.release();
+            circleLines.release();
 
             drawPlanetWireframe(placing.planet);
         }
@@ -357,43 +414,56 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
 }
 
 void PlanetsWidget::drawPlanet(const Planet &planet){
+    highResSphereVerts.bind();
+    highResSphereTris.bind();
+
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
     glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-    shaderTexture.setAttributeArray(vertex, GL_FLOAT, glm::value_ptr(highResSphere.verts[0].position), 3, sizeof(Vertex));
-    shaderTexture.setAttributeArray(uv, GL_FLOAT, glm::value_ptr(highResSphere.verts[0].uv), 2, sizeof(Vertex));
-    glDrawElements(GL_TRIANGLES, highResSphere.triangleCount, GL_UNSIGNED_INT, highResSphere.triangles);
+    shaderTexture.setAttributeBuffer(vertex, GL_FLOAT, 0,                     3, sizeof(Vertex));
+    shaderTexture.setAttributeBuffer(uv,     GL_FLOAT, 3 * sizeof(glm::vec3), 2, sizeof(Vertex));
+    glDrawElements(GL_TRIANGLES, highResSphereTriCount, GL_UNSIGNED_INT, nullptr);
+
+    highResSphereVerts.release();
+    highResSphereTris.release();
 }
 
 void PlanetsWidget::drawPlanetColor(const Planet &planet, const QColor &color){
+    lowResSphereVerts.bind();
+    lowResSphereTris.bind();
+
     shaderColor.setUniformValue(shaderColor_color, color);
 
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale * 1.05f));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-    shaderColor.setAttributeArray(vertex, GL_FLOAT, glm::value_ptr(lowResSphere.verts[0].position), 3, sizeof(Vertex));
-    glDrawElements(GL_TRIANGLES, lowResSphere.triangleCount, GL_UNSIGNED_INT, lowResSphere.triangles);
+    shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
+    glDrawElements(GL_TRIANGLES, lowResSphereTriCount, GL_UNSIGNED_INT, nullptr);
+
+    lowResSphereVerts.release();
+    lowResSphereTris.release();
 }
 
 void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QColor &color){
+    lowResSphereVerts.bind();
+    lowResSphereLines.bind();
+
     shaderColor.setUniformValue(shaderColor_color, color);
 
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale * 1.05f));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-    shaderColor.setAttributeArray(vertex, GL_FLOAT, glm::value_ptr(lowResSphere.verts[0].position), 3, sizeof(Vertex));
-    glDrawElements(GL_LINES, lowResSphere.lineCount, GL_UNSIGNED_INT, lowResSphere.lines);
+    shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
+    glDrawElements(GL_LINES, lowResSphereLineCount, GL_UNSIGNED_INT, nullptr);
+
+    lowResSphereVerts.release();
+    lowResSphereLines.release();
 }
 
 const QColor PlanetsWidget::trailColor = QColor(0xcc, 0xff, 0xff, 0xff);
-
-const Sphere<64, 32> PlanetsWidget::highResSphere = Sphere<64, 32>(true);
-const Sphere<32, 16> PlanetsWidget::lowResSphere  = Sphere<32, 16>(true);
-
-const Circle<64> PlanetsWidget::circle = Circle<64>();
 
 const int PlanetsWidget::vertex = 0;
 const int PlanetsWidget::uv     = 1;

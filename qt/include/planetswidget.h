@@ -14,6 +14,7 @@ class QMouseEvent;
 #include <QOpenGLShader>
 #include <QOpenGLTexture>
 #include <QOpenGLWidget>
+#include <QOpenGLBuffer>
 
 class PlanetsWidget : public QOpenGLWidget, public QOpenGLFunctions {
     Q_OBJECT
@@ -51,9 +52,21 @@ private:
     /* The position of the mouse cursor last mouse movement event. */
     QPoint lastMousePos;
 
-    const static Sphere<64, 32> highResSphere;
-    const static Sphere<32, 16> lowResSphere;
-    const static Circle<64> circle;
+    QOpenGLBuffer highResSphereVerts;
+    QOpenGLBuffer highResSphereTris;
+    unsigned int highResSphereTriCount;
+    QOpenGLBuffer highResSphereLines;
+    unsigned int highResSphereLineCount;
+
+    QOpenGLBuffer lowResSphereVerts;
+    QOpenGLBuffer lowResSphereTris;
+    unsigned int lowResSphereTriCount;
+    QOpenGLBuffer lowResSphereLines;
+    unsigned int lowResSphereLineCount;
+
+    QOpenGLBuffer circleVerts;
+    QOpenGLBuffer circleLines;
+    unsigned int circleLineCount;
 
     const static QColor trailColor;
 
