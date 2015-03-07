@@ -182,15 +182,24 @@ void PlanetsWidget::paintGL() {
 
         texture->bind();
 
+        highResSphereVerts.bind();
+        highResSphereTris.bind();
+
         for(const auto& i : universe){
             drawPlanet(i.second);
         }
+
+        highResSphereVerts.release();
+        highResSphereTris.release();
 
         shaderTexture.disableAttributeArray(uv);
     }
 
     shaderColor.bind();
     glUniformMatrix4fv(shaderColor_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
+
+    lowResSphereVerts.bind();
+    lowResSphereLines.bind();
 
     if(drawPlanetColors){
         for(const auto& i : universe){
@@ -199,6 +208,9 @@ void PlanetsWidget::paintGL() {
     }else if(!hidePlanets && universe.isSelectedValid()){
         drawPlanetWireframe(universe.getSelected());
     }
+
+    lowResSphereVerts.release();
+    lowResSphereLines.release();
 
     if(drawPlanetTrails){
         shaderColor.setUniformValue(shaderColor_modelMatrix, QMatrix4x4());
@@ -261,7 +273,13 @@ void PlanetsWidget::paintGL() {
     }
     case PlacingInterface::FreePositionXY:
     case PlacingInterface::FreePositionZ:
+        lowResSphereVerts.bind();
+        lowResSphereLines.bind();
+
         drawPlanetWireframe(placing.planet);
+
+        lowResSphereVerts.release();
+        lowResSphereLines.release();
         break;
     case PlacingInterface::OrbitalPlane:
     case PlacingInterface::OrbitalPlanet:
@@ -281,7 +299,13 @@ void PlanetsWidget::paintGL() {
             circleVerts.release();
             circleLines.release();
 
+            lowResSphereVerts.bind();
+            lowResSphereLines.bind();
+
             drawPlanetWireframe(placing.planet);
+
+            lowResSphereVerts.release();
+            lowResSphereLines.release();
         }
         break;
     default: break;
@@ -414,9 +438,6 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
 }
 
 void PlanetsWidget::drawPlanet(const Planet &planet){
-    highResSphereVerts.bind();
-    highResSphereTris.bind();
-
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
     glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
@@ -424,32 +445,9 @@ void PlanetsWidget::drawPlanet(const Planet &planet){
     shaderTexture.setAttributeBuffer(vertex, GL_FLOAT, 0,                     3, sizeof(Vertex));
     shaderTexture.setAttributeBuffer(uv,     GL_FLOAT, 3 * sizeof(glm::vec3), 2, sizeof(Vertex));
     glDrawElements(GL_TRIANGLES, highResSphereTriCount, GL_UNSIGNED_INT, nullptr);
-
-    highResSphereVerts.release();
-    highResSphereTris.release();
-}
-
-void PlanetsWidget::drawPlanetColor(const Planet &planet, const QColor &color){
-    lowResSphereVerts.bind();
-    lowResSphereTris.bind();
-
-    shaderColor.setUniformValue(shaderColor_color, color);
-
-    glm::mat4 matrix = glm::translate(planet.position);
-    matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale * 1.05f));
-    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
-
-    shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
-    glDrawElements(GL_TRIANGLES, lowResSphereTriCount, GL_UNSIGNED_INT, nullptr);
-
-    lowResSphereVerts.release();
-    lowResSphereTris.release();
 }
 
 void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QColor &color){
-    lowResSphereVerts.bind();
-    lowResSphereLines.bind();
-
     shaderColor.setUniformValue(shaderColor_color, color);
 
     glm::mat4 matrix = glm::translate(planet.position);
@@ -458,9 +456,6 @@ void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QColor &colo
 
     shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
     glDrawElements(GL_LINES, lowResSphereLineCount, GL_UNSIGNED_INT, nullptr);
-
-    lowResSphereVerts.release();
-    lowResSphereLines.release();
 }
 
 const QColor PlanetsWidget::trailColor = QColor(0xcc, 0xff, 0xff, 0xff);

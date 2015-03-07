@@ -96,7 +96,6 @@ class PlanetsWindow{
 
     /* Various planet drawing functions, mostly the same as in the Qt interface. */
     void drawPlanet(const Planet &planet);
-    void drawPlanetColor(const Planet &planet, const uint32_t& color);
     void drawPlanetWireframe(const Planet &planet, const uint32_t& color = 0xff00ff00);
 
     /* Convert a 0xAARRGGBB color value to a float-based vec4. */

@@ -130,6 +130,5 @@ protected:
 
     /* Various planet drawing functions, mostly the same as in the SDL interface. */
     void drawPlanet(const Planet &planet);
-    void drawPlanetColor(const Planet &planet, const QColor &color);
     void drawPlanetWireframe(const Planet &planet, const QColor &color = 0xff00ff00);
 };

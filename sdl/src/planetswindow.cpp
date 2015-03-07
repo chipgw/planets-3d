@@ -698,17 +698,6 @@ void PlanetsWindow::drawPlanet(const Planet &planet){
     glDrawElements(GL_TRIANGLES, highResSphere.triangleCount, GL_UNSIGNED_INT, highResSphere.triangles);
 }
 
-void PlanetsWindow::drawPlanetColor(const Planet &planet, const uint32_t &color){
-    glUniform4fv(shaderColor_color, 1, glm::value_ptr(uintColorToVec4(color)));
-
-    glm::mat4 matrix = glm::translate(planet.position);
-    matrix = glm::scale(matrix, glm::vec3(planet.radius() * 1.05f));
-    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
-
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(lowResSphere.verts[0].position));
-    glDrawElements(GL_TRIANGLES, lowResSphere.triangleCount, GL_UNSIGNED_INT, lowResSphere.triangles);
-}
-
 void PlanetsWindow::drawPlanetWireframe(const Planet &planet, const uint32_t &color){
     glUniform4fv(shaderColor_color, 1, glm::value_ptr(uintColorToVec4(color)));
 
