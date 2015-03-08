@@ -42,8 +42,6 @@ private:
     /* The desired refresh rate, in milliseconds. */
     int refreshRate;
 
-    /* This timer updates the frame after the refresh interval has passed. */
-    QTimer timer;
     /* Time since the start of the frame. */
     QElapsedTimer frameTime;
     /* Total amount of time the widget has been running. */

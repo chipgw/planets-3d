@@ -8,7 +8,7 @@
 #include <glm/gtx/norm.hpp>
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent),
-    doScreenshot(false), frameCount(0), refreshRate(16), timer(this), placing(universe), drawScale(1.0f),
+    doScreenshot(false), frameCount(0), placing(universe), drawScale(1.0f),
     camera(universe), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/"),
     highResSphereLines(QOpenGLBuffer::IndexBuffer), highResSphereTris(QOpenGLBuffer::IndexBuffer),
@@ -25,17 +25,8 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent),
         }
     }
 
-#ifndef NDEBUG
-    /* Don't cap framerate for debug builds. (Note: your GPU might do it anyway...) */
-    refreshRate = 0;
-#endif
-
     /* We want mouse movement events. */
     setMouseTracking(true);
-
-    /* set up the timer for adding frames to the event queue. */
-    timer.setSingleShot(true);
-    connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
 
     /* Don't let people make the widget really small. */
     setMinimumSize(QSize(100, 100));
@@ -353,7 +344,7 @@ void PlanetsWidget::paintGL() {
         }
     }
 
-    timer.start(glm::max(0, refreshRate - int(frameTime.elapsed())));
+    update();
 
     emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(++frameCount * 1.0e3f / totalTime.elapsed()));
     emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e6f / delay));
