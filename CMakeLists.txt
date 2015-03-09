@@ -10,7 +10,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directo
 set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/include" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
@@ -19,16 +18,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 
-
 if(${CMAKE_GENERATOR} MATCHES "Visual Studio*")
     add_definitions(-DPLANETS3D_MSVC_CONFIGURATION="$(ConfigurationName)")
 endif()
-
-find_package(OpenGL REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIRS})
-
-find_package(TinyXML REQUIRED)
-include_directories(${TINYXML_INCLUDE_DIR})
 
 add_subdirectory(lib)
 

@@ -1,8 +1,8 @@
-project(Planets3D_qt5)
+project(Planets3D_qt)
 cmake_minimum_required(VERSION 2.8.11)
 
 unset(PLANETS3D_QT4 CACHE)
-option(PLANETS3D_QT5 "Build Qt5 Interface Executable" OFF)
+option(PLANETS3D_QT5 "Build Qt Interface Executable" OFF)
 
 file(GLOB QT_HEADERS "${Planets3D_qt_SOURCE_DIR}/include/*.h")
 file(GLOB QT_SHADERS "${Planets3D_qt_SOURCE_DIR}/shaders/*")
@@ -29,9 +29,3 @@ add_executable(${PROJECT_NAME} WIN32 ${QT_SOURCES} ${QT_FORM_CODE} ${QT_HEADERS}
 
 target_link_libraries(${PROJECT_NAME} Qt5::OpenGL Planets3D)
 
-if(DEFINED Qt5Gui_OPENGL_LIBRARIES)
-    include_directories(${Qt5Gui_OPENGL_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME} ${Qt5Gui_OPENGL_LIBRARIES})
-else(DEFINED Qt5Gui_OPENGL_LIBRARIES)
-    target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
-endif(DEFINED Qt5Gui_OPENGL_LIBRARIES)

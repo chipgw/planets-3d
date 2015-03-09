@@ -38,5 +38,10 @@ if(PLANETS3D_SDL)
         target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
     endif(PLANETS3D_WITH_GLEW)
 
+    find_package(OpenGL REQUIRED)
+    include_directories(${OPENGL_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME} Planets3D ${OPENGL_gl_LIBRARY})
+
+    add_custom_command(TARGET ${PROJECT_NAME} COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/textures/planet.png
+                                                                               ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/)
 endif(PLANETS3D_SDL)
