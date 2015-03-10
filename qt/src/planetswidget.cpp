@@ -10,10 +10,8 @@
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent),
     doScreenshot(false), frameCount(0), placing(universe), drawScale(1.0f),
     camera(universe), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
-    screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/"),
-    highResSphereLines(QOpenGLBuffer::IndexBuffer), highResSphereTris(QOpenGLBuffer::IndexBuffer),
-    lowResSphereLines(QOpenGLBuffer::IndexBuffer), lowResSphereTris(QOpenGLBuffer::IndexBuffer),
-    circleLines(QOpenGLBuffer::IndexBuffer) {
+    screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/"), highResSphereTris(QOpenGLBuffer::IndexBuffer),
+    lowResSphereLines(QOpenGLBuffer::IndexBuffer), circleLines(QOpenGLBuffer::IndexBuffer) {
 
     /* The screenshot directory I used to use. Someday I'll remove this movement code... */
     if(!screenshotDir.exists()){
@@ -107,19 +105,9 @@ void PlanetsWidget::initializeGL() {
     highResSphereTris.allocate(highResSphere.triangles, highResSphere.triangleCount * sizeof(unsigned int));
     highResSphereTriCount = highResSphere.triangleCount;
 
-    highResSphereLines.create();
-    highResSphereLines.bind();
-    highResSphereLines.allocate(highResSphere.lines, highResSphere.lineCount * sizeof(unsigned int));
-    highResSphereLineCount = highResSphere.lineCount;
-
     lowResSphereVerts.create();
     lowResSphereVerts.bind();
     lowResSphereVerts.allocate(lowResSphere.verts, lowResSphere.vertexCount * sizeof(Vertex));
-
-    lowResSphereTris.create();
-    lowResSphereTris.bind();
-    lowResSphereTris.allocate(lowResSphere.triangles, lowResSphere.triangleCount * sizeof(unsigned int));
-    lowResSphereTriCount = lowResSphere.triangleCount;
 
     lowResSphereLines.create();
     lowResSphereLines.bind();

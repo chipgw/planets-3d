@@ -53,12 +53,8 @@ private:
     QOpenGLBuffer highResSphereVerts;
     QOpenGLBuffer highResSphereTris;
     unsigned int highResSphereTriCount;
-    QOpenGLBuffer highResSphereLines;
-    unsigned int highResSphereLineCount;
 
     QOpenGLBuffer lowResSphereVerts;
-    QOpenGLBuffer lowResSphereTris;
-    unsigned int lowResSphereTriCount;
     QOpenGLBuffer lowResSphereLines;
     unsigned int lowResSphereLineCount;
 
