@@ -203,7 +203,7 @@ void PlanetsWidget::paintGL() {
 
     switch(placing.step){
     case PlacingInterface::FreeVelocity:{
-        float length = glm::length(placing.planet.velocity) / PlanetsUniverse::velocityfac;
+        float length = glm::length(placing.planet.velocity) / universe.velocityfac;
 
         if(length > 0.0f){
             glm::mat4 matrix = glm::translate(placing.planet.position);

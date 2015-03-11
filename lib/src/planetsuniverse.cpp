@@ -14,7 +14,9 @@ using std::uniform_int_distribution;
 using std::uniform_real_distribution;
 
 PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20),
-    generator(std::chrono::system_clock::now().time_since_epoch().count()) {}
+    generator(std::chrono::system_clock::now().time_since_epoch().count()),
+    gravityconst(6.67e-11f), velocityfac(1.0e-5f), min_mass(1.0f), max_mass(1.0e9f),
+    pathLength(200), pathRecordDistance(0.25f) {}
 
 bool PlanetsUniverse::load(const std::string &filename, bool clear){
     TiXmlDocument doc(filename);
@@ -147,7 +149,7 @@ void PlanetsUniverse::advance(float time){
                 }
 
                 i->second.position += i->second.velocity * time;
-                i->second.updatePath();
+                i->second.updatePath(pathLength, pathRecordDistance);
 
                 ++i;
             }
@@ -270,10 +272,3 @@ void PlanetsUniverse::centerAll(){
         }
     }
 }
-
-const float PlanetsUniverse::gravityconst = 6.67e-11f;
-
-const float PlanetsUniverse::velocityfac = 1.0e-5f;
-
-const float PlanetsUniverse::min_mass = 1.0f;
-const float PlanetsUniverse::max_mass = 1.0e9f;

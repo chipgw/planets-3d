@@ -3,25 +3,29 @@
 #include <vector>
 #include <glm/vec3.hpp>
 
+#ifdef _MSC_VER
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
+
 class Planet {
 private:
     float mass_p;
     float radius_p;
 
 public:
-    Planet(glm::vec3 p = glm::vec3(), glm::vec3 v = glm::vec3(), float m = 100.0f);
+    EXPORT Planet(glm::vec3 p = glm::vec3(), glm::vec3 v = glm::vec3(), float m = 100.0f);
 
     glm::vec3 position;
     glm::vec3 velocity;
 
     std::vector<glm::vec3> path;
-    static std::vector<glm::vec3>::size_type pathLength;
-    static float pathRecordDistance;
 
-    void updatePath();
+    void updatePath(size_t pathLength, float pathRecordDistance);
 
     inline float radius() const { return radius_p; }
 
-    void setMass(const float &m);
+    EXPORT void setMass(const float &m);
     inline float mass() const { return mass_p; }
 };

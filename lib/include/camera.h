@@ -38,29 +38,29 @@ public:
     /* The final camera matrix with all transformations applied, pass this to OpenGL. */
     glm::mat4 camera;
 
-    Camera(PlanetsUniverse &universe);
+    EXPORT Camera(PlanetsUniverse &universe);
 
     /* Limit the rotation & distance of the camera. */
-    void bound();
+    EXPORT void bound();
     /* Reset to the default camera position & rotation, also clearing the follow state. */
-    void reset();
+    EXPORT void reset();
 
     /* Call this from the interface code when the viewport size changes. */
-    void resizeViewport(const float &width, const float &height);
+    EXPORT void resizeViewport(const float &width, const float &height);
 
     /* Update the camera matrix from all the other variables. */
-    const glm::mat4 &setup();
+    EXPORT const glm::mat4 &setup();
 
     /* Get a ray coming from the camera at pos viewport coordinates. */
-    Ray getRay(const glm::ivec2 &pos, float startDepth = 0.9f, float endDepth = 0.0f) const;
+    EXPORT Ray getRay(const glm::ivec2 &pos, float startDepth = 0.9f, float endDepth = 0.0f) const;
     /* Select the planet under the viewport coordinates supplied. */
-    PlanetsUniverse::key_type selectUnder(const glm::ivec2 &pos);
+    EXPORT PlanetsUniverse::key_type selectUnder(const glm::ivec2 &pos);
 
     /* Following state changing functions. */
-    void followPrevious();
-    void followNext();
-    void followSelection() { following = universe.selected; followingState = Single; }
-    void clearFollow() { following = 0; followingState = FollowNone; }
-    void followPlainAverage() { followingState = PlainAverage; }
-    void followWeightedAverage() { followingState = WeightedAverage; }
+    EXPORT void followPrevious();
+    EXPORT void followNext();
+    inline void followSelection() { following = universe.selected; followingState = Single; }
+    inline void clearFollow() { following = 0; followingState = FollowNone; }
+    inline void followPlainAverage() { followingState = PlainAverage; }
+    inline void followWeightedAverage() { followingState = WeightedAverage; }
 };

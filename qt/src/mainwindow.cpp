@@ -13,11 +13,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     ui->PauseResume_Button->setFocus();
 
-    ui->newMass_SpinBox->setMinimum(PlanetsUniverse::min_mass);
-    ui->newMass_SpinBox->setMaximum(PlanetsUniverse::max_mass);
+    ui->newMass_SpinBox->setMinimum(ui->centralwidget->universe.min_mass);
+    ui->newMass_SpinBox->setMaximum(ui->centralwidget->universe.max_mass);
 
-    ui->firingMassSpinBox->setMinimum(PlanetsUniverse::min_mass);
-    ui->firingMassSpinBox->setMaximum(PlanetsUniverse::max_mass);
+    ui->firingMassSpinBox->setMinimum(ui->centralwidget->universe.min_mass);
+    ui->firingMassSpinBox->setMaximum(ui->centralwidget->universe.max_mass);
 
     connect(ui->actionExit, &QAction::triggered, this, &QMainWindow::close);
     connect(ui->actionAbout_Qt, &QAction::triggered, QApplication::instance(), &QApplication::aboutQt);
@@ -114,7 +114,7 @@ void MainWindow::closeEvent(QCloseEvent *e){
 void MainWindow::on_createPlanet_PushButton_clicked(){
     ui->centralwidget->universe.selected = ui->centralwidget->universe.addPlanet(
                 Planet(glm::vec3(ui->newPosX_SpinBox->value(),      ui->newPosY_SpinBox->value(),      ui->newPosZ_SpinBox->value()),
-                       glm::vec3(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * PlanetsUniverse::velocityfac,
+                       glm::vec3(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * ui->centralwidget->universe.velocityfac,
                        ui->newMass_SpinBox->value()));
 }
 
@@ -224,7 +224,7 @@ void MainWindow::on_stepsPerFrameSpinBox_valueChanged(int value){
 }
 
 void MainWindow::on_trailLengthSpinBox_valueChanged(int value){
-    Planet::pathLength = value;
+    ui->centralwidget->universe.pathLength = value;
 }
 
 void MainWindow::on_planetScaleDoubleSpinBox_valueChanged(double value){
@@ -232,11 +232,11 @@ void MainWindow::on_planetScaleDoubleSpinBox_valueChanged(double value){
 }
 
 void MainWindow::on_trailRecordDistanceDoubleSpinBox_valueChanged(double value){
-    Planet::pathRecordDistance = value * value;
+    ui->centralwidget->universe.pathRecordDistance = value * value;
 }
 
 void MainWindow::on_firingVelocityDoubleSpinBox_valueChanged(double value){
-    ui->centralwidget->placing.firingSpeed = value * PlanetsUniverse::velocityfac;
+    ui->centralwidget->placing.firingSpeed = value * ui->centralwidget->universe.velocityfac;
 }
 
 void MainWindow::on_firingMassSpinBox_valueChanged(int value){
@@ -277,7 +277,7 @@ void MainWindow::on_generateRandomPushButton_clicked(){
             ui->centralwidget->universe.generateRandomOrbital(ui->randomAmountSpinBox->value(), ui->centralwidget->universe.selected);
     }else{
         ui->centralwidget->universe.generateRandom(ui->randomAmountSpinBox->value(), ui->randomRangeDoubleSpinBox->value(),
-                                                   ui->randomSpeedDoubleSpinBox->value() * PlanetsUniverse::velocityfac,
+                                                   ui->randomSpeedDoubleSpinBox->value() * ui->centralwidget->universe.velocityfac,
                                                    ui->randomMassDoubleSpinBox->value());
     }
 }

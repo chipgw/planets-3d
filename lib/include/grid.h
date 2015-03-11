@@ -2,10 +2,11 @@
 
 #include <vector>
 #include <glm/glm.hpp>
+#include <planet.h>
 
 class Grid {
 public:
-    Grid();
+    EXPORT Grid();
 
     bool draw;
     uint32_t range;
@@ -17,8 +18,8 @@ public:
     float alphafac;
 
     /* Update all contained generated data. */
-    void update(const glm::mat4 &camera);
+    EXPORT void update(const glm::mat4 &camera);
 
     /* Toggle drawing the grid. */
-    void toggle() { draw = !draw; }
+    inline void toggle() { draw = !draw; }
 };

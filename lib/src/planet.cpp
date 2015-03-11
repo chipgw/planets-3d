@@ -5,7 +5,7 @@ Planet::Planet(glm::vec3 p, glm::vec3 v, float m) : position(p), velocity(v) {
     setMass(m);
 }
 
-void Planet::updatePath(){
+void Planet::updatePath(size_t pathLength, float pathRecordDistance){
     if(path.size() < 2 || glm::distance2(path[path.size() - 2], position) > pathRecordDistance){
         path.push_back(position);
     } else {
@@ -25,7 +25,3 @@ void Planet::setMass(const float &m){
         radius_p = std::cbrt((3.0f * m / 4.0f) * glm::pi<float>());
     }
 }
-
-std::vector<glm::vec3>::size_type Planet::pathLength = 200;
-
-float Planet::pathRecordDistance = 0.25f;

@@ -5,8 +5,8 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 PlacingInterface::PlacingInterface(PlanetsUniverse &u) : universe(u),
-    firingSpeed(PlanetsUniverse::velocityfac * 10.0f), firingMass(25.0f), step(NotPlacing) {
-    planet.velocity.y = PlanetsUniverse::velocityfac;
+    firingSpeed(universe.velocityfac * 10.0f), firingMass(25.0f), step(NotPlacing) {
+    planet.velocity.y = universe.velocityfac;
 }
 
 bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &delta, const Camera &camera, bool &holdMouse){
@@ -108,10 +108,10 @@ bool PlacingInterface::handleMouseWheel(float delta){
     case FreePositionZ:
     case OrbitalPlanet:
     case OrbitalPlane:
-        planet.setMass(glm::clamp(planet.mass() + delta * planet.mass(), PlanetsUniverse::min_mass, PlanetsUniverse::max_mass));
+        planet.setMass(glm::clamp(planet.mass() + delta * planet.mass(), universe.min_mass, universe.max_mass));
         return true;
     case FreeVelocity:
-        planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) + delta * PlanetsUniverse::velocityfac);
+        planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) + delta * universe.velocityfac);
         return true;
     }
     return false;
@@ -125,10 +125,10 @@ bool PlacingInterface::handleAnalogStick(const glm::vec2 &pos, const bool& modif
         case FreePositionZ:
         case OrbitalPlanet:
         case OrbitalPlane:
-            planet.setMass(glm::clamp(planet.mass() - y * planet.mass(), PlanetsUniverse::min_mass, PlanetsUniverse::max_mass));
+            planet.setMass(glm::clamp(planet.mass() - y * planet.mass(), universe.min_mass, universe.max_mass));
             return true;
         case FreeVelocity:
-            planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) - y * PlanetsUniverse::velocityfac);
+            planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) - y * universe.velocityfac);
             return true;
         }
     }
