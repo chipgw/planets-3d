@@ -1,5 +1,5 @@
 project(Planets3D_qt)
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.1)
 
 unset(PLANETS3D_QT4 CACHE)
 option(PLANETS3D_QT5 "Build Qt Interface Executable" OFF)
