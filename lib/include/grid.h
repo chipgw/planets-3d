@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <glm/glm.hpp>
-#include <planet.h>
+#include "platform.h"
 
 class Grid {
 public:

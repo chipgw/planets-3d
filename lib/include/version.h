@@ -1,10 +1,6 @@
 #pragma once
 
-#ifdef _MSC_VER
-#define IMPORT __declspec(dllimport)
-#else
-#define IMPORT
-#endif
+#include "platform.h"
 
 namespace version{
     IMPORT extern const char* git_revision;

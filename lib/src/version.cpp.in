@@ -1,8 +1,4 @@
-#ifdef _MSC_VER
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
+#include "platform.h"
 
 namespace version{
     EXPORT const char* git_revision = "@GIT_SHA1@";
