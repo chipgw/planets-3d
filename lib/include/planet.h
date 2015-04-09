@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <glm/vec3.hpp>
-#include "platform.h"
+#include "types.h"
 
 class Planet {
 private:

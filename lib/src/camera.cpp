@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "planetsuniverse.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
@@ -81,7 +82,7 @@ Ray Camera::getRay(const glm::ivec2 &pos, float startDepth, float endDepth) cons
     return ray;
 }
 
-PlanetsUniverse::key_type Camera::selectUnder(const glm::ivec2 &pos){
+key_type Camera::selectUnder(const glm::ivec2 &pos){
     universe.resetSelected();
     float nearest = std::numeric_limits<float>::max();
 
@@ -140,4 +141,9 @@ void Camera::followPrevious(){
         /* Get the key back from the iterator. */
         following = current->first;
     }
+}
+
+void Camera::followSelection() {
+    following = universe.selected;
+    followingState = Single;
 }

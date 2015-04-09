@@ -4,12 +4,10 @@
 #include <map>
 #include <random>
 #include <string>
-#include <cstdint>
 #include <glm/mat4x4.hpp>
 
 class PlanetsUniverse {
 public:
-    typedef uint32_t key_type;
     typedef std::map<key_type, Planet> list_type;
     typedef list_type::iterator iterator;
     typedef list_type::const_iterator const_iterator;

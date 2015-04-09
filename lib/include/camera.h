@@ -2,7 +2,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
-#include <planetsuniverse.h>
+#include "types.h"
 
 /* Simple way to return the origin and direction of a ray. */
 struct Ray {
@@ -25,7 +25,7 @@ public:
 
     /* What are we following? */
     FollowingState followingState;
-    PlanetsUniverse::key_type following;
+    key_type following;
 
     /* Values to transform the camera by. Rotation values are in radians. */
     glm::vec3 position;
@@ -54,12 +54,12 @@ public:
     /* Get a ray coming from the camera at pos viewport coordinates. */
     EXPORT Ray getRay(const glm::ivec2 &pos, float startDepth = 0.9f, float endDepth = 0.0f) const;
     /* Select the planet under the viewport coordinates supplied. */
-    EXPORT PlanetsUniverse::key_type selectUnder(const glm::ivec2 &pos);
+    EXPORT key_type selectUnder(const glm::ivec2 &pos);
 
     /* Following state changing functions. */
     EXPORT void followPrevious();
     EXPORT void followNext();
-    inline void followSelection() { following = universe.selected; followingState = Single; }
+    EXPORT void followSelection();
     inline void clearFollow() { following = 0; followingState = FollowNone; }
     inline void followPlainAverage() { followingState = PlainAverage; }
     inline void followWeightedAverage() { followingState = WeightedAverage; }

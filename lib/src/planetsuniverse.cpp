@@ -157,7 +157,7 @@ void PlanetsUniverse::advance(float time){
     }
 }
 
-PlanetsUniverse::key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type keyHint){
+key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type keyHint){
     uniform_int_distribution<key_type> color_gen(0xFF000001, 0xFFFFFFFF);
 
     while(planets.count(keyHint) > 0 || (keyHint & RGB_MASK) == 0){
@@ -182,7 +182,7 @@ void PlanetsUniverse::generateRandom(const int &count, const float &positionRang
 
 /* TODO - This function currently does not account for other planets.
  * Doing so would be very complicated. IDK if it'd even be possible... I'll have to look into it sometime. */
-PlanetsUniverse::key_type PlanetsUniverse::addOrbital(Planet &around, const float &radius, const float &mass, const glm::mat4& plane){
+key_type PlanetsUniverse::addOrbital(Planet &around, const float &radius, const float &mass, const glm::mat4& plane){
     /* Calculate the speed based on gravitational force and distance. */
     float speed = sqrt((around.mass() * around.mass() * gravityconst) / ((around.mass() + mass) * radius));
 

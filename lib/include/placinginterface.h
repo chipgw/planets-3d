@@ -41,8 +41,8 @@ public:
 
     /* Set the current placing mode.  */
     EXPORT void enableFiringMode(bool enable);
-    inline void beginInteractiveCreation(){ step = FreePositionXY; universe.resetSelected(); }
-    inline void beginOrbitalCreation(){ if(universe.isSelectedValid()) step = OrbitalPlanet; }
+    EXPORT void beginInteractiveCreation();
+    EXPORT void beginOrbitalCreation();
 
     EXPORT PlacingInterface(PlanetsUniverse &universe);
 };

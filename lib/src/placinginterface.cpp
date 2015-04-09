@@ -1,4 +1,5 @@
-#include "include/placinginterface.h"
+#include "placinginterface.h"
+#include "planetsuniverse.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
@@ -192,4 +193,12 @@ void PlacingInterface::enableFiringMode(bool enable){
     }else if(step == Firing){
         step = NotPlacing;
     }
+}
+
+void PlacingInterface::beginInteractiveCreation(){
+    step = FreePositionXY; universe.resetSelected();
+}
+
+void PlacingInterface::beginOrbitalCreation(){
+    if(universe.isSelectedValid()) step = OrbitalPlanet;
 }
