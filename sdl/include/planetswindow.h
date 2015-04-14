@@ -8,6 +8,7 @@
 #include "placinginterface.h"
 #include "spheregenerator.h"
 #include "grid.h"
+#include "camera.h"
 #include <SDL.h>
 
 #ifdef PLANETS3D_WITH_GLEW

@@ -4,6 +4,7 @@
 #include "planetsuniverse.h"
 #include "spheregenerator.h"
 #include "grid.h"
+#include "camera.h"
 #include <QElapsedTimer>
 #include <QTimer>
 #include <QDir>

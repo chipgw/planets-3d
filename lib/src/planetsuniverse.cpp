@@ -1,4 +1,5 @@
-#include "include/planetsuniverse.h"
+#include "planetsuniverse.h"
+#include "planet.h"
 #include <chrono>
 #include <tinyxml.h>
 #include <glm/gtx/norm.hpp>
@@ -18,7 +19,7 @@ PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(
     gravityconst(6.67e-11f), velocityfac(1.0e-5f), min_mass(1.0f), max_mass(1.0e9f),
     pathLength(200), pathRecordDistance(0.25f) {}
 
-bool PlanetsUniverse::load(const std::string &filename, bool clear){
+bool PlanetsUniverse::load(const std::string &filename, std::string& errorMsg, bool clear){
     TiXmlDocument doc(filename);
 
     if(!doc.LoadFile()){
@@ -67,7 +68,7 @@ bool PlanetsUniverse::load(const std::string &filename, bool clear){
     return true;
 }
 
-bool PlanetsUniverse::save(const std::string &filename){
+bool PlanetsUniverse::save(const std::string &filename, std::string& errorMsg){
     TiXmlDocument doc;
 
     doc.LinkEndChild(new TiXmlDeclaration("1.0", "", ""));

@@ -16,8 +16,9 @@ PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera
     initSDL();
     initGL();
 
+    std::string err;
     for(int i = 0; i < argc; ++i) {
-        if(universe.load(argv[i])) break;
+        if(universe.load(argv[i], err)) break;
     }
 
     if(universe.size() == 0){

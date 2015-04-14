@@ -53,8 +53,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->firingSettings_DockWidget->hide();
     ui->randomSettings_DockWidget->hide();
 
+    std::string err;
     for(const QString &argument : QApplication::arguments()){
-        if(QFileInfo(argument).filePath() != QApplication::applicationFilePath() && ui->centralwidget->universe.load(argument.toStdString())){
+        if(ui->centralwidget->universe.load(argument.toStdString(), err)){
             break;
         }
     }
@@ -174,15 +175,19 @@ void MainWindow::on_actionNew_Simulation_triggered(){
 
 void MainWindow::on_actionOpen_Simulation_triggered(){
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.xml);;All Files (*.*)"));
-    if(!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString())){
-        QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(ui->centralwidget->universe.getErrorMessage()));
+
+    std::string err;
+    if(!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err)){
+        QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
     }
 }
 
 void MainWindow::on_actionAppend_Simulation_triggered(){
     QString filename = QFileDialog::getOpenFileName(this, tr("Append Simulation"), "", tr("Simulation files (*.xml);;All Files (*.*)"));
-    if(!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), false)){
-        QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(ui->centralwidget->universe.getErrorMessage()));
+
+    std::string err;
+    if(!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err, false)){
+        QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
     }
 }
 
@@ -191,10 +196,12 @@ bool MainWindow::on_actionSave_Simulation_triggered(){
         QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
 
         if(!filename.isEmpty()){
-            if(ui->centralwidget->universe.save(filename.toStdString())) {
+            std::string err;
+
+            if(ui->centralwidget->universe.save(filename.toStdString(), err)) {
                 return true;
             }
-            QMessageBox::warning(this, tr("Error Saving Simulation."), QString::fromStdString(ui->centralwidget->universe.getErrorMessage()));
+            QMessageBox::warning(this, tr("Error Saving Simulation."), QString::fromStdString(err));
         }
     }else{
         QMessageBox::warning(this, tr("Error Saving Simulation."), tr("No planets to save!"));
@@ -295,7 +302,8 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event){
 void MainWindow::dropEvent(QDropEvent *event){
     if(event->mimeData()->hasUrls()){
         for(const QUrl& url : event->mimeData()->urls()){
-            if(ui->centralwidget->universe.load(url.toLocalFile().toStdString())){
+            std::string err;
+            if(ui->centralwidget->universe.load(url.toLocalFile().toStdString(), err)){
                 return event->acceptProposedAction();
             }
         }

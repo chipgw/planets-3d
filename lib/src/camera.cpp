@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "planet.h"
 #include "planetsuniverse.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

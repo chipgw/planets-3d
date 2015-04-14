@@ -1,6 +1,6 @@
 #pragma once
 
-#include "planet.h"
+#include "types.h"
 #include <map>
 #include <random>
 #include <string>
@@ -14,8 +14,6 @@ public:
 
 private:
     list_type planets;
-
-    std::string errorMsg;
 
     std::default_random_engine generator;
 
@@ -47,8 +45,8 @@ public:
     EXPORT void generateRandomOrbital(const int &count, key_type target);
 
     /* Load and save from an XML file. Sets error string and returns false on an error. */
-    EXPORT bool save(const std::string& filename);
-    EXPORT bool load(const std::string& filename, bool clear = true);
+    EXPORT bool save(const std::string& filename, std::string& errorMsg);
+    EXPORT bool load(const std::string& filename, std::string& errorMsg, bool clear = true);
 
     EXPORT PlanetsUniverse();
 
@@ -58,12 +56,12 @@ public:
     inline bool isEmpty() const { return planets.size() == 0; }
     inline bool isValid(const key_type &key) const { return planets.count(key) > 0; }
     inline void remove(const key_type &key) { planets.erase(key); }
-    inline Planet &operator [] (const key_type &key) { return planets[key]; }
+    inline Planet &operator [] (const key_type &key) { return planets.at(key); }
 
     /* Is a planet selected? */
     inline bool isSelectedValid() const { return planets.count(selected) > 0; }
     /* Get the currently selected planet. Don't call without checking for validity first. */
-    inline Planet &getSelected() { return planets[selected]; }
+    inline Planet &getSelected() { return planets.at(selected); }
     /* Deselect the currently selected planet. */
     inline void resetSelected() { selected = 0; }
 
@@ -74,9 +72,6 @@ public:
     inline const_iterator cend() const { return planets.cend(); }
     inline const_iterator find(const key_type &key) { return planets.find(key); }
     inline list_type::size_type size() const { return planets.size(); }
-
-    /* If loading or saving had an error, this will say what it was. */
-    inline std::string getErrorMessage() const { return errorMsg; }
 
     /* Make the weighted average position and velocity of all planets 0.
      * After this if all the planets merged into one it would be stationary at the origin. */

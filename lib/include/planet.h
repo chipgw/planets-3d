@@ -1,8 +1,8 @@
 #pragma once
 
+#include "types.h"
 #include <vector>
 #include <glm/vec3.hpp>
-#include "types.h"
 
 class Planet {
 private:

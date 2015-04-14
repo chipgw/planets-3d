@@ -1,7 +1,7 @@
 #pragma once
 
-#include <planet.h>
-#include <camera.h>
+#include "planet.h"
+#include <glm/mat4x4.hpp>
 
 class PlacingInterface{
     PlanetsUniverse &universe;
