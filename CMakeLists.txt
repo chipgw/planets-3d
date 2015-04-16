@@ -14,6 +14,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 unset(PLANETS3D_QT4 CACHE)
 option(PLANETS3D_QT5 "Build Qt Interface Executable" OFF)
 option(PLANETS3D_SDL "Build SDL Interface Executable" OFF)
+option(PLANETS3D_BUILD_TINYXML "Look for TinyXML source files in \"tinyxml\" folder, and build as a static library." OFF)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/include" "${CMAKE_CURRENT_SOURCE_DIR}/lib" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
@@ -40,9 +41,17 @@ list(APPEND LIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/version.cpp")
 
 add_library(${PROJECT_NAME} SHARED ${LIB_SOURCES} ${LIB_HEADERS})
 
-find_package(TinyXML REQUIRED)
-include_directories(${TINYXML_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${TINYXML_LIBRARIES})
+if(PLANETS3D_BUILD_TINYXML)
+    add_definitions(-DTIXML_USE_STL)
+    file(GLOB TinyXML_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tinyxml/*.cpp")
+    add_library(TinyXML ${TinyXML_SOURCES})
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/tinyxml/")
+    target_link_libraries(${PROJECT_NAME} TinyXML)
+else(PLANETS3D_BUILD_TINYXML)
+    find_package(TinyXML REQUIRED)
+    include_directories(${TINYXML_INCLUDE_DIR})
+    target_link_libraries(${PROJECT_NAME} ${TINYXML_LIBRARIES})
+endif(PLANETS3D_BUILD_TINYXML)
 
 #---------------------------------------------
 # SDL Interface
