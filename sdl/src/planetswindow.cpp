@@ -106,7 +106,12 @@ GLuint PlanetsWindow::loadTexture(const char* filename){
     SDL_Surface* image = IMG_Load(filename);
 
     if(image == nullptr){
-        printf("Failed to load texture! Error: %s\n", IMG_GetError());
+        /* Qt Creator's output panel doesn't seem to like the '\r' character for some reason... */
+        std::string err(IMG_GetError());
+        err.erase(err.find('\r'));
+
+        printf("Failed to load texture! Error: %s", err.c_str());
+
         return 0;
     }
 
