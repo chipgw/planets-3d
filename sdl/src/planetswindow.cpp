@@ -9,6 +9,13 @@
 #include <glm/gtx/norm.hpp>
 #include <SDL_image.h>
 
+#ifdef PLANETS3D_WITH_GLEW
+#include <GL/glew.h>
+#else
+#define GL_GLEXT_PROTOTYPES
+#include <GL/glcorearb.h>
+#endif
+
 const int16_t triggerDeadzone = 16;
 
 PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe), totalFrames(0),
@@ -102,7 +109,7 @@ void PlanetsWindow::initGL(){
     planetTexture = loadTexture("planet.png");
 }
 
-GLuint PlanetsWindow::loadTexture(const char* filename){
+unsigned int PlanetsWindow::loadTexture(const char* filename){
     SDL_Surface* image = IMG_Load(filename);
 
     if(image == nullptr){

@@ -11,13 +11,6 @@
 #include "camera.h"
 #include <SDL.h>
 
-#ifdef PLANETS3D_WITH_GLEW
-#include <GL/glew.h>
-#else
-#define GL_GLEXT_PROTOTYPES
-#include <GL/glcorearb.h>
-#endif
-
 class PlanetsWindow{
     /* Universe and basic interface classes. */
     PlanetsUniverse universe;
@@ -55,13 +48,13 @@ class PlanetsWindow{
     uint32_t windowHeight;
 
     /* OpenGL vertex attribute handles. */
-    const static GLuint vertex, uv;
+    const static unsigned int vertex, uv;
 
     /* GL shader and uniform handles for texture shader. */
-    GLuint shaderTexture, shaderTexture_vsh, shaderTexture_fsh, shaderTexture_cameraMatrix, shaderTexture_modelMatrix;
+    unsigned int shaderTexture, shaderTexture_vsh, shaderTexture_fsh, shaderTexture_cameraMatrix, shaderTexture_modelMatrix;
 
     /* GL shader and uniform handles for flat color shader. */
-    GLuint shaderColor, shaderColor_vsh, shaderColor_fsh, shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
+    unsigned int shaderColor, shaderColor_vsh, shaderColor_fsh, shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
 
     /* Generated spheres/circles for rendering */
     const static Sphere<64, 32> highResSphere;
@@ -69,7 +62,7 @@ class PlanetsWindow{
     const static Circle<64> circle;
 
     /* Currently the only texture used. */
-    GLuint planetTexture;
+    unsigned int planetTexture;
 
     void updateGrid();
 
@@ -85,7 +78,7 @@ class PlanetsWindow{
     void initShaders();
 
     /* Load a texture from a file. */
-    GLuint loadTexture(const char* filename);
+    unsigned int loadTexture(const char* filename);
 
     /* Render all the stuffs. */
     void paint();
