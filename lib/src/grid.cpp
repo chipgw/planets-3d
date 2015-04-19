@@ -3,7 +3,7 @@
 
 /* Returns the highest bit of an unsigned int.
  * Used to find the largest power of two less than the provided value. */
-int highBit(unsigned int n) {
+uint32_t highBit(uint32_t n) {
     n |= (n >>  1);
     n |= (n >>  2);
     n |= (n >>  4);

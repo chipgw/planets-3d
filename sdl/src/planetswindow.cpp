@@ -687,8 +687,18 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
 }
 
 void PlanetsWindow::onClose(){
-    /* TODO - make warning message and/or menu */
-    running = false;
+    const SDL_MessageBoxButtonData buttons[] = {
+        { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "no" },
+        { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "yes" }
+    };
+    const SDL_MessageBoxData messageboxdata = {
+        SDL_MESSAGEBOX_WARNING, windowSDL,
+        "Exit Planets3D?", "The universe will not be saved.",
+        SDL_arraysize(buttons), buttons, nullptr
+    };
+
+    int result;
+    running = SDL_ShowMessageBox(&messageboxdata, &result) == 0 && result == 0;
 }
 
 void PlanetsWindow::onResized(uint32_t width, uint32_t height){
