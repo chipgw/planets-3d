@@ -32,6 +32,6 @@ void Grid::update(const glm::mat4& camera){
 
     /* Use the camera matrix to approximate the distance from the universe center. */
     float distance = std::cbrt(glm::length2(camera[3]));
-    scale = highBit(distance);
+    scale = float(highBit(uint32_t(distance)));
     alphafac = distance / scale - 1.0f;
 }

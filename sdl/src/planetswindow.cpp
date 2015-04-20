@@ -254,7 +254,7 @@ int PlanetsWindow::run(){
 
         /* Don't advance if we're placing. */
         if(placing.step == PlacingInterface::NotPlacing || placing.step == PlacingInterface::Firing){
-            universe.advance(delay);
+            universe.advance(float(delay));
         }
 
         paint();
@@ -708,7 +708,7 @@ void PlanetsWindow::onResized(uint32_t width, uint32_t height){
 
     /* Resize the viewport and camera. */
     glViewport(0, 0, width, height);
-    camera.resizeViewport(width, height);
+    camera.resizeViewport(float(width), float(height));
 }
 
 void PlanetsWindow::drawPlanet(const Planet &planet){
