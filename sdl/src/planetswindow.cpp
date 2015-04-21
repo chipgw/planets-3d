@@ -563,6 +563,10 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym &key){
             universe.simspeed *= 0.5f;
         }
         break;
+    case SDLK_RETURN:
+        if(key.mod & KMOD_ALT)
+            toggleFullscreen();
+        break;
     }
 }
 
