@@ -437,13 +437,7 @@ void PlanetsWindow::paint(){
 void PlanetsWindow::toggleFullscreen(){
     fullscreen = !fullscreen;
 
-    if(fullscreen){
-        /* We want the native desktop resolution for fullscreen mode. */
-        SDL_DisplayMode mode;
-        SDL_GetDesktopDisplayMode(0, &mode);
-        SDL_SetWindowDisplayMode(windowSDL, &mode);
-    }
-    SDL_SetWindowFullscreen(windowSDL, SDL_bool(fullscreen));
+    SDL_SetWindowFullscreen(windowSDL, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 }
 
 void PlanetsWindow::doEvents(){
