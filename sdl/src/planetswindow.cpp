@@ -1,5 +1,6 @@
 #include "planetswindow.h"
 #include "shaders.h"
+#include "spheregenerator.h"
 
 #include <algorithm>
 #include <chrono>
@@ -280,6 +281,8 @@ int PlanetsWindow::run(){
 }
 
 void PlanetsWindow::paint(){
+    const static Circle<64> circle;
+
     /* Make sure we're using the right GL context and clear the window. */
     SDL_GL_MakeCurrent(windowSDL, contextSDL);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -421,11 +424,11 @@ void PlanetsWindow::paint(){
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f)));
 
         glm::mat4 matrix = glm::translate(camera.position);
-        matrix = glm::scale(matrix, glm::vec3(camera.distance * 1.0e-3f));
+        matrix = glm::scale(matrix, glm::vec3(camera.distance * 4.0e-3f));
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-        glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(lowResSphere.verts[0].position));
-        glDrawElements(GL_TRIANGLES, lowResSphere.triangleCount, GL_UNSIGNED_INT, lowResSphere.triangles);
+        glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(circle.verts[0].position));
+        glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
 
         glEnable(GL_DEPTH_TEST);
     }
@@ -716,6 +719,7 @@ void PlanetsWindow::onResized(uint32_t width, uint32_t height){
 }
 
 void PlanetsWindow::drawPlanet(const Planet &planet){
+    const static Sphere<64, 32> highResSphere;
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius()));
     glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
@@ -726,6 +730,8 @@ void PlanetsWindow::drawPlanet(const Planet &planet){
 }
 
 void PlanetsWindow::drawPlanetWireframe(const Planet &planet, const uint32_t &color){
+    const static Sphere<32, 16> lowResSphere;
+
     glUniform4fv(shaderColor_color, 1, glm::value_ptr(uintColorToVec4(color)));
 
     glm::mat4 matrix = glm::translate(planet.position);
@@ -736,10 +742,7 @@ void PlanetsWindow::drawPlanetWireframe(const Planet &planet, const uint32_t &co
     glDrawElements(GL_LINES, lowResSphere.lineCount, GL_UNSIGNED_INT, lowResSphere.lines);
 }
 
-const Sphere<64, 32> PlanetsWindow::highResSphere = Sphere<64, 32>();
-const Sphere<32, 16> PlanetsWindow::lowResSphere  = Sphere<32, 16>();
 
-const Circle<64> PlanetsWindow::circle = Circle<64>();
 
 const GLuint PlanetsWindow::vertex = 0;
 const GLuint PlanetsWindow::uv     = 1;

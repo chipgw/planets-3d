@@ -6,7 +6,6 @@
 
 #include "planetsuniverse.h"
 #include "placinginterface.h"
-#include "spheregenerator.h"
 #include "grid.h"
 #include "camera.h"
 #include <SDL.h>
@@ -55,11 +54,6 @@ class PlanetsWindow{
 
     /* GL shader and uniform handles for flat color shader. */
     unsigned int shaderColor, shaderColor_vsh, shaderColor_fsh, shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
-
-    /* Generated spheres/circles for rendering */
-    const static Sphere<64, 32> highResSphere;
-    const static Sphere<32, 16> lowResSphere;
-    const static Circle<64> circle;
 
     /* Currently the only texture used. */
     unsigned int planetTexture;
