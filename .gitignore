@@ -52,4 +52,11 @@ build*
 # Allow putting glm in local include folder #
 include/*
 
+# For building TinyXML #
 tinyxml
+
+
+# Git patch files #
+###################
+*.patch
+*.diff
