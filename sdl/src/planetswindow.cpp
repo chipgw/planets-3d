@@ -247,8 +247,11 @@ int PlanetsWindow::run(){
     while(running) {
         /* Figure out how long the last frame took to render & display, in microseconds. */
         std::chrono::high_resolution_clock::time_point current = std::chrono::high_resolution_clock::now();
-        int64_t delay = std::chrono::duration_cast<std::chrono::microseconds>(current - last_time).count();
+        int delay = std::chrono::duration_cast<std::chrono::microseconds>(current - last_time).count();
         last_time = current;
+
+        /* Don't do delays larger than a second. */
+        delay = std::min(delay, 1000000);
 
         doControllerAxisInput(delay);
         doEvents();
@@ -689,8 +692,8 @@ void PlanetsWindow::doControllerAxisInput(int64_t delay){
 
 void PlanetsWindow::onClose(){
     const SDL_MessageBoxButtonData buttons[] = {
-        { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "no" },
-        { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "yes" }
+        { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No" },
+        { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" }
     };
     const SDL_MessageBoxData messageboxdata = {
         SDL_MESSAGEBOX_WARNING, windowSDL,

@@ -11,23 +11,23 @@ struct Vertex {
     float padding;
 };
 
-template <unsigned int slices> class Circle {
+template <uint32_t slices> class Circle {
 public:
-    static const unsigned int vertexCount = slices;
-    static const unsigned int lineCount = slices * 2;
+    static const uint32_t vertexCount = slices;
+    static const uint32_t lineCount = slices * 2;
 
     Vertex verts[vertexCount];
-    unsigned int lines[lineCount];
+    uint32_t lines[lineCount];
 
     Circle();
 };
 
-template <unsigned int slices> Circle<slices>::Circle(){
+template <uint32_t slices> Circle<slices>::Circle(){
     float step = (2.0f * glm::pi<float>()) / slices;
 
-    unsigned int currentLine = 0;
+    uint32_t currentLine = 0;
 
-    for(unsigned int current = 0; current < slices; ++current){
+    for(uint32_t current = 0; current < slices; ++current){
         verts[current].position[0] = glm::cos(current * step);
         verts[current].position[1] = glm::sin(current * step);
         verts[current].position[2] = 0.0f;
@@ -42,33 +42,33 @@ template <unsigned int slices> Circle<slices>::Circle(){
     }
 }
 
-template <unsigned int slices, unsigned int stacks> class Sphere {
+template <uint32_t slices, uint32_t stacks> class Sphere {
 public:
-    static const unsigned int vertexCount = (slices + 1) * (stacks + 1);
-    static const unsigned int triangleCount = slices * stacks * 6;
-    static const unsigned int lineCount = slices * stacks * 4;
+    static const uint32_t vertexCount = (slices + 1) * (stacks + 1);
+    static const uint32_t triangleCount = slices * stacks * 6;
+    static const uint32_t lineCount = slices * stacks * 4;
 
     Vertex verts[vertexCount];
-    unsigned int triangles[triangleCount];
-    unsigned int lines[lineCount];
+    uint32_t triangles[triangleCount];
+    uint32_t lines[lineCount];
 
     Sphere(bool flipV = false);
 };
 
-template <unsigned int slices, unsigned int stacks> Sphere<slices, stacks>::Sphere(bool flipV){
+template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::Sphere(bool flipV){
     float vstep = glm::pi<float>() / stacks;
     float hstep = (2.0f * glm::pi<float>()) / slices;
 
-    unsigned int currentTriangle = 0;
-    unsigned int currentLine = 0;
+    uint32_t currentTriangle = 0;
+    uint32_t currentLine = 0;
 
-    for(unsigned int v = 0; v <= stacks; ++v){
+    for(uint32_t v = 0; v <= stacks; ++v){
         float z = glm::cos(v * vstep);
         float r = glm::sin(v * vstep);
 
-        for(unsigned int h = 0; h <= slices; ++h){
-            unsigned int w = slices + 1;
-            unsigned int current = v * w + h;
+        for(uint32_t h = 0; h <= slices; ++h){
+            uint32_t w = slices + 1;
+            uint32_t current = v * w + h;
 
             verts[current].position.x = glm::cos(h * hstep) * r;
             verts[current].position.y = glm::sin(h * hstep) * r;
