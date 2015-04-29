@@ -241,13 +241,17 @@ void PlanetsWindow::initShaders(){
 int PlanetsWindow::run(){
     running = true;
 
-    std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-    std::chrono::high_resolution_clock::time_point last_time = start_time;
+    typedef std::chrono::high_resolution_clock clock;
+    using std::chrono::duration_cast;
+    using std::chrono::microseconds;
+
+    clock::time_point start_time = clock::now();
+    clock::time_point last_time = start_time;
 
     while(running) {
         /* Figure out how long the last frame took to render & display, in microseconds. */
-        std::chrono::high_resolution_clock::time_point current = std::chrono::high_resolution_clock::now();
-        int delay = std::chrono::duration_cast<std::chrono::microseconds>(current - last_time).count();
+        clock::time_point current = clock::now();
+        int delay = duration_cast<microseconds>(current - last_time).count();
         last_time = current;
 
         /* Don't do delays larger than a second. */
@@ -272,11 +276,11 @@ int PlanetsWindow::run(){
     }
 
     /* Output stats to the console. */
-    std::chrono::high_resolution_clock::time_point current = std::chrono::high_resolution_clock::now();
-    printf("Total Time: %f seconds.\n", (std::chrono::duration_cast<std::chrono::microseconds>(current - start_time).count() * 1.0e-6f));
+    clock::time_point current = clock::now();
+    printf("Total Time: %f seconds.\n", (duration_cast<microseconds>(current - start_time).count() * 1.0e-6f));
     printf("Total Frames: %i.\n", totalFrames);
-    printf("Average Draw Time: %fms.\n", (std::chrono::duration_cast<std::chrono::microseconds>(current - start_time).count() * 1.0e-3f) / float(totalFrames));
-    printf("Average Framerate: %f fps.\n", (1.0f / (std::chrono::duration_cast<std::chrono::microseconds>(current - start_time).count() / float(totalFrames))) * 1.0e6f);
+    printf("Average Draw Time: %fms.\n", (duration_cast<microseconds>(current - start_time).count() * 1.0e-3f) / float(totalFrames));
+    printf("Average Framerate: %f fps.\n", (1.0f / (duration_cast<microseconds>(current - start_time).count() / float(totalFrames))) * 1.0e6f);
 
     /* TODO - There might be some places where we should return something other than 0. (i.e. on a fatal error.)
      * If not why should this return anything? */
