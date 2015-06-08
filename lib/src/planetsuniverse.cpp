@@ -242,11 +242,10 @@ void PlanetsUniverse::deleteEscapees(){
     float limits = 1.0e12f;
 
     for(iterator i = planets.begin(); i != planets.end();){
-        if(glm::distance2(i->second.position, averagePosition) > limits){
+        if(glm::distance2(i->second.position, averagePosition) > limits)
             i = planets.erase(i);
-        } else{
+        else
             ++i;
-        }
     }
 }
 

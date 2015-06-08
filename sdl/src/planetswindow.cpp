@@ -25,13 +25,8 @@ PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera
     initGL();
 
     std::string err;
-    for(int i = 0; i < argc; ++i) {
+    for(int i = 0; i < argc; ++i)
         if(universe.load(argv[i], err)) break;
-    }
-
-    if(universe.size() == 0){
-        universe.generateRandom(100, 1.0e3f, 1.0f, 100.0f);
-    }
 }
 
 PlanetsWindow::~PlanetsWindow(){
