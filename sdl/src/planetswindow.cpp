@@ -249,6 +249,10 @@ int PlanetsWindow::run(){
         int delay = duration_cast<microseconds>(current - last_time).count();
         last_time = current;
 
+        if (delay != 0)
+            /* Put a bunch of information into the title. */
+            SDL_SetWindowTitle(windowSDL, ("Planets3D  [" + std::to_string(1000000 / delay) + "fps, " + std::to_string(delay / 1000) + "ms " + std::to_string(universe.size()) + " planets]").c_str());
+
         /* Don't do delays larger than a second. */
         delay = std::min(delay, 1000000);
 
@@ -535,6 +539,9 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym &key){
         break;
     case SDLK_m:
         universe.generateRandomOrbital(1, universe.selected);
+        break;
+    case SDLK_r:
+        universe.generateRandom(10, 1.0e3f, universe.velocityfac, 100.0f);
         break;
     case SDLK_c:
         universe.centerAll();
