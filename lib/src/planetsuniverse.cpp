@@ -33,9 +33,8 @@ bool PlanetsUniverse::load(const std::string &filename, std::string& errorMsg, b
         return false;
     }
 
-    if(clear){
+    if(clear)
         deleteAll();
-    }
 
     for(TiXmlElement* element = root->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()){
         if(element->ValueStr() == "planet"){
@@ -48,18 +47,17 @@ bool PlanetsUniverse::load(const std::string &filename, std::string& errorMsg, b
                 std::string colorStr = element->Attribute("color");
                 colorStr.replace(0, 1, "");
                 color = std::stoul(colorStr, nullptr, 16);
-            } catch(std::exception) { /* Just ignore if it doesn't work. It isn't that critical. */ }
+            } catch(...) { /* Just ignore if it doesn't work. It isn't that critical. */ }
 
             for(TiXmlElement* sub = element->FirstChildElement(); sub != nullptr; sub = sub->NextSiblingElement()){
-                if(sub->ValueStr() == "position"){
+                if(sub->ValueStr() == "position")
                     planet.position = glm::vec3(std::stof(sub->Attribute("x")),
                                                 std::stof(sub->Attribute("y")),
                                                 std::stof(sub->Attribute("z")));
-                }else if(sub->ValueStr() == "velocity"){
+                else if(sub->ValueStr() == "velocity")
                     planet.velocity = glm::vec3(std::stof(sub->Attribute("x")),
                                                 std::stof(sub->Attribute("y")),
                                                 std::stof(sub->Attribute("z"))) * velocityfac;
-                }
             }
             addPlanet(planet, color);
         }
@@ -121,37 +119,52 @@ void PlanetsUniverse::advance(float time){
     for(int s = 0; s < stepsPerFrame; ++s){
         iterator i = planets.begin();
         while(i != planets.end()){
+            /* In case there are planets with negative or empty mass for some reason, we don't want them messing things up. */
             if(i->second.mass() <= 0.0f){
                 i = planets.erase(i);
             }else{
+                /* We only have to run this for planets after the current one,
+                 * because all the planets before this have already been calculated with this one. */
                 iterator o = i; ++o;
+
                 while(o != planets.end()){
                     glm::vec3 direction = o->second.position - i->second.position;
                     float distancesqr = glm::length2(direction);
 
+                    /* Planets are close enough to merge. */
                     if(distancesqr < glm::pow(i->second.radius() + o->second.radius(), 2.0f)){
+                        /* Set the position and velocity to the wieghted average between the planets. */
                         i->second.position = o->second.position * o->second.mass() + i->second.position * i->second.mass();
                         i->second.velocity = o->second.velocity * o->second.mass() + i->second.velocity * i->second.mass();
                         i->second.setMass(i->second.mass() + o->second.mass());
                         i->second.position /= i->second.mass();
                         i->second.velocity /= i->second.mass();
-                        if(o->first == selected){
+
+                        /* If the one we're deleting happens to be selected, select the remaining planet. */
+                        if(o->first == selected)
                             selected = i->first;
-                        }
+
+                        /* The path would be invalid after this. */
                         i->second.path.clear();
                         o = planets.erase(o);
                     }else{
+                        /* The gravity math to calculate the force between the planets. */
                         direction *= gravityconst * time * ((o->second.mass() * i->second.mass()) / distancesqr) * glm::fastInverseSqrt(distancesqr);
 
+                        /* Apply the force to the velocity of both planets. */
                         i->second.velocity += direction / i->second.mass();
                         o->second.velocity -= direction / o->second.mass();
+
+                        /* Keep going. (Not in for loop because of the possibility of erase() getting called.) */
                         ++o;
                     }
                 }
 
+                /* Apply the velocity to the position of the planet and update the path. */
                 i->second.position += i->second.velocity * time;
                 i->second.updatePath(pathLength, pathRecordDistance);
 
+                /* Onward! (Same situation as with ++o above.) */
                 ++i;
             }
         }
@@ -161,9 +174,9 @@ void PlanetsUniverse::advance(float time){
 key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type keyHint){
     uniform_int_distribution<key_type> color_gen(0xFF000001, 0xFFFFFFFF);
 
-    while(planets.count(keyHint) > 0 || (keyHint & RGB_MASK) == 0){
+    /* Keep generating until we find an unused key. */
+    while(planets.count(keyHint) > 0 || (keyHint & RGB_MASK) == 0)
         keyHint = color_gen(generator);
-    }
 
     planets[keyHint] = planet;
     return keyHint;
@@ -174,11 +187,10 @@ void PlanetsUniverse::generateRandom(const int &count, const float &positionRang
     uniform_real_distribution<float> velocity(-maxVelocity, maxVelocity);
     uniform_real_distribution<float> mass(min_mass, maxMass);
 
-    for(int i = 0; i < count; ++i){
+    for(int i = 0; i < count; ++i)
         addPlanet(Planet(glm::vec3(position(generator), position(generator), position(generator)),
                          glm::vec3(velocity(generator), velocity(generator), velocity(generator)),
                          mass(generator)));
-    }
 }
 
 /* TODO - This function currently does not account for other planets.
@@ -227,22 +239,22 @@ void PlanetsUniverse::generateRandomOrbital(const int &count, key_type target){
 }
 
 void PlanetsUniverse::deleteEscapees(){
-    glm::vec3 averagePosition, averageVelocity;
+    /* We delete anything too far from the weighted average position. */
+    glm::vec3 averagePosition;
     float totalMass = 0.0f;
 
-    for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
-        averagePosition += i->second.position * i->second.mass();
-        averageVelocity += i->second.velocity * i->second.mass();
-        totalMass += i->second.mass();
+    for(const auto& planet : planets){
+        averagePosition += planet.second.position * planet.second.mass();
+        totalMass += planet.second.mass();
     }
 
     averagePosition /= totalMass;
-    averageVelocity /= totalMass;
 
-    float limits = 1.0e12f;
+    /* The squared distance from the center outside of which we delete things. */
+    const float limits2 = 1.0e12f;
 
     for(iterator i = planets.begin(); i != planets.end();){
-        if(glm::distance2(i->second.position, averagePosition) > limits)
+        if(glm::distance2(i->second.position, averagePosition) > limits2)
             i = planets.erase(i);
         else
             ++i;
@@ -250,25 +262,27 @@ void PlanetsUniverse::deleteEscapees(){
 }
 
 void PlanetsUniverse::centerAll(){
+    /* We need the weighted average position and velocity to center. */
     glm::vec3 averagePosition, averageVelocity;
     float totalMass = 0.0f;
 
-    for(const_iterator i = planets.cbegin(); i != planets.cend(); ++i){
-        averagePosition += i->second.position * i->second.mass();
-        averageVelocity += i->second.velocity * i->second.mass();
-        totalMass += i->second.mass();
+    for(const auto& planet : planets){
+        averagePosition += planet.second.position * planet.second.mass();
+        averageVelocity += planet.second.velocity * planet.second.mass();
+        totalMass += planet.second.mass();
     }
 
     averagePosition /= totalMass;
     averageVelocity /= totalMass;
 
-    float epsilon = glm::epsilon<float>();
+    const float epsilon = glm::epsilon<float>();
 
+    /* Don't bother centering if we're already reasonably centered. */
     if(!glm::isNull(averagePosition, epsilon) || !glm::isNull(averageVelocity, epsilon)){
-        for(iterator i = planets.begin(); i != planets.end(); ++i){
-            i->second.position -= averagePosition;
-            i->second.velocity -= averageVelocity;
-            i->second.path.clear();
+        for(auto& planet : planets){
+            planet.second.position -= averagePosition;
+            planet.second.velocity -= averageVelocity;
+            planet.second.path.clear();
         }
     }
 }
