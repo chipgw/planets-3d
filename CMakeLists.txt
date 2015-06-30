@@ -27,6 +27,9 @@ if(${CMAKE_GENERATOR} MATCHES "Visual Studio*")
     add_definitions(-DPLANETS3D_MSVC_CONFIGURATION="$(ConfigurationName)")
 endif()
 
+find_package(GLM REQUIRED)
+include_directories(${GLM_INCLUDE_DIR})
+
 #---------------------------------------------
 # Library
 #---------------------------------------------
