@@ -47,6 +47,7 @@ Thumbs.db
 
 # build directories #
 #####################
+build
 
 # For building TinyXML #
 tinyxml
