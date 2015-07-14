@@ -1,7 +1,7 @@
 set(CMAKE_BUILD_TYPE_INIT "Debug")
 
 project(Planets3D)
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.2)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directory for libraries")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directory for executables.")
@@ -11,7 +11,6 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-unset(PLANETS3D_QT4 CACHE)
 option(PLANETS3D_QT5 "Build Qt Interface Executable" OFF)
 option(PLANETS3D_SDL "Build SDL Interface Executable" OFF)
 option(PLANETS3D_BUILD_TINYXML "Look for TinyXML source files in \"tinyxml\" folder, and build as a static library." OFF)
@@ -64,7 +63,7 @@ if(PLANETS3D_SDL)
     if(WIN32)
         set(PLANETS3D_WITH_GLEW ON)
     else(WIN32)
-        option(PLANETS3D_WITH_GLEW "Use GLEW to load OpenGL functions." OFF)
+        option(PLANETS3D_WITH_GLEW "Use GLEW to load OpenGL functions. (SDL interface only)" OFF)
     endif(WIN32)
 
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/sdl/include")
