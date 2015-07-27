@@ -29,7 +29,7 @@ License
 
 
 [CMake]:http://www.cmake.org
-[Qt]:http://qt-project.org
+[Qt]:http://www.qt.io
 [GLM]:http://glm.g-truc.net/
 [TinyXml]:http://www.grinninglizard.com/tinyxml/
 [SDL]:http://www.libsdl.org

@@ -41,7 +41,7 @@ file(GLOB LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/lib/src/*.cpp")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/lib/src/version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/version.cpp" @ONLY)
 list(APPEND LIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/version.cpp")
 
-add_library(${PROJECT_NAME} SHARED ${LIB_SOURCES} ${LIB_HEADERS})
+add_library(${PROJECT_NAME} SHARED ${LIB_SOURCES} ${LIB_HEADERS} README.md LICENSE)
 
 if(PLANETS3D_BUILD_TINYXML)
     add_definitions(-DTIXML_USE_STL)
