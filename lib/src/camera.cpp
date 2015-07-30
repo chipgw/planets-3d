@@ -16,6 +16,7 @@ void Camera::bound(){
 }
 
 void Camera::reset(){
+    /* Here are the Camera default values. */
     distance = 100.0f;
     xrotation = glm::quarter_pi<float>();
     zrotation = 0.0f;

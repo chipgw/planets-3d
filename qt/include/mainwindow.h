@@ -20,9 +20,6 @@ private slots:
     void on_createPlanet_PushButton_clicked();
 
     void on_actionClear_Velocity_triggered();
-    void on_actionCenter_All_triggered();
-    void on_actionDelete_Escapees_triggered();
-    void on_actionDelete_triggered();
 
     void on_speed_Dial_valueChanged(int value);
     void on_PauseResume_Button_clicked();

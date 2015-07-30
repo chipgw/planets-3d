@@ -127,7 +127,7 @@ if(PLANETS3D_QT5)
     qt5_add_resources(QT_RESOURCES_RCC ${QT_RESOURCES})
     qt5_wrap_ui(QT_FORM_CODE ${QT_FORMS})
 
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/qt/include")
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/qt/include" ${Qt5OpenGL_INCLUDE_DIRS})
     add_executable(${PROJECT_NAME}_qt WIN32 ${QT_SOURCES} ${QT_FORM_CODE} ${QT_HEADERS} ${QT_RESOURCES_RCC} ${QT_WINDRES} ${QT_SHADERS})
 
     target_link_libraries(${PROJECT_NAME}_qt Qt5::OpenGL Planets3D)

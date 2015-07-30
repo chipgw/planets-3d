@@ -37,9 +37,14 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
         if(universe.isSelectedValid()){
             Ray ray = camera.getRay(pos);
 
+            /* Set the position on an XY plane at the Z of the target planet. */
             planet.position = ray.origin + (ray.direction * ((universe.getSelected().position.z - ray.origin.z) / ray.direction.z));
+
+            /* Get the radius from the position of the orbiting planet relative to the target planet. */
             glm::vec3 relative = planet.position - universe.getSelected().position;
             orbitalRadius = glm::length(relative);
+
+            /* Use the normalized direction between the orbit planet and target to create the rotation matrix. */
             relative /= orbitalRadius;
             rotation = glm::mat4(glm::vec4(relative, 0.0f),
                                  glm::vec4(relative.y, -relative.x, 0.0f, 0.0f),
@@ -51,8 +56,11 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
         break;
     case OrbitalPlane:
         if(universe.isSelectedValid()){
+            /* Put mouse delta directly into rotation. */
             rotation *= glm::rotate(delta.x * 1.0e-3f, glm::vec3(1.0f, 0.0f, 0.0f));
             rotation *= glm::rotate(delta.y * 1.0e-3f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+            /* Set the position based on radius and rotation matrix. */
             planet.position = universe.getSelected().position + glm::vec3(rotation[0] * orbitalRadius);
             holdMouse = true;
             return true;
@@ -82,23 +90,27 @@ bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const Camera &cam
         return true;
     }
     case OrbitalPlanet:
+        /* If a planet is selected go to the next step. */
         if(universe.isSelectedValid()){
             step = OrbitalPlane;
             return true;
         }
+
+        /* If nothing is selected then exit placing mode. */
         orbitalRadius = 0.0f;
         step = NotPlacing;
         break;
     case OrbitalPlane:
+        /* No matter what exit placing mode. */
+        step = NotPlacing;
+
         if(universe.isSelectedValid()){
             universe.addOrbital(universe.getSelected(), orbitalRadius, planet.mass(), rotation);
 
             orbitalRadius = 0.0f;
-            step = NotPlacing;
             return true;
         }
         orbitalRadius = 0.0f;
-        step = NotPlacing;
         break;
     }
     return false;

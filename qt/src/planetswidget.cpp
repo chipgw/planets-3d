@@ -16,11 +16,10 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent),
     /* The screenshot directory I used to use. Someday I'll remove this movement code... */
     if(!screenshotDir.exists()){
         QDir oldDir = QDir::homePath() + "/Pictures/Planets3D Screenshots/";
-        if(oldDir.exists()){
+        if(oldDir.exists())
             oldDir.rename(oldDir.absolutePath(), screenshotDir.absolutePath());
-        }else{
+        else
             screenshotDir.mkpath(screenshotDir.absolutePath());
-        }
     }
 
     /* We want mouse movement events. */

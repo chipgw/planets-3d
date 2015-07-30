@@ -55,9 +55,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     std::string err;
     for(const QString &argument : QApplication::arguments()){
-        if(ui->centralwidget->universe.load(argument.toStdString(), err)){
+        if(ui->centralwidget->universe.load(argument.toStdString(), err))
             break;
-        }
     }
 
     settings.beginGroup(categoryMainWindow);
@@ -69,20 +68,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->actionDraw_Paths->setChecked(settings.value(settingDrawPaths).toBool());
 
     /* These aren't auto-saved, so for the moment they must be manually added to the config file. */
-    if(settings.contains(settingGridDimensions)){
+    if(settings.contains(settingGridDimensions))
         ui->gridRangeSpinBox->setValue(settings.value(settingGridDimensions).toInt());
-    }
-    if(settings.contains(settingTrailLength)){
+
+    if(settings.contains(settingTrailLength))
         ui->trailLengthSpinBox->setValue(settings.value(settingTrailLength).toInt());
-    }
-    if(settings.contains(settingTrailDelta)){
+
+    if(settings.contains(settingTrailDelta))
         ui->trailRecordDistanceDoubleSpinBox->setValue(settings.value(settingTrailDelta).toDouble());
-    }
+
     settings.endGroup();
 
-    if(settings.contains(settingStepsPerFrame)){
+    if(settings.contains(settingStepsPerFrame))
         ui->stepsPerFrameSpinBox->setValue(settings.value(settingStepsPerFrame).toInt());
-    }
 
     setAcceptDrops(true);
 }
@@ -105,9 +103,8 @@ void MainWindow::closeEvent(QCloseEvent *e){
         int result = QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
                                           QMessageBox::Yes | QMessageBox::Save | QMessageBox::No, QMessageBox::Yes);
 
-        if(result == QMessageBox::No || (result == QMessageBox::Save && !on_actionSave_Simulation_triggered())){
+        if(result == QMessageBox::No || (result == QMessageBox::Save && !on_actionSave_Simulation_triggered()))
             return e->ignore();
-        }
     }
     e->accept();
 }
@@ -120,7 +117,7 @@ void MainWindow::on_createPlanet_PushButton_clicked(){
 }
 
 void MainWindow::on_actionClear_Velocity_triggered(){
-    if(ui->centralwidget->universe.isSelectedValid()){
+    if(ui->centralwidget->universe.isSelectedValid())
         ui->centralwidget->universe.getSelected().velocity = glm::vec3();
     }
 }
@@ -159,36 +156,32 @@ void MainWindow::on_PauseResume_Button_clicked(){
 }
 
 void MainWindow::on_FastForward_Button_clicked(){
-    if(ui->speed_Dial->value() == ui->speed_Dial->maximum() || ui->speed_Dial->value() == 0){
+    if(ui->speed_Dial->value() == ui->speed_Dial->maximum() || ui->speed_Dial->value() == 0)
         ui->speed_Dial->setValue(ui->speed_Dial->maximum() / speeddialmax);
-    }else{
+    else
         ui->speed_Dial->setValue(ui->speed_Dial->value() * 2);
-    }
 }
 
 void MainWindow::on_actionNew_Simulation_triggered(){
     if(!ui->centralwidget->universe.isEmpty() && QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"),
-                                                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
+                                                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
         ui->centralwidget->universe.deleteAll();
-    }
 }
 
 void MainWindow::on_actionOpen_Simulation_triggered(){
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.xml);;All Files (*.*)"));
 
     std::string err;
-    if(!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err)){
+    if(!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err))
         QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
-    }
 }
 
 void MainWindow::on_actionAppend_Simulation_triggered(){
     QString filename = QFileDialog::getOpenFileName(this, tr("Append Simulation"), "", tr("Simulation files (*.xml);;All Files (*.*)"));
 
     std::string err;
-    if(!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err, false)){
+    if(!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err, false))
         QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
-    }
 }
 
 bool MainWindow::on_actionSave_Simulation_triggered(){
@@ -198,9 +191,9 @@ bool MainWindow::on_actionSave_Simulation_triggered(){
         if(!filename.isEmpty()){
             std::string err;
 
-            if(ui->centralwidget->universe.save(filename.toStdString(), err)) {
+            if(ui->centralwidget->universe.save(filename.toStdString(), err))
                 return true;
-            }
+
             QMessageBox::warning(this, tr("Error Saving Simulation."), QString::fromStdString(err));
         }
     }else{
@@ -265,9 +258,8 @@ void MainWindow::on_actionPlanet_Colors_toggled(bool value){
 void MainWindow::on_actionHide_Planets_toggled(bool value){
     ui->centralwidget->hidePlanets = value;
 
-    if(value){
+    if(value)
         ui->actionDraw_Paths->setChecked(true);
-    }
 }
 
 void MainWindow::on_randomOrbitalCheckBox_toggled(bool checked){
@@ -292,9 +284,10 @@ void MainWindow::on_generateRandomPushButton_clicked(){
 void MainWindow::dragEnterEvent(QDragEnterEvent *event){
     if(event->mimeData()->hasUrls()){
         for(const QUrl& url : event->mimeData()->urls()){
-            if(QFile::exists(url.toLocalFile())){
+            /* Only accept local files. */
+            if(QFile::exists(url.toLocalFile()))
+                /* TODO - perhaps this should filter to XML files... */
                 return event->acceptProposedAction();
-            }
         }
     }
 }
@@ -303,24 +296,24 @@ void MainWindow::dropEvent(QDropEvent *event){
     if(event->mimeData()->hasUrls()){
         for(const QUrl& url : event->mimeData()->urls()){
             std::string err;
-            if(ui->centralwidget->universe.load(url.toLocalFile().toStdString(), err)){
+            if(ui->centralwidget->universe.load(url.toLocalFile().toStdString(), err))
                 return event->acceptProposedAction();
-            }
         }
     }
 }
 
 bool MainWindow::event(QEvent *event){
+    /* Pause/Resume when window looses/gains focus. */
     switch(event->type()) {
     case QEvent::WindowActivate:
-        if(ui->centralwidget->universe.simspeed <= 0.0f){
+        /* If paused, resume. */
+        if(ui->centralwidget->universe.simspeed <= 0.0f)
             on_PauseResume_Button_clicked();
-        }
         break;
     case QEvent::WindowDeactivate:
-        if(ui->centralwidget->universe.simspeed > 0.0f){
+        /* If running, pause. */
+        if(ui->centralwidget->universe.simspeed > 0.0f)
             on_PauseResume_Button_clicked();
-        }
         break;
     default: break;
     }
