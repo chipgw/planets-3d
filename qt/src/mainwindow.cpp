@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "version.h"
+#include <functional>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QCloseEvent>
@@ -35,8 +36,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionPlain_Average,                    &QAction::triggered,    ui->centralwidget, &PlanetsWidget::followPlainAverage);
     connect(ui->actionWeighted_Average,                 &QAction::triggered,    ui->centralwidget, &PlanetsWidget::followWeightedAverage);
 
+    connect(ui->actionDelete,           &QAction::triggered, std::bind(&PlanetsUniverse::deleteSelected,    &ui->centralwidget->universe));
+    connect(ui->actionCenter_All,       &QAction::triggered, std::bind(&PlanetsUniverse::centerAll,         &ui->centralwidget->universe));
+    connect(ui->actionDelete_Escapees,  &QAction::triggered, std::bind(&PlanetsUniverse::deleteEscapees,    &ui->centralwidget->universe));
+
     connect(ui->gridRangeSpinBox, SIGNAL(valueChanged(int)), ui->centralwidget, SLOT(setGridRange(int)));
 
+    /* Set up the statusbar labels. */
     ui->statusbar->addPermanentWidget(planetCountLabel = new QLabel(ui->statusbar));
     ui->statusbar->addPermanentWidget(fpsLabel = new QLabel(ui->statusbar));
     ui->statusbar->addPermanentWidget(averagefpsLabel = new QLabel(ui->statusbar));
@@ -44,10 +50,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     planetCountLabel->setFixedWidth(120);
     averagefpsLabel->setFixedWidth(160);
 
+    /* Connect the statusbar labels to the correct signals. */
     connect(ui->centralwidget, &PlanetsWidget::updatePlanetCountMessage,      planetCountLabel, &QLabel::setText);
     connect(ui->centralwidget, &PlanetsWidget::updateFPSStatusMessage,        fpsLabel,         &QLabel::setText);
     connect(ui->centralwidget, &PlanetsWidget::updateAverageFPSStatusMessage, averagefpsLabel,  &QLabel::setText);
 
+    /* Add the actions in the tools toolbar to the menubar. */
     ui->menubar->insertMenu(ui->menuHelp->menuAction(), createPopupMenu())->setText(tr("Tools"));
 
     ui->firingSettings_DockWidget->hide();
@@ -59,10 +67,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             break;
     }
 
+    /* Load the saved window geometry. */
     settings.beginGroup(categoryMainWindow);
     restoreGeometry(settings.value(settingGeometry).toByteArray());
     restoreState(settings.value(settingState).toByteArray());
     settings.endGroup();
+
+    /* Start Graphics settings. */
     settings.beginGroup(categoryGraphics);
     ui->actionGrid->setChecked(settings.value(settingDrawGrid).toBool());
     ui->actionDraw_Paths->setChecked(settings.value(settingDrawPaths).toBool());
@@ -78,6 +89,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         ui->trailRecordDistanceDoubleSpinBox->setValue(settings.value(settingTrailDelta).toDouble());
 
     settings.endGroup();
+    /* End Graphics settings. */
 
     if(settings.contains(settingStepsPerFrame))
         ui->stepsPerFrameSpinBox->setValue(settings.value(settingStepsPerFrame).toInt());
@@ -86,10 +98,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 }
 
 MainWindow::~MainWindow(){
+    /* Save the window geometry for loading next time. */
     settings.beginGroup(categoryMainWindow);
     settings.setValue(settingGeometry, saveGeometry());
     settings.setValue(settingState, saveState());
     settings.endGroup();
+
+    /* The auto-saved graphics settings. */
     settings.beginGroup(categoryGraphics);
     settings.setValue(settingDrawGrid, ui->actionGrid->isChecked());
     settings.setValue(settingDrawPaths, ui->actionDraw_Paths->isChecked());
@@ -103,6 +118,7 @@ void MainWindow::closeEvent(QCloseEvent *e){
         int result = QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
                                           QMessageBox::Yes | QMessageBox::Save | QMessageBox::No, QMessageBox::Yes);
 
+        /* Ignore close event if user cancels or saving doesn't complete properly. */
         if(result == QMessageBox::No || (result == QMessageBox::Save && !on_actionSave_Simulation_triggered()))
             return e->ignore();
     }
@@ -119,24 +135,12 @@ void MainWindow::on_createPlanet_PushButton_clicked(){
 void MainWindow::on_actionClear_Velocity_triggered(){
     if(ui->centralwidget->universe.isSelectedValid())
         ui->centralwidget->universe.getSelected().velocity = glm::vec3();
-    }
-}
-
-void MainWindow::on_actionCenter_All_triggered(){
-    ui->centralwidget->universe.centerAll();
-}
-
-void MainWindow::on_actionDelete_Escapees_triggered(){
-    ui->centralwidget->universe.deleteEscapees();
-}
-
-void MainWindow::on_actionDelete_triggered(){
-    ui->centralwidget->universe.deleteSelected();
 }
 
 void MainWindow::on_speed_Dial_valueChanged(int value){
     ui->centralwidget->universe.simspeed = float(value * speeddialmax) / ui->speed_Dial->maximum();
     ui->speedDisplay_lcdNumber->display(ui->centralwidget->universe.simspeed);
+
     if(ui->speed_Dial->value() == 0){
         ui->PauseResume_Button->setText(tr("Resume"));
         ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
@@ -258,6 +262,7 @@ void MainWindow::on_actionPlanet_Colors_toggled(bool value){
 void MainWindow::on_actionHide_Planets_toggled(bool value){
     ui->centralwidget->hidePlanets = value;
 
+    /* Automatically enable drawing paths when hiding planets. */
     if(value)
         ui->actionDraw_Paths->setChecked(true);
 }

@@ -49,6 +49,7 @@ private slots:
     void on_generateRandomPushButton_clicked();
 
 private:
+    /* String keys for settings. */
     const static QString categoryMainWindow;
     const static QString categoryGraphics;
     const static QString settingGeometry;
@@ -68,6 +69,7 @@ private:
 
     QSettings settings;
 
+    /* These labels go in the statusbar. */
     QLabel *planetCountLabel;
     QLabel *fpsLabel;
     QLabel *averagefpsLabel;
