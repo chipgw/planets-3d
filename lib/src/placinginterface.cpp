@@ -11,9 +11,9 @@ PlacingInterface::PlacingInterface(PlanetsUniverse &u) : universe(u),
     planet.velocity.y = universe.velocityfac;
 }
 
-bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &delta, const Camera &camera, bool &holdMouse){
-    switch(step){
-    case FreePositionXY:{
+bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &delta, const Camera &camera, bool &holdMouse) {
+    switch (step) {
+    case FreePositionXY: {
         /* Set placing position on the XY plane. */
         Ray ray = camera.getRay(pos);
 
@@ -34,7 +34,7 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
         holdMouse = true;
         return true;
     case OrbitalPlanet:
-        if(universe.isSelectedValid()){
+        if (universe.isSelectedValid()) {
             Ray ray = camera.getRay(pos);
 
             /* Set the position on an XY plane at the Z of the target planet. */
@@ -55,7 +55,7 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
         }
         break;
     case OrbitalPlane:
-        if(universe.isSelectedValid()){
+        if (universe.isSelectedValid()) {
             /* Put mouse delta directly into rotation. */
             rotation *= glm::rotate(delta.x * 1.0e-3f, glm::vec3(1.0f, 0.0f, 0.0f));
             rotation *= glm::rotate(delta.y * 1.0e-3f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -70,8 +70,8 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
     return false;
 }
 
-bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const Camera &camera){
-    switch(step){
+bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const Camera &camera) {
+    switch (step) {
     case FreePositionXY:
         step = FreePositionZ;
         return true;
@@ -83,7 +83,7 @@ bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const Camera &cam
         planet.velocity = glm::vec3(rotation[2]) * glm::length(planet.velocity);
         universe.selected = universe.addPlanet(planet);
         return true;
-    case Firing:{
+    case Firing: {
         Ray ray = camera.getRay(pos);
 
         universe.addPlanet(Planet(ray.origin, ray.direction * firingSpeed, firingMass));
@@ -91,7 +91,7 @@ bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const Camera &cam
     }
     case OrbitalPlanet:
         /* If a planet is selected go to the next step. */
-        if(universe.isSelectedValid()){
+        if (universe.isSelectedValid()) {
             step = OrbitalPlane;
             return true;
         }
@@ -104,7 +104,7 @@ bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const Camera &cam
         /* No matter what exit placing mode. */
         step = NotPlacing;
 
-        if(universe.isSelectedValid()){
+        if (universe.isSelectedValid()) {
             universe.addOrbital(universe.getSelected(), orbitalRadius, planet.mass(), rotation);
 
             orbitalRadius = 0.0f;
@@ -117,7 +117,7 @@ bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const Camera &cam
 }
 
 bool PlacingInterface::handleMouseWheel(float delta){
-    switch(step){
+    switch (step){
     case FreePositionXY:
     case FreePositionZ:
     case OrbitalPlanet:
@@ -131,10 +131,10 @@ bool PlacingInterface::handleMouseWheel(float delta){
     return false;
 }
 
-bool PlacingInterface::handleAnalogStick(const glm::vec2 &pos, const bool& modifier, Camera &camera){
-    if(modifier){
+bool PlacingInterface::handleAnalogStick(const glm::vec2 &pos, const bool& modifier, Camera &camera) {
+    if (modifier) {
         float y = pos.y * 10.0f;
-        switch(step){
+        switch (step) {
         case FreePositionXY:
         case FreePositionZ:
         case OrbitalPlanet:
@@ -146,7 +146,7 @@ bool PlacingInterface::handleAnalogStick(const glm::vec2 &pos, const bool& modif
             return true;
         }
     }
-    switch(step){
+    switch (step) {
     case FreePositionXY:
         /* Set placing position on XY plane. */
         planet.position += glm::rotateZ(glm::vec3(pos.x, -pos.y, 0.0f) * camera.distance, -camera.zrotation);
@@ -164,7 +164,7 @@ bool PlacingInterface::handleAnalogStick(const glm::vec2 &pos, const bool& modif
         planet.velocity = glm::vec3(rotation[2]) * glm::length(planet.velocity);
         return true;
     case OrbitalPlanet:
-        if(universe.isSelectedValid()){
+        if (universe.isSelectedValid()) {
             /* In this step the planet is locked at the same z coord as the one it's orbiting. */
             planet.position.z = universe.getSelected().position.z;
 
@@ -184,7 +184,7 @@ bool PlacingInterface::handleAnalogStick(const glm::vec2 &pos, const bool& modif
         }
         break;
     case OrbitalPlane:
-        if(universe.isSelectedValid()){
+        if (universe.isSelectedValid()) {
             /* TODO - this doesn't work as well as it did with the mouse, need to find a better method */
             rotation *= glm::rotate(pos.x, glm::vec3(1.0f, 0.0f, 0.0f));
             rotation *= glm::rotate(pos.y, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -199,19 +199,19 @@ bool PlacingInterface::handleAnalogStick(const glm::vec2 &pos, const bool& modif
     return false;
 }
 
-void PlacingInterface::enableFiringMode(bool enable){
-    if(enable){
+void PlacingInterface::enableFiringMode(bool enable) {
+    if (enable) {
         step = Firing;
         universe.resetSelected();
-    }else if(step == Firing){
+    } else if (step == Firing) {
         step = NotPlacing;
     }
 }
 
-void PlacingInterface::beginInteractiveCreation(){
+void PlacingInterface::beginInteractiveCreation() {
     step = FreePositionXY; universe.resetSelected();
 }
 
-void PlacingInterface::beginOrbitalCreation(){
+void PlacingInterface::beginOrbitalCreation() {
     if(universe.isSelectedValid()) step = OrbitalPlanet;
 }

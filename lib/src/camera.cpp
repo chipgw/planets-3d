@@ -47,16 +47,15 @@ const glm::mat4 &Camera::setup(){
     case PlainAverage:
         if(universe.size() != 0){
             position = glm::vec3();
-            for(const auto& i : universe){
+            for(const auto& i : universe)
                 position += i.second.position;
-            }
+
             position /= universe.size();
         }
         break;
     case Single:
-        if(universe.isValid(following)){
+        if(universe.isValid(following))
             position = universe[following].position;
-        }
         break;
     }
 
@@ -111,13 +110,12 @@ void Camera::followNext(){
         followingState = Single;
         PlanetsUniverse::const_iterator current = universe.find(following);
 
-        if(current == universe.cend()){
+        if(current == universe.cend())
             /* If the planet was not found, start at the beginning. */
             current = universe.cbegin();
-        }else if(++current == universe.cend()){
+        else if(++current == universe.cend())
             /* If the planet was the last planet in the list, start at the beginning. */
             current = universe.cbegin();
-        }
 
         /* Get the key back from the iterator. */
         following = current->first;
@@ -134,9 +132,8 @@ void Camera::followPrevious(){
             current = universe.cbegin();
         }else{
             /* If the planet was the first planet in the list, start at the end. */
-            if(current == universe.cbegin()){
+            if(current == universe.cbegin())
                 current = universe.cend();
-            }
             --current;
         }
 

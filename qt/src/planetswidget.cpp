@@ -143,9 +143,8 @@ void PlanetsWidget::paintGL() {
     int delay = frameTime.nsecsElapsed() / 1000;
     frameTime.start();
 
-    if(placing.step == PlacingInterface::NotPlacing || placing.step == PlacingInterface::Firing){
+    if(placing.step == PlacingInterface::NotPlacing || placing.step == PlacingInterface::Firing)
         universe.advance(delay);
-    }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -163,9 +162,8 @@ void PlanetsWidget::paintGL() {
         highResSphereVerts.bind();
         highResSphereTris.bind();
 
-        for(const auto& i : universe){
+        for(const auto& i : universe)
             drawPlanet(i.second);
-        }
 
         highResSphereVerts.release();
         highResSphereTris.release();
@@ -179,13 +177,11 @@ void PlanetsWidget::paintGL() {
     lowResSphereVerts.bind();
     lowResSphereLines.bind();
 
-    if(drawPlanetColors){
-        for(const auto& i : universe){
+    if(drawPlanetColors)
+        for(const auto& i : universe)
             drawPlanetWireframe(i.second, i.first);
-        }
-    }else if(!hidePlanets && universe.isSelectedValid()){
+    else if(!hidePlanets && universe.isSelectedValid())
         drawPlanetWireframe(universe.getSelected());
-    }
 
     lowResSphereVerts.release();
     lowResSphereLines.release();
@@ -326,9 +322,8 @@ void PlanetsWidget::paintGL() {
         filename = filename.arg(i, 4, 10, QChar('0'));
 
         QImage img = grabFramebuffer();
-        if(!img.isNull() && img.save(filename)){
+        if(!img.isNull() && img.save(filename))
             qDebug("Screenshot saved to: %s", qPrintable(filename));
-        }
     }
 
     update();
@@ -336,11 +331,10 @@ void PlanetsWidget::paintGL() {
     emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(++frameCount * 1.0e3f / totalTime.elapsed()));
     emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e6f / delay));
 
-    if(universe.size() == 1){
+    if(universe.size() == 1)
         emit updatePlanetCountMessage(tr("1 planet"));
-    }else{
+    else
         emit updatePlanetCountMessage(tr("%1 planets").arg(universe.size()));
-    }
 }
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
@@ -397,9 +391,8 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
 void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     if(e->button() == Qt::LeftButton){
         glm::ivec2 pos(e->x(), e->y());
-        if(!placing.handleMouseClick(pos, camera)){
+        if(!placing.handleMouseClick(pos, camera))
             camera.selectUnder(pos);
-        }
     }
 }
 
