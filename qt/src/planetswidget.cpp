@@ -286,7 +286,7 @@ void PlanetsWidget::paintGL() {
     }
 
     if(grid.draw){
-        grid.update(camera.camera);
+        grid.update(camera);
 
         /* The grid doesn't write to the depth buffer. */
         glDepthMask(GL_FALSE);

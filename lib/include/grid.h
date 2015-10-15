@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include "platform.h"
 
+class Camera;
+
 class Grid {
 public:
     EXPORT Grid();
@@ -18,7 +20,7 @@ public:
     float alphafac;
 
     /* Update all contained generated data. */
-    EXPORT void update(const glm::mat4 &camera);
+    EXPORT void update(const Camera &camera);
 
     /* Toggle drawing the grid. */
     inline void toggle() { draw = !draw; }

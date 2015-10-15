@@ -24,6 +24,7 @@ PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera
     initSDL();
     initGL();
 
+    /* Try loading from the command line. Ignore invalid files and break on the first successful file. */
     std::string err;
     for (int i = 0; i < argc; ++i)
         if(universe.load(argv[i], err)) break;
@@ -51,7 +52,7 @@ void PlanetsWindow::initSDL() {
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     windowSDL = SDL_CreateWindow("Planets3D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600,
-                                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
+                                 SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
 
     if (!windowSDL) {
         printf("ERROR: Unable to create window!");
@@ -113,7 +114,7 @@ unsigned int PlanetsWindow::loadTexture(const char* filename) {
         std::string err(IMG_GetError());
         err.erase(err.find('\r'));
 
-        printf("Failed to load texture! Error: %s", err.c_str());
+        printf("Failed to load texture! Error: %s\n", err.c_str());
 
         return 0;
     }
@@ -142,7 +143,7 @@ GLuint compileShader(const char *source, GLenum shaderType) {
 
     glCompileShader(shader);
 
-    int isCompiled,maxLength;
+    int isCompiled, maxLength;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
 
@@ -161,7 +162,7 @@ GLuint compileShader(const char *source, GLenum shaderType) {
             delete[] infoLog;
         }
     }else if (isCompiled == GL_FALSE) {
-        printf("ERROR: failed to compile shader! No log availible.");
+        printf("ERROR: failed to compile shader! No log availible.\n");
         return 0;
     }
     return shader;
@@ -194,7 +195,7 @@ int linkShaderProgram(GLuint vsh, GLuint fsh) {
             delete[] infoLog;
         }
     } else if (isLinked == GL_FALSE) {
-        printf("ERROR: failed to link shader program! No log availible.");
+        printf("ERROR: failed to link shader program! No log availible.\n");
         return 0;
     }
 
@@ -394,7 +395,7 @@ void PlanetsWindow::paint() {
     }
 
     if (grid.draw) {
-        grid.update(camera.camera);
+        grid.update(camera);
 
         glDepthMask(GL_FALSE);
 
@@ -417,6 +418,7 @@ void PlanetsWindow::paint() {
         glDepthMask(GL_TRUE);
     }
 
+    /* If there is a controller attatched, we aren't placing, and we aren't following anything, draw a little circle in the center of the screen. */
     if (controller != nullptr && placing.step == PlacingInterface::NotPlacing && camera.followingState == Camera::FollowNone) {
         glDisable(GL_DEPTH_TEST);
 
