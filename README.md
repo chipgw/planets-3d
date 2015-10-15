@@ -1,6 +1,6 @@
 Planets3D
 =========
-is a 3D gravitational simulator inspired by Planets (planets.homedns.org)
+is a 3D gravitational simulator.
 
 Dependencies:
 -------------
