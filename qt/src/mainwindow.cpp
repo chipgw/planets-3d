@@ -51,9 +51,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     averagefpsLabel->setFixedWidth(160);
 
     /* Connect the statusbar labels to the correct signals. */
-    connect(ui->centralwidget, &PlanetsWidget::updatePlanetCountMessage,      planetCountLabel, &QLabel::setText);
-    connect(ui->centralwidget, &PlanetsWidget::updateFPSStatusMessage,        fpsLabel,         &QLabel::setText);
-    connect(ui->centralwidget, &PlanetsWidget::updateAverageFPSStatusMessage, averagefpsLabel,  &QLabel::setText);
+    connect(ui->centralwidget, &PlanetsWidget::updatePlanetCountMessage,        planetCountLabel,   &QLabel::setText);
+    connect(ui->centralwidget, &PlanetsWidget::updateFPSStatusMessage,          fpsLabel,           &QLabel::setText);
+    connect(ui->centralwidget, &PlanetsWidget::updateAverageFPSStatusMessage,   averagefpsLabel,    &QLabel::setText);
+    connect(ui->centralwidget, &PlanetsWidget::statusBarMessage,                ui->statusbar,      &QStatusBar::showMessage);
 
     /* Add the actions in the tools toolbar to the menubar. */
     ui->menubar->insertMenu(ui->menuHelp->menuAction(), createPopupMenu())->setText(tr("Tools"));

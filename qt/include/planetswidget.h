@@ -91,6 +91,7 @@ signals:
     void updateFPSStatusMessage(const QString &text);
     void updateAverageFPSStatusMessage(const QString &text);
     void updatePlanetCountMessage(const QString &text);
+    void statusBarMessage(const QString &text, int timeout = 0);
 
 public slots:
     /* Slots for placing functions. */
