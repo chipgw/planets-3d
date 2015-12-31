@@ -1,15 +1,15 @@
 #include "planetswidget.h"
 #include <QDir>
 #include <QMouseEvent>
+#include <QOpenGLFramebufferObject>
 #include <limits>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent),
-    doScreenshot(false), frameCount(0), placing(universe), drawScale(1.0f),
-    camera(universe), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent), frameCount(0), placing(universe),
+    drawScale(1.0f), camera(universe), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/"), highResSphereTris(QOpenGLBuffer::IndexBuffer),
     lowResSphereLines(QOpenGLBuffer::IndexBuffer), circleLines(QOpenGLBuffer::IndexBuffer) {
 
@@ -143,35 +143,57 @@ void PlanetsWidget::paintGL() {
     int delay = frameTime.nsecsElapsed() / 1000;
     frameTime.start();
 
-    if(placing.step == PlacingInterface::NotPlacing || placing.step == PlacingInterface::Firing)
+    /* Don't advance if placing. */
+    if (placing.step == PlacingInterface::NotPlacing || placing.step == PlacingInterface::Firing)
         universe.advance(delay);
 
+    render();
+
+    update();
+
+    emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(++frameCount * 1.0e3f / totalTime.elapsed()));
+    emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e6f / delay));
+
+    if (universe.size() == 1)
+        emit updatePlanetCountMessage(tr("1 planet"));
+    else
+        emit updatePlanetCountMessage(tr("%1 planets").arg(universe.size()));
+}
+
+void PlanetsWidget::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     camera.setup();
 
-    if(!hidePlanets){
+    if (!hidePlanets) {
+        /* Only used for drawing the planets. */
         shaderTexture.bind();
+
+        /* Upload the updated camera matrix. */
         glUniformMatrix4fv(shaderTexture_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
-        shaderTexture.setUniformValue(shaderTexture_modelMatrix, QMatrix4x4());
 
         shaderTexture.enableAttributeArray(uv);
 
+        /* Our one and only texture, which apparently doesn't stay bound between frames... */
         texture->bind();
 
         highResSphereVerts.bind();
         highResSphereTris.bind();
 
-        for(const auto& i : universe)
+        for (const auto& i : universe)
             drawPlanet(i.second);
 
         highResSphereVerts.release();
         highResSphereTris.release();
 
+        /* That's the only thing that uses the uv coords. */
         shaderTexture.disableAttributeArray(uv);
     }
 
+    /* Everything else uses the color shader. */
     shaderColor.bind();
+
+    /* Upload the updated camera matrix. */
     glUniformMatrix4fv(shaderColor_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
 
     lowResSphereVerts.bind();
@@ -186,27 +208,28 @@ void PlanetsWidget::paintGL() {
     lowResSphereVerts.release();
     lowResSphereLines.release();
 
-    if(drawPlanetTrails){
+    if (drawPlanetTrails) {
         shaderColor.setUniformValue(shaderColor_modelMatrix, QMatrix4x4());
         shaderColor.setUniformValue(shaderColor_color, trailColor);
 
-        for(const auto& i : universe){
+        for (const auto& i : universe) {
             shaderColor.setAttributeArray(vertex, GL_FLOAT, i.second.path.data(), 3);
             glDrawArrays(GL_LINE_STRIP, 0, GLsizei(i.second.path.size()));
         }
     }
 
-    switch(placing.step){
+    switch (placing.step) {
     case PlacingInterface::FreeVelocity:{
         float length = glm::length(placing.planet.velocity) / universe.velocityfac;
 
-        if(length > 0.0f){
+        if (length > 0.0f) {
             glm::mat4 matrix = glm::translate(placing.planet.position);
             matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
             matrix *= placing.rotation;
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
             shaderColor.setUniformValue(shaderColor_color, trailColor);
 
+            /* A simple arrow. */
             float verts[] = {  0.1f, 0.1f, 0.0f,
                                0.1f,-0.1f, 0.0f,
                               -0.1f,-0.1f, 0.0f,
@@ -285,7 +308,7 @@ void PlanetsWidget::paintGL() {
     default: break;
     }
 
-    if(grid.draw){
+    if (grid.draw) {
         grid.update(camera);
 
         /* The grid doesn't write to the depth buffer. */
@@ -312,29 +335,43 @@ void PlanetsWidget::paintGL() {
 
         glDepthMask(GL_TRUE);
     }
+}
 
-    if(doScreenshot){
-        doScreenshot = false;
+void PlanetsWidget::takeScreenshot() {
+    QElapsedTimer t;
+    t.start();
 
-        QString filename = screenshotDir.absoluteFilePath("shot%1.png");
-        int i = 0;
-        while(QFile::exists(filename.arg(++i, 4, 10, QChar('0'))));
-        filename = filename.arg(i, 4, 10, QChar('0'));
+    makeCurrent();
 
-        QImage img = grabFramebuffer();
-        if(!img.isNull() && img.save(filename))
-            statusBarMessage("Screenshot saved to: " + filename, 10000);
-    }
+    QString filename = screenshotDir.absoluteFilePath("shot%1.png");
+    int i = 0;
+    while (QFile::exists(filename.arg(++i, 4, 10, QChar('0'))));
+    filename = filename.arg(i, 4, 10, QChar('0'));
 
-    update();
+    QOpenGLFramebufferObjectFormat fmt;
+    /* Skip the Alpha component. */
+    fmt.setInternalTextureFormat(GL_RGB);
+    /* We need a depth buffer. */
+    fmt.setAttachment(QOpenGLFramebufferObject::Depth);
 
-    emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(++frameCount * 1.0e3f / totalTime.elapsed()));
-    emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e6f / delay));
+    /* Basically we just want as many as possible if they're supported. */
+    if (context()->hasExtension("GL_EXT_framebuffer_multisample") && context()->hasExtension("GL_EXT_framebuffer_blit"))
+        fmt.setSamples(64);
 
-    if(universe.size() == 1)
-        emit updatePlanetCountMessage(tr("1 planet"));
-    else
-        emit updatePlanetCountMessage(tr("%1 planets").arg(universe.size()));
+    /* TODO - It would be easy enough to make this support arbitrarily sized screenshots.
+     * The camera and viewport would have to be resized though, and there would need to be UI for it... */
+    QOpenGLFramebufferObject sample(this->size(), fmt);
+    sample.bind();
+
+    render();
+
+    /* Get the image to save. */
+    QImage img = sample.toImage();
+
+    if (!img.isNull() && img.save(filename))
+        statusBarMessage(("Screenshot saved to: \"" + filename + "\", operation took %1ms").arg(t.elapsed()) , 10000);
+
+    doneCurrent();
 }
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){

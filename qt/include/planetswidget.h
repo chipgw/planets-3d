@@ -35,9 +35,6 @@ private:
 
     Camera camera;
 
-    /* If true paintGL will save a screenshot after rendering a frame. */
-    bool doScreenshot;
-
     /* Total amount of frames drawn since the creation of the widget. */
     int frameCount;
     /* The desired refresh rate, in milliseconds. */
@@ -99,7 +96,7 @@ public slots:
     void enableFiringMode(bool enable){ placing.enableFiringMode(enable); }
     void beginOrbitalCreation(){ placing.beginOrbitalCreation(); }
 
-    void takeScreenshot(){ doScreenshot = true; }
+    void takeScreenshot();
 
     void setGridRange(int value) { grid.range = value; }
 
@@ -116,6 +113,8 @@ protected:
     void initializeGL();
     void resizeGL(int width, int height);
     void paintGL();
+
+    void render();
 
     /* Mouse event functions, these pass data to the PlacingInterface. */
     void mouseMoveEvent(QMouseEvent* e);
