@@ -178,14 +178,21 @@ void MainWindow::on_actionOpen_Simulation_triggered() {
     std::string err;
     if (!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err))
         QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
+    else
+        ui->statusbar->showMessage(("Loaded %1 planets from to \"" + filename + '"').arg(ui->centralwidget->universe.size()), 8000);
 }
 
 void MainWindow::on_actionAppend_Simulation_triggered() {
     QString filename = QFileDialog::getOpenFileName(this, tr("Append Simulation"), "", tr("Simulation files (*.xml);;All Files (*.*)"));
 
     std::string err;
+    /* So we can tell how many were added. */
+    auto previousSize = ui->centralwidget->universe.size();
+
     if (!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err, false))
         QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
+    else
+        ui->statusbar->showMessage(("Loaded %1 planets from to \"" + filename + '"').arg(ui->centralwidget->universe.size() - previousSize), 8000);
 }
 
 bool MainWindow::on_actionSave_Simulation_triggered(){
@@ -195,8 +202,10 @@ bool MainWindow::on_actionSave_Simulation_triggered(){
         if (!filename.isEmpty()) {
             std::string err;
 
-            if (ui->centralwidget->universe.save(filename.toStdString(), err))
+            if (ui->centralwidget->universe.save(filename.toStdString(), err)) {
+                ui->statusbar->showMessage("Simulation saved to \"" + filename + '"', 8000);
                 return true;
+            }
 
             QMessageBox::warning(this, tr("Error Saving Simulation."), QString::fromStdString(err));
         }
