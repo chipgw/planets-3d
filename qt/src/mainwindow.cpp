@@ -95,6 +95,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         ui->stepsPerFrameSpinBox->setValue(settings.value(settingStepsPerFrame).toInt());
 
     setAcceptDrops(true);
+
+    updateRecentFileActions();
 }
 
 MainWindow::~MainWindow() {
@@ -178,8 +180,10 @@ void MainWindow::on_actionOpen_Simulation_triggered() {
     std::string err;
     if (!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err))
         QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
-    else
+    else {
         ui->statusbar->showMessage(("Loaded %1 planets from to \"" + filename + '"').arg(ui->centralwidget->universe.size()), 8000);
+        addRecentFile(filename);
+    }
 }
 
 void MainWindow::on_actionAppend_Simulation_triggered() {
@@ -191,8 +195,10 @@ void MainWindow::on_actionAppend_Simulation_triggered() {
 
     if (!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err, false))
         QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
-    else
+    else {
         ui->statusbar->showMessage(("Loaded %1 planets from to \"" + filename + '"').arg(ui->centralwidget->universe.size() - previousSize), 8000);
+        addRecentFile(filename);
+    }
 }
 
 bool MainWindow::on_actionSave_Simulation_triggered(){
@@ -204,6 +210,7 @@ bool MainWindow::on_actionSave_Simulation_triggered(){
 
             if (ui->centralwidget->universe.save(filename.toStdString(), err)) {
                 ui->statusbar->showMessage("Simulation saved to \"" + filename + '"', 8000);
+                addRecentFile(filename);
                 return true;
             }
 
@@ -294,6 +301,73 @@ void MainWindow::on_generateRandomPushButton_clicked() {
                                                    ui->randomMassDoubleSpinBox->value());
     }
 }
+
+void MainWindow::on_actionClear_triggered() {
+    settings.remove("Recent");
+    updateRecentFileActions();
+}
+
+void MainWindow::addRecentFile(const QString& filename) {
+    if (QFile::exists(filename)) {
+        /* Get the existing list. */
+        QStringList recent = settings.value("Recent").toStringList();
+
+        /* Front = first on the list, which is where the newest entry goes. */
+        recent.push_front(filename);
+
+        /* No duplicates allowed. */
+        recent.removeDuplicates();
+
+        /* Save them and update the menu. */
+        settings.setValue("Recent", recent);
+        updateRecentFileActions();
+    }
+}
+
+void MainWindow::updateRecentFileActions() {
+    /* Remove any existing actions from the menu. */
+    for (QAction* action : recentFileActions) {
+        ui->menuRecent_Files->removeAction(action);
+        delete action;
+    }
+    recentFileActions.clear();
+
+    for (const QString& filename : settings.value("Recent").toStringList()) {
+        QFileInfo file(filename);
+        /* The action text itself is just the file name without the path. */
+        QAction* action = new QAction(file.fileName(), this);
+
+        /* Store the full path in the tooltip. */
+        action->setToolTip(file.absoluteFilePath());
+
+        /* Connect it to our generic slot for recent file actions. */
+        connect(action, &QAction::triggered, this, &MainWindow::openRecentFile);
+
+        /* Throw it into the list. */
+        recentFileActions.append(action);
+    }
+    /* Put them before the first item in the menu, which would be the separator. */
+    ui->menuRecent_Files->insertActions(ui->menuRecent_Files->actions()[0], recentFileActions);
+}
+
+void MainWindow::openRecentFile() {
+    /* Getthe QAction that sent the signal. If it wasn't a QAction, just ignore it. */
+    if (QAction* action = qobject_cast<QAction*>(sender())) {
+        std::string err;
+        /* tooltip = full path to the file. */
+        QString path = action->toolTip();
+
+        if (!ui->centralwidget->universe.load(path.toStdString(), err))
+            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
+        else {
+            ui->statusbar->showMessage(("Loaded %1 planets from to \"" + path + '"').arg(ui->centralwidget->universe.size()), 8000);
+
+            /* Even though it is already in recent we add it, so it will be on top. */
+            addRecentFile(path);
+        }
+    }
+}
+
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
     if (event->mimeData()->hasUrls()){

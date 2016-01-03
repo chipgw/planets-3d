@@ -31,11 +31,19 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuRecent_Files">
+     <property name="title">
+      <string>Recent Files</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="actionClear"/>
+    </widget>
     <addaction name="actionNew_Simulation"/>
     <addaction name="actionOpen_Simulation"/>
     <addaction name="actionAppend_Simulation"/>
     <addaction name="actionSave_Simulation"/>
     <addaction name="separator"/>
+    <addaction name="menuRecent_Files"/>
     <addaction name="actionTake_Screenshot"/>
     <addaction name="actionExit"/>
    </widget>
@@ -901,6 +909,11 @@
   <action name="actionNext_Planet">
    <property name="text">
     <string>&amp;Next Planet</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
    </property>
   </action>
  </widget>

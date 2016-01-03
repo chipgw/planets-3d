@@ -29,7 +29,6 @@ private slots:
     void on_actionOpen_Simulation_triggered();
     void on_actionAppend_Simulation_triggered();
     bool on_actionSave_Simulation_triggered();
-
     void on_actionAbout_triggered();
 
     void on_stepsPerFrameSpinBox_valueChanged(int value);
@@ -47,6 +46,10 @@ private slots:
 
     void on_randomOrbitalCheckBox_toggled(bool checked);
     void on_generateRandomPushButton_clicked();
+
+    void openRecentFile();
+
+    void on_actionClear_triggered();
 
 private:
     /* String keys for settings. */
@@ -73,6 +76,12 @@ private:
     QLabel *planetCountLabel;
     QLabel *fpsLabel;
     QLabel *averagefpsLabel;
+
+    QStringList getRecentFiles();
+    void addRecentFile(const QString& filename);
+    void updateRecentFileActions();
+
+    QList<QAction*> recentFileActions;
 
     void closeEvent(QCloseEvent *e);
 
