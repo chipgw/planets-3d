@@ -17,6 +17,10 @@ class QMouseEvent;
 #include <QOpenGLWidget>
 #include <QOpenGLBuffer>
 
+#ifdef PLANETS3D_QT_USE_SDL_GAMEPAD
+#include <SDL_gamecontroller.h>
+#endif
+
 class PlanetsWidget : public QOpenGLWidget, public QOpenGLFunctions {
     Q_OBJECT
 private:
@@ -61,6 +65,26 @@ private:
     unsigned int circleLineCount;
 
     const static QColor trailColor;
+
+#ifdef PLANETS3D_QT_USE_SDL_GAMEPAD
+    /* The currently active gamepad. */
+    SDL_GameController* controller = nullptr;
+
+    /* Are we using the speed trigger?
+     * Set to true when trigger leaves deadzone,
+     * set to false when speed is locked or it enters the deadzone. */
+    bool speedTriggerInUse;
+    /* Previous value retrieved from the speed trigger.
+     * Used when checking if the trigger has left the deadzone. */
+    int16_t speedTriggerLast;
+
+    void initSDL();
+
+    void pollGamepad();
+
+    void doControllerButtonPress(const Uint8 &button);
+    void doControllerAxisInput(int64_t delay);
+#endif
 
 public:
     PlanetsWidget(QWidget *parent = nullptr);

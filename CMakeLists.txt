@@ -13,6 +13,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 option(PLANETS3D_QT5 "Build Qt Interface Executable" OFF)
 option(PLANETS3D_SDL "Build SDL Interface Executable" OFF)
+option(PLANETS3D_QT_USE_SDL_GAMEPAD "Use SDL library for gamepad support in Qt executable." OFF)
 option(PLANETS3D_BUILD_TINYXML "Look for TinyXML source files in \"tinyxml\" folder, and build as a static library." OFF)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/include" "${CMAKE_CURRENT_SOURCE_DIR}/lib" "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -55,6 +56,11 @@ else(PLANETS3D_BUILD_TINYXML)
     target_link_libraries(${PROJECT_NAME} ${TINYXML_LIBRARIES})
 endif(PLANETS3D_BUILD_TINYXML)
 
+if(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
+    find_package(SDL2 REQUIRED)
+    include_directories(${SDL2_INCLUDE_DIR})
+endif(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
+
 #---------------------------------------------
 # SDL Interface
 #---------------------------------------------
@@ -75,8 +81,6 @@ if(PLANETS3D_SDL)
 
     add_executable(${PROJECT_NAME}_sdl WIN32 ${SDL_SOURCES} ${SDL_HEADERS} ${SDL_WINDRES} ${SDL_SHADERS})
 
-    find_package(SDL2 REQUIRED)
-    include_directories(${SDL2_INCLUDE_DIR})
     target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_LIBRARY})
 
     if(MSVC)
@@ -131,4 +135,10 @@ if(PLANETS3D_QT5)
     add_executable(${PROJECT_NAME}_qt WIN32 ${QT_SOURCES} ${QT_FORM_CODE} ${QT_HEADERS} ${QT_RESOURCES_RCC} ${QT_WINDRES} ${QT_SHADERS})
 
     target_link_libraries(${PROJECT_NAME}_qt Qt5::OpenGL Planets3D)
+
+    if(PLANETS3D_QT_USE_SDL_GAMEPAD)
+        string(REPLACE ${SDL2MAIN_LIBRARY} "" SDL2_LIB_NO_MAIN ${SDL2_LIBRARY})
+        target_link_libraries(${PROJECT_NAME}_qt ${SDL2_LIB_NO_MAIN})
+        add_definitions(-DPLANETS3D_QT_USE_SDL_GAMEPAD)
+    endif(PLANETS3D_QT_USE_SDL_GAMEPAD)
 endif(PLANETS3D_QT5)
