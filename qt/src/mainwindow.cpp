@@ -370,22 +370,23 @@ void MainWindow::openRecentFile() {
 
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
-    if (event->mimeData()->hasUrls()){
-        for (const QUrl& url : event->mimeData()->urls()) {
-            /* Only accept local files. */
-            if (QFile::exists(url.toLocalFile()))
-                /* TODO - perhaps this should filter to XML files... */
-                return event->acceptProposedAction();
-        }
-    }
+    for (const QUrl& url : event->mimeData()->urls())
+        /* Only accept local files. */
+        if (QFile::exists(url.toLocalFile()))
+            /* TODO - perhaps this should filter to XML files... */
+            return event->acceptProposedAction();
 }
 
 void MainWindow::dropEvent(QDropEvent *event) {
-    if (event->mimeData()->hasUrls()){
-        for (const QUrl& url : event->mimeData()->urls()){
-            std::string err;
-            if (ui->centralwidget->universe.load(url.toLocalFile().toStdString(), err))
-                return event->acceptProposedAction();
+    std::string err;
+    for (const QUrl& url : event->mimeData()->urls()) {
+        if (!ui->centralwidget->universe.load(url.toLocalFile().toStdString(), err))
+            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
+        else {
+            ui->statusbar->showMessage(("Loaded %1 planets from to \"" + url.toLocalFile() + '"').arg(ui->centralwidget->universe.size()), 8000);
+
+            addRecentFile(url.toLocalFile());
+            return event->acceptProposedAction();
         }
     }
 }
