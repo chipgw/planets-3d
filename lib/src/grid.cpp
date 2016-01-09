@@ -31,8 +31,12 @@ void Grid::update(const Camera& camera) {
         }
     }
 
-    /* Use the camera matrix to approximate the distance from the universe center. */
+    /* Use the camera distance & position to calculate the grid size. */
     float distance = glm::pow(glm::length(camera.position) + camera.distance, 2.0/3.0);
+
+    /* The scale is distance rounded to the nearest power of two. */
     scale = float(highBit(uint32_t(distance)));
+
+    /* How much of a difference is there between the distance value and the scale value? */
     alphafac = distance / scale - 1.0f;
 }

@@ -12,16 +12,6 @@ PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent), frameCoun
     drawScale(1.0f), camera(universe), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/"), highResSphereTris(QOpenGLBuffer::IndexBuffer),
     lowResSphereLines(QOpenGLBuffer::IndexBuffer), circleLines(QOpenGLBuffer::IndexBuffer) {
-
-    /* The screenshot directory I used to use. Someday I'll remove this movement code... */
-    if(!screenshotDir.exists()){
-        QDir oldDir = QDir::homePath() + "/Pictures/Planets3D Screenshots/";
-        if(oldDir.exists())
-            oldDir.rename(oldDir.absolutePath(), screenshotDir.absolutePath());
-        else
-            screenshotDir.mkpath(screenshotDir.absolutePath());
-    }
-
     /* We want mouse movement events. */
     setMouseTracking(true);
 
