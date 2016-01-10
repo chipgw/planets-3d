@@ -51,6 +51,9 @@ private slots:
 
     void on_actionClear_triggered();
 
+    /* Called on GL frame swap to update status bar messages and any other controls that may need it. */
+    void frameUpdate();
+
 private:
     /* String keys for settings. */
     const static QString categoryMainWindow;

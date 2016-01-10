@@ -51,9 +51,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     averagefpsLabel->setFixedWidth(160);
 
     /* Connect the statusbar labels to the correct signals. */
-    connect(ui->centralwidget, &PlanetsWidget::updatePlanetCountMessage,        planetCountLabel,   &QLabel::setText);
     connect(ui->centralwidget, &PlanetsWidget::updateFPSStatusMessage,          fpsLabel,           &QLabel::setText);
     connect(ui->centralwidget, &PlanetsWidget::updateAverageFPSStatusMessage,   averagefpsLabel,    &QLabel::setText);
+    connect(ui->centralwidget, &PlanetsWidget::frameSwapped,                    this,               &MainWindow::frameUpdate);
     connect(ui->centralwidget, &PlanetsWidget::statusBarMessage,                ui->statusbar,      &QStatusBar::showMessage);
 
     /* Add the actions in the tools toolbar to the menubar. */
@@ -407,6 +407,16 @@ bool MainWindow::event(QEvent *event) {
     default: break;
     }
     return QMainWindow::event(event);
+}
+
+void MainWindow::frameUpdate() {
+    if (ui->centralwidget->universe.size() == 1)
+        planetCountLabel->setText(tr("1 planet"));
+    else
+        planetCountLabel->setText(tr("%1 planets").arg(ui->centralwidget->universe.size()));
+
+    if (int(ui->centralwidget->universe.simspeed * ui->speed_Dial->maximum() / speeddialmax) != ui->speed_Dial->value())
+        ui->speed_Dial->setValue(int(ui->centralwidget->universe.simspeed * ui->speed_Dial->maximum() / speeddialmax));
 }
 
 const int MainWindow::speeddialmax = 32;

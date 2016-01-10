@@ -152,11 +152,6 @@ void PlanetsWidget::paintGL() {
 
     emit updateAverageFPSStatusMessage(tr("average fps: %1").arg(++frameCount * 1.0e3f / totalTime.elapsed()));
     emit updateFPSStatusMessage(tr("fps: %1").arg(1.0e6f / delay));
-
-    if (universe.size() == 1)
-        emit updatePlanetCountMessage(tr("1 planet"));
-    else
-        emit updatePlanetCountMessage(tr("%1 planets").arg(universe.size()));
 }
 
 void PlanetsWidget::render() {
