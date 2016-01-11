@@ -201,7 +201,7 @@ void MainWindow::on_actionAppend_Simulation_triggered() {
     }
 }
 
-bool MainWindow::on_actionSave_Simulation_triggered(){
+bool MainWindow::on_actionSave_Simulation_triggered() {
     if (!ui->centralwidget->universe.isEmpty()) {
         QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
 

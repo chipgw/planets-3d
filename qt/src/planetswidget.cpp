@@ -121,7 +121,8 @@ void PlanetsWidget::initializeGL() {
 
     /* End vertex/index buffer allocation. */
 
-    if(frameCount == 0){
+    /* If we haven't rendered any frames yet, start the timer. */
+    if (frameCount == 0) {
         totalTime.start();
         frameTime.start();
     }
@@ -213,7 +214,7 @@ void PlanetsWidget::render() {
     }
 
     switch (placing.step) {
-    case PlacingInterface::FreeVelocity:{
+    case PlacingInterface::FreeVelocity: {
         float length = glm::length(placing.planet.velocity) / universe.velocityfac;
 
         if (length > 0.0f) {
@@ -274,7 +275,7 @@ void PlanetsWidget::render() {
         break;
     case PlacingInterface::OrbitalPlane:
     case PlacingInterface::OrbitalPlanet:
-        if(universe.isSelectedValid() && placing.orbitalRadius > 0.0f){
+        if (universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
             glm::mat4 matrix = glm::translate(universe.getSelected().position);
             matrix = glm::scale(matrix, glm::vec3(placing.orbitalRadius));
             matrix *= placing.rotation;
@@ -368,18 +369,18 @@ void PlanetsWidget::takeScreenshot() {
     doneCurrent();
 }
 
-void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
+void PlanetsWidget::mouseMoveEvent(QMouseEvent* e) {
     glm::ivec2 delta(lastMousePos.x() - e->x(), lastMousePos.y() - e->y());
 
     bool holdCursor = false;
 
-    if(!placing.handleMouseMove(glm::ivec2(e->x(), e->y()), delta, camera, holdCursor)){
-        if(e->buttons().testFlag(Qt::MiddleButton) || e->buttons().testFlag(Qt::RightButton)){
-            if(e->modifiers().testFlag(Qt::ControlModifier)){
+    if (!placing.handleMouseMove(glm::ivec2(e->x(), e->y()), delta, camera, holdCursor)) {
+        if (e->buttons().testFlag(Qt::MiddleButton) || e->buttons().testFlag(Qt::RightButton)) {
+            if (e->modifiers().testFlag(Qt::ControlModifier)) {
                 camera.distance -= delta.y * camera.distance * 1.0e-2f;
                 setCursor(Qt::SizeVerCursor);
                 camera.bound();
-            }else{
+            } else {
                 camera.xrotation += delta.y * 0.01f;
                 camera.zrotation += delta.x * 0.01f;
 
@@ -389,7 +390,7 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e){
             }
         }
     }
-    if(holdCursor){
+    if (holdCursor) {
         QCursor::setPos(mapToGlobal(lastMousePos));
         setCursor(Qt::BlankCursor);
     } else {
@@ -401,10 +402,10 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
     switch(e->button()){
     case Qt::LeftButton:
         /* Double clicking the left button while not placing sets or clears the planet currently being followed. */
-        if(placing.step == PlacingInterface::NotPlacing){
-            if(universe.isSelectedValid()){
+        if (placing.step == PlacingInterface::NotPlacing) {
+            if (universe.isSelectedValid()) {
                 camera.followSelection();
-            }else{
+            } else {
                 camera.clearFollow();
                 camera.position = glm::vec3();
             }
@@ -432,14 +433,14 @@ void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
 }
 
 void PlanetsWidget::wheelEvent(QWheelEvent* e){
-    if(!placing.handleMouseWheel(e->delta() * 1.0e-3f)){
+    if (!placing.handleMouseWheel(e->delta() * 1.0e-3f)) {
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;
 
         camera.bound();
     }
 }
 
-void PlanetsWidget::drawPlanet(const Planet &planet){
+void PlanetsWidget::drawPlanet(const Planet &planet) {
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
     glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
@@ -449,7 +450,7 @@ void PlanetsWidget::drawPlanet(const Planet &planet){
     glDrawElements(GL_TRIANGLES, highResSphereTriCount, GL_UNSIGNED_INT, nullptr);
 }
 
-void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QColor &color){
+void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QColor &color) {
     shaderColor.setUniformValue(shaderColor_color, color);
 
     glm::mat4 matrix = glm::translate(planet.position);
