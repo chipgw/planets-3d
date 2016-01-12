@@ -58,6 +58,9 @@ class PlanetsWindow{
     /* Currently the only texture used. */
     unsigned int planetTexture;
 
+    unsigned int highResVBO, highResTriIBO, highResTriCount;
+    unsigned int lowResVBO, lowResLineIBO, lowResLineCount;
+
     void updateGrid();
 
     /* Called to update universe based on SDL events. */

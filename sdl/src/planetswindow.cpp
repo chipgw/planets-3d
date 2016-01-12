@@ -31,6 +31,11 @@ PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera
 }
 
 PlanetsWindow::~PlanetsWindow() {
+    glDeleteBuffers(1, &highResVBO);
+    glDeleteBuffers(1, &highResTriIBO);
+    glDeleteBuffers(1, &lowResVBO);
+    glDeleteBuffers(1, &lowResLineIBO);
+
     SDL_GL_DeleteContext(contextSDL);
     SDL_DestroyWindow(windowSDL);
 
@@ -104,6 +109,28 @@ void PlanetsWindow::initGL() {
     glEnableVertexAttribArray(vertex);
 
     planetTexture = loadTexture("planet.png");
+
+    Sphere<64, 32> highResSphere;
+    Sphere<32, 16> lowResSphere;
+
+    glGenBuffers(1, &highResVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
+    glBufferData(GL_ARRAY_BUFFER, highResSphere.vertexCount * sizeof(Vertex), highResSphere.verts, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &highResTriIBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, highResSphere.triangleCount * sizeof(uint32_t), highResSphere.triangles, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &lowResVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, lowResVBO);
+    glBufferData(GL_ARRAY_BUFFER, lowResSphere.vertexCount * sizeof(Vertex), lowResSphere.verts, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &lowResLineIBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lowResLineIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, lowResSphere.lineCount * sizeof(uint32_t), lowResSphere.lines, GL_STATIC_DRAW);
+
+    highResTriCount = highResSphere.triangleCount;
+    lowResLineCount = lowResSphere.lineCount;
 }
 
 unsigned int PlanetsWindow::loadTexture(const char* filename) {
@@ -298,6 +325,9 @@ void PlanetsWindow::paint() {
     glUniformMatrix4fv(shaderTexture_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
     glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 
+    glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
+
     for (const auto& i : universe)
         drawPlanet(i.second);
 
@@ -308,9 +338,18 @@ void PlanetsWindow::paint() {
     glUniformMatrix4fv(shaderColor_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 
+    glBindBuffer(GL_ARRAY_BUFFER, lowResVBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lowResLineIBO);
+
     /* Draw a green wireframe sphere around the selected planet if there is one. */
     if (universe.isSelectedValid())
         drawPlanetWireframe(universe.getSelected());
+
+    if (placing.step != PlacingInterface::NotPlacing && placing.step != PlacingInterface::Firing)
+        drawPlanetWireframe(placing.planet);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     /* This color is used for trails, the velocity arrow when free placing, and the orbit circle when placing orbital. */
     glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
@@ -325,8 +364,7 @@ void PlanetsWindow::paint() {
         }
     }
 
-    switch (placing.step) {
-    case PlacingInterface::FreeVelocity: {
+   if (placing.step == PlacingInterface::FreeVelocity) {
         float length = glm::length(placing.planet.velocity) / universe.velocityfac;
 
         if (length > 0.0f) {
@@ -373,25 +411,16 @@ void PlanetsWindow::paint() {
             glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
         }
     }
-    case PlacingInterface::FreePositionXY:
-    case PlacingInterface::FreePositionZ:
-        drawPlanetWireframe(placing.planet);
-        break;
-    case PlacingInterface::OrbitalPlane:
-    case PlacingInterface::OrbitalPlanet:
-        if (universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
-            glm::mat4 matrix = glm::translate(universe.getSelected().position);
-            matrix = glm::scale(matrix, glm::vec3(placing.orbitalRadius));
-            matrix *= placing.rotation;
-            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-            glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(circle.verts[0].position));
-            glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
+    if (placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet &&
+            universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
+        glm::mat4 matrix = glm::translate(universe.getSelected().position);
+        matrix = glm::scale(matrix, glm::vec3(placing.orbitalRadius));
+        matrix *= placing.rotation;
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-            drawPlanetWireframe(placing.planet);
-        }
-        break;
-    default: break;
+        glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(circle.verts[0].position));
+        glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
     }
 
     if (grid.draw) {
@@ -710,27 +739,24 @@ void PlanetsWindow::onResized(uint32_t width, uint32_t height) {
 }
 
 void PlanetsWindow::drawPlanet(const Planet &planet) {
-    const static Sphere<64, 32> highResSphere;
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius()));
     glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(highResSphere.verts[0].position));
-    glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(highResSphere.verts[0].uv));
-    glDrawElements(GL_TRIANGLES, highResSphere.triangleCount, GL_UNSIGNED_INT, highResSphere.triangles);
+    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(glm::vec3)));
+    glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
 }
 
 void PlanetsWindow::drawPlanetWireframe(const Planet &planet, const uint32_t &color) {
-    const static Sphere<32, 16> lowResSphere;
-
     glUniform4fv(shaderColor_color, 1, glm::value_ptr(uintColorToVec4(color)));
 
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * 1.05f));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(lowResSphere.verts[0].position));
-    glDrawElements(GL_LINES, lowResSphere.lineCount, GL_UNSIGNED_INT, lowResSphere.lines);
+    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glDrawElements(GL_LINES, lowResLineCount, GL_UNSIGNED_INT, 0);
 }
 
 const GLuint PlanetsWindow::vertex = 0;
