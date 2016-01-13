@@ -35,6 +35,8 @@ PlanetsWindow::~PlanetsWindow() {
     glDeleteBuffers(1, &highResTriIBO);
     glDeleteBuffers(1, &lowResVBO);
     glDeleteBuffers(1, &lowResLineIBO);
+    glDeleteBuffers(1, &circleVBO);
+    glDeleteBuffers(1, &circleLineIBO);
 
     SDL_GL_DeleteContext(contextSDL);
     SDL_DestroyWindow(windowSDL);
@@ -112,6 +114,7 @@ void PlanetsWindow::initGL() {
 
     Sphere<64, 32> highResSphere;
     Sphere<32, 16> lowResSphere;
+    Circle<64> circle;
 
     glGenBuffers(1, &highResVBO);
     glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
@@ -129,8 +132,17 @@ void PlanetsWindow::initGL() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lowResLineIBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, lowResSphere.lineCount * sizeof(uint32_t), lowResSphere.lines, GL_STATIC_DRAW);
 
+    glGenBuffers(1, &circleVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
+    glBufferData(GL_ARRAY_BUFFER, circle.vertexCount * sizeof(Vertex), circle.verts, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &circleLineIBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, circle.lineCount * sizeof(uint32_t), circle.lines, GL_STATIC_DRAW);
+
     highResTriCount = highResSphere.triangleCount;
     lowResLineCount = lowResSphere.lineCount;
+    circleLineCount = circle.lineCount;
 }
 
 unsigned int PlanetsWindow::loadTexture(const char* filename) {
@@ -310,8 +322,6 @@ int PlanetsWindow::run() {
 }
 
 void PlanetsWindow::paint() {
-    const static Circle<64> circle;
-
     /* Make sure we're using the right GL context and clear the window. */
     SDL_GL_MakeCurrent(windowSDL, contextSDL);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -412,39 +422,43 @@ void PlanetsWindow::paint() {
         }
     }
 
-    if (placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet &&
+   if (grid.draw) {
+       grid.update(camera);
+
+       glDepthMask(GL_FALSE);
+
+       glVertexAttribPointer(vertex, 2, GL_FLOAT, GL_FALSE, 0, grid.points.data());
+
+       glm::vec4 color = grid.color;
+       color.a *= grid.alphafac;
+
+       glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(grid.scale))));
+       glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
+
+       glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
+
+       glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(grid.scale * 0.5f))));
+       color.a = grid.color.a - color.a;
+       glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
+
+       glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
+
+       glDepthMask(GL_TRUE);
+   }
+
+   glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
+
+   glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+
+   if (placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet &&
             universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
         glm::mat4 matrix = glm::translate(universe.getSelected().position);
         matrix = glm::scale(matrix, glm::vec3(placing.orbitalRadius));
         matrix *= placing.rotation;
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-        glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(circle.verts[0].position));
-        glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
-    }
-
-    if (grid.draw) {
-        grid.update(camera);
-
-        glDepthMask(GL_FALSE);
-
-        glVertexAttribPointer(vertex, 2, GL_FLOAT, GL_FALSE, 0, grid.points.data());
-
-        glm::vec4 color = grid.color;
-        color.a *= grid.alphafac;
-
-        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(grid.scale))));
-        glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
-
-        glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
-
-        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(grid.scale * 0.5f))));
-        color.a = grid.color.a - color.a;
-        glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
-
-        glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
-
-        glDepthMask(GL_TRUE);
+        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, 0);
     }
 
     /* If there is a controller attatched, we aren't placing, and we aren't following anything, draw a little circle in the center of the screen. */
@@ -457,8 +471,7 @@ void PlanetsWindow::paint() {
         matrix = glm::scale(matrix, glm::vec3(camera.distance * 4.0e-3f));
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-        glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), glm::value_ptr(circle.verts[0].position));
-        glDrawElements(GL_LINES, circle.lineCount, GL_UNSIGNED_INT, circle.lines);
+        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, 0);
 
         glEnable(GL_DEPTH_TEST);
     }
