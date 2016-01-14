@@ -16,6 +16,9 @@ class PlanetsWindow{
     PlacingInterface placing;
     Camera camera;
 
+    /* Store the current speed in here when pausing. */
+    float pauseSpeed;
+
     /* SDL handles for the window and GL context */
     SDL_Window *windowSDL;
     SDL_GLContext contextSDL;

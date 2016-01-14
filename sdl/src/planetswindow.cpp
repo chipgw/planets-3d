@@ -19,7 +19,7 @@
 
 const int16_t triggerDeadzone = 16;
 
-PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe), totalFrames(0),
+PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe), pauseSpeed(1.0f), totalFrames(0),
     drawTrails(false), controller(nullptr), speedTriggerInUse(false), speedTriggerLast(0) {
     initSDL();
     initGL();
@@ -287,7 +287,8 @@ int PlanetsWindow::run() {
 
         if (delay != 0)
             /* Put a bunch of information into the title. */
-            SDL_SetWindowTitle(windowSDL, ("Planets3D  [" + std::to_string(1000000 / delay) + "fps, " + std::to_string(delay / 1000) + "ms " + std::to_string(universe.size()) + " planets]").c_str());
+            SDL_SetWindowTitle(windowSDL, ("Planets3D  [" + std::to_string(1000000 / delay) + "fps, " + std::to_string(delay / 1000) + "ms " + std::to_string(universe.size()) + " planet(s), " +
+                                           std::to_string(universe.simspeed) + "x speed, " + std::to_string(universe.stepsPerFrame) + " step(s), " +  std::to_string(universe.pathLength) + " path length]").c_str());
 
         /* Don't do delays larger than a second. */
         delay = std::min(delay, 1000000);
@@ -606,6 +607,33 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym &key) {
     case SDLK_RETURN:
         if(key.mod & KMOD_ALT)
             toggleFullscreen();
+        break;
+    case SDLK_SPACE:
+        if (universe.simspeed <= 0.0f)
+            universe.simspeed = pauseSpeed;
+        else {
+            pauseSpeed = universe.simspeed;
+            universe.simspeed = 0.0f;
+        }
+        break;
+    case SDLK_LEFT:
+        if (universe.stepsPerFrame > 1)
+            --universe.stepsPerFrame;
+        break;
+    case SDLK_RIGHT:
+        ++universe.stepsPerFrame;
+        break;
+    case SDLK_UP:
+        if(universe.pathLength < 2000)
+            universe.pathLength *= 2;
+        else
+            universe.pathLength = 4000;
+        break;
+    case SDLK_DOWN:
+        if(universe.pathLength > 200)
+            universe.pathLength /= 2;
+        else
+            universe.pathLength = 100;
         break;
     }
 }
