@@ -53,10 +53,10 @@ class PlanetsWindow{
     const static unsigned int vertex, uv;
 
     /* GL shader and uniform handles for texture shader. */
-    unsigned int shaderTexture, shaderTexture_vsh, shaderTexture_fsh, shaderTexture_cameraMatrix, shaderTexture_modelMatrix;
+    unsigned int shaderTexture, shaderTexture_cameraMatrix, shaderTexture_modelMatrix;
 
     /* GL shader and uniform handles for flat color shader. */
-    unsigned int shaderColor, shaderColor_vsh, shaderColor_fsh, shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
+    unsigned int shaderColor, shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
 
     /* Currently the only texture used. */
     unsigned int planetTexture;
@@ -77,6 +77,7 @@ class PlanetsWindow{
     void initSDL();
     void initGL();
     void initShaders();
+    void initBuffers();
 
     /* Load a texture from a file. */
     unsigned int loadTexture(const char* filename);

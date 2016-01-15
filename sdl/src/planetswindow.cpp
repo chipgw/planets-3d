@@ -37,6 +37,8 @@ PlanetsWindow::~PlanetsWindow() {
     glDeleteBuffers(1, &lowResLineIBO);
     glDeleteBuffers(1, &circleVBO);
     glDeleteBuffers(1, &circleLineIBO);
+    glDeleteProgram(shaderTexture);
+    glDeleteProgram(shaderColor);
 
     SDL_GL_DeleteContext(contextSDL);
     SDL_DestroyWindow(windowSDL);
@@ -112,37 +114,7 @@ void PlanetsWindow::initGL() {
 
     planetTexture = loadTexture("planet.png");
 
-    Sphere<64, 32> highResSphere;
-    Sphere<32, 16> lowResSphere;
-    Circle<64> circle;
-
-    glGenBuffers(1, &highResVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
-    glBufferData(GL_ARRAY_BUFFER, highResSphere.vertexCount * sizeof(Vertex), highResSphere.verts, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &highResTriIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, highResSphere.triangleCount * sizeof(uint32_t), highResSphere.triangles, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &lowResVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, lowResVBO);
-    glBufferData(GL_ARRAY_BUFFER, lowResSphere.vertexCount * sizeof(Vertex), lowResSphere.verts, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &lowResLineIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lowResLineIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, lowResSphere.lineCount * sizeof(uint32_t), lowResSphere.lines, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &circleVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
-    glBufferData(GL_ARRAY_BUFFER, circle.vertexCount * sizeof(Vertex), circle.verts, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &circleLineIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, circle.lineCount * sizeof(uint32_t), circle.lines, GL_STATIC_DRAW);
-
-    highResTriCount = highResSphere.triangleCount;
-    lowResLineCount = lowResSphere.lineCount;
-    circleLineCount = circle.lineCount;
+    initBuffers();
 }
 
 unsigned int PlanetsWindow::loadTexture(const char* filename) {
@@ -158,6 +130,7 @@ unsigned int PlanetsWindow::loadTexture(const char* filename) {
         return 0;
     }
 
+    /* We need the format to be R8G8B8A8 for upload to GPU. */
     SDL_Surface* converted = SDL_ConvertSurface(image, SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 0);
     SDL_FreeSurface(image);
 
@@ -200,7 +173,7 @@ GLuint compileShader(const char *source, GLenum shaderType) {
             printf("INFO: succesfully compiled shader.\n\tLog: %s", infoLog);
             delete[] infoLog;
         }
-    }else if (isCompiled == GL_FALSE) {
+    } else if (isCompiled == GL_FALSE) {
         printf("ERROR: failed to compile shader! No log availible.\n");
         return 0;
     }
@@ -243,9 +216,13 @@ int linkShaderProgram(GLuint vsh, GLuint fsh) {
 
 void PlanetsWindow::initShaders() {
     /* Compile the flat color shader included in shaders.h as const char*. */
-    shaderColor_vsh = compileShader(color_vertex_src,     GL_VERTEX_SHADER);
-    shaderColor_fsh = compileShader(color_fragment_src,   GL_FRAGMENT_SHADER);
+    GLuint shaderColor_vsh = compileShader(color_vertex_src,     GL_VERTEX_SHADER);
+    GLuint shaderColor_fsh = compileShader(color_fragment_src,   GL_FRAGMENT_SHADER);
     shaderColor = linkShaderProgram(shaderColor_vsh, shaderColor_fsh);
+
+    /* These aren't needed anymore... */
+    glDeleteShader(shaderColor_vsh);
+    glDeleteShader(shaderColor_fsh);
 
     /* Get the uniform locations from color shader. */
     glUseProgram(shaderColor);
@@ -256,9 +233,13 @@ void PlanetsWindow::initShaders() {
     glBindAttribLocation(shaderColor, vertex, "vertex");
 
     /* Compile the textured shader included in shaders.h as const char*. */
-    shaderTexture_vsh = compileShader(texture_vertex_src,   GL_VERTEX_SHADER);
-    shaderTexture_fsh = compileShader(texture_fragment_src, GL_FRAGMENT_SHADER);
+    GLuint shaderTexture_vsh = compileShader(texture_vertex_src,   GL_VERTEX_SHADER);
+    GLuint shaderTexture_fsh = compileShader(texture_fragment_src, GL_FRAGMENT_SHADER);
     shaderTexture = linkShaderProgram(shaderTexture_vsh, shaderTexture_fsh);
+
+    /* These aren't needed anymore... */
+    glDeleteShader(shaderTexture_vsh);
+    glDeleteShader(shaderTexture_fsh);
 
     /* Get the uniform locations from the texture shader. */
     glUseProgram(shaderTexture);
@@ -267,6 +248,40 @@ void PlanetsWindow::initShaders() {
 
     glBindAttribLocation(shaderTexture, vertex, "vertex");
     glBindAttribLocation(shaderTexture, uv,     "uv");
+}
+
+void PlanetsWindow::initBuffers() {
+    Sphere<64, 32> highResSphere;
+    Sphere<32, 16> lowResSphere;
+    Circle<64> circle;
+
+    glGenBuffers(1, &highResVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
+    glBufferData(GL_ARRAY_BUFFER, highResSphere.vertexCount * sizeof(Vertex), highResSphere.verts, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &highResTriIBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, highResSphere.triangleCount * sizeof(uint32_t), highResSphere.triangles, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &lowResVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, lowResVBO);
+    glBufferData(GL_ARRAY_BUFFER, lowResSphere.vertexCount * sizeof(Vertex), lowResSphere.verts, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &lowResLineIBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lowResLineIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, lowResSphere.lineCount * sizeof(uint32_t), lowResSphere.lines, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &circleVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
+    glBufferData(GL_ARRAY_BUFFER, circle.vertexCount * sizeof(Vertex), circle.verts, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &circleLineIBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, circle.lineCount * sizeof(uint32_t), circle.lines, GL_STATIC_DRAW);
+
+    highResTriCount = highResSphere.triangleCount;
+    lowResLineCount = lowResSphere.lineCount;
+    circleLineCount = circle.lineCount;
 }
 
 int PlanetsWindow::run() {
