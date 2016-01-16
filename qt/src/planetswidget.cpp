@@ -605,7 +605,6 @@ void PlanetsWidget::doControllerAxisInput(int64_t delay) {
 
         /* If the trigger has gone from disengaged (< deadzone) to engaged (> deadzone) we enable using it as speed input. */
         if (speedTriggerInUse || (speedTriggerCurrent > triggerDeadzone && speedTriggerLast <= triggerDeadzone)) {
-            /* TODO - This really messes up the interface... */
             universe.simspeed = float(speedTriggerCurrent * 8) / int16_max;
             universe.simspeed *= universe.simspeed;
 

@@ -419,7 +419,7 @@ void MainWindow::frameUpdate() {
         ui->speed_Dial->setValue(int(ui->centralwidget->universe.simspeed * ui->speed_Dial->maximum() / speeddialmax));
 }
 
-const int MainWindow::speeddialmax = 32;
+const int MainWindow::speeddialmax = 64;
 
 const QString MainWindow::categoryMainWindow =      "MainWindow";
 const QString MainWindow::categoryGraphics =        "Graphics";
