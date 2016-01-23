@@ -417,6 +417,20 @@ void MainWindow::frameUpdate() {
 
     if (int(ui->centralwidget->universe.simspeed * ui->speed_Dial->maximum() / speeddialmax) != ui->speed_Dial->value())
         ui->speed_Dial->setValue(int(ui->centralwidget->universe.simspeed * ui->speed_Dial->maximum() / speeddialmax));
+
+    if (ui->centralwidget->universe.isSelectedValid()) {
+        const Planet& selected = ui->centralwidget->universe.getSelected();
+
+        ui->positionLabel->setText(QString("x: %0, y: %1, z: %2").arg(selected.position.x).arg(selected.position.y).arg(selected.position.z));
+        ui->velocityLabel->setText(QString("x: %0, y: %1, z: %2").arg(selected.velocity.x).arg(selected.velocity.y).arg(selected.velocity.z));
+        ui->massLabel->setText(QString::number(selected.mass()));
+        ui->colorLabel->setText(QColor(QRgb(ui->centralwidget->universe.selected)).name());
+    } else {
+        ui->positionLabel->setText("");
+        ui->velocityLabel->setText("");
+        ui->massLabel->setText("");
+        ui->colorLabel->setText("");
+    }
 }
 
 const int MainWindow::speeddialmax = 64;
