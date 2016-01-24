@@ -421,8 +421,10 @@ void MainWindow::frameUpdate() {
     if (ui->centralwidget->universe.isSelectedValid()) {
         const Planet& selected = ui->centralwidget->universe.getSelected();
 
+        glm::vec3 velocity = selected.velocity / ui->centralwidget->universe.velocityfac;
+
         ui->positionLabel->setText(QString("x: %0, y: %1, z: %2").arg(selected.position.x).arg(selected.position.y).arg(selected.position.z));
-        ui->velocityLabel->setText(QString("x: %0, y: %1, z: %2").arg(selected.velocity.x).arg(selected.velocity.y).arg(selected.velocity.z));
+        ui->velocityLabel->setText(QString("x: %0, y: %1, z: %2").arg(velocity.x).arg(velocity.y).arg(velocity.z));
         ui->massLabel->setText(QString::number(selected.mass()));
         ui->colorLabel->setText(QColor(QRgb(ui->centralwidget->universe.selected)).name());
     } else {
