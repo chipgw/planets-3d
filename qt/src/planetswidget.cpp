@@ -423,7 +423,9 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
 void PlanetsWidget::mousePressEvent(QMouseEvent* e){
     if(e->button() == Qt::LeftButton){
         glm::ivec2 pos(e->x(), e->y());
-        if(!placing.handleMouseClick(pos, camera))
+
+        /* Send click to placement system. If it doesn't use it and planets aren't hidden, select under the cursor. */
+        if(!placing.handleMouseClick(pos, camera) && !hidePlanets)
             camera.selectUnder(pos);
     }
 }
