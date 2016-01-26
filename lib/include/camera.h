@@ -10,7 +10,7 @@ struct Ray {
 };
 
 class Camera {
-    PlanetsUniverse &universe;
+    PlanetsUniverse& universe;
 
     /* [0, 0, Width, Height] (in pixels). Used for unproject and anything else that wants width or height of the viewport. */
     glm::vec4 viewport;
@@ -37,7 +37,7 @@ public:
     /* The final camera matrix with all transformations applied, pass this to OpenGL. */
     glm::mat4 camera;
 
-    EXPORT Camera(PlanetsUniverse &universe);
+    EXPORT Camera(PlanetsUniverse& universe);
 
     /* Limit the rotation & distance of the camera. */
     EXPORT void bound();
@@ -48,12 +48,12 @@ public:
     EXPORT void resizeViewport(const float &width, const float &height);
 
     /* Update the camera matrix from all the other variables. */
-    EXPORT const glm::mat4 &setup();
+    EXPORT const glm::mat4& setup();
 
     /* Get a ray coming from the camera at pos viewport coordinates. */
-    EXPORT Ray getRay(const glm::ivec2 &pos, float startDepth = 0.9f, float endDepth = 0.0f) const;
+    EXPORT Ray getRay(const glm::ivec2& pos, float startDepth = 0.9f, float endDepth = 0.0f) const;
     /* Select the planet under the viewport coordinates supplied. */
-    EXPORT key_type selectUnder(const glm::ivec2 &pos);
+    EXPORT key_type selectUnder(const glm::ivec2& pos);
 
     /* Following state changing functions. */
     EXPORT void followPrevious();
