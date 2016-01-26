@@ -54,8 +54,8 @@ const glm::mat4 &Camera::setup(){
         }
         break;
     case Single:
-        if(universe.isValid(following))
-            position = universe[following].position;
+        if(universe.isValid(universe.following))
+            position = universe[universe.following].position;
         break;
     }
 
@@ -105,10 +105,15 @@ key_type Camera::selectUnder(const glm::ivec2 &pos){
 	return universe.selected;
 }
 
+void Camera::clearFollow() {
+    universe.following = 0;
+    followingState = FollowNone;
+}
+
 void Camera::followNext(){
     if(!universe.isEmpty()){
         followingState = Single;
-        PlanetsUniverse::const_iterator current = universe.find(following);
+        PlanetsUniverse::const_iterator current = universe.find(universe.following);
 
         if(current == universe.cend())
             /* If the planet was not found, start at the beginning. */
@@ -118,14 +123,14 @@ void Camera::followNext(){
             current = universe.cbegin();
 
         /* Get the key back from the iterator. */
-        following = current->first;
+        universe.following = current->first;
     }
 }
 
 void Camera::followPrevious(){
     if(!universe.isEmpty()){
         followingState = Single;
-        PlanetsUniverse::const_iterator current = universe.find(following);
+        PlanetsUniverse::const_iterator current = universe.find(universe.following);
 
         if(current == universe.cend()){
             /* If the planet was not found, start at the beginning. */
@@ -138,11 +143,11 @@ void Camera::followPrevious(){
         }
 
         /* Get the key back from the iterator. */
-        following = current->first;
+        universe.following = current->first;
     }
 }
 
 void Camera::followSelection() {
-    following = universe.selected;
+    universe.following = universe.selected;
     followingState = Single;
 }

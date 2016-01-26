@@ -14,7 +14,7 @@
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
 
-PlanetsUniverse::PlanetsUniverse() : selected(0), simspeed(1.0f), stepsPerFrame(20),
+PlanetsUniverse::PlanetsUniverse() : selected(0), following(0), simspeed(1.0f), stepsPerFrame(20),
     generator(std::chrono::system_clock::now().time_since_epoch().count()),
     gravityconst(6.67e-11f), velocityfac(1.0e-5f), min_mass(1.0f), max_mass(1.0e9f),
     pathLength(200), pathRecordDistance(0.25f) { }
@@ -143,6 +143,9 @@ void PlanetsUniverse::advance(float time) {
                         /* If the one we're deleting happens to be selected, select the remaining planet. */
                         if (o->first == selected)
                             selected = i->first;
+                        /* If the planet being followed happens to be the one being deleted, follow the remaining planet. */
+                        if (o->first == following)
+                            following = i->first;
 
                         /* The path would be invalid after this. */
                         i->second.path.clear();

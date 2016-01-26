@@ -31,7 +31,7 @@ public:
     std::vector<glm::vec3>::size_type pathLength;
     float pathRecordDistance;
 
-    key_type selected;
+    key_type selected, following;
 
     /* Speed multiplier for simulation. */
     float simspeed;

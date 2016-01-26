@@ -25,7 +25,6 @@ public:
 
     /* What are we following? */
     FollowingState followingState;
-    key_type following;
 
     /* Values to transform the camera by. Rotation values are in radians. */
     glm::vec3 position;
@@ -60,7 +59,7 @@ public:
     EXPORT void followPrevious();
     EXPORT void followNext();
     EXPORT void followSelection();
-    inline void clearFollow() { following = 0; followingState = FollowNone; }
+    EXPORT void clearFollow();
     inline void followPlainAverage() { followingState = PlainAverage; }
     inline void followWeightedAverage() { followingState = WeightedAverage; }
 };
