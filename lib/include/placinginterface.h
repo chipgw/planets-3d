@@ -18,7 +18,7 @@ public:
     };
 
     /* Which step are we on? */
-    PlacingStep step;
+    PlacingStep step = NotPlacing;
 
     /* Variables for Free and Orbital modes. */
     Planet planet;
@@ -27,7 +27,7 @@ public:
 
     /* Variables for firing mode. */
     float firingSpeed;
-    float firingMass;
+    float firingMass = 25.0f;
 
     /* Handle mouse events. These functions return true if input was used,
      * false if input was not used and should be used for other stuff such as camera movement.

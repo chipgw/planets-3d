@@ -14,10 +14,7 @@
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
 
-PlanetsUniverse::PlanetsUniverse() : selected(0), following(0), simspeed(1.0f), stepsPerFrame(20),
-    generator(std::chrono::system_clock::now().time_since_epoch().count()),
-    gravityconst(6.67e-11f), velocityfac(1.0e-5f), min_mass(1.0f), max_mass(1.0e9f),
-    pathLength(200), pathRecordDistance(0.25f) { }
+PlanetsUniverse::PlanetsUniverse() : generator(std::chrono::system_clock::now().time_since_epoch().count()) { }
 
 bool PlanetsUniverse::load(const std::string &filename, std::string& errorMsg, bool clear) {
     TiXmlDocument doc(filename);

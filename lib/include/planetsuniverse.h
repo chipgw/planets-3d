@@ -19,24 +19,24 @@ private:
 
 public:
     /* The gravity constant */
-    const float gravityconst;
+    const float gravityconst = 6.667e-11;
     /* The factor for apparent velocity.
      * (UI velocity * this = actual velocity, because it would be really really small if done right.) */
-    const float velocityfac;
+    const float velocityfac = 1.0e-5f;
 
     /* UI limits on planet size. */
-    const float min_mass;
-    const float max_mass;
+    const float min_mass = 1.0f;
+    const float max_mass = 1.0e9f;
 
-    std::vector<glm::vec3>::size_type pathLength;
-    float pathRecordDistance;
+    std::vector<glm::vec3>::size_type pathLength = 200;
+    float pathRecordDistance = 0.25f;
 
-    key_type selected, following;
+    key_type selected = 0, following = 0;
 
     /* Speed multiplier for simulation. */
-    float simspeed;
+    float simspeed = 1.0f;
     /* How many sub-steps to perform per frame for better accuracy. */
-    int stepsPerFrame;
+    int stepsPerFrame = 20;
 
     /* Make new planets. */
     EXPORT key_type addPlanet(const Planet &planet, key_type keyHint = 0);

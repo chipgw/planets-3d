@@ -8,12 +8,11 @@ class Camera;
 
 class Grid {
 public:
-    EXPORT Grid();
+    bool draw = false;
+    uint32_t range = 32;
+    glm::vec4 color = glm::vec4(0.8f, 1.0f, 1.0f, 0.4f);
 
-    bool draw;
-    uint32_t range;
     std::vector<glm::vec2> points;
-    glm::vec4 color;
 
     /* Both of these variables are for the larger of the two grid displays */
     float scale;

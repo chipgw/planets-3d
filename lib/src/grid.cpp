@@ -13,8 +13,6 @@ uint32_t highBit(uint32_t n) {
     return n - (n >> 1);
 }
 
-Grid::Grid() : range(32), color(0.8f, 1.0f, 1.0f, 0.4f), draw(false) { /* Nuthin. */ }
-
 void Grid::update(const Camera& camera) {
     /* The resulting amount of vertecies is (range + 1) * 4
      * because there are 4 vertecies for every range value, plus for center lines at 0.  */
