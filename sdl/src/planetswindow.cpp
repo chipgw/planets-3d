@@ -19,8 +19,7 @@
 
 const int16_t triggerDeadzone = 16;
 
-PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe), pauseSpeed(1.0f), totalFrames(0),
-    drawTrails(false), controller(nullptr), speedTriggerInUse(false), speedTriggerLast(0) {
+PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe) {
     initSDL();
     initGL();
 

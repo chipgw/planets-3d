@@ -8,8 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 
-PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent), frameCount(0), placing(universe),
-    drawScale(1.0f), camera(universe), drawPlanetTrails(false), drawPlanetColors(false), hidePlanets(false),
+PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent), placing(universe), camera(universe),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/"), highResSphereTris(QOpenGLBuffer::IndexBuffer),
     lowResSphereLines(QOpenGLBuffer::IndexBuffer), circleLines(QOpenGLBuffer::IndexBuffer) {
     /* We want mouse movement events. */

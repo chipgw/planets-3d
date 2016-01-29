@@ -17,31 +17,31 @@ class PlanetsWindow{
     Camera camera;
 
     /* Store the current speed in here when pausing. */
-    float pauseSpeed;
+    float pauseSpeed = 1.0f;
 
     /* SDL handles for the window and GL context */
     SDL_Window *windowSDL;
     SDL_GLContext contextSDL;
 
     /* The currently active gamepad. */
-    SDL_GameController* controller;
+    SDL_GameController* controller = nullptr;
 
     /* Are we using the speed trigger?
      * Set to true when trigger leaves deadzone,
      * set to false when speed is locked or it enters the deadzone. */
-    bool speedTriggerInUse;
+    bool speedTriggerInUse = false;
     /* Previous value retrieved from the speed trigger.
      * Used when checking if the trigger has left the deadzone. */
-    int16_t speedTriggerLast;
+    int16_t speedTriggerLast = 0;
 
     /* Is the window currently fullscreen? */
-    bool fullscreen;
+    bool fullscreen = false;
 
     /* onClose() sets this to false to stop the primary loop. */
-    bool running;
+    bool running = false;
 
     /* Graphics settings */
-    bool drawTrails;
+    bool drawTrails = false;
 
     Grid grid;
 
@@ -100,7 +100,7 @@ class PlanetsWindow{
     }
 
     /* Total amount of frames drawn since window creation. */
-    uintmax_t totalFrames;
+    uintmax_t totalFrames = 0;
 
 public:
     /* Create the window, expects command line arguments as passed to a standard main(int argc, char* argv[]) function. */

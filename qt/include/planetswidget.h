@@ -40,7 +40,7 @@ private:
     Camera camera;
 
     /* Total amount of frames drawn since the creation of the widget. */
-    int frameCount;
+    int frameCount = 0;
     /* The desired refresh rate, in milliseconds. */
     int refreshRate;
 
@@ -96,13 +96,13 @@ public:
     Grid grid;
 
     /* Scale to draw the planets at. 1.0 is the default scale. */
-    float drawScale;
+    float drawScale = 1.0f;
     /* Do we draw trails? */
-    bool drawPlanetTrails;
+    bool drawPlanetTrails = false;
     /* Do we draw wireframe colors? */
-    bool drawPlanetColors;
+    bool drawPlanetColors = false;
     /* Do we hide the textured planet spheres? */
-    bool hidePlanets;
+    bool hidePlanets = false;
 
     /* Where we save screenshots to. */
     QDir screenshotDir;
