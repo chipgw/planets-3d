@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>823</height>
+    <height>956</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -33,7 +33,7 @@
     </property>
     <widget class="QMenu" name="menuRecent_Files">
      <property name="title">
-      <string>Recent Files</string>
+      <string>&amp;Recent Files</string>
      </property>
      <addaction name="separator"/>
      <addaction name="actionClear"/>
@@ -83,7 +83,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="newPlanet_DockWidget">
    <property name="windowTitle">
-    <string>New Planet</string>
+    <string>&amp;New Planet</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -281,10 +281,10 @@
   </widget>
   <widget class="QDockWidget" name="speedControl_DockWidget">
    <property name="windowTitle">
-    <string>Speed Control</string>
+    <string>Speed Contro&amp;l</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>8</number>
    </attribute>
    <widget class="QWidget" name="speedControl_DockWidgetContents">
     <layout class="QGridLayout" name="gridLayout">
@@ -365,7 +365,7 @@
   </widget>
   <widget class="QDockWidget" name="viewSettings_DockWidget">
    <property name="windowTitle">
-    <string>View Settings</string>
+    <string>&amp;View Settings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -483,10 +483,10 @@
   </widget>
   <widget class="QDockWidget" name="firingSettings_DockWidget">
    <property name="windowTitle">
-    <string>Firing Mode Settings</string>
+    <string>Firing &amp;Mode Settings</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>8</number>
    </attribute>
    <widget class="QWidget" name="firingSettings_DockWidgetContents">
     <layout class="QFormLayout" name="formLayout_4">
@@ -542,7 +542,7 @@
   </widget>
   <widget class="QDockWidget" name="randomSettings_DockWidget">
    <property name="windowTitle">
-    <string>Random Planet Generator</string>
+    <string>&amp;Random Planet Generator</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -689,7 +689,7 @@
   </widget>
   <widget class="QDockWidget" name="info_DockWidget">
    <property name="windowTitle">
-    <string>Info</string>
+    <string>&amp;Info</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -965,7 +965,7 @@
   </action>
   <action name="actionClear">
    <property name="text">
-    <string>Clear</string>
+    <string>&amp;Clear</string>
    </property>
   </action>
  </widget>
