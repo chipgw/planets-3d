@@ -389,7 +389,7 @@ void PlanetsWindow::paint() {
         }
     }
 
-   if (placing.step == PlacingInterface::FreeVelocity) {
+    if (placing.step == PlacingInterface::FreeVelocity) {
         float length = glm::length(placing.planet.velocity) / universe.velocityfac;
 
         if (length > 0.0f) {
@@ -545,9 +545,16 @@ void PlanetsWindow::doEvents() {
             break;
         case SDL_MOUSEBUTTONUP:
             if (event.button.button == SDL_BUTTON_LEFT) {
-                glm::ivec2 pos(event.button.x, event.button.y);
-                if(!placing.handleMouseClick(pos, camera))
-                    camera.selectUnder(pos);
+                if (event.button.clicks == 2 && placing.step == PlacingInterface::NotPlacing) {
+                    if (universe.isSelectedValid())
+                        camera.followSelection();
+                    else
+                        camera.clearFollow();
+                } else {
+                    glm::ivec2 pos(event.button.x, event.button.y);
+                    if(!placing.handleMouseClick(pos, camera))
+                        camera.selectUnder(pos);
+                }
             }
             /* Always show cursor when mouse button is released. */
             SDL_SetRelativeMouseMode(SDL_FALSE);
