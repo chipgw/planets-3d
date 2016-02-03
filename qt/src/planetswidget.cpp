@@ -2,6 +2,7 @@
 #include <QDir>
 #include <QMouseEvent>
 #include <QOpenGLFramebufferObject>
+#include <QApplication>
 #include <limits>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -505,7 +506,7 @@ void PlanetsWidget::doControllerButtonPress(const uint8_t &button) {
 
     switch(button) {
     case SDL_CONTROLLER_BUTTON_BACK:
-//        onClose(); TODO - How is this done with Qt?
+        QApplication::closeAllWindows();
         break;
     case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
         camera.reset();
