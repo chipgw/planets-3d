@@ -466,12 +466,12 @@ void PlanetsWindow::paint() {
 
    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
-   if (placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet &&
-            universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
+   if (placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet && universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
         glm::mat4 matrix = glm::translate(universe.getSelected().position);
         matrix = glm::scale(matrix, glm::vec3(placing.orbitalRadius));
         matrix *= placing.rotation;
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+        glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
 
         glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, 0);
     }
