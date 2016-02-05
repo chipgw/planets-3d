@@ -10,6 +10,7 @@ Dependencies:
 
 For Qt interface:
 * [Qt] 5.4 or later.
+* [SDL] 2.0 or greater. (Optional for controller support. Add `-DPLANETS3D_QT_USE_SDL_GAMEPAD=On` to enable)
 
 For SDL interface:
 * [SDL] 2.0 or greater.
