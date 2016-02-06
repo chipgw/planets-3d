@@ -16,22 +16,20 @@ using std::uniform_real_distribution;
 
 PlanetsUniverse::PlanetsUniverse() : generator(std::chrono::system_clock::now().time_since_epoch().count()) { }
 
-bool PlanetsUniverse::load(const std::string &filename, std::string& errorMsg, bool clear) {
+int PlanetsUniverse::load(const std::string &filename, bool clear) {
     TiXmlDocument doc(filename);
 
-    if (!doc.LoadFile()) {
-        errorMsg =  "Unable to load file \"" + filename + "\"!\n" + doc.ErrorDesc();
-        return false;
-    }
+    if (!doc.LoadFile())
+        throw "Unable to load file \"" + filename + "\"!\n" + doc.ErrorDesc();
 
     TiXmlElement* root = doc.FirstChildElement("planets-3d-universe");
-    if (root == nullptr) {
-        errorMsg = "\"" + filename + "\" is not a valid universe file!";
-        return false;
-    }
+    if (root == nullptr)
+        throw "\"" + filename + "\" is not a valid universe file!";
 
     if (clear)
         deleteAll();
+
+    int loaded = 0;
 
     for (TiXmlElement* element = root->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
         if (element->ValueStr() == "planet") {
@@ -57,13 +55,14 @@ bool PlanetsUniverse::load(const std::string &filename, std::string& errorMsg, b
                                                 std::stof(sub->Attribute("z"))) * velocityfac;
             }
             addPlanet(planet, color);
+            ++loaded;
         }
     }
 
-    return true;
+    return loaded;
 }
 
-bool PlanetsUniverse::save(const std::string &filename, std::string& errorMsg) {
+void PlanetsUniverse::save(const std::string &filename) {
     TiXmlDocument doc;
 
     doc.LinkEndChild(new TiXmlDeclaration("1.0", "", ""));
@@ -101,12 +100,8 @@ bool PlanetsUniverse::save(const std::string &filename, std::string& errorMsg) {
 
     doc.LinkEndChild(root);
 
-    if (!doc.SaveFile(filename)) {
-        errorMsg = doc.ErrorDesc();
-        return false;
-    }
-
-    return true;
+    if (!doc.SaveFile(filename))
+        throw doc.ErrorDesc();
 }
 
 void PlanetsUniverse::advance(float time) {

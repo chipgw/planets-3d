@@ -62,10 +62,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->firingSettings_DockWidget->hide();
     ui->randomSettings_DockWidget->hide();
 
-    std::string err;
-    for (const QString &argument : QApplication::arguments())
-        if (ui->centralwidget->universe.load(argument.toStdString(), err))
+    for (const QString &argument : QApplication::arguments()) {
+        try {
+            ui->centralwidget->universe.load(argument.toStdString());
             break;
+        } catch (...) { }
+    }
 
     /* Load the saved window geometry. */
     settings.beginGroup(categoryMainWindow);
@@ -177,27 +179,28 @@ void MainWindow::on_actionNew_Simulation_triggered() {
 void MainWindow::on_actionOpen_Simulation_triggered() {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.xml);;All Files (*.*)"));
 
-    std::string err;
-    if (!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err))
-        QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
-    else {
-        ui->statusbar->showMessage(("Loaded %1 planets from to \"" + filename + '"').arg(ui->centralwidget->universe.size()), 8000);
-        addRecentFile(filename);
+    if (!filename.isEmpty()) {
+        try {
+            int loaded = ui->centralwidget->universe.load(filename.toStdString());
+            ui->statusbar->showMessage(("Loaded %1 planets from \"" + filename + '"').arg(loaded), 8000);
+            addRecentFile(filename);
+        } catch (const std::string err) {
+            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
+        }
     }
 }
 
 void MainWindow::on_actionAppend_Simulation_triggered() {
     QString filename = QFileDialog::getOpenFileName(this, tr("Append Simulation"), "", tr("Simulation files (*.xml);;All Files (*.*)"));
 
-    std::string err;
-    /* So we can tell how many were added. */
-    auto previousSize = ui->centralwidget->universe.size();
-
-    if (!filename.isEmpty() && !ui->centralwidget->universe.load(filename.toStdString(), err, false))
-        QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
-    else {
-        ui->statusbar->showMessage(("Loaded %1 planets from to \"" + filename + '"').arg(ui->centralwidget->universe.size() - previousSize), 8000);
-        addRecentFile(filename);
+    if (!filename.isEmpty()) {
+        try {
+            int loaded = ui->centralwidget->universe.load(filename.toStdString(), false);
+            ui->statusbar->showMessage(("Loaded %1 planets from \"" + filename + '"').arg(loaded), 8000);
+            addRecentFile(filename);
+        } catch (const std::string err) {
+            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
+        }
     }
 }
 
@@ -206,15 +209,14 @@ bool MainWindow::on_actionSave_Simulation_triggered() {
         QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
 
         if (!filename.isEmpty()) {
-            std::string err;
-
-            if (ui->centralwidget->universe.save(filename.toStdString(), err)) {
+            try {
+                ui->centralwidget->universe.save(filename.toStdString());
                 ui->statusbar->showMessage("Simulation saved to \"" + filename + '"', 8000);
                 addRecentFile(filename);
                 return true;
+            } catch (const std::string err) {
+                QMessageBox::warning(this, tr("Error Saving Simulation."), QString::fromStdString(err));
             }
-
-            QMessageBox::warning(this, tr("Error Saving Simulation."), QString::fromStdString(err));
         }
     } else {
         QMessageBox::warning(this, tr("Error Saving Simulation."), tr("No planets to save!"));
@@ -353,17 +355,18 @@ void MainWindow::updateRecentFileActions() {
 void MainWindow::openRecentFile() {
     /* Getthe QAction that sent the signal. If it wasn't a QAction, just ignore it. */
     if (QAction* action = qobject_cast<QAction*>(sender())) {
-        std::string err;
         /* tooltip = full path to the file. */
         QString path = action->toolTip();
 
-        if (!ui->centralwidget->universe.load(path.toStdString(), err))
-            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
-        else {
-            ui->statusbar->showMessage(("Loaded %1 planets from to \"" + path + '"').arg(ui->centralwidget->universe.size()), 8000);
+        try {
+            int loaded = ui->centralwidget->universe.load(path.toStdString());
+
+            ui->statusbar->showMessage(("Loaded %1 planets from \"" + path + '"').arg(loaded), 8000);
 
             /* Even though it is already in recent we add it, so it will be on top. */
             addRecentFile(path);
+        } catch (const std::string err) {
+            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
         }
     }
 }
@@ -378,15 +381,16 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
 }
 
 void MainWindow::dropEvent(QDropEvent *event) {
-    std::string err;
     for (const QUrl& url : event->mimeData()->urls()) {
-        if (!ui->centralwidget->universe.load(url.toLocalFile().toStdString(), err))
-            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
-        else {
-            ui->statusbar->showMessage(("Loaded %1 planets from to \"" + url.toLocalFile() + '"').arg(ui->centralwidget->universe.size()), 8000);
+        try {
+            int loaded = ui->centralwidget->universe.load(url.toLocalFile().toStdString());
+
+            ui->statusbar->showMessage(("Loaded %1 planets from \"" + url.toLocalFile() + '"').arg(loaded), 8000);
 
             addRecentFile(url.toLocalFile());
             return event->acceptProposedAction();
+        } catch (const std::string err) {
+            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
         }
     }
 }

@@ -24,9 +24,11 @@ PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera
     initGL();
 
     /* Try loading from the command line. Ignore invalid files and break on the first successful file. */
-    std::string err;
-    for (int i = 0; i < argc; ++i)
-        if(universe.load(argv[i], err)) break;
+    for (int i = 0; i < argc; ++i) {
+        try {
+            universe.load(argv[i]); break;
+        } catch (...) {}
+    }
 }
 
 PlanetsWindow::~PlanetsWindow() {
@@ -159,7 +161,7 @@ GLuint compileShader(const char *source, GLenum shaderType) {
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
 
     if (maxLength > 1) {
-        char *infoLog = new char[maxLength];
+        char* infoLog = new char[maxLength];
 
         glGetShaderInfoLog(shader, maxLength, &maxLength, infoLog);
 
@@ -192,7 +194,7 @@ int linkShaderProgram(GLuint vsh, GLuint fsh) {
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
     if (maxLength > 1) {
-        char *infoLog = new char[maxLength];
+        char* infoLog = new char[maxLength];
 
         glGetProgramInfoLog(program, maxLength, &maxLength, infoLog);
 

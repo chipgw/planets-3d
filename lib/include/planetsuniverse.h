@@ -45,8 +45,8 @@ public:
     EXPORT void generateRandomOrbital(const int &count, key_type target);
 
     /* Load and save from an XML file. Sets error string and returns false on an error. */
-    EXPORT bool save(const std::string& filename, std::string& errorMsg);
-    EXPORT bool load(const std::string& filename, std::string& errorMsg, bool clear = true);
+    EXPORT void save(const std::string& filename);
+    EXPORT int load(const std::string& filename, bool clear = true);
 
     EXPORT PlanetsUniverse();
 
