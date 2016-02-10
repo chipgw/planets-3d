@@ -19,7 +19,7 @@ private:
 
 public:
     /* The gravity constant */
-    const float gravityconst = 6.667e-11;
+    const float gravityconst = 6.667e-11f;
     /* The factor for apparent velocity.
      * (UI velocity * this = actual velocity, because it would be really really small if done right.) */
     const float velocityfac = 1.0e-5f;

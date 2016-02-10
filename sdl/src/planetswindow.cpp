@@ -557,6 +557,8 @@ void PlanetsWindow::doEvents() {
                     if(!placing.handleMouseClick(pos, camera))
                         camera.selectUnder(pos);
                 }
+            } else if ((event.button.button == SDL_BUTTON_MIDDLE || event.button.button == SDL_BUTTON_RIGHT) && event.button.clicks == 2) {
+                camera.reset();
             }
             /* Always show cursor when mouse button is released. */
             SDL_SetRelativeMouseMode(SDL_FALSE);
