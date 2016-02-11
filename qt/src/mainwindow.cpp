@@ -10,13 +10,13 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), speedDialMemory(0),
     settings(QSettings::IniFormat, QSettings::UserScope, QApplication::organizationName(), QApplication::applicationName()) {
-
+    /* Set up the UI from the .ui file. */
     ui->setupUi(this);
     ui->PauseResume_Button->setFocus();
 
+    /*Set the limits defined in the universe. */
     ui->newMass_SpinBox->setMinimum(ui->centralwidget->universe.min_mass);
     ui->newMass_SpinBox->setMaximum(ui->centralwidget->universe.max_mass);
-
     ui->firingMassSpinBox->setMinimum(ui->centralwidget->universe.min_mass);
     ui->firingMassSpinBox->setMaximum(ui->centralwidget->universe.max_mass);
 
@@ -62,11 +62,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->firingSettings_DockWidget->hide();
     ui->randomSettings_DockWidget->hide();
 
-    for (const QString &argument : QApplication::arguments()) {
+    /* Try loading file from command line arguments... */
+    for (const QString& argument : QApplication::arguments()) {
         try {
             ui->centralwidget->universe.load(argument.toStdString());
             break;
-        } catch (...) { }
+        } catch (...) { /* We don't care if there are errors, just ignore them. */ }
     }
 
     /* Load the saved window geometry. */
@@ -158,6 +159,7 @@ void MainWindow::on_PauseResume_Button_clicked() {
     if (ui->speed_Dial->value() == 0) {
         ui->speed_Dial->setValue(speedDialMemory);
     } else {
+        /* Store the curent value for resuming. */
         speedDialMemory = ui->speed_Dial->value();
         ui->speed_Dial->setValue(0);
     }
@@ -165,6 +167,7 @@ void MainWindow::on_PauseResume_Button_clicked() {
 
 void MainWindow::on_FastForward_Button_clicked() {
     if (ui->speed_Dial->value() == ui->speed_Dial->maximum() || ui->speed_Dial->value() == 0)
+        /* If it's at the max or zero, set to the value that gives a simspeed of 1. */
         ui->speed_Dial->setValue(ui->speed_Dial->maximum() / speeddialmax);
     else
         ui->speed_Dial->setValue(ui->speed_Dial->value() * 2);
@@ -172,7 +175,7 @@ void MainWindow::on_FastForward_Button_clicked() {
 
 void MainWindow::on_actionNew_Simulation_triggered() {
     if (!ui->centralwidget->universe.isEmpty() && QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to destroy the universe? (i.e. delete all planets.)"),
-                                                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+                                                                       QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
         ui->centralwidget->universe.deleteAll();
 }
 
@@ -286,22 +289,21 @@ void MainWindow::on_actionHide_Planets_toggled(bool value) {
 }
 
 void MainWindow::on_randomOrbitalCheckBox_toggled(bool checked) {
+    /* All these boxes are unused for orbital mode. */
     ui->randomRangeDoubleSpinBox->setEnabled(!checked);
     ui->randomMassDoubleSpinBox->setEnabled(!checked);
     ui->randomSpeedDoubleSpinBox->setEnabled(!checked);
 }
 
 void MainWindow::on_generateRandomPushButton_clicked() {
-    if (ui->randomOrbitalCheckBox->isChecked()) {
-        if (ui->centralwidget->universe.isEmpty())
-            QMessageBox::warning(this, tr("Can't generate planets!"), tr("Nothing for new planets to orbit around!"));
-        else
-            ui->centralwidget->universe.generateRandomOrbital(ui->randomAmountSpinBox->value(), ui->centralwidget->universe.selected);
-    } else {
+    if (!ui->randomOrbitalCheckBox->isChecked())
         ui->centralwidget->universe.generateRandom(ui->randomAmountSpinBox->value(), ui->randomRangeDoubleSpinBox->value(),
                                                    ui->randomSpeedDoubleSpinBox->value() * ui->centralwidget->universe.velocityfac,
                                                    ui->randomMassDoubleSpinBox->value());
-    }
+    else if (ui->centralwidget->universe.isEmpty())
+        QMessageBox::warning(this, tr("Can't generate planets!"), tr("Nothing for new planets to orbit around!"));
+    else
+        ui->centralwidget->universe.generateRandomOrbital(ui->randomAmountSpinBox->value(), ui->centralwidget->universe.selected);
 }
 
 void MainWindow::on_actionClear_triggered() {
