@@ -24,7 +24,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>30</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -83,7 +83,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="newPlanet_DockWidget">
    <property name="windowTitle">
-    <string>&amp;New Planet</string>
+    <string>New Planet</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -281,7 +281,7 @@
   </widget>
   <widget class="QDockWidget" name="speedControl_DockWidget">
    <property name="windowTitle">
-    <string>Speed Contro&amp;l</string>
+    <string>Speed Control</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -365,7 +365,7 @@
   </widget>
   <widget class="QDockWidget" name="viewSettings_DockWidget">
    <property name="windowTitle">
-    <string>&amp;View Settings</string>
+    <string>View Settings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -483,7 +483,7 @@
   </widget>
   <widget class="QDockWidget" name="firingSettings_DockWidget">
    <property name="windowTitle">
-    <string>Firing &amp;Mode Settings</string>
+    <string>Firing Mode Settings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -542,7 +542,7 @@
   </widget>
   <widget class="QDockWidget" name="randomSettings_DockWidget">
    <property name="windowTitle">
-    <string>&amp;Random Planet Generator</string>
+    <string>Random Planet Generator</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -689,7 +689,7 @@
   </widget>
   <widget class="QDockWidget" name="info_DockWidget">
    <property name="windowTitle">
-    <string>&amp;Info</string>
+    <string>Info</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
