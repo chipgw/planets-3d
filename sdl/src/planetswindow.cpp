@@ -665,7 +665,7 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym &key) {
 
 void PlanetsWindow::doControllerButtonPress(const Uint8 &button) {
     /* When simulating mouse events we use the center of the screen (in pixels). */
-    glm::ivec2 centerScreen(windowWidth / 2, windowHeight / 2);
+    glm::ivec2 centerScreen = windowSize / 2;
 
     switch(button) {
     case SDL_CONTROLLER_BUTTON_BACK:
@@ -796,8 +796,7 @@ void PlanetsWindow::onClose() {
 
 void PlanetsWindow::onResized(uint32_t width, uint32_t height) {
     /* Store the width and height for later use. */
-    windowWidth = width;
-    windowHeight = height;
+    windowSize = glm::ivec2(width, height);
 
     /* Resize the viewport and camera. */
     glViewport(0, 0, width, height);

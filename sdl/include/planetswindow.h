@@ -46,8 +46,7 @@ class PlanetsWindow{
     Grid grid;
 
     /* Store the window width and height (in pixels) for use with mouse events. */
-    uint32_t windowWidth;
-    uint32_t windowHeight;
+    glm::ivec2 windowSize;
 
     /* OpenGL vertex attribute handles. */
     const static unsigned int vertex, uv;
