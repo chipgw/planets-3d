@@ -375,19 +375,17 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e) {
     bool holdCursor = false;
 
     if (!placing.handleMouseMove(glm::ivec2(e->x(), e->y()), delta, camera, holdCursor)) {
-        if (e->buttons().testFlag(Qt::MiddleButton) || e->buttons().testFlag(Qt::RightButton)) {
-            if (e->modifiers().testFlag(Qt::ControlModifier)) {
-                camera.distance -= delta.y * camera.distance * 1.0e-2f;
-                setCursor(Qt::SizeVerCursor);
-                camera.bound();
-            } else {
-                camera.xrotation += delta.y * 0.01f;
-                camera.zrotation += delta.x * 0.01f;
+        if (e->buttons().testFlag(Qt::MiddleButton)) {
+            camera.distance -= delta.y * camera.distance * 1.0e-2f;
+            setCursor(Qt::SizeVerCursor);
+            camera.bound();
+        } else if (e->buttons().testFlag(Qt::RightButton)) {
+            camera.xrotation += delta.y * 0.01f;
+            camera.zrotation += delta.x * 0.01f;
 
-                camera.bound();
+            camera.bound();
 
-                holdCursor = true;
-            }
+            holdCursor = true;
         }
     }
     if (holdCursor) {
