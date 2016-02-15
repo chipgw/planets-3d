@@ -146,13 +146,8 @@ void MainWindow::on_speed_Dial_valueChanged(int value) {
     ui->centralwidget->universe.simspeed = float(value * speeddialmax) / ui->speed_Dial->maximum();
     ui->speedDisplay_lcdNumber->display(ui->centralwidget->universe.simspeed);
 
-    if (ui->speed_Dial->value() == 0) {
-        ui->PauseResume_Button->setText(tr("Resume"));
-        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_play_blue.png"));
-    } else {
-        ui->PauseResume_Button->setText(tr("Pause"));
-        ui->PauseResume_Button->setIcon(QIcon(":/icons/silk/control_pause_blue.png"));
-    }
+    ui->PauseResume_Button->setText(value == 0 ? tr("Resume") : tr("Pause"));
+    ui->PauseResume_Button->setIcon(QIcon(value == 0 ? ":/icons/silk/control_play_blue.png" : ":/icons/silk/control_pause_blue.png"));
 }
 
 void MainWindow::on_PauseResume_Button_clicked() {
@@ -166,9 +161,10 @@ void MainWindow::on_PauseResume_Button_clicked() {
 }
 
 void MainWindow::on_FastForward_Button_clicked() {
+    /* If it's at the max or zero, set to the value that gives a simspeed of 1. */
     if (ui->speed_Dial->value() == ui->speed_Dial->maximum() || ui->speed_Dial->value() == 0)
-        /* If it's at the max or zero, set to the value that gives a simspeed of 1. */
         ui->speed_Dial->setValue(ui->speed_Dial->maximum() / speeddialmax);
+    /* Otherwise just double it, the max limit is handled by the widget. */
     else
         ui->speed_Dial->setValue(ui->speed_Dial->value() * 2);
 }
@@ -187,8 +183,8 @@ void MainWindow::on_actionOpen_Simulation_triggered() {
             int loaded = ui->centralwidget->universe.load(filename.toStdString());
             ui->statusbar->showMessage(("Loaded %1 planets from \"" + filename + '"').arg(loaded), 8000);
             addRecentFile(filename);
-        } catch (const std::string err) {
-            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
+        } catch (const std::exception& err) {
+            QMessageBox::warning(this, tr("Error loading simulation!"), err.what());
         }
     }
 }
@@ -201,8 +197,8 @@ void MainWindow::on_actionAppend_Simulation_triggered() {
             int loaded = ui->centralwidget->universe.load(filename.toStdString(), false);
             ui->statusbar->showMessage(("Loaded %1 planets from \"" + filename + '"').arg(loaded), 8000);
             addRecentFile(filename);
-        } catch (const std::string err) {
-            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
+        } catch (const std::exception& err) {
+            QMessageBox::warning(this, tr("Error loading simulation!"), err.what());
         }
     }
 }
@@ -217,8 +213,8 @@ bool MainWindow::on_actionSave_Simulation_triggered() {
                 ui->statusbar->showMessage("Simulation saved to \"" + filename + '"', 8000);
                 addRecentFile(filename);
                 return true;
-            } catch (const std::string err) {
-                QMessageBox::warning(this, tr("Error Saving Simulation."), QString::fromStdString(err));
+            } catch (const std::exception& err) {
+                QMessageBox::warning(this, tr("Error Saving Simulation."), err.what());
             }
         }
     } else {
@@ -367,8 +363,8 @@ void MainWindow::openRecentFile() {
 
             /* Even though it is already in recent we add it, so it will be on top. */
             addRecentFile(path);
-        } catch (const std::string err) {
-            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
+        } catch (const std::exception& err) {
+            QMessageBox::warning(this, tr("Error loading simulation!"), err.what());
         }
     }
 }
@@ -391,8 +387,8 @@ void MainWindow::dropEvent(QDropEvent *event) {
 
             addRecentFile(url.toLocalFile());
             return event->acceptProposedAction();
-        } catch (const std::string err) {
-            QMessageBox::warning(NULL, tr("Error loading simulation!"), QString::fromStdString(err));
+        } catch (const std::exception& err) {
+            QMessageBox::warning(this, tr("Error loading simulation!"), err.what());
         }
     }
 }

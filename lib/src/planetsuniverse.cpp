@@ -20,11 +20,11 @@ int PlanetsUniverse::load(const std::string &filename, bool clear) {
     TiXmlDocument doc(filename);
 
     if (!doc.LoadFile())
-        throw "Unable to load file \"" + filename + "\"!\n" + doc.ErrorDesc();
+        throw std::runtime_error("Unable to load file \"" + filename + "\"!\n" + doc.ErrorDesc());
 
     TiXmlElement* root = doc.FirstChildElement("planets-3d-universe");
     if (root == nullptr)
-        throw "\"" + filename + "\" is not a valid universe file!";
+        throw std::runtime_error("\"" + filename + "\" is not a valid universe file!");
 
     if (clear)
         deleteAll();
@@ -101,7 +101,7 @@ void PlanetsUniverse::save(const std::string &filename) {
     doc.LinkEndChild(root);
 
     if (!doc.SaveFile(filename))
-        throw doc.ErrorDesc();
+        throw std::runtime_error(doc.ErrorDesc());
 }
 
 void PlanetsUniverse::advance(float time) {
