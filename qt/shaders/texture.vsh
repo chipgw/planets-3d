@@ -6,8 +6,7 @@ uniform highp mat4 modelMatrix;
 
 varying highp vec2 texCoord;
 
-void main(void)
-{
+void main() {
     gl_Position = cameraMatrix * modelMatrix * vertex;
     texCoord = uv;
 }

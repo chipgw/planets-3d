@@ -1,5 +1,5 @@
 uniform highp vec4 color;
 
-void main(void){
+void main() {
     gl_FragColor = color;
 }
