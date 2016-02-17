@@ -6,11 +6,11 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-PlacingInterface::PlacingInterface(PlanetsUniverse &u) : universe(u), firingSpeed(universe.velocityfac * 10.0f) {
+PlacingInterface::PlacingInterface(PlanetsUniverse& u) : universe(u), firingSpeed(universe.velocityfac * 10.0f) {
     planet.velocity.y = universe.velocityfac;
 }
 
-bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &delta, const Camera &camera, bool &holdMouse) {
+bool PlacingInterface::handleMouseMove(const glm::ivec2& pos, const glm::ivec2& delta, const Camera& camera, bool& holdMouse) {
     switch (step) {
     case FreePositionXY: {
         /* Set placing position on the XY plane. */
@@ -69,7 +69,7 @@ bool PlacingInterface::handleMouseMove(const glm::ivec2 &pos, const glm::ivec2 &
     return false;
 }
 
-bool PlacingInterface::handleMouseClick(const glm::ivec2 &pos, const Camera &camera) {
+bool PlacingInterface::handleMouseClick(const glm::ivec2& pos, const Camera& camera) {
     switch (step) {
     case FreePositionXY:
         step = FreePositionZ;
@@ -130,7 +130,7 @@ bool PlacingInterface::handleMouseWheel(float delta){
     return false;
 }
 
-bool PlacingInterface::handleAnalogStick(const glm::vec2 &pos, const bool& modifier, Camera &camera) {
+bool PlacingInterface::handleAnalogStick(const glm::vec2& pos, const bool& modifier, Camera& camera) {
     if (modifier) {
         float y = pos.y * 10.0f;
         switch (step) {

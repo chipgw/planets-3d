@@ -21,6 +21,6 @@ public:
 
     inline float radius() const { return radius_p; }
 
-    EXPORT void setMass(const float &m);
+    EXPORT void setMass(const float& m);
     inline float mass() const { return mass_p; }
 };

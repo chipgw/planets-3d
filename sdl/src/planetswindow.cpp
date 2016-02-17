@@ -588,7 +588,7 @@ void PlanetsWindow::doEvents() {
     }
 }
 
-void PlanetsWindow::doKeyPress(const SDL_Keysym &key) {
+void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
     switch(key.sym) {
     case SDLK_ESCAPE:
         onClose();
@@ -663,7 +663,7 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym &key) {
     }
 }
 
-void PlanetsWindow::doControllerButtonPress(const Uint8 &button) {
+void PlanetsWindow::doControllerButtonPress(const Uint8& button) {
     /* When simulating mouse events we use the center of the screen (in pixels). */
     glm::ivec2 centerScreen = windowSize / 2;
 
@@ -803,7 +803,7 @@ void PlanetsWindow::onResized(uint32_t width, uint32_t height) {
     camera.resizeViewport(float(width), float(height));
 }
 
-void PlanetsWindow::drawPlanet(const Planet &planet) {
+void PlanetsWindow::drawPlanet(const Planet& planet) {
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius()));
     glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
@@ -813,7 +813,7 @@ void PlanetsWindow::drawPlanet(const Planet &planet) {
     glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
 }
 
-void PlanetsWindow::drawPlanetWireframe(const Planet &planet, const uint32_t &color) {
+void PlanetsWindow::drawPlanetWireframe(const Planet& planet, const uint32_t& color) {
     glUniform4fv(shaderColor_color, 1, glm::value_ptr(uintColorToVec4(color)));
 
     glm::mat4 matrix = glm::translate(planet.position);

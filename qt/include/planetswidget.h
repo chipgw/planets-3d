@@ -82,7 +82,7 @@ private:
 
     void pollGamepad();
 
-    void doControllerButtonPress(const Uint8 &button);
+    void doControllerButtonPress(const Uint8& button);
     void doControllerAxisInput(int64_t delay);
 #endif
 
@@ -109,9 +109,9 @@ public:
 
 signals:
     /* Update the statusbar messages. */
-    void updateFPSStatusMessage(const QString &text);
-    void updateAverageFPSStatusMessage(const QString &text);
-    void statusBarMessage(const QString &text, int timeout = 0);
+    void updateFPSStatusMessage(const QString& text);
+    void updateAverageFPSStatusMessage(const QString& text);
+    void statusBarMessage(const QString& text, int timeout = 0);
 
 public slots:
     /* Slots for placing functions. */
@@ -147,6 +147,6 @@ protected:
     void wheelEvent(QWheelEvent* e);
 
     /* Various planet drawing functions, mostly the same as in the SDL interface. */
-    void drawPlanet(const Planet &planet);
-    void drawPlanetWireframe(const Planet &planet, const QColor &color = 0xff00ff00);
+    void drawPlanet(const Planet& planet);
+    void drawPlanetWireframe(const Planet& planet, const QColor& color = 0xff00ff00);
 };

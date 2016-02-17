@@ -24,7 +24,7 @@ void Camera::reset() {
     position = glm::vec3();
 }
 
-void Camera::resizeViewport(const float &width, const float &height) {
+void Camera::resizeViewport(const float& width, const float& height) {
     viewport = glm::vec4(0.0f, 0.0f, width, height);
 
     projection = glm::perspective(glm::quarter_pi<float>(), width / height, 0.1f, 1.0e6f);

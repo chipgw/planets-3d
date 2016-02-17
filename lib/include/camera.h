@@ -45,7 +45,7 @@ public:
     EXPORT void reset();
 
     /* Call this from the interface code when the viewport size changes. */
-    EXPORT void resizeViewport(const float &width, const float &height);
+    EXPORT void resizeViewport(const float& width, const float& height);
 
     /* Update the camera matrix from all the other variables. */
     EXPORT const glm::mat4& setup();

@@ -19,7 +19,7 @@ public:
     float alphafac;
 
     /* Update all contained generated data. */
-    EXPORT void update(const Camera &camera);
+    EXPORT void update(const Camera& camera);
 
     /* Toggle drawing the grid. */
     inline void toggle() { draw = !draw; }

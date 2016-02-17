@@ -68,8 +68,8 @@ class PlanetsWindow{
 
     /* Called to update universe based on SDL events. */
     void doEvents();
-    void doKeyPress(const SDL_Keysym &key);
-    void doControllerButtonPress(const Uint8 &button);
+    void doKeyPress(const SDL_Keysym& key);
+    void doControllerButtonPress(const Uint8& button);
     void doControllerAxisInput(int64_t delay);
 
     /* Initialization functions, called by constructor. */
@@ -90,8 +90,8 @@ class PlanetsWindow{
     void onResized(uint32_t width, uint32_t height);
 
     /* Various planet drawing functions, mostly the same as in the Qt interface. */
-    void drawPlanet(const Planet &planet);
-    void drawPlanetWireframe(const Planet &planet, const uint32_t& color = 0xff00ff00);
+    void drawPlanet(const Planet& planet);
+    void drawPlanetWireframe(const Planet& planet, const uint32_t& color = 0xff00ff00);
 
     /* Convert a 0xAARRGGBB color value to a float-based vec4. */
     glm::vec4 uintColorToVec4(const uint32_t& color) {

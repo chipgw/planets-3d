@@ -16,7 +16,7 @@ using std::uniform_real_distribution;
 
 PlanetsUniverse::PlanetsUniverse() : generator(std::chrono::system_clock::now().time_since_epoch().count()) { }
 
-int PlanetsUniverse::load(const std::string &filename, bool clear) {
+int PlanetsUniverse::load(const std::string& filename, bool clear) {
     TiXmlDocument doc(filename);
 
     if (!doc.LoadFile())
@@ -62,7 +62,7 @@ int PlanetsUniverse::load(const std::string &filename, bool clear) {
     return loaded;
 }
 
-void PlanetsUniverse::save(const std::string &filename) {
+void PlanetsUniverse::save(const std::string& filename) {
     TiXmlDocument doc;
 
     doc.LinkEndChild(new TiXmlDeclaration("1.0", "", ""));
@@ -166,7 +166,7 @@ void PlanetsUniverse::advance(float time) {
     }
 }
 
-key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type keyHint) {
+key_type PlanetsUniverse::addPlanet(const Planet& planet, key_type keyHint) {
     uniform_int_distribution<key_type> color_gen(0xFF000001, 0xFFFFFFFF);
 
     /* Keep generating until we find an unused key. */
@@ -177,7 +177,7 @@ key_type PlanetsUniverse::addPlanet(const Planet &planet, key_type keyHint) {
     return keyHint;
 }
 
-void PlanetsUniverse::generateRandom(const int &count, const float &positionRange, const float &maxVelocity, const float &maxMass) {
+void PlanetsUniverse::generateRandom(const int& count, const float& positionRange, const float& maxVelocity, const float& maxMass) {
     uniform_real_distribution<float> position(-positionRange, positionRange);
     uniform_real_distribution<float> velocity(-maxVelocity, maxVelocity);
     uniform_real_distribution<float> mass(min_mass, maxMass);
@@ -190,7 +190,7 @@ void PlanetsUniverse::generateRandom(const int &count, const float &positionRang
 
 /* TODO - This function currently does not account for other planets.
  * Doing so would be very complicated. IDK if it'd even be possible... I'll have to look into it sometime. */
-key_type PlanetsUniverse::addOrbital(Planet &around, const float &radius, const float &mass, const glm::mat4& plane) {
+key_type PlanetsUniverse::addOrbital(Planet& around, const float& radius, const float& mass, const glm::mat4& plane) {
     /* Calculate the speed based on gravitational force and distance. */
     float speed = sqrt((around.mass() * around.mass() * gravityconst) / ((around.mass() + mass) * radius));
 
@@ -206,7 +206,7 @@ key_type PlanetsUniverse::addOrbital(Planet &around, const float &radius, const 
     return planet;
 }
 
-void PlanetsUniverse::generateRandomOrbital(const int &count, key_type target) {
+void PlanetsUniverse::generateRandomOrbital(const int& count, key_type target) {
     /* We need a planet to orbit around. */
     if (!isEmpty()) {
         /* Ensure we have a valid target planet, if none was provided select at random. */

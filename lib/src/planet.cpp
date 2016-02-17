@@ -18,7 +18,7 @@ void Planet::updatePath(size_t pathLength, float pathRecordDistance) {
         path.erase(path.begin(), path.end() - pathLength);
 }
 
-void Planet::setMass(const float &m) {
+void Planet::setMass(const float& m) {
     mass_p = m;
     radius_p = 0.0f;
 

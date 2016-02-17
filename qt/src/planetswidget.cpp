@@ -440,7 +440,7 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e){
     }
 }
 
-void PlanetsWidget::drawPlanet(const Planet &planet) {
+void PlanetsWidget::drawPlanet(const Planet& planet) {
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
     glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
@@ -450,7 +450,7 @@ void PlanetsWidget::drawPlanet(const Planet &planet) {
     glDrawElements(GL_TRIANGLES, highResSphereTriCount, GL_UNSIGNED_INT, nullptr);
 }
 
-void PlanetsWidget::drawPlanetWireframe(const Planet &planet, const QColor &color) {
+void PlanetsWidget::drawPlanetWireframe(const Planet& planet, const QColor& color) {
     shaderColor.setUniformValue(shaderColor_color, color);
 
     glm::mat4 matrix = glm::translate(planet.position);
@@ -498,7 +498,7 @@ void PlanetsWidget::pollGamepad() {
     }
 }
 
-void PlanetsWidget::doControllerButtonPress(const uint8_t &button) {
+void PlanetsWidget::doControllerButtonPress(const uint8_t& button) {
     /* When simulating mouse events we use the center of the screen (in pixels). */
     glm::ivec2 centerScreen(width() / 2, height() / 2);
 

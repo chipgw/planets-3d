@@ -39,10 +39,10 @@ public:
     int stepsPerFrame = 20;
 
     /* Make new planets. */
-    EXPORT key_type addPlanet(const Planet &planet, key_type keyHint = 0);
-    EXPORT void generateRandom(const int &count, const float &positionRange, const float &maxVelocity, const float &maxMass);
-    EXPORT key_type addOrbital(Planet &around, const float &radius, const float &mass, const glm::mat4 &plane);
-    EXPORT void generateRandomOrbital(const int &count, key_type target);
+    EXPORT key_type addPlanet(const Planet& planet, key_type keyHint = 0);
+    EXPORT void generateRandom(const int& count, const float& positionRange, const float& maxVelocity, const float& maxMass);
+    EXPORT key_type addOrbital(Planet& around, const float& radius, const float& mass, const glm::mat4& plane);
+    EXPORT void generateRandomOrbital(const int& count, key_type target);
 
     /* Load and save from an XML file. Sets error string and returns false on an error. */
     EXPORT void save(const std::string& filename);
@@ -54,14 +54,14 @@ public:
     EXPORT void advance(float time);
 
     inline bool isEmpty() const { return planets.size() == 0; }
-    inline bool isValid(const key_type &key) const { return planets.count(key) > 0; }
-    inline void remove(const key_type &key) { planets.erase(key); }
-    inline Planet &operator [] (const key_type &key) { return planets.at(key); }
+    inline bool isValid(const key_type& key) const { return planets.count(key) > 0; }
+    inline void remove(const key_type& key) { planets.erase(key); }
+    inline Planet& operator [] (const key_type& key) { return planets.at(key); }
 
     /* Is a planet selected? */
     inline bool isSelectedValid() const { return planets.count(selected) > 0; }
     /* Get the currently selected planet. Don't call without checking for validity first. */
-    inline Planet &getSelected() { return planets.at(selected); }
+    inline Planet& getSelected() { return planets.at(selected); }
     /* Deselect the currently selected planet. */
     inline void resetSelected() { selected = 0; }
 
@@ -70,7 +70,7 @@ public:
     inline iterator end() { return planets.end(); }
     inline const_iterator cbegin() const { return planets.cbegin(); }
     inline const_iterator cend() const { return planets.cend(); }
-    inline const_iterator find(const key_type &key) { return planets.find(key); }
+    inline const_iterator find(const key_type& key) { return planets.find(key); }
     inline list_type::size_type size() const { return planets.size(); }
 
     /* Make the weighted average position and velocity of all planets 0.
