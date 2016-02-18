@@ -119,7 +119,7 @@ void Camera::clearFollow() {
 }
 
 void Camera::followNext() {
-    if(!universe.isEmpty()) {
+    if (!universe.isEmpty()) {
         followingState = Single;
         PlanetsUniverse::const_iterator current = universe.find(universe.following);
 
@@ -136,7 +136,7 @@ void Camera::followNext() {
 }
 
 void Camera::followPrevious() {
-    if(!universe.isEmpty()) {
+    if (!universe.isEmpty()) {
         followingState = Single;
         PlanetsUniverse::const_iterator current = universe.find(universe.following);
 

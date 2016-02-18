@@ -115,8 +115,8 @@ bool PlacingInterface::handleMouseClick(const glm::ivec2& pos, const Camera& cam
     return false;
 }
 
-bool PlacingInterface::handleMouseWheel(float delta){
-    switch (step){
+bool PlacingInterface::handleMouseWheel(float delta) {
+    switch (step) {
     case FreePositionXY:
     case FreePositionZ:
     case OrbitalPlanet:
@@ -212,5 +212,5 @@ void PlacingInterface::beginInteractiveCreation() {
 }
 
 void PlacingInterface::beginOrbitalCreation() {
-    if(universe.isSelectedValid()) step = OrbitalPlanet;
+    if (universe.isSelectedValid()) step = OrbitalPlanet;
 }

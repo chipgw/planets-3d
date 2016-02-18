@@ -115,9 +115,9 @@ signals:
 
 public slots:
     /* Slots for placing functions. */
-    void beginInteractiveCreation(){ placing.beginInteractiveCreation(); }
-    void enableFiringMode(bool enable){ placing.enableFiringMode(enable); }
-    void beginOrbitalCreation(){ placing.beginOrbitalCreation(); }
+    void beginInteractiveCreation() { placing.beginInteractiveCreation(); }
+    void enableFiringMode(bool enable) { placing.enableFiringMode(enable); }
+    void beginOrbitalCreation() { placing.beginOrbitalCreation(); }
 
     void takeScreenshot();
 

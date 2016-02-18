@@ -19,7 +19,7 @@
 
 const int16_t triggerDeadzone = 16;
 
-PlanetsWindow::PlanetsWindow(int argc, char *argv[]) : placing(universe), camera(universe) {
+PlanetsWindow::PlanetsWindow(int argc, char* argv[]) : placing(universe), camera(universe) {
     initSDL();
     initGL();
 
@@ -149,7 +149,7 @@ unsigned int PlanetsWindow::loadTexture(const char* filename) {
     return texture;
 }
 
-GLuint compileShader(const char *source, GLenum shaderType) {
+GLuint compileShader(const char* source, GLenum shaderType) {
     GLuint shader = glCreateShader(shaderType);
 
     glShaderSource(shader, 1, (const GLchar**)&source, 0);
@@ -303,8 +303,9 @@ int PlanetsWindow::run() {
 
         if (delay != 0)
             /* Put a bunch of information into the title. */
-            SDL_SetWindowTitle(windowSDL, ("Planets3D  [" + std::to_string(1000000 / delay) + "fps, " + std::to_string(delay / 1000) + "ms " + std::to_string(universe.size()) + " planet(s), " +
-                                           std::to_string(universe.simspeed) + "x speed, " + std::to_string(universe.stepsPerFrame) + " step(s), " +  std::to_string(universe.pathLength) + " path length]").c_str());
+            SDL_SetWindowTitle(windowSDL, ("Planets3D  [" + std::to_string(1000000 / delay) + "fps, " + std::to_string(delay / 1000) + "ms " +
+                                           std::to_string(universe.size()) + " planet(s), " + std::to_string(universe.simspeed) + "x speed, " +
+                                           std::to_string(universe.stepsPerFrame) + " step(s), " +  std::to_string(universe.pathLength) + " path length]").c_str());
 
         /* Don't do delays larger than a second. */
         delay = std::min(delay, 1000000);
@@ -554,7 +555,7 @@ void PlanetsWindow::doEvents() {
                         camera.clearFollow();
                 } else {
                     glm::ivec2 pos(event.button.x, event.button.y);
-                    if(!placing.handleMouseClick(pos, camera))
+                    if (!placing.handleMouseClick(pos, camera))
                         camera.selectUnder(pos);
                 }
             } else if ((event.button.button == SDL_BUTTON_MIDDLE || event.button.button == SDL_BUTTON_RIGHT) && event.button.clicks == 2) {
@@ -618,19 +619,19 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
         grid.toggle();
         break;
     case SDLK_KP_PLUS:
-        if(universe.simspeed <= 0.0f)
+        if (universe.simspeed <= 0.0f)
             universe.simspeed = 1.0f;
-        else if(universe.simspeed < 64.0f)
+        else if (universe.simspeed < 64.0f)
             universe.simspeed *= 2.0f;
         break;
     case SDLK_KP_MINUS:
-        if(universe.simspeed <= 1.0f)
+        if (universe.simspeed <= 1.0f)
             universe.simspeed = 0.0f;
         else
             universe.simspeed *= 0.5f;
         break;
     case SDLK_RETURN:
-        if(key.mod & KMOD_ALT)
+        if (key.mod & KMOD_ALT)
             toggleFullscreen();
         break;
     case SDLK_SPACE:
@@ -649,13 +650,13 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
         ++universe.stepsPerFrame;
         break;
     case SDLK_UP:
-        if(universe.pathLength < 2000)
+        if (universe.pathLength < 2000)
             universe.pathLength *= 2;
         else
             universe.pathLength = 4000;
         break;
     case SDLK_DOWN:
-        if(universe.pathLength > 200)
+        if (universe.pathLength > 200)
             universe.pathLength /= 2;
         else
             universe.pathLength = 100;

@@ -13,7 +13,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
     
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
     
 private slots:
@@ -67,7 +67,7 @@ private:
     const static QString settingTrailDelta;
     const static QString settingStepsPerFrame;
 
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
 
     /* the maximum value of the simulation speed dial. */
     static const int speeddialmax;
@@ -76,20 +76,26 @@ private:
     QSettings settings;
 
     /* These labels go in the statusbar. */
-    QLabel *planetCountLabel;
-    QLabel *fpsLabel;
-    QLabel *averagefpsLabel;
+    QLabel* planetCountLabel;
+    QLabel* fpsLabel;
+    QLabel* averagefpsLabel;
 
+    /* Read recent file list from settings. */
     QStringList getRecentFiles();
+
+    /* Add a new file to recent file list in settings. */
     void addRecentFile(const QString& filename);
+
+    /* Update the "Recent Files" menu. */
     void updateRecentFileActions();
 
+    /* These actions are for individual recent file entries, the tooltips contain the full path. */
     QList<QAction*> recentFileActions;
 
-    void closeEvent(QCloseEvent *e);
+    void closeEvent(QCloseEvent* e);
 
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dropEvent(QDropEvent* event);
 
-    bool event(QEvent *event);
+    bool event(QEvent* event);
 };

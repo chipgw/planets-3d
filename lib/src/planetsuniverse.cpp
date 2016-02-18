@@ -182,7 +182,7 @@ void PlanetsUniverse::generateRandom(const int& count, const float& positionRang
     uniform_real_distribution<float> velocity(-maxVelocity, maxVelocity);
     uniform_real_distribution<float> mass(min_mass, maxMass);
 
-    for(int i = 0; i < count; ++i)
+    for (int i = 0; i < count; ++i)
         addPlanet(Planet(glm::vec3(position(generator), position(generator), position(generator)),
                          glm::vec3(velocity(generator), velocity(generator), velocity(generator)),
                          mass(generator)));

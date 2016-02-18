@@ -20,7 +20,7 @@ class PlanetsWindow{
     float pauseSpeed = 1.0f;
 
     /* SDL handles for the window and GL context */
-    SDL_Window *windowSDL;
+    SDL_Window* windowSDL;
     SDL_GLContext contextSDL;
 
     /* The currently active gamepad. */

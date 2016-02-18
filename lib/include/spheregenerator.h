@@ -22,17 +22,17 @@ public:
     Circle();
 };
 
-template <uint32_t slices> Circle<slices>::Circle(){
+template <uint32_t slices> Circle<slices>::Circle() {
     float step = (2.0f * glm::pi<float>()) / slices;
 
     uint32_t currentLine = 0;
 
-    for(uint32_t current = 0; current < slices; ++current){
+    for (uint32_t current = 0; current < slices; ++current) {
         verts[current].position[0] = glm::cos(current * step);
         verts[current].position[1] = glm::sin(current * step);
         verts[current].position[2] = 0.0f;
 
-        if(current == (slices - 1)){
+        if (current == (slices - 1)) {
             lines[currentLine++] = current;
             lines[currentLine++] = 0;
         }else{
@@ -55,18 +55,18 @@ public:
     Sphere(bool flipV = false);
 };
 
-template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::Sphere(bool flipV){
+template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::Sphere(bool flipV) {
     float vstep = glm::pi<float>() / stacks;
     float hstep = (2.0f * glm::pi<float>()) / slices;
 
     uint32_t currentTriangle = 0;
     uint32_t currentLine = 0;
 
-    for(uint32_t v = 0; v <= stacks; ++v){
+    for (uint32_t v = 0; v <= stacks; ++v) {
         float z = glm::cos(v * vstep);
         float r = glm::sin(v * vstep);
 
-        for(uint32_t h = 0; h <= slices; ++h){
+        for (uint32_t h = 0; h <= slices; ++h) {
             uint32_t w = slices + 1;
             uint32_t current = v * w + h;
 
@@ -79,7 +79,7 @@ template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::Sphere(bool 
             verts[current].uv.x = float(h) / float(slices);
             verts[current].uv.y = flipV ? 1.0f - float(v) / float(stacks) : float(v) / float(stacks);
 
-            if(h != slices && v != stacks){
+            if (h != slices && v != stacks) {
                 triangles[currentTriangle++] = current;
                 triangles[currentTriangle++] = current + w;
                 triangles[currentTriangle++] = current + 1;

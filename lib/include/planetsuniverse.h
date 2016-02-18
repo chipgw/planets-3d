@@ -80,5 +80,5 @@ public:
     /* Functions for destroying stuff. */
     inline void deleteAll() { planets.clear(); resetSelected(); }
     EXPORT void deleteEscapees();
-    inline void deleteSelected() { if(isSelectedValid()) planets.erase(selected); }
+    inline void deleteSelected() { if (isSelectedValid()) planets.erase(selected); }
 };

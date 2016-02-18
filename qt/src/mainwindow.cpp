@@ -8,7 +8,7 @@
 #include <QMimeData>
 #include <QUrl>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), speedDialMemory(0),
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), speedDialMemory(0),
     settings(QSettings::IniFormat, QSettings::UserScope, QApplication::organizationName(), QApplication::applicationName()) {
     /* Set up the UI from the .ui file. */
     ui->setupUi(this);
@@ -118,7 +118,7 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::closeEvent(QCloseEvent *e) {
+void MainWindow::closeEvent(QCloseEvent* e) {
     if (!ui->centralwidget->universe.isEmpty()) {
         int result = QMessageBox::warning(this, tr("Are You Sure?"), tr("Are you sure you wish to exit? (universe will not be saved...)"),
                                           QMessageBox::Yes | QMessageBox::Save | QMessageBox::No, QMessageBox::Yes);
@@ -370,7 +370,7 @@ void MainWindow::openRecentFile() {
 }
 
 
-void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
+void MainWindow::dragEnterEvent(QDragEnterEvent* event) {
     for (const QUrl& url : event->mimeData()->urls())
         /* Only accept local files. */
         if (QFile::exists(url.toLocalFile()))
@@ -378,7 +378,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
             return event->acceptProposedAction();
 }
 
-void MainWindow::dropEvent(QDropEvent *event) {
+void MainWindow::dropEvent(QDropEvent* event) {
     for (const QUrl& url : event->mimeData()->urls()) {
         try {
             int loaded = ui->centralwidget->universe.load(url.toLocalFile().toStdString());
@@ -393,7 +393,7 @@ void MainWindow::dropEvent(QDropEvent *event) {
     }
 }
 
-bool MainWindow::event(QEvent *event) {
+bool MainWindow::event(QEvent* event) {
     /* Pause/Resume when window looses/gains focus. */
     switch (event->type()) {
     case QEvent::WindowActivate:

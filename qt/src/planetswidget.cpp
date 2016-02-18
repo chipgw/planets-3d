@@ -194,10 +194,10 @@ void PlanetsWidget::render() {
     lowResSphereVerts.bind();
     lowResSphereLines.bind();
 
-    if(drawPlanetColors)
-        for(const auto& i : universe)
+    if (drawPlanetColors)
+        for (const auto& i : universe)
             drawPlanetWireframe(i.second, i.first);
-    else if(!hidePlanets && universe.isSelectedValid())
+    else if (!hidePlanets && universe.isSelectedValid())
         drawPlanetWireframe(universe.getSelected());
 
     lowResSphereVerts.release();
@@ -396,8 +396,8 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e) {
     }
 }
 
-void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
-    switch(e->button()){
+void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e) {
+    switch(e->button()) {
     case Qt::LeftButton:
         /* Double clicking the left button while not placing sets or clears the planet currently being followed. */
         if (placing.step == PlacingInterface::NotPlacing) {
@@ -418,21 +418,21 @@ void PlanetsWidget::mouseDoubleClickEvent(QMouseEvent* e){
     }
 }
 
-void PlanetsWidget::mousePressEvent(QMouseEvent* e){
-    if(e->button() == Qt::LeftButton){
+void PlanetsWidget::mousePressEvent(QMouseEvent* e) {
+    if (e->button() == Qt::LeftButton) {
         glm::ivec2 pos(e->x(), e->y());
 
         /* Send click to placement system. If it doesn't use it and planets aren't hidden, select under the cursor. */
-        if(!placing.handleMouseClick(pos, camera) && !hidePlanets)
+        if (!placing.handleMouseClick(pos, camera) && !hidePlanets)
             camera.selectUnder(pos);
     }
 }
 
-void PlanetsWidget::mouseReleaseEvent(QMouseEvent *e){
+void PlanetsWidget::mouseReleaseEvent(QMouseEvent* e) {
     setCursor(Qt::ArrowCursor);
 }
 
-void PlanetsWidget::wheelEvent(QWheelEvent* e){
+void PlanetsWidget::wheelEvent(QWheelEvent* e) {
     if (!placing.handleMouseWheel(e->delta() * 1.0e-3f)) {
         camera.distance -= e->delta() * camera.distance * 5.0e-4f;
 
