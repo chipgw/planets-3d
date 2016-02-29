@@ -175,8 +175,19 @@ void PlanetsWidget::render() {
         highResSphereVerts.bind();
         highResSphereTris.bind();
 
-        for (const auto& i : universe)
-            drawPlanet(i.second);
+        /* Set up the attribute buffers once for all planets. */
+        shaderTexture.setAttributeBuffer(vertex, GL_FLOAT, 0,                     3, sizeof(Vertex));
+        shaderTexture.setAttributeBuffer(uv,     GL_FLOAT, 3 * sizeof(glm::vec3), 2, sizeof(Vertex));
+
+        for (const auto& i : universe) {
+            /* Set up a matrix for the planet's position and size. */
+            glm::mat4 matrix = glm::translate(i.second.position);
+            matrix = glm::scale(matrix, glm::vec3(i.second.radius() * drawScale));
+            glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+            /* Draw the high resolution sphere. */
+            glDrawElements(GL_TRIANGLES, highResSphereTriCount, GL_UNSIGNED_INT, nullptr);
+        }
 
         highResSphereVerts.release();
         highResSphereTris.release();
@@ -440,23 +451,15 @@ void PlanetsWidget::wheelEvent(QWheelEvent* e) {
     }
 }
 
-void PlanetsWidget::drawPlanet(const Planet& planet) {
-    glm::mat4 matrix = glm::translate(planet.position);
-    matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
-    glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
-
-    shaderTexture.setAttributeBuffer(vertex, GL_FLOAT, 0,                     3, sizeof(Vertex));
-    shaderTexture.setAttributeBuffer(uv,     GL_FLOAT, 3 * sizeof(glm::vec3), 2, sizeof(Vertex));
-    glDrawElements(GL_TRIANGLES, highResSphereTriCount, GL_UNSIGNED_INT, nullptr);
-}
-
 void PlanetsWidget::drawPlanetWireframe(const Planet& planet, const QColor& color) {
     shaderColor.setUniformValue(shaderColor_color, color);
 
     glm::mat4 matrix = glm::translate(planet.position);
+    /* Wireframe scales to 1.05x the normal scale, so that it will be above the surface of a planet. */
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale * 1.05f));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
+    /* No need for UV... */
     shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
     glDrawElements(GL_LINES, lowResSphereLineCount, GL_UNSIGNED_INT, nullptr);
 }
