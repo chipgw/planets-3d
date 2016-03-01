@@ -542,7 +542,7 @@ void PlanetsWidget::doControllerButtonPress(const uint8_t& button) {
         camera.followPrevious();
         break;
     case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-        camera.followPrevious();
+        camera.followNext();
         break;
     case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
         camera.clearFollow();

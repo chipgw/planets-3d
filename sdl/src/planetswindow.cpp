@@ -704,7 +704,7 @@ void PlanetsWindow::doControllerButtonPress(const Uint8& button) {
         camera.followPrevious();
         break;
     case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-        camera.followPrevious();
+        camera.followNext();
         break;
     case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
         camera.clearFollow();
