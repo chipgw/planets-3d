@@ -2,9 +2,7 @@
 
 #include <vector>
 #include <glm/glm.hpp>
-#include "platform.h"
-
-class Camera;
+#include "types.h"
 
 class Grid {
 public:

@@ -17,10 +17,14 @@ public:
 
     std::vector<glm::vec3> path;
 
+    /* Add a point to the path if the planet is specified distance (in units squared) from the last point. */
     void updatePath(size_t pathLength, float pathRecordDistance);
 
+    /* Automatically set based on planet mass. */
     inline float radius() const { return radius_p; }
 
+    /* Set the planet's mass and update the radius. */
     EXPORT void setMass(const float& m);
+
     inline float mass() const { return mass_p; }
 };

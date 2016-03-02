@@ -20,9 +20,7 @@ void Planet::updatePath(size_t pathLength, float pathRecordDistance) {
 
 void Planet::setMass(const float& m) {
     mass_p = m;
-    radius_p = 0.0f;
 
     /* Don't bother calculating the radius if the mass is zero or less. */
-    if (m > 0.0f)
-        radius_p = std::cbrt((3.0f * m / 4.0f) * glm::pi<float>());
+    radius_p = m <= 0.0f ? 0.0f : std::cbrt((3.0f * m / 4.0f) * glm::pi<float>());
 }
