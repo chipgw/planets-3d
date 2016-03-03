@@ -473,9 +473,10 @@ void PlanetsWidget::drawPlanetWireframe(const Planet& planet, const QColor& colo
 const int16_t triggerDeadzone = 16;
 
 void PlanetsWidget::initSDL() {
-    if (SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) == -1)
+    if (SDL_Init(SDL_INIT_GAMECONTROLLER) == -1)
         qDebug("ERROR: Unable to init SDL! \"%s\"", SDL_GetError());
 
+    /* We need events from the controllers, as we don't poll buttons. */
     SDL_GameControllerEventState(SDL_ENABLE);
 }
 
@@ -488,7 +489,7 @@ void PlanetsWidget::pollGamepad() {
             SDL_GameControllerOpen(event.cdevice.which);
             break;
         case SDL_CONTROLLERBUTTONUP:
-            /* If we haven't picked a controller yet, use this one. */
+            /* If we haven't picked a controller yet or the guide button is pressed, use this one. */
             if (controller == nullptr || event.cbutton.button == SDL_CONTROLLER_BUTTON_GUIDE)
                 controller = SDL_GameControllerOpen(event.cbutton.which);
 
@@ -513,6 +514,7 @@ void PlanetsWidget::doControllerButtonPress(const uint8_t& button) {
         camera.reset();
         break;
     case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+        /* Left stick resets camera position without touching angle or zoom. */
         camera.position = glm::vec3();
         break;
     case SDL_CONTROLLER_BUTTON_A:
@@ -524,6 +526,7 @@ void PlanetsWidget::doControllerButtonPress(const uint8_t& button) {
         universe.deleteSelected();
         break;
     case SDL_CONTROLLER_BUTTON_Y:
+        /* Automatically select orbital or normal interactive placement based on selection. */
         if (universe.isSelectedValid())
             placing.beginOrbitalCreation();
         else
@@ -548,6 +551,7 @@ void PlanetsWidget::doControllerButtonPress(const uint8_t& button) {
         camera.clearFollow();
         break;
     case SDL_CONTROLLER_BUTTON_DPAD_UP:
+        /* Toggle between the two types of average follow. */
         if (camera.followingState == Camera::WeightedAverage)
             camera.followPlainAverage();
         else
