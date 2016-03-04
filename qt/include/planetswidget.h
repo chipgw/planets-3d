@@ -146,7 +146,6 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent* e);
     void wheelEvent(QWheelEvent* e);
 
-    /* Various planet drawing functions, mostly the same as in the SDL interface. */
-    void drawPlanet(const Planet& planet);
+    /* Draw a wireframe planet. Expects low res sphere VBO & IBO to be bound. */
     void drawPlanetWireframe(const Planet& planet, const QColor& color = 0xff00ff00);
 };
