@@ -89,8 +89,7 @@ class PlanetsWindow{
     /* Called whenever window gets resized. */
     void onResized(uint32_t width, uint32_t height);
 
-    /* Various planet drawing functions, mostly the same as in the Qt interface. */
-    void drawPlanet(const Planet& planet);
+    /* Draw a wireframe planet. Expects low res sphere VBO & IBO to be bound. */
     void drawPlanetWireframe(const Planet& planet, const uint32_t& color = 0xff00ff00);
 
     /* Convert a 0xAARRGGBB color value to a float-based vec4. */

@@ -356,8 +356,15 @@ void PlanetsWindow::paint() {
     glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
 
-    for (const auto& i : universe)
-        drawPlanet(i.second);
+    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(glm::vec3)));
+
+    for (const auto& i : universe) {
+        glm::mat4 matrix = glm::translate(i.second.position);
+        matrix = glm::scale(matrix, glm::vec3(i.second.radius()));
+        glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+        glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
+    }
 
     /* Now the texture shader and uv's don't get used until next frame. */
     glDisableVertexAttribArray(uv);
@@ -802,16 +809,6 @@ void PlanetsWindow::onResized(uint32_t width, uint32_t height) {
     /* Resize the viewport and camera. */
     glViewport(0, 0, width, height);
     camera.resizeViewport(float(width), float(height));
-}
-
-void PlanetsWindow::drawPlanet(const Planet& planet) {
-    glm::mat4 matrix = glm::translate(planet.position);
-    matrix = glm::scale(matrix, glm::vec3(planet.radius()));
-    glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
-
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(glm::vec3)));
-    glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
 }
 
 void PlanetsWindow::drawPlanetWireframe(const Planet& planet, const uint32_t& color) {
