@@ -176,8 +176,8 @@ void PlanetsWidget::render() {
         highResSphereTris.bind();
 
         /* Set up the attribute buffers once for all planets. */
-        shaderTexture.setAttributeBuffer(vertex, GL_FLOAT, 0,                     3, sizeof(Vertex));
-        shaderTexture.setAttributeBuffer(uv,     GL_FLOAT, 3 * sizeof(glm::vec3), 2, sizeof(Vertex));
+        shaderTexture.setAttributeBuffer(vertex, GL_FLOAT, 0,                       3, sizeof(Vertex));
+        shaderTexture.setAttributeBuffer(uv,     GL_FLOAT, offsetof(Vertex, uv),    2, sizeof(Vertex));
 
         for (const auto& i : universe) {
             /* Set up a matrix for the planet's position and size. */

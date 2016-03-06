@@ -357,7 +357,7 @@ void PlanetsWindow::paint() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
 
     glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(glm::vec3)));
+    glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
     for (const auto& i : universe) {
         glm::mat4 matrix = glm::translate(i.second.position);
