@@ -32,7 +32,7 @@ void Camera::resizeViewport(const float& width, const float& height) {
 
 const glm::mat4& Camera::setup() {
     /* If universe is empty following is useless. */
-    if (universe.size() != 0) {
+    if (!universe.isEmpty()) {
         switch (followingState) {
         case Single:
             if (universe.isValid(universe.following))
@@ -86,7 +86,9 @@ Ray Camera::getRay(const glm::ivec2& pos, float startDepth, float endDepth) cons
 
     windowCoord.z = endDepth;
 
-    ray.direction = glm::normalize(ray.origin - glm::unProject(windowCoord, model, camera, viewport));
+    /* The normalized difference between the unprojected mouse coordinates
+     * with a z of >0 and a z of 0 gives us a vector pointing straight out from the camera. */
+    ray.direction = glm::normalize(glm::unProject(windowCoord, model, camera, viewport) - ray.origin);
 
     return ray;
 }
@@ -99,10 +101,15 @@ key_type Camera::selectUnder(const glm::ivec2& pos) {
 
     /* Go through each planet and see if the ray intersects it. */
     for (const auto& i : universe) {
+        /* Find the directional vector from the ray origin to the planet. */
         glm::vec3 difference = i.second.position - ray.origin;
+
         float dot = glm::dot(difference, ray.direction);
+
+        /* Getting distance^2 works just fine for us, no need to sqrt. */
         float distance = glm::length2(difference);
-        /* dot * distance is the closest the ray gets to the planet's center point.
+
+        /* distance^2 - dot^2 is the closest the ray gets to the planet's center point.
          * Comparing to the planet radius tells whether or not it intersects. */
         if (distance < nearest && (distance - dot * dot) <= (i.second.radius() * i.second.radius())) {
             universe.selected = i.first;

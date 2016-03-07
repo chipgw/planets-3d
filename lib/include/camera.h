@@ -51,7 +51,7 @@ public:
     EXPORT const glm::mat4& setup();
 
     /* Get a ray coming from the camera at pos viewport coordinates. */
-    EXPORT Ray getRay(const glm::ivec2& pos, float startDepth = 0.9f, float endDepth = 0.0f) const;
+    EXPORT Ray getRay(const glm::ivec2& pos, float startDepth = 0.0f, float endDepth = 0.9f) const;
     /* Select the planet under the viewport coordinates supplied. */
     EXPORT key_type selectUnder(const glm::ivec2& pos);
 
