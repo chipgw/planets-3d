@@ -65,6 +65,9 @@ public:
     /* Deselect the currently selected planet. */
     inline void resetSelected() { selected = 0; }
 
+    /* Get a key for a random planet in the list. Will always retun a valid key unless universe is empty. */
+    EXPORT key_type getRandomPlanet();
+
     /* Iterators and stuff. */
     inline iterator begin() { return planets.begin(); }
     inline iterator end() { return planets.end(); }

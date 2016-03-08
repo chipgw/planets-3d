@@ -210,12 +210,8 @@ void PlanetsUniverse::generateRandomOrbital(const int& count, key_type target) {
     /* We need a planet to orbit around. */
     if (!isEmpty()) {
         /* Ensure we have a valid target planet, if none was provided select at random. */
-        if (!isValid(target)) {
-            uniform_int_distribution<list_type::size_type> random_n(0, size() - 1);
-            auto iter = begin();
-            std::advance(iter, random_n(generator));
-            target = iter->first;
-        }
+        if (!isValid(target))
+            target = getRandomPlanet();
 
         Planet &around = planets[target];
 
@@ -254,6 +250,17 @@ void PlanetsUniverse::deleteEscapees() {
         else
             ++i;
     }
+}
+
+key_type PlanetsUniverse::getRandomPlanet() {
+    if (isEmpty())
+        return 0;
+
+    uniform_int_distribution<list_type::size_type> random_n(0, size() - 1);
+    auto iter = begin();
+    std::advance(iter, random_n(generator));
+
+    return iter->first;
 }
 
 void PlanetsUniverse::centerAll() {
