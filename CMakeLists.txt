@@ -57,7 +57,6 @@ else(PLANETS3D_BUILD_TINYXML)
 endif(PLANETS3D_BUILD_TINYXML)
 
 if(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
-    set(SDL_BUILDING_LIBRARY)
     find_package(SDL2 REQUIRED)
     include_directories(${SDL2_INCLUDE_DIR})
 endif(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
@@ -85,7 +84,7 @@ if(PLANETS3D_SDL)
     target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_LIBRARY})
 
     if(MSVC)
-        target_link_libraries(${PROJECT_NAME}_sdl ${SDL2MAIN_LIBRARY})
+        target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_SDLMAIN_LIBRARY})
     endif(MSVC)
 
     find_package(SDL2_image REQUIRED)

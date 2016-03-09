@@ -86,7 +86,7 @@ FIND_PATH(SDL2_INCLUDE_DIR SDL.h
 )
 #MESSAGE("SDL2_INCLUDE_DIR is ${SDL2_INCLUDE_DIR}")
 
-FIND_LIBRARY(SDL2_LIBRARY_TEMP
+FIND_LIBRARY(SDL2_LIBRARY_RAW
   NAMES SDL2
   HINTS
   $ENV{SDL2DIR}
@@ -98,14 +98,12 @@ FIND_LIBRARY(SDL2_LIBRARY_TEMP
   /opt
 )
 
-#MESSAGE("SDL2_LIBRARY_TEMP is ${SDL2_LIBRARY_TEMP}")
-
 IF(NOT ${SDL2_INCLUDE_DIR} MATCHES ".framework")
   # Non-OS X framework versions expect you to also dynamically link to
   # SDL2main. This is mainly for Windows and OS X. Other (Unix) platforms
   # seem to provide SDL2main for compatibility even though they don't
   # necessarily need it.
-  FIND_LIBRARY(SDL2MAIN_LIBRARY
+  FIND_LIBRARY(SDL2_SDLMAIN_LIBRARY
     NAMES SDL2main
     HINTS
     $ENV{SDL2DIR}
@@ -134,13 +132,8 @@ IF(MINGW)
 ENDIF(MINGW)
 
 SET(SDL2_FOUND "NO")
-IF(SDL2_LIBRARY_TEMP)
-  # For SDL2main
-  IF(NOT SDL2_BUILDING_LIBRARY)
-    IF(SDL2MAIN_LIBRARY)
-      SET(SDL2_LIBRARY_TEMP ${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY_TEMP})
-    ENDIF(SDL2MAIN_LIBRARY)
-  ENDIF(NOT SDL2_BUILDING_LIBRARY)
+IF(SDL2_LIBRARY_RAW)
+  SET(SDL2_LIBRARY ${SDL2_LIBRARY_RAW})
 
   # For OS X, SDL2 uses Cocoa as a backend so it must link to Cocoa.
   # CMake doesn't display the -framework Cocoa string in the UI even
@@ -149,28 +142,28 @@ IF(SDL2_LIBRARY_TEMP)
   # So I use a temporary variable until the end so I can set the
   # "real" variable in one-shot.
   IF(APPLE)
-    SET(SDL2_LIBRARY_TEMP ${SDL2_LIBRARY_TEMP} "-framework Cocoa")
+    SET(SDL2_LIBRARY ${SDL2_LIBRARY} "-framework Cocoa")
   ENDIF(APPLE)
 
   # For threads, as mentioned Apple doesn't need this.
   # In fact, there seems to be a problem if I used the Threads package
   # and try using this line, so I'm just skipping it entirely for OS X.
   IF(NOT APPLE)
-    SET(SDL2_LIBRARY_TEMP ${SDL2_LIBRARY_TEMP} ${CMAKE_THREAD_LIBS_INIT})
+    SET(SDL2_LIBRARY ${SDL2_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
   ENDIF(NOT APPLE)
 
   # For MinGW library
   IF(MINGW)
-    SET(SDL2_LIBRARY_TEMP ${MINGW32_LIBRARY} ${SDL2_LIBRARY_TEMP})
+    SET(SDL2_LIBRARY ${MINGW32_LIBRARY} ${SDL2_LIBRARY})
   ENDIF(MINGW)
 
   # Set the final string here so the GUI reflects the final state.
-  SET(SDL2_LIBRARY ${SDL2_LIBRARY_TEMP} CACHE STRING "Where the SDL2 Library can be found")
+  SET(SDL2_LIBRARY ${SDL2_LIBRARY} CACHE STRING "Where the SDL2 Library can be found")
   # Set the temp variable to INTERNAL so it is not seen in the CMake GUI
-  SET(SDL2_LIBRARY_TEMP "${SDL2_LIBRARY_TEMP}" CACHE INTERNAL "")
+  SET(SDL2_LIBRARY_RAW "${SDL2_LIBRARY_RAW}" CACHE INTERNAL "")
 
   SET(SDL2_FOUND "YES")
-ENDIF(SDL2_LIBRARY_TEMP)
+ENDIF(SDL2_LIBRARY_RAW)
 
 INCLUDE(FindPackageHandleStandardArgs)
 
