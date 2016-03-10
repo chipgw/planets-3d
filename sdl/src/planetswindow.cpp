@@ -672,9 +672,6 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
 }
 
 void PlanetsWindow::doControllerButtonPress(const Uint8& button) {
-    /* When simulating mouse events we use the center of the screen (in pixels). */
-    glm::ivec2 centerScreen = windowSize / 2;
-
     switch(button) {
     case SDL_CONTROLLER_BUTTON_BACK:
         onClose();
@@ -687,8 +684,8 @@ void PlanetsWindow::doControllerButtonPress(const Uint8& button) {
         break;
     case SDL_CONTROLLER_BUTTON_A:
         /* TODO - there should probably be a seperate function for this... */
-        if (!placing.handleMouseClick(centerScreen, camera))
-            camera.selectUnder(centerScreen);
+        if (!placing.handleMouseClick(camera.getCenterScreen(), camera))
+            camera.selectUnder(camera.getCenterScreen());
         break;
     case SDL_CONTROLLER_BUTTON_X:
         universe.deleteSelected();

@@ -3,7 +3,7 @@
 #include "planet.h"
 #include <glm/mat4x4.hpp>
 
-class PlacingInterface{
+class PlacingInterface {
     PlanetsUniverse &universe;
 
 public:

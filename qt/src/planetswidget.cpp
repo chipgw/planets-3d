@@ -503,9 +503,6 @@ void PlanetsWidget::pollGamepad() {
 }
 
 void PlanetsWidget::doControllerButtonPress(const uint8_t& button) {
-    /* When simulating mouse events we use the center of the screen (in pixels). */
-    glm::ivec2 centerScreen(width() / 2, height() / 2);
-
     switch(button) {
     case SDL_CONTROLLER_BUTTON_BACK:
         QApplication::closeAllWindows();
@@ -519,8 +516,8 @@ void PlanetsWidget::doControllerButtonPress(const uint8_t& button) {
         break;
     case SDL_CONTROLLER_BUTTON_A:
         /* TODO - there should probably be a seperate function for this... */
-        if (!placing.handleMouseClick(centerScreen, camera))
-            camera.selectUnder(centerScreen);
+        if (!placing.handleMouseClick(camera.getCenterScreen(), camera))
+            camera.selectUnder(camera.getCenterScreen());
         break;
     case SDL_CONTROLLER_BUTTON_X:
         universe.deleteSelected();

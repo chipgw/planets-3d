@@ -62,4 +62,6 @@ public:
     EXPORT void clearFollow();
     inline void followPlainAverage() { followingState = PlainAverage; }
     inline void followWeightedAverage() { followingState = WeightedAverage; }
+
+    EXPORT glm::ivec2 getCenterScreen() const;
 };

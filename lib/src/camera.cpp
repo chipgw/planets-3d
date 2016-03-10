@@ -166,3 +166,7 @@ void Camera::followSelection() {
     universe.following = universe.selected;
     followingState = Single;
 }
+
+glm::ivec2 Camera::getCenterScreen() const {
+     return glm::ivec2(viewport.z / 2, viewport.w / 2);
+}
