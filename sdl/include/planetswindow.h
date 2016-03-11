@@ -8,6 +8,7 @@
 #include "placinginterface.h"
 #include "grid.h"
 #include "camera.h"
+#include "sdlgamepad.h"
 #include <SDL.h>
 
 class PlanetsWindow{
@@ -23,16 +24,7 @@ class PlanetsWindow{
     SDL_Window* windowSDL;
     SDL_GLContext contextSDL;
 
-    /* The currently active gamepad. */
-    SDL_GameController* controller = nullptr;
-
-    /* Are we using the speed trigger?
-     * Set to true when trigger leaves deadzone,
-     * set to false when speed is locked or it enters the deadzone. */
-    bool speedTriggerInUse = false;
-    /* Previous value retrieved from the speed trigger.
-     * Used when checking if the trigger has left the deadzone. */
-    int16_t speedTriggerLast = 0;
+    PlanetsGamepad gamepad;
 
     /* Is the window currently fullscreen? */
     bool fullscreen = false;
@@ -69,8 +61,6 @@ class PlanetsWindow{
     /* Called to update universe based on SDL events. */
     void doEvents();
     void doKeyPress(const SDL_Keysym& key);
-    void doControllerButtonPress(const Uint8& button);
-    void doControllerAxisInput(int64_t delay);
 
     /* Initialization functions, called by constructor. */
     void initSDL();

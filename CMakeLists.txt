@@ -58,7 +58,9 @@ endif(PLANETS3D_BUILD_TINYXML)
 
 if(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
     find_package(SDL2 REQUIRED)
-    include_directories(${SDL2_INCLUDE_DIR})
+    include_directories(${SDL2_INCLUDE_DIR} "gamepad")
+
+    add_library(${PROJECT_NAME}_gamepad STATIC "gamepad/sdlgamepad.h" "gamepad/sdlgamepad.cpp")
 endif(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
 
 #---------------------------------------------
@@ -81,8 +83,6 @@ if(PLANETS3D_SDL)
 
     add_executable(${PROJECT_NAME}_sdl WIN32 ${SDL_SOURCES} ${SDL_HEADERS} ${SDL_WINDRES} ${SDL_SHADERS})
 
-    target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_LIBRARY})
-
     if(MSVC)
         target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_SDLMAIN_LIBRARY})
     endif(MSVC)
@@ -100,7 +100,7 @@ if(PLANETS3D_SDL)
 
     find_package(OpenGL REQUIRED)
     include_directories(${OPENGL_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME}_sdl ${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
+    target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_LIBRARY} ${PROJECT_NAME}_gamepad ${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
 
     add_custom_command(TARGET ${PROJECT_NAME}_sdl COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/textures/planet.png
                                                                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/)
@@ -137,7 +137,7 @@ if(PLANETS3D_QT5)
     target_link_libraries(${PROJECT_NAME}_qt Qt5::OpenGL Planets3D)
 
     if(PLANETS3D_QT_USE_SDL_GAMEPAD)
-        target_link_libraries(${PROJECT_NAME}_qt ${SDL2_LIBRARY})
+        target_link_libraries(${PROJECT_NAME}_qt ${PROJECT_NAME}_gamepad ${SDL2_LIBRARY})
         add_definitions(-DPLANETS3D_QT_USE_SDL_GAMEPAD)
     endif(PLANETS3D_QT_USE_SDL_GAMEPAD)
 endif(PLANETS3D_QT5)
