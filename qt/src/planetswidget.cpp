@@ -344,6 +344,30 @@ void PlanetsWidget::render() {
 
         glDepthMask(GL_TRUE);
     }
+
+#ifdef PLANETS3D_QT_USE_SDL_GAMEPAD
+    /* If there is a controller attached, we aren't placing, and we aren't following anything, draw a little circle in the center of the screen. */
+    if (gamepad.isAttached() && placing.step == PlacingInterface::NotPlacing && camera.followingState == Camera::FollowNone) {
+        glDisable(GL_DEPTH_TEST);
+
+        glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f)));
+
+        circleVerts.bind();
+        circleLines.bind();
+
+        glm::mat4 matrix = glm::translate(camera.position);
+        matrix = glm::scale(matrix, glm::vec3(camera.distance * 4.0e-3f));
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+        shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
+        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
+
+        circleVerts.release();
+        circleLines.release();
+
+        glEnable(GL_DEPTH_TEST);
+    }
+#endif
 }
 
 void PlanetsWidget::takeScreenshot() {
