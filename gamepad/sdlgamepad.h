@@ -16,10 +16,10 @@ class PlanetsGamepad {
     /* Are we using the speed trigger?
      * Set to true when trigger leaves deadzone,
      * set to false when speed is locked or it enters the deadzone. */
-    bool speedTriggerInUse;
+    bool speedTriggerInUse = false;
     /* Previous value retrieved from the speed trigger.
      * Used when checking if the trigger has left the deadzone. */
-    int16_t speedTriggerLast;
+    int16_t speedTriggerLast = 0;
 
 public:
     /* Only call if SDL isn't inited already. */
