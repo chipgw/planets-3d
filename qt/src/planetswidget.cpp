@@ -290,16 +290,34 @@ void PlanetsWidget::render() {
     case PlacingInterface::OrbitalPlane:
     case PlacingInterface::OrbitalPlanet:
         if (universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
-            glm::mat4 matrix = glm::translate(universe.getSelected().position);
-            matrix = glm::scale(matrix, glm::vec3(placing.orbitalRadius));
-            matrix *= placing.rotation;
-            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
-            shaderColor.setUniformValue(shaderColor_color, trailColor);
+            /* This is how large the planet being placed's orbit will be. */
+            float newPlanetRadius = placing.orbitalRadius / (1 + (placing.planet.mass() / universe.getSelected().mass()));
+            /* THis is how large the planet being orbited around will be displaced by the new planet. */
+            float oldPlanetRadius = placing.orbitalRadius / (1 + (universe.getSelected().mass() / placing.planet.mass()));
+
+            /* Start at the placing planet location and move -1 (* the raduis value) on x to locate the center. */
+            glm::mat4 newRadiusMatrix = glm::translate(placing.planet.position);
+            newRadiusMatrix = glm::scale(newRadiusMatrix, glm::vec3(newPlanetRadius));
+            newRadiusMatrix *= placing.rotation;
+            newRadiusMatrix = glm::translate(newRadiusMatrix, glm::vec3(-1.0f, 0.0f, 0.0f));
+
+            /* Start at the selected planet location and move 1 (* the radius value) on x to locate the center. */
+            glm::mat4 oldRadiusMatrix = glm::translate(universe.getSelected().position);
+            oldRadiusMatrix = glm::scale(oldRadiusMatrix, glm::vec3(oldPlanetRadius));
+            oldRadiusMatrix *= placing.rotation;
+            oldRadiusMatrix = glm::translate(oldRadiusMatrix, glm::vec3( 1.0f, 0.0f, 0.0f));
 
             circleVerts.bind();
             circleLines.bind();
 
+            shaderColor.setUniformValue(shaderColor_color, trailColor);
             shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
+
+            /* Draw both circles. */
+            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(newRadiusMatrix));
+            glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
+
+            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(oldRadiusMatrix));
             glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
 
             circleVerts.release();
