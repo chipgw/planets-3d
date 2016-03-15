@@ -447,43 +447,61 @@ void PlanetsWindow::paint() {
         }
     }
 
-   if (grid.draw) {
-       grid.update(camera);
+    if (grid.draw) {
+        grid.update(camera);
 
-       glDepthMask(GL_FALSE);
+        glDepthMask(GL_FALSE);
 
-       glVertexAttribPointer(vertex, 2, GL_FLOAT, GL_FALSE, 0, grid.points.data());
+        glVertexAttribPointer(vertex, 2, GL_FLOAT, GL_FALSE, 0, grid.points.data());
 
-       glm::vec4 color = grid.color;
-       color.a *= grid.alphafac;
+        glm::vec4 color = grid.color;
+        color.a *= grid.alphafac;
 
-       glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(grid.scale))));
-       glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(grid.scale))));
+        glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
 
-       glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
+        glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
 
-       glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(grid.scale * 0.5f))));
-       color.a = grid.color.a - color.a;
-       glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(grid.scale * 0.5f))));
+        color.a = grid.color.a - color.a;
+        glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
 
-       glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
+        glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
 
-       glDepthMask(GL_TRUE);
-   }
+        glDepthMask(GL_TRUE);
+    }
 
-   glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
-   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
+    glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
 
-   glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
-   if (placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet && universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
-        glm::mat4 matrix = glm::translate(universe.getSelected().position);
-        matrix = glm::scale(matrix, glm::vec3(placing.orbitalRadius));
-        matrix *= placing.rotation;
-        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+    if (placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet && universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
 
-        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, 0);
+        /* This is how large the planet being placed's orbit will be. */
+        float newPlanetRadius = placing.orbitalRadius / (1 + (placing.planet.mass() / universe.getSelected().mass()));
+        /* This is how large the planet being orbited around will be displaced by the new planet. */
+        float oldPlanetRadius = placing.orbitalRadius / (1 + (universe.getSelected().mass() / placing.planet.mass()));
+
+        /* Start at the placing planet location and move -1 (* the raduis value) on x to locate the center. */
+        glm::mat4 newRadiusMatrix = glm::translate(placing.planet.position);
+        newRadiusMatrix = glm::scale(newRadiusMatrix, glm::vec3(newPlanetRadius));
+        newRadiusMatrix *= placing.rotation;
+        newRadiusMatrix = glm::translate(newRadiusMatrix, glm::vec3(-1.0f, 0.0f, 0.0f));
+
+        /* Start at the selected planet location and move 1 (* the radius value) on x to locate the center. */
+        glm::mat4 oldRadiusMatrix = glm::translate(universe.getSelected().position);
+        oldRadiusMatrix = glm::scale(oldRadiusMatrix, glm::vec3(oldPlanetRadius));
+        oldRadiusMatrix *= placing.rotation;
+        oldRadiusMatrix = glm::translate(oldRadiusMatrix, glm::vec3( 1.0f, 0.0f, 0.0f));
+
+        /* Draw both circles. */
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(newRadiusMatrix));
+        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
+
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(oldRadiusMatrix));
+        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
     }
 
     /* If there is a controller attached, we aren't placing, and we aren't following anything, draw a little circle in the center of the screen. */

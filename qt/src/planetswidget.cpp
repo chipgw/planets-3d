@@ -292,7 +292,7 @@ void PlanetsWidget::render() {
         if (universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
             /* This is how large the planet being placed's orbit will be. */
             float newPlanetRadius = placing.orbitalRadius / (1 + (placing.planet.mass() / universe.getSelected().mass()));
-            /* THis is how large the planet being orbited around will be displaced by the new planet. */
+            /* This is how large the planet being orbited around will be displaced by the new planet. */
             float oldPlanetRadius = placing.orbitalRadius / (1 + (universe.getSelected().mass() / placing.planet.mass()));
 
             /* Start at the placing planet location and move -1 (* the raduis value) on x to locate the center. */
