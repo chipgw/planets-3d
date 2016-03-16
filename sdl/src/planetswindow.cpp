@@ -615,6 +615,10 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
     case SDLK_o:
         placing.beginOrbitalCreation();
         break;
+    case SDLK_n:
+        if (key.mod & KMOD_CTRL)
+            newUniverse();
+        break;
     case SDLK_m:
         universe.generateRandomOrbital(1, universe.selected);
         break;
@@ -692,6 +696,22 @@ void PlanetsWindow::onClose() {
 
     int result;
     running = !universe.isEmpty() && SDL_ShowMessageBox(&messageboxdata, &result) == 0 && result == 0;
+}
+
+void PlanetsWindow::newUniverse() {
+    const SDL_MessageBoxButtonData buttons[] = {
+        { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No" },
+        { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" }
+    };
+    const SDL_MessageBoxData messageboxdata = {
+        SDL_MESSAGEBOX_WARNING, windowSDL,
+        "Destroy Universe?", "The universe will not be saved.",
+        SDL_arraysize(buttons), buttons, nullptr
+    };
+
+    int result;
+    if (!universe.isEmpty() && SDL_ShowMessageBox(&messageboxdata, &result) == 0 && result == 1)
+        universe.deleteAll();
 }
 
 void PlanetsWindow::onResized(uint32_t width, uint32_t height) {

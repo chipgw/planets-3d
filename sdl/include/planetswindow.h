@@ -76,6 +76,10 @@ class PlanetsWindow{
 
     /* Call this to close the window. */
     void onClose();
+
+    /* Call to show a confirmation message to delete planets. */
+    void newUniverse();
+
     /* Called whenever window gets resized. */
     void onResized(uint32_t width, uint32_t height);
 
