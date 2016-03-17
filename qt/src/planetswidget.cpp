@@ -11,8 +11,10 @@
 
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent), placing(universe), camera(universe),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/"), highResSphereTris(QOpenGLBuffer::IndexBuffer),
-    lowResSphereLines(QOpenGLBuffer::IndexBuffer), circleLines(QOpenGLBuffer::IndexBuffer),
-    gamepad(universe, camera, placing) {
+#ifdef PLANETS3D_QT_USE_SDL_GAMEPAD
+    gamepad(universe, camera, placing),
+#endif
+    lowResSphereLines(QOpenGLBuffer::IndexBuffer), circleLines(QOpenGLBuffer::IndexBuffer) {
     /* We want mouse movement events. */
     setMouseTracking(true);
 
