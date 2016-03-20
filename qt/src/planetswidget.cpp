@@ -482,7 +482,7 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e) {
 
         /* Send click to placement system. If it doesn't use it and planets aren't hidden, select under the cursor. */
         if (!placing.handleMouseClick(pos, camera) && !hidePlanets)
-            camera.selectUnder(pos);
+            camera.selectUnder(pos, drawScale);
     }
 }
 
