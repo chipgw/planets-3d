@@ -68,13 +68,17 @@ public:
     /* Get a key for a random planet in the list. Will always retun a valid key unless universe is empty. */
     EXPORT key_type getRandomPlanet();
 
+    EXPORT key_type nextKey(key_type key) const;
+    EXPORT key_type prevKey(key_type key) const;
+
     /* Iterators and stuff. */
     inline iterator begin() { return planets.begin(); }
     inline iterator end() { return planets.end(); }
     inline const_iterator cbegin() const { return planets.cbegin(); }
     inline const_iterator cend() const { return planets.cend(); }
-    inline const_iterator find(const key_type& key) { return planets.find(key); }
+    inline const_iterator find(const key_type& key) const { return planets.find(key); }
     inline list_type::size_type size() const { return planets.size(); }
+
 
     /* Make the weighted average position and velocity of all planets 0.
      * After this if all the planets merged into one it would be stationary at the origin. */

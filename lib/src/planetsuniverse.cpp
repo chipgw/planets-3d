@@ -263,6 +263,41 @@ key_type PlanetsUniverse::getRandomPlanet() {
     return iter->first;
 }
 
+key_type PlanetsUniverse::nextKey(key_type key) const {
+    if (!isEmpty()) {
+        const_iterator current = find(key);
+
+        if (current == cend())
+            /* If the planet was not found, start at the beginning. */
+            current = cbegin();
+        else if (++current == cend())
+            /* If the planet was the last planet in the list, start at the beginning. */
+            current = cbegin();
+
+        /* Get the key back from the iterator. */
+        return current->first;
+    }
+}
+
+key_type PlanetsUniverse::prevKey(key_type key) const {
+    if (!isEmpty()) {
+        const_iterator current = find(key);
+
+        if (current == cend()) {
+            /* If the planet was not found, start at the beginning. */
+            current = cbegin();
+        } else {
+            /* If the planet was the first planet in the list, start at the end. */
+            if (current == cbegin())
+                current = cend();
+            --current;
+        }
+
+        /* Get the key back from the iterator. */
+        return current->first;
+    }
+}
+
 void PlanetsUniverse::centerAll() {
     /* We need the weighted average position and velocity to center. */
     glm::vec3 averagePosition, averageVelocity;

@@ -132,40 +132,13 @@ void Camera::clearFollow() {
 }
 
 void Camera::followNext() {
-    if (!universe.isEmpty()) {
+    if (universe.isValid(universe.following = universe.nextKey(universe.following)))
         followingState = Single;
-        PlanetsUniverse::const_iterator current = universe.find(universe.following);
-
-        if (current == universe.cend())
-            /* If the planet was not found, start at the beginning. */
-            current = universe.cbegin();
-        else if (++current == universe.cend())
-            /* If the planet was the last planet in the list, start at the beginning. */
-            current = universe.cbegin();
-
-        /* Get the key back from the iterator. */
-        universe.following = current->first;
-    }
 }
 
 void Camera::followPrevious() {
-    if (!universe.isEmpty()) {
+    if (universe.isValid(universe.following = universe.prevKey(universe.following)))
         followingState = Single;
-        PlanetsUniverse::const_iterator current = universe.find(universe.following);
-
-        if (current == universe.cend()) {
-            /* If the planet was not found, start at the beginning. */
-            current = universe.cbegin();
-        } else {
-            /* If the planet was the first planet in the list, start at the end. */
-            if (current == universe.cbegin())
-                current = universe.cend();
-            --current;
-        }
-
-        /* Get the key back from the iterator. */
-        universe.following = current->first;
-    }
 }
 
 void Camera::followSelection() {
