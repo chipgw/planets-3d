@@ -9,10 +9,14 @@ Camera::Camera(PlanetsUniverse& u) : universe(u) {
     reset();
 }
 
+float wrapRad(float rad) {
+    return glm::mod(rad + glm::pi<float>(), glm::pi<float>() * 2.0f) - glm::pi<float>();
+}
+
 void Camera::bound() {
     distance = glm::clamp(distance, 10.0f, 1.0e4f);
     xrotation = glm::clamp(xrotation, -glm::half_pi<float>(), glm::half_pi<float>());
-    zrotation = glm::mod(zrotation, glm::pi<float>() * 2.0f);
+    zrotation = wrapRad(zrotation);
 }
 
 void Camera::reset() {
