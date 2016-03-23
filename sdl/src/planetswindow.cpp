@@ -476,7 +476,7 @@ void PlanetsWindow::paint() {
 
     glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
-    if (placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet && universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
+    if ((placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet) && universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
 
         /* This is how large the planet being placed's orbit will be. */
