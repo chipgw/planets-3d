@@ -1,13 +1,16 @@
 #include "planetsuniverse.h"
 #include "planet.h"
 #include <chrono>
-#include <tinyxml.h>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_query.hpp>
 #include <glm/gtx/fast_square_root.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/random.hpp>
 #include <cstdio>
+
+#ifndef EMSCRIPTEN
+#include <tinyxml.h>
+#endif
 
 #define RGB_MASK 0x00ffffff
 
@@ -17,6 +20,7 @@ using std::uniform_real_distribution;
 PlanetsUniverse::PlanetsUniverse() : generator(std::chrono::system_clock::now().time_since_epoch().count()) { }
 
 int PlanetsUniverse::load(const std::string& filename, bool clear) {
+#ifndef EMSCRIPTEN
     TiXmlDocument doc(filename);
 
     if (!doc.LoadFile())
@@ -60,9 +64,11 @@ int PlanetsUniverse::load(const std::string& filename, bool clear) {
     }
 
     return loaded;
+#endif
 }
 
 void PlanetsUniverse::save(const std::string& filename) {
+#ifndef EMSCRIPTEN
     TiXmlDocument doc;
 
     doc.LinkEndChild(new TiXmlDeclaration("1.0", "", ""));
@@ -102,6 +108,7 @@ void PlanetsUniverse::save(const std::string& filename) {
 
     if (!doc.SaveFile(filename))
         throw std::runtime_error(doc.ErrorDesc());
+#endif
 }
 
 void PlanetsUniverse::advance(float time) {

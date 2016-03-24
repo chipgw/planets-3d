@@ -11,11 +11,6 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-option(PLANETS3D_QT5 "Build Qt Interface Executable" OFF)
-option(PLANETS3D_SDL "Build SDL Interface Executable" OFF)
-option(PLANETS3D_QT_USE_SDL_GAMEPAD "Use SDL library for gamepad support in Qt executable." OFF)
-option(PLANETS3D_BUILD_TINYXML "Look for TinyXML source files in \"tinyxml\" folder, and build as a static library." OFF)
-
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/include" "${CMAKE_CURRENT_SOURCE_DIR}/lib" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
@@ -23,9 +18,20 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 
-if(${CMAKE_GENERATOR} MATCHES "Visual Studio*")
-    add_definitions(-DPLANETS3D_MSVC_CONFIGURATION="$(ConfigurationName)")
-endif()
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    option(PLANETS3D_QT5 "Build Qt Interface Executable" OFF)
+    option(PLANETS3D_SDL "Build SDL Interface Executable" OFF)
+
+    if(PLANETS3D_QT5)
+        option(PLANETS3D_QT_USE_SDL_GAMEPAD "Use SDL library for gamepad support in Qt executable." OFF)
+    endif(PLANETS3D_QT5)
+
+    option(PLANETS3D_BUILD_TINYXML "Look for TinyXML source files in \"tinyxml\" folder, and build as a static library." OFF)
+
+    if(${CMAKE_GENERATOR} MATCHES "Visual Studio*")
+        add_definitions(-DPLANETS3D_MSVC_CONFIGURATION="$(ConfigurationName)")
+    endif()
+endif(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
 find_package(GLM REQUIRED)
 include_directories(${GLM_INCLUDE_DIR})
@@ -40,28 +46,57 @@ file(GLOB LIB_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/lib/include/*.h")
 file(GLOB LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/lib/src/*.cpp")
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/lib/src/version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/version.cpp" @ONLY)
-list(APPEND LIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/version.cpp")
+list(APPEND LIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/version.cpp" README.md LICENSE)
 
-add_library(${PROJECT_NAME} SHARED ${LIB_SOURCES} ${LIB_HEADERS} README.md LICENSE)
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    # If we're building for HTML we just throw everything into one project later, otherwise we use a shared library for this.
+    add_library(${PROJECT_NAME} SHARED ${LIB_SOURCES} ${LIB_HEADERS})
 
-if(PLANETS3D_BUILD_TINYXML)
-    add_definitions(-DTIXML_USE_STL)
-    file(GLOB TinyXML_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tinyxml/*.cpp")
-    add_library(TinyXML ${TinyXML_SOURCES})
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/tinyxml/")
-    target_link_libraries(${PROJECT_NAME} TinyXML)
-else(PLANETS3D_BUILD_TINYXML)
-    find_package(TinyXML REQUIRED)
-    include_directories(${TINYXML_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME} ${TINYXML_LIBRARIES})
-endif(PLANETS3D_BUILD_TINYXML)
+    if(PLANETS3D_BUILD_TINYXML)
+        add_definitions(-DTIXML_USE_STL)
+        file(GLOB TinyXML_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tinyxml/*.cpp")
+        add_library(TinyXML ${TinyXML_SOURCES})
+        include_directories("${CMAKE_CURRENT_SOURCE_DIR}/tinyxml/")
+        target_link_libraries(${PROJECT_NAME} TinyXML)
+    else(PLANETS3D_BUILD_TINYXML)
+        find_package(TinyXML REQUIRED)
+        include_directories(${TINYXML_INCLUDE_DIR})
+        target_link_libraries(${PROJECT_NAME} ${TINYXML_LIBRARIES})
+    endif(PLANETS3D_BUILD_TINYXML)
 
-if(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
-    find_package(SDL2 REQUIRED)
-    include_directories(${SDL2_INCLUDE_DIR} "gamepad")
+    if(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
+        find_package(SDL2 REQUIRED)
+        include_directories(${SDL2_INCLUDE_DIR} "gamepad")
 
-    add_library(${PROJECT_NAME}_gamepad STATIC "gamepad/sdlgamepad.h" "gamepad/sdlgamepad.cpp")
-endif(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
+        add_library(${PROJECT_NAME}_gamepad STATIC "gamepad/sdlgamepad.h" "gamepad/sdlgamepad.cpp")
+    endif(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
+endif(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+
+#---------------------------------------------
+# Emscripten Interface
+#---------------------------------------------
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/sdl/include" "gamepad")
+
+    set(CMAKE_CXX_FLAGS "-s FULL_ES2=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='[\"png\"]' -std=c++11")
+    set(CMAKE_CXX_FLAGS_DEBUG "-s DEMANGLE_SUPPORT=1 -g")
+
+    file(GLOB SDL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sdl/include/*.h")
+    file(GLOB SDL_SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/sdl/shaders/*")
+
+    file(GLOB SDL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sdl/src/*.cpp")
+
+    # Currently we use an auto generated HTML file from Emscripten, eventually that will change...
+    SET(CMAKE_EXECUTABLE_SUFFIX ".html")
+
+    # TODO - Maybe it would be better to have totally separate rendering & interface code from the SDL version...
+    add_executable(${PROJECT_NAME}_js ${LIB_SOURCES} ${LIB_HEADERS} ${SDL_SOURCES} ${SDL_HEADERS} ${SDL_SHADERS} "gamepad/sdlgamepad.h" "gamepad/sdlgamepad.cpp")
+
+    # Currently this is useless because I haven't gotten it to load the texture properly...
+    add_custom_command(TARGET ${PROJECT_NAME}_js COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/textures/planet.png
+                                                                                   ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/)
+endif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
 #---------------------------------------------
 # SDL Interface

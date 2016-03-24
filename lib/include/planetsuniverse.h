@@ -6,6 +6,10 @@
 #include <string>
 #include <glm/mat4x4.hpp>
 
+#ifdef EMSCRIPTEN
+#include "planet.h"
+#endif
+
 class PlanetsUniverse {
 public:
     typedef std::map<key_type, Planet> list_type;
