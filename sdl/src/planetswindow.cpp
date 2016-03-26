@@ -8,7 +8,6 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
-#include <SDL_image.h>
 
 #if defined(EMSCRIPTEN)
 #include <SDL2/SDL_opengles2.h>
@@ -123,6 +122,10 @@ void PlanetsWindow::initGL() {
 
     initBuffers();
 }
+
+#ifndef EMSCRIPTEN
+#include <SDL_image.h>
+#endif
 
 unsigned int PlanetsWindow::loadTexture(const char* filename) {
 #ifdef EMSCRIPTEN
