@@ -10,6 +10,7 @@
 #include <glm/gtx/norm.hpp>
 
 #if defined(EMSCRIPTEN)
+#include <emscripten.h>
 #include <SDL2/SDL_opengles2.h>
 #elif defined(PLANETS3D_WITH_GLEW)
 #include <GL/glew.h>
@@ -123,14 +124,20 @@ void PlanetsWindow::initGL() {
     initBuffers();
 }
 
-#ifndef EMSCRIPTEN
+#ifdef EMSCRIPTEN
+extern "C" {
+  extern void loadTextureJS(const char* filename, GLuint texture);
+}
+#else
 #include <SDL_image.h>
 #endif
 
 unsigned int PlanetsWindow::loadTexture(const char* filename) {
+    GLuint texture = 0;
 #ifdef EMSCRIPTEN
-    /* TODO - Make the texture work in HTML version... */
-    return 0;
+    glGenTextures(1, &texture);
+
+    loadTextureJS(filename, texture);
 #else
     SDL_Surface* image = IMG_Load(filename);
 
@@ -148,7 +155,6 @@ unsigned int PlanetsWindow::loadTexture(const char* filename) {
     SDL_Surface* converted = SDL_ConvertSurface(image, SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 0);
     SDL_FreeSurface(image);
 
-    GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, converted->w, converted->h, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, converted->pixels);
@@ -158,9 +164,9 @@ unsigned int PlanetsWindow::loadTexture(const char* filename) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     SDL_FreeSurface(converted);
+#endif
 
     return texture;
-#endif
 }
 
 GLuint compileShader(const char* source, GLenum shaderType) {
