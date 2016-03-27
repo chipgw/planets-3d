@@ -77,6 +77,9 @@ endif(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 #---------------------------------------------
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    # Already set, but Qt Creator doesn't know about it.
+    add_definitions(-DEMSCRIPTEN)
+
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/sdl/include" "gamepad")
 
     set(CMAKE_CXX_FLAGS "-s FULL_ES2=1 -s USE_SDL=2 -std=c++11 --js-library \"${CMAKE_CURRENT_SOURCE_DIR}/js/planets.js\"")
