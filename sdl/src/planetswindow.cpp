@@ -340,8 +340,8 @@ void PlanetsWindow::doFrame(int delay) {
 #ifdef EMSCRIPTEN
     /* TODO - The events for window size are not properly generated for some reason,
      * this is a cheap way of getting it to work right in their absence. */
-    int w, h;
-    SDL_GetWindowSize(windowSDL, &w, &h);
+    int w, h, f;
+    emscripten_get_canvas_size(&w, &h, &f);
     onResized(w, h);
 #endif
 
