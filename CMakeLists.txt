@@ -82,7 +82,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/sdl/include" "gamepad")
 
-    set(CMAKE_CXX_FLAGS "-s FULL_ES2=1 -s USE_SDL=2 -std=c++11 --js-library \"${CMAKE_CURRENT_SOURCE_DIR}/js/planets.js\"")
+    set(CMAKE_CXX_FLAGS "-s FULL_ES2=1 -s USE_SDL=2 -std=c++11 --js-library \"${CMAKE_CURRENT_SOURCE_DIR}/js/planets-jslib.js\"")
     set(CMAKE_CXX_FLAGS_DEBUG "-s DEMANGLE_SUPPORT=1 -g")
 
     file(GLOB SDL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sdl/include/*.h")
