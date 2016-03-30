@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>planets-js by chipgw</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="planetsui.css"/>
+  </head>
+  <body onload="init()">
+<!--     <div id="loading"><div class="center">Loading<div class="elipsis">...</div></div></div> -->
+
+    <!-- Elements used for logic that should not be seen. -->
+    <div class="hide">
+      <form id="loadFileForm">
+        <input type="file" id="loadFile">
+      </form>
+    </div>
+
+    <div class="menu">
+      <input type="button" id="menuOpenFile" value="Open File">
+      <input type="button" id="menuDelete" value="Delete Selected">
+      <input type="button" id="menuStop" value="Stop Selected">
+      <input type="button" id="menuClear" value="Clear Universe">
+      <input type="button" id="menuCenter" value="Center Universe">
+      <input type="button" id="menuFullscreen" value="Toggle Fullscreen">
+    </div>
+
+    <div id="popupBar">
+      <div id="speedPopup">
+        <h1>Speed Control</h1>
+        <table>
+          <tr>
+            <th colspan="2"><input type="range" class="tableInput" id="speedRange" min="0" max="40000" value="1000"></th>
+          </tr>
+          <tr>
+            <!-- TODO - add icons to buttons -->
+            <th><input type="button" class="tableInput" id="speedPauseResume" value="Pause"></th>
+            <th><input type="button" class="tableInput" id="speedFastForward" value="Fast Forward"></th>
+          </tr>
+        </table>
+      </div>
+      <div id="viewPopup">
+        <h1>View Settings</h1>
+        <table>
+          <tr>
+            <th>Path Length:</th>
+            <th><input type="range" class="tableInput" id="pathLength" min="0" max="4096" value="256"></th>
+          </tr>
+          <tr>
+            <th>Path Delta Size:</th>
+            <th><input type="range" class="tableInput" id="pathDistance" min="0.1" max="10" step="0.1" value="1"></th>
+          </tr>
+        </table>
+      </div>
+      <div id="createPlanetPopup">
+        <h1>Create Planet</h1>
+        <table>
+          <tr>
+            <th/>
+            <th>X</th>
+            <th>Y</th>
+            <th>Z</th>
+          </tr>
+          <tr>
+            <th>Position:</th>
+            <th><input type="number" class="tableInput" id="createPositionX" value="0"></th>
+            <th><input type="number" class="tableInput" id="createPositionY" value="0"></th>
+            <th><input type="number" class="tableInput" id="createPositionZ" value="0"></th>
+          </tr>
+          <tr>
+            <th>Velocity:</th>
+            <th><input type="number" class="tableInput" id="createVelocityX" value="0"></th>
+            <th><input type="number" class="tableInput" id="createVelocityY" value="0"></th>
+            <th><input type="number" class="tableInput" id="createVelocityZ" value="0"></th>
+          </tr>
+          <tr>
+            <th>Mass:</th>
+            <th colspan="3"><input type="number" class="tableInput" id="createMass" min="0" step="100" value="100"></th>
+          </tr>
+          <tr>
+            <th colspan="4"><input type="button" class="tableInput" id="createPlanetButton" value="Create"></th>
+          </tr>
+        </table>
+      </div>
+      <div id="randomPopup">
+        <h1>Planet Generator</h1>
+        <table>
+          <tr>
+            <th>Amount:</th>
+            <th><input type="number" class="tableInput" id="randomAmount" min="0" max="50" value="10"></th>
+          </tr>
+          <tr>
+            <th>Range:</th>
+            <th><input type="number" class="tableInput" id="randomRange" value="1000"></th>
+          </tr>
+          <tr>
+            <th>Max Speed:</th>
+            <th><input type="number" class="tableInput" id="randomSpeed" step="0.1" value="1.0"></th>
+          </tr>
+          <tr>
+            <th>Max Mass:</th>
+            <th><input type="number" class="tableInput" id="randomMass" min="0" step="100" value="200"></th>
+          </tr>
+          <tr>
+            <th colspan="2"><input type="button" class="tableInput" id="randomGenerateButton" value="Generate"></th>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <canvas id="canvas" oncontextmenu="event.preventDefault()">
+      Whoops! It seems your browser doesn't support the <code>&lt;canvas&gt;</code> element...
+    </canvas>
+    
+    <script src="planets-webgl.js"></script>
+    <script src="planets-interface.js"></script>
+  </body>
+</html>

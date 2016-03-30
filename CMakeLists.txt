@@ -89,7 +89,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     file(GLOB SDL_SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/sdl/shaders/*")
 
     file(GLOB SDL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sdl/src/*.cpp")
-    file(GLOB JS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/js/*.js")
+    file(GLOB JS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/js/*.*" "${CMAKE_CURRENT_SOURCE_DIR}/js/*/*.*" )
 
     # Currently we use an auto generated HTML file from Emscripten, eventually that will change...
     SET(CMAKE_EXECUTABLE_SUFFIX ".html")
