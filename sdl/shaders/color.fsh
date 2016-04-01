@@ -1,6 +1,3 @@
-#ifdef EMSCRIPTEN
-"precision highp float;"
-#endif
 R"(
 uniform vec4 color;
 

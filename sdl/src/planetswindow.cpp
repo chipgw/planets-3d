@@ -8,11 +8,9 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
+#include <SDL_image.h>
 
-#if defined(EMSCRIPTEN)
-#include <emscripten.h>
-#include <SDL2/SDL_opengles2.h>
-#elif defined(PLANETS3D_WITH_GLEW)
+#ifdef PLANETS3D_WITH_GLEW
 #include <GL/glew.h>
 #else
 #define GL_GLEXT_PROTOTYPES
@@ -25,14 +23,12 @@ PlanetsWindow::PlanetsWindow(int argc, char* argv[]) : placing(universe), camera
 
     gamepad.closeFunction = std::bind(&PlanetsWindow::onClose, this);
 
-#ifndef EMSCRIPTEN
     /* Try loading from the command line. Ignore invalid files and break on the first successful file. */
     for (int i = 0; i < argc; ++i) {
         try {
             universe.load(argv[i]); break;
         } catch (...) {}
     }
-#endif
 }
 
 PlanetsWindow::~PlanetsWindow() {
@@ -75,9 +71,7 @@ void PlanetsWindow::initSDL() {
 
     contextSDL = SDL_GL_CreateContext(windowSDL);
 
-#ifndef EMSCRIPTEN
     SDL_GL_SetSwapInterval(0);
-#endif
 
     /* TODO - I may want to handle the cursor myself... */
     SDL_ShowCursor(SDL_ENABLE);
@@ -124,21 +118,7 @@ void PlanetsWindow::initGL() {
     initBuffers();
 }
 
-#ifdef EMSCRIPTEN
-extern "C" {
-  extern void loadTextureJS(const char* filename, GLuint texture);
-}
-#else
-#include <SDL_image.h>
-#endif
-
 unsigned int PlanetsWindow::loadTexture(const char* filename) {
-    GLuint texture = 0;
-#ifdef EMSCRIPTEN
-    glGenTextures(1, &texture);
-
-    loadTextureJS(filename, texture);
-#else
     SDL_Surface* image = IMG_Load(filename);
 
     if (image == nullptr) {
@@ -155,6 +135,7 @@ unsigned int PlanetsWindow::loadTexture(const char* filename) {
     SDL_Surface* converted = SDL_ConvertSurface(image, SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 0);
     SDL_FreeSurface(image);
 
+    GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, converted->w, converted->h, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, converted->pixels);
@@ -164,7 +145,6 @@ unsigned int PlanetsWindow::loadTexture(const char* filename) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     SDL_FreeSurface(converted);
-#endif
 
     return texture;
 }
@@ -321,7 +301,30 @@ int PlanetsWindow::run() {
         int delay = duration_cast<microseconds>(current - last_time).count();
         last_time = current;
 
-        doFrame(delay);
+        if (delay != 0)
+            /* Put a bunch of information into the title. */
+            SDL_SetWindowTitle(windowSDL, ("Planets3D  [" + std::to_string(1000000 / delay) + "fps, " + std::to_string(delay / 1000) + "ms " +
+                                           std::to_string(universe.size()) + " planet(s), " + std::to_string(universe.simspeed) + "x speed, " +
+                                           std::to_string(universe.stepsPerFrame) + " step(s), " +  std::to_string(universe.pathLength) + " path length]").c_str());
+
+        /* Don't do delays larger than a second. */
+        delay = std::min(delay, 1000000);
+
+        gamepad.doControllerAxisInput(delay);
+        doEvents();
+
+        /* Don't advance if we're placing. */
+        if (placing.step == PlacingInterface::NotPlacing || placing.step == PlacingInterface::Firing)
+            universe.advance(float(delay));
+
+        paint();
+
+        SDL_GL_SwapWindow(windowSDL);
+
+        ++totalFrames;
+
+        /* So anything that was written to console gets written. */
+        fflush(stdout);
     }
 
     /* Output stats to the console. */
@@ -334,41 +337,6 @@ int PlanetsWindow::run() {
     /* TODO - There might be some places where we should return something other than 0. (i.e. on a fatal error.)
      * If not why should this return anything? */
     return 0;
-}
-
-void PlanetsWindow::doFrame(int delay) {
-#ifdef EMSCRIPTEN
-    /* TODO - The events for window size are not properly generated for some reason,
-     * this is a cheap way of getting it to work right in their absence. */
-    int w, h, f;
-    emscripten_get_canvas_size(&w, &h, &f);
-    onResized(w, h);
-#endif
-
-    if (delay != 0)
-        /* Put a bunch of information into the title. */
-        SDL_SetWindowTitle(windowSDL, ("Planets3D  [" + std::to_string(1000000 / delay) + "fps, " + std::to_string(delay / 1000) + "ms " +
-                                       std::to_string(universe.size()) + " planet(s), " + std::to_string(universe.simspeed) + "x speed, " +
-                                       std::to_string(universe.stepsPerFrame) + " step(s), " +  std::to_string(universe.pathLength) + " path length]").c_str());
-
-    /* Don't do delays larger than a second. */
-    delay = std::min(delay, 1000000);
-
-    gamepad.doControllerAxisInput(delay);
-    doEvents();
-
-    /* Don't advance if we're placing. */
-    if (placing.step == PlacingInterface::NotPlacing || placing.step == PlacingInterface::Firing)
-        universe.advance(float(delay));
-
-    paint();
-
-    SDL_GL_SwapWindow(windowSDL);
-
-    ++totalFrames;
-
-    /* So anything that was written to console gets written. */
-    fflush(stdout);
 }
 
 void PlanetsWindow::paint() {

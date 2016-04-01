@@ -104,6 +104,4 @@ public:
 
     /* Runs the event/drawing loop and doesn't return until window is closed. */
     int run();
-
-    void doFrame(int delay);
 };

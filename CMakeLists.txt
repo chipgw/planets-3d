@@ -18,6 +18,11 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 
+macro(copy_to_bin)
+    make_directory("${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${ARGV2}")
+    add_custom_command(TARGET ${ARGV0} COMMAND ${CMAKE_COMMAND} -E copy "${ARGV1}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${ARGV2}")
+endmacro()
+
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     option(PLANETS3D_QT5 "Build Qt Interface Executable" OFF)
     option(PLANETS3D_SDL "Build SDL Interface Executable" OFF)
@@ -80,26 +85,21 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     # Already set, but Qt Creator doesn't know about it.
     add_definitions(-DEMSCRIPTEN)
 
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/sdl/include" "gamepad")
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/gamepad")
 
-    set(CMAKE_CXX_FLAGS "-s FULL_ES2=1 -s USE_SDL=2 -std=c++11 --js-library \"${CMAKE_CURRENT_SOURCE_DIR}/js/planets-jslib.js\"")
+    # Still needs SDL for gamepad support.
+    set(CMAKE_CXX_FLAGS "--bind -s FULL_ES2=1 -s USE_SDL=2 -std=c++11")
     set(CMAKE_CXX_FLAGS_DEBUG "-s DEMANGLE_SUPPORT=1 -g")
 
-    file(GLOB SDL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sdl/include/*.h")
-    file(GLOB SDL_SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/sdl/shaders/*")
-
-    file(GLOB SDL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sdl/src/*.cpp")
     file(GLOB JS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/js/*.*" "${CMAKE_CURRENT_SOURCE_DIR}/js/*/*.*" )
 
-    # Currently we use an auto generated HTML file from Emscripten, eventually that will change...
-    SET(CMAKE_EXECUTABLE_SUFFIX ".html")
+    add_executable(${PROJECT_NAME}_js ${LIB_SOURCES} ${LIB_HEADERS} ${JS_SOURCES} "gamepad/sdlgamepad.h" "gamepad/sdlgamepad.cpp")
 
-    # TODO - Maybe it would be better to have totally separate rendering & interface code from the SDL version...
-    add_executable(${PROJECT_NAME}_js ${LIB_SOURCES} ${LIB_HEADERS} ${JS_SOURCES} ${SDL_SOURCES} ${SDL_HEADERS} ${SDL_SHADERS} "gamepad/sdlgamepad.h" "gamepad/sdlgamepad.cpp")
-
-    # Currently this is useless because I haven't gotten it to load the texture properly...
-    add_custom_command(TARGET ${PROJECT_NAME}_js COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/textures/planet.png
-                                                                                   ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/)
+    copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/textures/planet.png" "images/")
+    copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/scripts/*" "scripts/")
+    copy_to_bin(${PROJECT_NAME}_js $<TARGET_FILE:${PROJECT_NAME}_js> "scripts/")
+    copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/stylesheets/*" "stylesheets/")
+    copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/index.html")
 endif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
 #---------------------------------------------
@@ -141,8 +141,7 @@ if(PLANETS3D_SDL)
     include_directories(${OPENGL_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_LIBRARY} ${PROJECT_NAME}_gamepad ${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
 
-    add_custom_command(TARGET ${PROJECT_NAME}_sdl COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/textures/planet.png
-                                                                                   ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/)
+    copy_to_bin(${PROJECT_NAME}_sdl "${CMAKE_SOURCE_DIR}/textures/planet.png")
 endif(PLANETS3D_SDL)
 
 #---------------------------------------------
