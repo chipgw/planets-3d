@@ -32,12 +32,12 @@ function initFileUI(dropTarget) {
 function initMenu() {
     document.getElementById("menuClear").addEventListener("click", function(e) {
         if (confirm("Are you sure you want to destroy the universe?")) {
-            universe.clear();
+            universe.deleteAll();
         }
     }, false);
 
     document.getElementById("menuCenter").addEventListener("click", function(e) {
-        universe.center();
+        universe.centerAll();
     }, false);
 
     document.getElementById("menuDelete").addEventListener("click", function(e) {
@@ -45,7 +45,9 @@ function initMenu() {
     }, false);
 
     document.getElementById("menuStop").addEventListener("click", function(e) {
-        universe.selected.velocity.set(0.0, 0.0, 0.0);
+        universe.getSelected().velocity.x = 0;
+        universe.getSelected().velocity.y = 0;
+        universe.getSelected().velocity.z = 0;
     }, false);
 
     document.getElementById("menuFullscreen").addEventListener("click", function(e) {
@@ -104,32 +106,32 @@ function initSpeedPopup() {
     initPopup("speedPopup", true);
 
     document.getElementById("speedRange").addEventListener("input", function(e) {
-        universe.speed = parseFloat(e.target.value);
+        universe.speed = e.target.valueAsNumber;
     }, false);
 
     document.getElementById("speedPauseResume").addEventListener("click", function(e) {
         var range = document.getElementById("speedRange");
-        if (parseFloat(range.value) === 0.0) {
+        if (range.valueAsNumber === 0.0) {
             /* TODO - store previous value to resume to. */
-            range.value = 1000;
+            range.value = 1;
             e.target.value = "Pause";
         } else {
             range.value = 0;
             e.target.value = "Resume";
         }
-        universe.speed = parseFloat(range.value);
+        universe.speed = range.valueAsNumber;
     }, false);
 
     document.getElementById("speedFastForward").addEventListener("click", function(e) {
         var range = document.getElementById("speedRange");
-        var value = parseFloat(range.value);
+        var value = range.valueAsNumber;
         if (value === 0.0 || value === parseFloat(range.max)) {
-            range.value = 1000;
+            range.value = 1;
         } else {
             range.value = range.value * 2;
         }
         document.getElementById("speedPauseResume").value = "Pause";
-        universe.speed = parseFloat(range.value);
+        universe.speed = range.valueAsNumber;
     }, false);
 }
 
@@ -137,11 +139,11 @@ function initViewSettings() {
     initPopup("viewPopup");
 
     document.getElementById("pathLength").addEventListener("change", function(e) {
-        universe.pathLength = parseFloat(e.target.value);
+        universe.pathLength = e.target.valueAsNumber;
     }, false);
 
     document.getElementById("pathDistance").addEventListener("change", function(e) {
-        universe.pathRecordDistance = parseFloat(e.target.value);
+        universe.pathRecordDistance = e.target.valueAsNumber;
         universe.pathRecordDistance *= universe.pathRecordDistance;
     }, false);
 }
@@ -150,14 +152,15 @@ function initCreatePlanetPopup() {
     initPopup("createPlanetPopup");
 
     document.getElementById("createPlanetButton").addEventListener("click", function(e) {
-        var positionX = parseFloat(document.getElementById("createPositionX").value);
-        var positionY = parseFloat(document.getElementById("createPositionY").value);
-        var positionZ = parseFloat(document.getElementById("createPositionZ").value);
-        var velocityX = parseFloat(document.getElementById("createVelocityX").value) * VELOCITY_UI_FACTOR;
-        var velocityY = parseFloat(document.getElementById("createVelocityY").value) * VELOCITY_UI_FACTOR;
-        var velocityZ = parseFloat(document.getElementById("createVelocityZ").value) * VELOCITY_UI_FACTOR;
-        var mass = parseFloat(document.getElementById("createMass").value);
-//        new Planet(new THREE.Vector3(positionX, positionY, positionZ), new THREE.Vector3(velocityX, velocityY, velocityZ), mass);
+        var positionX = document.getElementById("createPositionX").valueAsNumber;
+        var positionY = document.getElementById("createPositionY").valueAsNumber;
+        var positionZ = document.getElementById("createPositionZ").valueAsNumber;
+        var velocityX = document.getElementById("createVelocityX").valueAsNumber * universe.velocityfac;
+        var velocityY = document.getElementById("createVelocityY").valueAsNumber * universe.velocityfac;
+        var velocityZ = document.getElementById("createVelocityZ").valueAsNumber * universe.velocityfac;
+        var mass = document.getElementById("createMass").valueAsNumber;
+
+        universe.addPlanet(new Module.Planet(new Module.Vec3(positionX, positionY, positionZ), new Module.Vec3(velocityX, velocityY, velocityZ), mass), 0);
     }, false);
 }
 
@@ -165,23 +168,12 @@ function initRandomPopup() {
     initPopup("randomPopup");
 
     document.getElementById("randomGenerateButton").addEventListener("click", function(e) {
-        var amount = Math.min(parseInt(document.getElementById("randomAmount").value), 50);
-        var range = parseFloat(document.getElementById("randomRange").value);
-        var maxSpeed = parseFloat(document.getElementById("randomSpeed").value) * VELOCITY_UI_FACTOR;
-        var maxMass = parseFloat(document.getElementById("randomMass").value);
+        var amount = Math.min(document.getElementById("randomAmount").valueAsInt, 50);
+        var range = document.getElementById("randomRange").valueAsNumber;
+        var maxSpeed = document.getElementById("randomSpeed").valueAsNumber * universe.velocityfac;
+        var maxMass = document.getElementById("randomMass").valueAsNumber;
 
-        var rand = function() {
-            return Math.random() * 2.0 - 1.0;
-        }
-
-        for(var i = 0; i < amount; ++i) {
-            var position = new THREE.Vector3(rand() * range, rand() * range, rand() * range);
-            var velocity = new THREE.Vector3(rand(), rand(), rand());
-            velocity.normalize();
-            velocity.multiplyScalar(rand() * maxSpeed);
-            var mass = Math.random() * maxMass;
-//            new Planet(position, velocity, mass)
-        }
+        universe.generateRandom(amount, range, maxSpeed, maxMass)
     }, false);
 }
 
@@ -189,13 +181,12 @@ function init() {
     initGL();
 
     window.onresize = function(e) {
-        renderer.setSize(window.innerWidth, window.innerHeight);
+//        renderer.setSize(window.innerWidth, window.innerHeight);
 //        camera.aspect = window.innerWidth / window.innerHeight
 //        camera.updateProjectionMatrix();
     };
 
-
-//    universe = new Universe();
+    universe = new Module.PlanetsUniverse();
 
     initFileUI(document.getElementById("canvas"));
     initMenu();

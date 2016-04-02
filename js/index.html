@@ -3,7 +3,7 @@
   <head>
     <title>planets-js by chipgw</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="planetsui.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/planetsui.css"/>
   </head>
   <body onload="init()">
 <!--     <div id="loading"><div class="center">Loading<div class="elipsis">...</div></div></div> -->
@@ -29,7 +29,7 @@
         <h1>Speed Control</h1>
         <table>
           <tr>
-            <th colspan="2"><input type="range" class="tableInput" id="speedRange" min="0" max="40000" value="1000"></th>
+            <th colspan="2"><input type="range" class="tableInput" id="speedRange" step="0.1" min="0" max="64" value="1"></th>
           </tr>
           <tr>
             <!-- TODO - add icons to buttons -->
@@ -111,7 +111,8 @@
       Whoops! It seems your browser doesn't support the <code>&lt;canvas&gt;</code> element...
     </canvas>
     
-    <script src="planets-webgl.js"></script>
-    <script src="planets-interface.js"></script>
+    <script src="scripts/Planets3D_js.js"></script>
+    <script src="scripts/planets-webgl.js"></script>
+    <script src="scripts/planets-interface.js"></script>
   </body>
 </html>
