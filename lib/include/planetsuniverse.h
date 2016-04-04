@@ -48,9 +48,11 @@ public:
     EXPORT key_type addOrbital(Planet& around, const float& radius, const float& mass, const glm::mat4& plane);
     EXPORT void generateRandomOrbital(const int& count, key_type target);
 
+#ifndef EMSCRIPTEN
     /* Load and save from an XML file. Sets error string and returns false on an error. */
     EXPORT void save(const std::string& filename);
     EXPORT int load(const std::string& filename, bool clear = true);
+#endif
 
     EXPORT PlanetsUniverse();
 

@@ -19,8 +19,8 @@ using std::uniform_real_distribution;
 
 PlanetsUniverse::PlanetsUniverse() : generator(std::chrono::system_clock::now().time_since_epoch().count()) { }
 
-int PlanetsUniverse::load(const std::string& filename, bool clear) {
 #ifndef EMSCRIPTEN
+int PlanetsUniverse::load(const std::string& filename, bool clear) {
     TiXmlDocument doc(filename);
 
     if (!doc.LoadFile())
@@ -64,11 +64,9 @@ int PlanetsUniverse::load(const std::string& filename, bool clear) {
     }
 
     return loaded;
-#endif
 }
 
 void PlanetsUniverse::save(const std::string& filename) {
-#ifndef EMSCRIPTEN
     TiXmlDocument doc;
 
     doc.LinkEndChild(new TiXmlDeclaration("1.0", "", ""));
@@ -108,8 +106,8 @@ void PlanetsUniverse::save(const std::string& filename) {
 
     if (!doc.SaveFile(filename))
         throw std::runtime_error(doc.ErrorDesc());
-#endif
 }
+#endif
 
 void PlanetsUniverse::advance(float time) {
     time *= simspeed;
@@ -274,16 +272,15 @@ key_type PlanetsUniverse::nextKey(key_type key) const {
     if (!isEmpty()) {
         const_iterator current = find(key);
 
-        if (current == cend())
-            /* If the planet was not found, start at the beginning. */
-            current = cbegin();
-        else if (++current == cend())
-            /* If the planet was the last planet in the list, start at the beginning. */
+        if (current == cend() || ++current == cend())
+            /* If the planet was not found or the planet was the last in the list, start at the beginning. */
             current = cbegin();
 
         /* Get the key back from the iterator. */
         return current->first;
     }
+
+    return 0;
 }
 
 key_type PlanetsUniverse::prevKey(key_type key) const {
@@ -303,6 +300,8 @@ key_type PlanetsUniverse::prevKey(key_type key) const {
         /* Get the key back from the iterator. */
         return current->first;
     }
+
+    return 0;
 }
 
 void PlanetsUniverse::centerAll() {
