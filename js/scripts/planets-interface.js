@@ -1,4 +1,4 @@
-var universe;
+var universe, camera;
 
 function initFileUI(dropTarget) {
     document.getElementById("loadFile").addEventListener("change", function(e) {
@@ -188,6 +188,8 @@ function init() {
 
     universe = new Module.PlanetsUniverse();
 
+    camera = new Module.Camera(universe);
+
     initFileUI(document.getElementById("canvas"));
     initMenu();
     initSpeedPopup();
@@ -198,4 +200,6 @@ function init() {
     try {
 //        universe.loadUrl("systems/default.xml");
     } catch (e) { }
+
+    requestAnimationFrame(animate);
 }

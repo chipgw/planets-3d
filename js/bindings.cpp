@@ -25,6 +25,7 @@ EMSCRIPTEN_BINDINGS(planets_universe) {
             .function("remove",                 &PlanetsUniverse::remove)
             .function("resetSelected",          &PlanetsUniverse::resetSelected)
             .function("size",                   &PlanetsUniverse::size)
+            .function("get",                    &PlanetsUniverse::operator [])
             .property("following",              &PlanetsUniverse::following)
             .property("pathLength",             &PlanetsUniverse::pathLength)
             .property("pathRecordDistance",     &PlanetsUniverse::pathRecordDistance)
@@ -55,6 +56,13 @@ EMSCRIPTEN_BINDINGS(vec3) {
             .property("x", &glm::vec3::x)
             .property("y", &glm::vec3::y)
             .property("z", &glm::vec3::z)
+            ;
+}
+
+EMSCRIPTEN_BINDINGS(mat4) {
+    /* Use JS convention of capital letter starting types. */
+    emscripten::class_<glm::mat4>("Mat4")
+            .constructor()
             ;
 }
 

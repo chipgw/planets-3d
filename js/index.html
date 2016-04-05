@@ -110,7 +110,28 @@
     <canvas id="canvas" oncontextmenu="event.preventDefault()">
       Whoops! It seems your browser doesn't support the <code>&lt;canvas&gt;</code> element...
     </canvas>
-    
+
+    <script id="color-vertex" type="x-shader/x-vertex">
+    attribute vec4 vertex;
+
+    uniform mat4 cameraMatrix;
+    uniform mat4 modelMatrix;
+
+    void main() {
+        gl_Position = cameraMatrix * modelMatrix * vertex;
+    }
+    </script>
+
+    <script id="color-fragment" type="x-shader/x-fragment">
+    precision mediump float;
+
+    uniform vec4 color;
+
+    void main() {
+        gl_FragColor = color;
+    }
+    </script>
+
     <script src="scripts/Planets3D_js.js"></script>
     <script src="scripts/planets-webgl.js"></script>
     <script src="scripts/planets-interface.js"></script>

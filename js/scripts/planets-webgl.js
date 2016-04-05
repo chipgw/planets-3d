@@ -1,37 +1,111 @@
-var gl;
+var spheres, context, colorShader;
+
+function initShader(element) {
+    if (!element)
+        return null;
+
+    var shader;
+    if (element.type == "x-shader/x-vertex")
+        shader = GLctx.createShader(GLctx.VERTEX_SHADER);
+    else if (element.type == "x-shader/x-fragment")
+        shader = GLctx.createShader(GLctx.FRAGMENT_SHADER);
+    else
+        return null;
+
+    var source = "";
+    var child = element.firstChild;
+
+    while (child) {
+        if (child.nodeType == 3)
+            source += child.textContent;
+        child = child.nextSibling;
+    }
+
+    GLctx.shaderSource(shader, source);
+    GLctx.compileShader(shader);
+
+    if (!GLctx.getShaderParameter(shader, GLctx.COMPILE_STATUS)) {
+        alert(GLctx.getShaderInfoLog(shader));
+        return null;
+    }
+
+    return shader;
+}
+
+function initShaderProgram(vsh, fsh) {
+    var vertex = initShader(document.getElementById(vsh));
+    var fragment = initShader(document.getElementById(fsh));
+
+    var program = GLctx.createProgram();
+    GLctx.attachShader(program, vertex);
+    GLctx.attachShader(program, fragment);
+    GLctx.linkProgram(program);
+
+    if (!GLctx.getProgramParameter(program, GLctx.LINK_STATUS)) {
+        alert("Could not initialise shader");
+    }
+
+    GLctx.useProgram(program);
+
+    return program;
+}
 
 function initGL() {
     var canvas = document.getElementById("canvas");
 
-    try {
-        // Try to grab the standard context. If it fails, fallback to experimental.
-        gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-    }
-    catch(e) {}
+    context = GL.createContext(canvas, {});
 
-    if (gl) {
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        gl.enable(gl.DEPTH_TEST);
-        gl.depthFunc(gl.LEQUAL);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    } else {
-        alert("Whoops! We couldn't initialize WebGL. Your browser may not support it...");
-    }
+    GL.makeContextCurrent(context);
+
+    GLctx.clearColor(0.0, 0.0, 0.0, 1.0);
+    GLctx.enable(GLctx.DEPTH_TEST);
+    GLctx.depthFunc(GLctx.LEQUAL);
+    GLctx.clear(GLctx.COLOR_BUFFER_BIT | GLctx.DEPTH_BUFFER_BIT);
+
+    colorShader = initShaderProgram("color-vertex", "color-fragment");
+
+    spheres = new Module.Spheres();
 }
 
 function loadTexture(filename) {
     var image = new Image();
-    var texture = gl.createTexture();
+    var texture = GLctx.createTexture();
 
     image.onload = function() {
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        GLctx.bindTexture(GLctx.TEXTURE_2D, texture);
+        GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, image);
 
-        gl.generateMipmap(gl.TEXTURE_2D);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        GLctx.generateMipmap(GLctx.TEXTURE_2D);
+        GLctx.texParameteri(GLctx.TEXTURE_2D, GLctx.TEXTURE_MAG_FILTER, GLctx.LINEAR);
+        GLctx.texParameteri(GLctx.TEXTURE_2D, GLctx.TEXTURE_MIN_FILTER, GLctx.LINEAR_MIPMAP_LINEAR);
     }
     image.src = filename;
 
     return texture;
+}
+
+function paint() {
+    GLctx.clear(GLctx.COLOR_BUFFER_BIT | GLctx.DEPTH_BUFFER_BIT);
+
+    camera.setup();
+
+    spheres.bindSolid()
+
+    spheres.drawSolid()
+}
+
+var lastTime = null;
+
+function animate(time) {
+    if (lastTime === null)
+        lastTime = time;
+
+    var delta = Math.min(time - lastTime, 10.0);
+    lastTime = time;
+
+    universe.advance(delta);
+
+    paint();
+
+    requestAnimationFrame(animate);
 }
