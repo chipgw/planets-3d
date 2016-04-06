@@ -152,15 +152,15 @@ function initCreatePlanetPopup() {
     initPopup("createPlanetPopup");
 
     document.getElementById("createPlanetButton").addEventListener("click", function(e) {
-        var positionX = document.getElementById("createPositionX").valueAsNumber;
-        var positionY = document.getElementById("createPositionY").valueAsNumber;
-        var positionZ = document.getElementById("createPositionZ").valueAsNumber;
-        var velocityX = document.getElementById("createVelocityX").valueAsNumber * universe.velocityfac;
-        var velocityY = document.getElementById("createVelocityY").valueAsNumber * universe.velocityfac;
-        var velocityZ = document.getElementById("createVelocityZ").valueAsNumber * universe.velocityfac;
+        var position = [document.getElementById("createPositionX").valueAsNumber,
+                        document.getElementById("createPositionY").valueAsNumber,
+                        document.getElementById("createPositionZ").valueAsNumber];
+        var velocity = [document.getElementById("createVelocityX").valueAsNumber * universe.velocityfac,
+                        document.getElementById("createVelocityY").valueAsNumber * universe.velocityfac,
+                        document.getElementById("createVelocityZ").valueAsNumber * universe.velocityfac];
         var mass = document.getElementById("createMass").valueAsNumber;
 
-        universe.addPlanet(new Module.Planet(new Module.Vec3(positionX, positionY, positionZ), new Module.Vec3(velocityX, velocityY, velocityZ), mass), 0);
+        universe.selected = universe.addPlanet(position, velocity, mass);
     }, false);
 }
 
@@ -182,8 +182,7 @@ function init() {
 
     window.onresize = function(e) {
 //        renderer.setSize(window.innerWidth, window.innerHeight);
-//        camera.aspect = window.innerWidth / window.innerHeight
-//        camera.updateProjectionMatrix();
+        camera.resizeViewport(window.innerWidth, window.innerHeight);
     };
 
     universe = new Module.PlanetsUniverse();
