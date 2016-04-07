@@ -178,23 +178,70 @@ function initRandomPopup() {
 }
 
 function init() {
+    var canvas = document.getElementById("canvas");
+
     initGL();
 
     window.onresize = function(e) {
-//        renderer.setSize(window.innerWidth, window.innerHeight);
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
         camera.resizeViewport(window.innerWidth, window.innerHeight);
+        GLctx.viewport(0, 0, window.innerWidth, window.innerHeight);
     };
 
     universe = new Module.PlanetsUniverse();
 
     camera = new Module.Camera(universe);
 
-    initFileUI(document.getElementById("canvas"));
+    /* To track whether or not the mouse moved between mousedown and mouseup. */
+    var drag = false;
+
+    /* Variables for tracking the mouse and getting motion delta. */
+    var lastMouseX, lastMouseY;
+
+    canvas.addEventListener("mousedown", function(e) {
+        drag = false;
+    }, false);
+    canvas.addEventListener("mousemove", function(e) {
+        drag = true;
+
+        var deltaX = lastMouseX - e.clientX;
+        var deltaY = lastMouseY - e.clientY;
+
+        switch (e.button) {
+        case 1:
+            camera.distance += deltaY;
+            break;
+        case 2:
+            camera.zrotation += deltaX;
+            camera.xrotation += deltaY * 0.1;
+            break;
+        }
+
+        camera.bound();
+
+        /* Keep track of these values for the next event. */
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+
+        event.preventDefault();
+    }, false);
+
+    document.addEventListener("mouseup", function(e) {
+        if (!drag) {
+            /* TODO - Implement... */
+        }
+    }, false);
+
+    initFileUI(canvas);
     initMenu();
     initSpeedPopup();
     initViewSettings();
     initCreatePlanetPopup();
     initRandomPopup();
+
+    /* Call this once to make sure it's the right size. */
+    window.onresize();
 
     try {
 //        universe.loadUrl("systems/default.xml");

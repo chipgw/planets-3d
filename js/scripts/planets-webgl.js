@@ -1,4 +1,6 @@
-var spheres, context, colorShader;
+var spheres, context;
+
+var colorShader, colorCameraMat, colorModelMat, colorColor;
 
 function initShader(element) {
     if (!element)
@@ -64,6 +66,10 @@ function initGL() {
 
     colorShader = initShaderProgram("color-vertex", "color-fragment");
 
+    colorCameraMat = GLctx.getUniformLocation(colorShader, "cameraMatrix");
+    colorModelMat = GLctx.getUniformLocation(colorShader, "modelMatrix");
+    colorColor = GLctx.getUniformLocation(colorShader, "color");
+
     spheres = new Module.Spheres();
 }
 
@@ -87,11 +93,17 @@ function loadTexture(filename) {
 function paint() {
     GLctx.clear(GLctx.COLOR_BUFFER_BIT | GLctx.DEPTH_BUFFER_BIT);
 
-    camera.setup();
+    var cameraMat = camera.setup();
 
-    spheres.bindSolid()
+    var ident = Module.getIdentityMatrix();
 
-    spheres.drawSolid()
+    GLctx.uniformMatrix4fv(colorCameraMat, false, cameraMat);
+    GLctx.uniformMatrix4fv(colorModelMat, false, ident);
+    GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
+
+    spheres.bindWire()
+
+    spheres.drawWire()
 }
 
 var lastTime = null;

@@ -4,6 +4,8 @@
 #include <bind.h>
 #include <glm/vec2.hpp>
 
+/* Wrap addPlanet to avoid having to create an instance of Planet in JS,
+ * because then memory managment becomes an issue. */
 key_type createPlanet(PlanetsUniverse& universe) {
     return universe.addPlanet(Planet());
 }
@@ -80,11 +82,38 @@ EMSCRIPTEN_BINDINGS(ivec2) {
             ;
 }
 
+template<int x, int y> float getMatElement(const glm::mat4& mat) {
+    return mat[x][y];
+}
+
+template<int x, int y> void setMatElement(glm::mat4& mat, float val) {
+    mat[x][y] = val;
+}
+
+glm::mat4 getIdentityMatrix() { return glm::mat4(); }
+
+/* TODO - This seems like it wouldn't be the best way to do this,
+ * plus I don't know if matrix manipulation functions will need to be called in JS... */
 EMSCRIPTEN_BINDINGS(mat4) {
-    /* Use JS convention of capital letter starting types. */
-    emscripten::class_<glm::mat4>("Mat4")
-            .constructor()
+    emscripten::value_array<glm::mat4>("mat4")
+            .element(&getMatElement<0, 0>, &setMatElement<0, 0>)
+            .element(&getMatElement<0, 1>, &setMatElement<0, 1>)
+            .element(&getMatElement<0, 2>, &setMatElement<0, 2>)
+            .element(&getMatElement<0, 3>, &setMatElement<0, 3>)
+            .element(&getMatElement<1, 0>, &setMatElement<1, 0>)
+            .element(&getMatElement<1, 1>, &setMatElement<1, 1>)
+            .element(&getMatElement<1, 2>, &setMatElement<1, 2>)
+            .element(&getMatElement<1, 3>, &setMatElement<1, 3>)
+            .element(&getMatElement<2, 0>, &setMatElement<2, 0>)
+            .element(&getMatElement<2, 1>, &setMatElement<2, 1>)
+            .element(&getMatElement<2, 2>, &setMatElement<2, 2>)
+            .element(&getMatElement<2, 3>, &setMatElement<2, 3>)
+            .element(&getMatElement<3, 0>, &setMatElement<3, 0>)
+            .element(&getMatElement<3, 1>, &setMatElement<3, 1>)
+            .element(&getMatElement<3, 2>, &setMatElement<3, 2>)
+            .element(&getMatElement<3, 3>, &setMatElement<3, 3>)
             ;
+    emscripten::function("getIdentityMatrix", &getIdentityMatrix);
 }
 
 EMSCRIPTEN_BINDINGS(camera) {
