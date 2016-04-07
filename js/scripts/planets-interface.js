@@ -195,12 +195,15 @@ function init() {
 
     /* To track whether or not the mouse moved between mousedown and mouseup. */
     var drag = false;
+    var button = -1;
 
     /* Variables for tracking the mouse and getting motion delta. */
     var lastMouseX, lastMouseY;
 
     canvas.addEventListener("mousedown", function(e) {
         drag = false;
+
+        button = e.button;
     }, false);
     canvas.addEventListener("mousemove", function(e) {
         drag = true;
@@ -208,13 +211,13 @@ function init() {
         var deltaX = lastMouseX - e.clientX;
         var deltaY = lastMouseY - e.clientY;
 
-        switch (e.button) {
+        switch (button) {
         case 1:
             camera.distance += deltaY;
             break;
         case 2:
-            camera.zrotation += deltaX;
-            camera.xrotation += deltaY * 0.1;
+            camera.zrotation -= deltaX * 0.05;
+            camera.xrotation -= deltaY * 0.02;
             break;
         }
 
@@ -224,13 +227,15 @@ function init() {
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
 
-        event.preventDefault();
+        e.preventDefault();
     }, false);
 
     document.addEventListener("mouseup", function(e) {
         if (!drag) {
             /* TODO - Implement... */
         }
+
+        button = -1;
     }, false);
 
     initFileUI(canvas);
