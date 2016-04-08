@@ -1,6 +1,7 @@
 var spheres, context;
 
 var colorShader, colorCameraMat, colorModelMat, colorColor;
+var textureShader, textureCameraMat, textureModelMat, planetTexture;
 
 function initShader(element) {
     if (!element)
@@ -70,6 +71,13 @@ function initGL() {
     colorModelMat = GLctx.getUniformLocation(colorShader, "modelMatrix");
     colorColor = GLctx.getUniformLocation(colorShader, "color");
 
+    textureShader = initShaderProgram("texture-vertex", "texture-fragment");
+
+    textureCameraMat = GLctx.getUniformLocation(textureShader, "cameraMatrix");
+    textureModelMat = GLctx.getUniformLocation(textureShader, "modelMatrix");
+
+    planetTexture = loadTexture("images/planet.png");
+
     spheres = new Module.Spheres();
 }
 
@@ -97,6 +105,8 @@ function paint() {
 
     var ident = Module.getIdentityMatrix();
 
+    GLctx.useProgram(colorShader);
+
     GLctx.uniformMatrix4fv(colorCameraMat, false, cameraMat);
     GLctx.uniformMatrix4fv(colorModelMat, false, ident);
     GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
@@ -104,6 +114,15 @@ function paint() {
     spheres.bindWire()
 
     spheres.drawWire()
+
+    GLctx.useProgram(textureShader);
+
+    GLctx.uniformMatrix4fv(textureCameraMat, false, cameraMat);
+    GLctx.uniformMatrix4fv(textureModelMat, false, ident);
+
+    spheres.bindSolid()
+
+    spheres.drawSolid()
 }
 
 var lastTime = null;

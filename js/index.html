@@ -132,6 +132,32 @@
     }
     </script>
 
+    <script id="texture-vertex" type="x-shader/x-vertex">
+    attribute vec4 vertex;
+    attribute vec2 uv;
+
+    uniform mat4 cameraMatrix;
+    uniform mat4 modelMatrix;
+
+    varying vec2 texCoord;
+
+    void main() {
+        gl_Position = cameraMatrix * modelMatrix * vertex;
+        texCoord = uv;
+    }
+    </script>
+
+    <script id="texture-fragment" type="x-shader/x-fragment">
+    precision mediump float;
+
+    uniform sampler2D texture;
+    varying vec2 texCoord;
+
+    void main() {
+        gl_FragColor = texture2D(texture, texCoord);
+    }
+    </script>
+
     <script src="scripts/Planets3D_js.js"></script>
     <script src="scripts/planets-webgl.js"></script>
     <script src="scripts/planets-interface.js"></script>
