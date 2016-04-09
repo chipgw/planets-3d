@@ -427,7 +427,7 @@ void MainWindow::frameUpdate() {
 
         ui->positionLabel->setText(QString("x: %0, y: %1, z: %2").arg(selected.position.x).arg(selected.position.y).arg(selected.position.z));
         ui->velocityLabel->setText(QString("x: %0, y: %1, z: %2").arg(velocity.x).arg(velocity.y).arg(velocity.z));
-        ui->massLabel->setText(QString::number(selected.mass()));
+        ui->massLabel->setNum(selected.mass());
         ui->colorLabel->setText(QColor(QRgb(ui->centralwidget->universe.selected)).name());
     } else {
         ui->positionLabel->setText("");
