@@ -103,26 +103,53 @@ function paint() {
 
     var cameraMat = camera.setup();
 
-    var ident = Module.getIdentityMatrix();
-
-    GLctx.useProgram(colorShader);
-
-    GLctx.uniformMatrix4fv(colorCameraMat, false, cameraMat);
-    GLctx.uniformMatrix4fv(colorModelMat, false, ident);
-    GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
-
-    spheres.bindWire()
-
-    spheres.drawWire()
-
     GLctx.useProgram(textureShader);
 
     GLctx.uniformMatrix4fv(textureCameraMat, false, cameraMat);
-    GLctx.uniformMatrix4fv(textureModelMat, false, ident);
+
+    var curKey = 0;
+    /* Will be the first key in the list. */
+    var startKey = universe.nextKey(0);
 
     spheres.bindSolid()
 
-    spheres.drawSolid()
+    while (curKey !== startKey) {
+        if (curKey === 0)
+            curKey = universe.nextKey(0);
+
+        var planet = universe.get(curKey);
+
+        var planetMat = [planet.radius, 0.0, 0.0, 0.0,
+                         0.0, planet.radius, 0.0, 0.0,
+                         0.0, 0.0, planet.radius, 0.0,
+                         planet.position[0], planet.position[1], planet.position[2], 1.0 ]
+
+        GLctx.uniformMatrix4fv(textureModelMat, false, planetMat);
+
+        spheres.drawSolid()
+
+        curKey = universe.nextKey(curKey);
+    }
+
+    if (universe.isSelectedValid()) {
+        GLctx.useProgram(colorShader);
+
+        var planet = universe.getSelected();
+
+        var planetMat = [planet.radius * 1.02, 0.0, 0.0, 0.0,
+                         0.0, planet.radius * 1.02, 0.0, 0.0,
+                         0.0, 0.0, planet.radius * 1.02, 0.0,
+                         planet.position[0], planet.position[1], planet.position[2], 1.0 ]
+
+
+        GLctx.uniformMatrix4fv(colorCameraMat, false, cameraMat);
+        GLctx.uniformMatrix4fv(colorModelMat, false, planetMat);
+        GLctx.uniform4fv(colorColor, [0.0, 1.0, 0.0, 1.0]);
+
+        spheres.bindWire()
+
+        spheres.drawWire()
+    }
 }
 
 var lastTime = null;
@@ -134,7 +161,7 @@ function animate(time) {
     var delta = Math.min(time - lastTime, 10.0);
     lastTime = time;
 
-    universe.advance(delta);
+    universe.advance(delta * 1000);
 
     paint();
 

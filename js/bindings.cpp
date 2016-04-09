@@ -63,6 +63,7 @@ EMSCRIPTEN_BINDINGS(planet) {
             .property("mass", &Planet::mass, &Planet::setMass)
             .property("position", &Planet::position)
             .property("velocity", &Planet::velocity)
+            .property("radius", &Planet::radius)
             ;
 }
 
