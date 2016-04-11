@@ -22,6 +22,29 @@ key_type createPlanetAll(PlanetsUniverse& universe, glm::vec3 position, glm::vec
     return universe.addPlanet(Planet(position, velocity, mass));
 }
 
+/* Need to wrap these functions  because I can't pass Planets without getting them copied for some reason... */
+glm::vec3 getPlanetPosition(PlanetsUniverse& universe, key_type key) {
+    return universe[key].position;
+}
+glm::vec3 getPlanetVelocity(PlanetsUniverse& universe, key_type key) {
+    return universe[key].velocity;
+}
+float getPlanetMass(PlanetsUniverse& universe, key_type key) {
+    return universe[key].mass();
+}
+float getPlanetRadius(PlanetsUniverse& universe, key_type key) {
+    return universe[key].radius();
+}
+void setPlanetPosition(PlanetsUniverse& universe, key_type key, glm::vec3 pos) {
+    universe[key].position = pos;
+}
+void setPlanetVelocity(PlanetsUniverse& universe, key_type key, glm::vec3 vel) {
+    universe[key].velocity = vel;
+}
+void setPlanetMass(PlanetsUniverse& universe, key_type key, float mass) {
+    universe[key].setMass(mass);
+}
+
 EMSCRIPTEN_BINDINGS(planets_universe) {
     emscripten::class_<PlanetsUniverse>("PlanetsUniverse")
             .constructor()
@@ -38,7 +61,6 @@ EMSCRIPTEN_BINDINGS(planets_universe) {
             .function("generateRandom",         &PlanetsUniverse::generateRandom)
             .function("generateRandomOrbital",  &PlanetsUniverse::generateRandomOrbital)
             .function("getRandomPlanet",        &PlanetsUniverse::getRandomPlanet)
-            .function("getSelected",            &PlanetsUniverse::getSelected)
             .function("isEmpty",                &PlanetsUniverse::isEmpty)
             .function("isSelectedValid",        &PlanetsUniverse::isSelectedValid)
             .function("isValid",                &PlanetsUniverse::isValid)
@@ -47,7 +69,6 @@ EMSCRIPTEN_BINDINGS(planets_universe) {
             .function("remove",                 &PlanetsUniverse::remove)
             .function("resetSelected",          &PlanetsUniverse::resetSelected)
             .function("size",                   &PlanetsUniverse::size)
-            .function("get",                    &PlanetsUniverse::operator [])
             .property("following",              &PlanetsUniverse::following)
             .property("pathLength",             &PlanetsUniverse::pathLength)
             .property("pathRecordDistance",     &PlanetsUniverse::pathRecordDistance)
@@ -55,15 +76,13 @@ EMSCRIPTEN_BINDINGS(planets_universe) {
             .property("speed",                  &PlanetsUniverse::simspeed)
             .property("stepsPerFrame",          &PlanetsUniverse::stepsPerFrame)
             .property("velocityfac",            &PlanetsUniverse::velocityfac)
-            ;
-}
-
-EMSCRIPTEN_BINDINGS(planet) {
-    emscripten::class_<Planet>("Planet")
-            .property("mass", &Planet::mass, &Planet::setMass)
-            .property("position", &Planet::position)
-            .property("velocity", &Planet::velocity)
-            .property("radius", &Planet::radius)
+            .function("getPlanetPosition",      &getPlanetPosition)
+            .function("getPlanetVelocity",      &getPlanetVelocity)
+            .function("getPlanetMass",          &getPlanetMass)
+            .function("getPlanetRadius",        &getPlanetRadius)
+            .function("setPlanetPosition",      &setPlanetPosition)
+            .function("setPlanetVelocity",      &setPlanetVelocity)
+            .function("setPlanetMass",          &setPlanetMass)
             ;
 }
 

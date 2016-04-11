@@ -117,12 +117,13 @@ function paint() {
         if (curKey === 0)
             curKey = universe.nextKey(0);
 
-        var planet = universe.get(curKey);
+        var pos = universe.getPlanetPosition(curKey);
+        var radius = universe.getPlanetRadius(curKey);
 
-        var planetMat = [planet.radius, 0.0, 0.0, 0.0,
-                         0.0, planet.radius, 0.0, 0.0,
-                         0.0, 0.0, planet.radius, 0.0,
-                         planet.position[0], planet.position[1], planet.position[2], 1.0 ]
+        var planetMat = [radius, 0.0, 0.0, 0.0,
+                         0.0, radius, 0.0, 0.0,
+                         0.0, 0.0, radius, 0.0,
+                         pos[0], pos[1], pos[2], 1.0 ]
 
         GLctx.uniformMatrix4fv(textureModelMat, false, planetMat);
 
@@ -134,13 +135,13 @@ function paint() {
     if (universe.isSelectedValid()) {
         GLctx.useProgram(colorShader);
 
-        var planet = universe.getSelected();
+        var pos = universe.getPlanetPosition(universe.selected);
+        var radius = universe.getPlanetRadius(universe.selected) * 1.02;
 
-        var planetMat = [planet.radius * 1.02, 0.0, 0.0, 0.0,
-                         0.0, planet.radius * 1.02, 0.0, 0.0,
-                         0.0, 0.0, planet.radius * 1.02, 0.0,
-                         planet.position[0], planet.position[1], planet.position[2], 1.0 ]
-
+        var planetMat = [radius, 0.0, 0.0, 0.0,
+                         0.0, radius, 0.0, 0.0,
+                         0.0, 0.0, radius, 0.0,
+                         pos[0], pos[1], pos[2], 1.0 ]
 
         GLctx.uniformMatrix4fv(colorCameraMat, false, cameraMat);
         GLctx.uniformMatrix4fv(colorModelMat, false, planetMat);

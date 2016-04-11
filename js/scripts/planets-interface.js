@@ -45,9 +45,7 @@ function initMenu() {
     }, false);
 
     document.getElementById("menuStop").addEventListener("click", function(e) {
-        universe.getSelected().velocity.x = 0;
-        universe.getSelected().velocity.y = 0;
-        universe.getSelected().velocity.z = 0;
+        universe.setPlanetVelocity(universe.selected, [0,0,0]);
     }, false);
 
     document.getElementById("menuFullscreen").addEventListener("click", function(e) {
@@ -168,7 +166,7 @@ function initRandomPopup() {
     initPopup("randomPopup");
 
     document.getElementById("randomGenerateButton").addEventListener("click", function(e) {
-        var amount = Math.min(document.getElementById("randomAmount").valueAsInt, 50);
+        var amount = Math.min(document.getElementById("randomAmount").valueAsNumber, 50);
         var range = document.getElementById("randomRange").valueAsNumber;
         var maxSpeed = document.getElementById("randomSpeed").valueAsNumber * universe.velocityfac;
         var maxMass = document.getElementById("randomMass").valueAsNumber;
