@@ -191,21 +191,16 @@ function init() {
 
     camera = new Module.Camera(universe);
 
-    /* To track whether or not the mouse moved between mousedown and mouseup. */
-    var drag = false;
+    /* To track the button being pressed during mousemove. */
     var button = -1;
 
     /* Variables for tracking the mouse and getting motion delta. */
     var lastMouseX, lastMouseY;
 
     canvas.addEventListener("mousedown", function(e) {
-        drag = false;
-
         button = e.button;
     }, false);
     canvas.addEventListener("mousemove", function(e) {
-        drag = true;
-
         var deltaX = lastMouseX - e.clientX;
         var deltaY = lastMouseY - e.clientY;
 
@@ -229,11 +224,19 @@ function init() {
     }, false);
 
     document.addEventListener("mouseup", function(e) {
-        if (!drag) {
-            /* TODO - Implement... */
+        if (e.button === 0) {
+            camera.selectUnder([e.clientX, e.clientY], 1);
         }
 
         button = -1;
+    }, false);
+
+    document.addEventListener("wheel", function(e) {
+        camera.distance += camera.distance * e.deltaY * 0.01;
+
+        camera.bound();
+
+        console.log(e.deltaMode)
     }, false);
 
     initFileUI(canvas);
