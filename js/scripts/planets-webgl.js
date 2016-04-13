@@ -132,9 +132,29 @@ function paint() {
         curKey = universe.nextKey(curKey);
     }
 
-    if (universe.isSelectedValid()) {
-        GLctx.useProgram(colorShader);
+    GLctx.useProgram(colorShader);
 
+    GLctx.uniformMatrix4fv(colorCameraMat, false, cameraMat);
+
+    spheres.bindWire()
+
+    GLctx.uniform4fv(colorColor, [0.0, 1.0, 0.0, 1.0]);
+
+    if (placing.step !== Module.PlacingStep.NotPlacing && placing.step !== Module.PlacingStep.Firing) {
+        var pos = placing.getPosition();
+        var radius = placing.getRadius();
+
+        var planetMat = [radius, 0.0, 0.0, 0.0,
+                         0.0, radius, 0.0, 0.0,
+                         0.0, 0.0, radius, 0.0,
+                         pos[0], pos[1], pos[2], 1.0 ]
+
+        GLctx.uniformMatrix4fv(colorModelMat, false, planetMat);
+
+        spheres.drawWire()
+
+        /* TODO - Render orbital circle and free-velocity arrow. */
+    } else if (universe.isSelectedValid()) {
         var pos = universe.getPlanetPosition(universe.selected);
         var radius = universe.getPlanetRadius(universe.selected) * 1.02;
 
@@ -143,11 +163,7 @@ function paint() {
                          0.0, 0.0, radius, 0.0,
                          pos[0], pos[1], pos[2], 1.0 ]
 
-        GLctx.uniformMatrix4fv(colorCameraMat, false, cameraMat);
         GLctx.uniformMatrix4fv(colorModelMat, false, planetMat);
-        GLctx.uniform4fv(colorColor, [0.0, 1.0, 0.0, 1.0]);
-
-        spheres.bindWire()
 
         spheres.drawWire()
     }

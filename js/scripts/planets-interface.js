@@ -1,4 +1,4 @@
-var universe, camera;
+var universe, camera, placing;
 
 function initFileUI(dropTarget) {
     document.getElementById("loadFile").addEventListener("change", function(e) {
@@ -66,6 +66,14 @@ function initMenu() {
                 document.webkitExitFullscreen();
             }
         }
+    }, false);
+
+    document.getElementById("menuInteractive").addEventListener("click", function(e) {
+        placing.beginInteractiveCreation();
+    }, false);
+
+    document.getElementById("menuOrbital").addEventListener("click", function(e) {
+        placing.beginOrbitalCreation();
     }, false);
 }
 
@@ -191,6 +199,8 @@ function init() {
 
     camera = new Module.Camera(universe);
 
+    placing = new Module.PlacingInterface(universe);
+
     /* To track the button being pressed during mousemove. */
     var button = -1;
 
@@ -204,17 +214,23 @@ function init() {
         var deltaX = lastMouseX - e.clientX;
         var deltaY = lastMouseY - e.clientY;
 
-        switch (button) {
-        case 1:
-            camera.distance += deltaY;
-            break;
-        case 2:
-            camera.zrotation -= deltaX * 0.05;
-            camera.xrotation -= deltaY * 0.02;
-            break;
-        }
+        var placingBools = placing.handleMouseMove([e.clientX, e.clientY], [deltaX, deltaY], camera);
 
-        camera.bound();
+        if (!placingBools[0]) {
+            switch (button) {
+            case 1:
+                camera.distance += deltaY;
+                break;
+            case 2:
+                camera.zrotation -= deltaX * 0.05;
+                camera.xrotation -= deltaY * 0.02;
+                break;
+            }
+
+            camera.bound();
+        } else if (placingBools[1]) {
+            /* TODO - Implement. */
+        }
 
         /* Keep track of these values for the next event. */
         lastMouseX = e.clientX;
@@ -223,20 +239,20 @@ function init() {
         e.preventDefault();
     }, false);
 
-    document.addEventListener("mouseup", function(e) {
-        if (e.button === 0) {
+    canvas.addEventListener("mouseup", function(e) {
+        if (e.button === 0 && !placing.handleMouseClick([e.clientX, e.clientY], camera)) {
             camera.selectUnder([e.clientX, e.clientY], 1);
         }
 
         button = -1;
     }, false);
 
-    document.addEventListener("wheel", function(e) {
-        camera.distance += camera.distance * e.deltaY * 0.01;
+    canvas.addEventListener("wheel", function(e) {
+        if (!placing.handleMouseWheel(e.deltaY * -0.01)) {
+            camera.distance += camera.distance * e.deltaY * 0.01;
 
-        camera.bound();
-
-        console.log(e.deltaMode)
+            camera.bound();
+        }
     }, false);
 
     initFileUI(canvas);
