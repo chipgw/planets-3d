@@ -239,6 +239,11 @@ function init() {
         e.preventDefault();
     }, false);
 
+    /* Letting go of mouse button anywhere needs to reset the button for dragging. */
+    document.addEventListener("mouseup", function(e) {
+        button = -1;
+    }, false);
+
     canvas.addEventListener("mouseup", function(e) {
         if (e.button === 0 && !placing.handleMouseClick([e.clientX, e.clientY], camera)) {
             camera.selectUnder([e.clientX, e.clientY], 1);
