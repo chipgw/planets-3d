@@ -153,7 +153,17 @@ function paint() {
 
         spheres.drawWire()
 
-        /* TODO - Render orbital circle and free-velocity arrow. */
+        if ((placing.step === Module.PlacingStep.OrbitalPlane || placing.step === Module.PlacingStep.OrbitalPlanet) && universe.isSelectedValid()) {
+            spheres.bindCircle();
+            GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
+
+            GLctx.uniformMatrix4fv(colorModelMat, false, placing.getOrbitalCircleMat());
+            spheres.drawCircle();
+
+            GLctx.uniformMatrix4fv(colorModelMat, false, placing.getOrbitedCircleMat());
+            spheres.drawCircle();
+        }
+        /* TODO - Draw free velocity arrow. */
     } else if (universe.isSelectedValid()) {
         var pos = universe.getPlanetPosition(universe.selected);
         var radius = universe.getPlanetRadius(universe.selected) * 1.02;

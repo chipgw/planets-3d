@@ -214,3 +214,29 @@ void PlacingInterface::beginInteractiveCreation() {
 void PlacingInterface::beginOrbitalCreation() {
     if (universe.isSelectedValid()) step = OrbitalPlanet;
 }
+
+glm::mat4 PlacingInterface::getOrbitalCircleMat() {
+    /* This is how large the orbit of the planet being placed will be. */
+    float radius = orbitalRadius / (1 + (planet.mass() / universe.getSelected().mass()));
+
+    /* Start at the placing planet location and move -1 (* the radius value) on x to locate the center. */
+    glm::mat4 matrix = glm::translate(planet.position);
+    matrix = glm::scale(matrix, glm::vec3(radius));
+    matrix *= rotation;
+    matrix = glm::translate(matrix, glm::vec3(-1.0f, 0.0f, 0.0f));
+
+    return matrix;
+}
+
+glm::mat4 PlacingInterface::getOrbitedCircleMat() {
+    /* This is how much the planet being orbited around will be displaced by the new planet. */
+    float radius = orbitalRadius / (1 + (universe.getSelected().mass() / planet.mass()));
+
+    /* Start at the selected planet location and move 1 (* the radius value) on x to locate the center. */
+    glm::mat4 matrix = glm::translate(universe.getSelected().position);
+    matrix = glm::scale(matrix, glm::vec3(radius));
+    matrix *= rotation;
+    matrix = glm::translate(matrix, glm::vec3( 1.0f, 0.0f, 0.0f));
+
+    return matrix;
+}

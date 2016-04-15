@@ -15,9 +15,11 @@ public:
 
     void bindSolid();
     void bindWire();
+    void bindCircle();
 
     void drawSolid();
     void drawWire();
+    void drawCircle();
 };
 
 Spheres::Spheres() {
@@ -73,6 +75,14 @@ void Spheres::bindWire() {
     glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 }
 
+void Spheres::bindCircle() {
+    glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
+
+    glDisableVertexAttribArray(uv);
+    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+}
+
 void Spheres::drawSolid() {
     glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
 }
@@ -81,12 +91,18 @@ void Spheres::drawWire() {
     glDrawElements(GL_LINES, lowResLineCount, GL_UNSIGNED_INT, 0);
 }
 
+void Spheres::drawCircle() {
+    glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, 0);
+}
+
 EMSCRIPTEN_BINDINGS(sphere) {
     emscripten::class_<Spheres>("Spheres")
             .constructor()
             .function("bindSolid",  &Spheres::bindSolid)
             .function("bindWire",   &Spheres::bindWire)
+            .function("bindCircle", &Spheres::bindCircle)
             .function("drawSolid",  &Spheres::drawSolid)
             .function("drawWire",   &Spheres::drawWire)
+            .function("drawCircle", &Spheres::drawCircle)
             ;
 }

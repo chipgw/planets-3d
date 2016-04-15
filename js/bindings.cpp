@@ -201,6 +201,8 @@ EMSCRIPTEN_BINDINGS(placinginterface) {
             .function("handleMouseWheel",           &PlacingInterface::handleMouseWheel)
             .function("getPosition",                &getPlacingPosition)
             .function("getRadius",                  &getPlacingRadius)
+            .function("getOrbitalCircleMat",        &PlacingInterface::getOrbitalCircleMat)
+            .function("getOrbitedCircleMat",        &PlacingInterface::getOrbitedCircleMat)
             .property("step",                       &PlacingInterface::step)
             ;
 }

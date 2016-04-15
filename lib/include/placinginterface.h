@@ -45,4 +45,7 @@ public:
     EXPORT void beginOrbitalCreation();
 
     EXPORT PlacingInterface(PlanetsUniverse& universe);
+
+    EXPORT glm::mat4 getOrbitalCircleMat();
+    EXPORT glm::mat4 getOrbitedCircleMat();
 };
