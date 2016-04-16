@@ -292,22 +292,8 @@ void PlanetsWidget::render() {
     case PlacingInterface::OrbitalPlane:
     case PlacingInterface::OrbitalPlanet:
         if (universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
-            /* This is how large the planet being placed's orbit will be. */
-            float newPlanetRadius = placing.orbitalRadius / (1 + (placing.planet.mass() / universe.getSelected().mass()));
-            /* This is how large the planet being orbited around will be displaced by the new planet. */
-            float oldPlanetRadius = placing.orbitalRadius / (1 + (universe.getSelected().mass() / placing.planet.mass()));
-
-            /* Start at the placing planet location and move -1 (* the radius value) on x to locate the center. */
-            glm::mat4 newRadiusMatrix = glm::translate(placing.planet.position);
-            newRadiusMatrix = glm::scale(newRadiusMatrix, glm::vec3(newPlanetRadius));
-            newRadiusMatrix *= placing.rotation;
-            newRadiusMatrix = glm::translate(newRadiusMatrix, glm::vec3(-1.0f, 0.0f, 0.0f));
-
-            /* Start at the selected planet location and move 1 (* the radius value) on x to locate the center. */
-            glm::mat4 oldRadiusMatrix = glm::translate(universe.getSelected().position);
-            oldRadiusMatrix = glm::scale(oldRadiusMatrix, glm::vec3(oldPlanetRadius));
-            oldRadiusMatrix *= placing.rotation;
-            oldRadiusMatrix = glm::translate(oldRadiusMatrix, glm::vec3( 1.0f, 0.0f, 0.0f));
+            glm::mat4 newRadiusMatrix = placing.getOrbitalCircleMat();
+            glm::mat4 oldRadiusMatrix = placing.getOrbitedCircleMat();
 
             circleVerts.bind();
             circleLines.bind();
