@@ -152,6 +152,10 @@ function initViewSettings() {
         universe.pathRecordDistance = e.target.valueAsNumber;
         universe.pathRecordDistance *= universe.pathRecordDistance;
     }, false);
+
+    document.getElementById("drawGrid").addEventListener("change", function(e) {
+        grid.enabled = e.target.checked;
+    }, false);
 }
 
 function initCreatePlanetPopup() {

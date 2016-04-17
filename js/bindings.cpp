@@ -87,16 +87,20 @@ EMSCRIPTEN_BINDINGS(planets_universe) {
             ;
 }
 
-EMSCRIPTEN_BINDINGS(vec3) {
+EMSCRIPTEN_BINDINGS(vectors) {
     /* TODO - Do we need functions for vectors? */
     emscripten::value_array<glm::vec3>("vec3")
             .element(&glm::vec3::x)
             .element(&glm::vec3::y)
             .element(&glm::vec3::z)
             ;
-}
-
-EMSCRIPTEN_BINDINGS(ivec2) {
+    /* Used for colors. */
+    emscripten::value_array<glm::vec4>("vec4")
+            .element(&glm::vec4::r)
+            .element(&glm::vec4::g)
+            .element(&glm::vec4::b)
+            .element(&glm::vec4::a)
+            ;
     emscripten::value_array<glm::ivec2>("ivec2")
             .element(&glm::ivec2::x)
             .element(&glm::ivec2::y)

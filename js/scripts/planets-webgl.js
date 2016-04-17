@@ -1,4 +1,4 @@
-var spheres, context;
+var spheres, context, grid;
 
 var colorShader, colorCameraMat, colorModelMat, colorColor;
 var textureShader, textureCameraMat, textureModelMat, planetTexture;
@@ -63,6 +63,13 @@ function initGL() {
     GLctx.clearColor(0.0, 0.0, 0.0, 1.0);
     GLctx.enable(GLctx.DEPTH_TEST);
     GLctx.depthFunc(GLctx.LEQUAL);
+
+    GLctx.enable(GLctx.CULL_FACE);
+    GLctx.cullFace(GLctx.BACK);
+
+    GLctx.enable(GLctx.BLEND);
+    GLctx.blendFunc(GLctx.SRC_ALPHA, GLctx.ONE_MINUS_SRC_ALPHA);
+
     GLctx.clear(GLctx.COLOR_BUFFER_BIT | GLctx.DEPTH_BUFFER_BIT);
 
     colorShader = initShaderProgram("color-vertex", "color-fragment");
@@ -79,6 +86,8 @@ function initGL() {
     planetTexture = loadTexture("images/planet.png");
 
     spheres = new Module.Spheres();
+
+    grid = new Module.Grid();
 }
 
 function loadTexture(filename) {
@@ -176,6 +185,38 @@ function paint() {
         GLctx.uniformMatrix4fv(colorModelMat, false, planetMat);
 
         spheres.drawWire()
+    }
+
+    if (grid.enabled) {
+        grid.update(camera);
+
+        grid.bind();
+
+        GLctx.disable(GLctx.DEPTH_TEST);
+
+        var color = grid.color;
+        color[3] *= grid.alphafac;
+
+        var gridMat = [grid.scale, 0.0, 0.0, 0.0,
+                       0.0, grid.scale, 0.0, 0.0,
+                       0.0, 0.0, grid.scale, 0.0,
+                       0.0, 0.0, 0.0, 1.0 ]
+
+        GLctx.uniformMatrix4fv(colorModelMat, false, gridMat);
+
+        GLctx.uniform4fv(colorColor, color);
+
+        grid.draw();
+
+        gridMat[0] *= 0.5; gridMat[5] *= 0.5; gridMat[10] *= 0.5;
+        GLctx.uniformMatrix4fv(colorModelMat, false, gridMat);
+
+        color[3] = grid.color[3] - color[3];
+        GLctx.uniform4fv(colorColor, color);
+
+        grid.draw();
+
+        GLctx.enable(GLctx.DEPTH_TEST);
     }
 }
 
