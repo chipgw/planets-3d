@@ -192,7 +192,7 @@ function paint() {
 
         grid.bind();
 
-        GLctx.disable(GLctx.DEPTH_TEST);
+        GLctx.depthMask(false);
 
         var color = grid.color;
         color[3] *= grid.alphafac;
@@ -216,7 +216,7 @@ function paint() {
 
         grid.draw();
 
-        GLctx.enable(GLctx.DEPTH_TEST);
+        GLctx.depthMask(true);
     }
 }
 
