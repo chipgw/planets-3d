@@ -218,6 +218,18 @@ function paint() {
 
         GLctx.depthMask(true);
     }
+
+    if (document.getElementById("drawTrails").checked) {
+        var ident = [1.0, 0.0, 0.0, 0.0,
+                     0.0, 1.0, 0.0, 0.0,
+                     0.0, 0.0, 1.0, 0.0,
+                     0.0, 0.0, 0.0, 1.0];
+
+        GLctx.uniformMatrix4fv(colorModelMat, false, ident);
+        GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
+
+        universe.drawTrails();
+    }
 }
 
 var lastTime = null;
