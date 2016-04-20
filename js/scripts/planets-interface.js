@@ -248,12 +248,14 @@ function init() {
         button = -1;
     }, false);
 
-    canvas.addEventListener("mouseup", function(e) {
-        if (e.button === 0 && !placing.handleMouseClick([e.clientX, e.clientY], camera)) {
+    canvas.addEventListener("click", function(e) {
+        if (e.button === 0 && !placing.handleMouseClick([e.clientX, e.clientY], camera))
             camera.selectUnder([e.clientX, e.clientY], 1);
-        }
+    }, false);
 
-        button = -1;
+    canvas.addEventListener("dblclick", function(e) {
+        if (e.button === 0 && placing.step === Module.PlacingStep.NotPlacing)
+            camera.followSelection();
     }, false);
 
     canvas.addEventListener("wheel", function(e) {

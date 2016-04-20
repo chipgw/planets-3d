@@ -3,6 +3,11 @@ var spheres, context, grid;
 var colorShader, colorCameraMat, colorModelMat, colorColor;
 var textureShader, textureCameraMat, textureModelMat, planetTexture;
 
+const IDENTITY_MATRIX = [1.0, 0.0, 0.0, 0.0,
+                         0.0, 1.0, 0.0, 0.0,
+                         0.0, 0.0, 1.0, 0.0,
+                         0.0, 0.0, 0.0, 1.0];
+
 function initShader(element) {
     if (!element)
         return null;
@@ -220,12 +225,7 @@ function paint() {
     }
 
     if (document.getElementById("drawTrails").checked) {
-        var ident = [1.0, 0.0, 0.0, 0.0,
-                     0.0, 1.0, 0.0, 0.0,
-                     0.0, 0.0, 1.0, 0.0,
-                     0.0, 0.0, 0.0, 1.0];
-
-        GLctx.uniformMatrix4fv(colorModelMat, false, ident);
+        GLctx.uniformMatrix4fv(colorModelMat, false, IDENTITY_MATRIX);
         GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
 
         universe.drawTrails();
