@@ -50,21 +50,19 @@ function initMenu() {
 
     document.getElementById("menuFullscreen").addEventListener("click", function(e) {
         if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
-            if (document.documentElement.requestFullscreen) {
+            if (document.documentElement.requestFullscreen)
                 document.documentElement.requestFullscreen();
-            } else if (document.documentElement.mozRequestFullScreen) {
+            else if (document.documentElement.mozRequestFullScreen)
                 document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
+            else if (document.documentElement.webkitRequestFullscreen)
                 document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-            }
         } else {
-            if (document.exitFullscreen) {
+            if (document.exitFullscreen)
                 document.exitFullscreen();
-            } else if (document.mozCancelFullScreen) {
+            else if (document.mozCancelFullScreen)
                 document.mozCancelFullScreen();
-            } else if (document.webkitExitFullscreen) {
+            else if (document.webkitExitFullscreen)
                 document.webkitExitFullscreen();
-            }
         }
     }, false);
 
@@ -99,7 +97,7 @@ function initPopup(name, visible) {
     popup.children[0].addEventListener("dblclick", toggle, false);
     toggleButton.addEventListener("click", toggle, false);
 
-    if(visible) {
+    if (visible) {
         style.display = "table";
         toggleButton.setAttribute("value", "\u25B2");
     } else {
@@ -179,11 +177,22 @@ function initRandomPopup() {
 
     document.getElementById("randomGenerateButton").addEventListener("click", function(e) {
         var amount = Math.min(document.getElementById("randomAmount").valueAsNumber, 50);
-        var range = document.getElementById("randomRange").valueAsNumber;
-        var maxSpeed = document.getElementById("randomSpeed").valueAsNumber * universe.velocityfac;
-        var maxMass = document.getElementById("randomMass").valueAsNumber;
 
-        universe.generateRandom(amount, range, maxSpeed, maxMass)
+        if (document.getElementById("randomOrbital").checked) {
+            universe.generateRandomOrbital(amount, universe.selected);
+        } else {
+            var range = document.getElementById("randomRange").valueAsNumber;
+            var maxSpeed = document.getElementById("randomSpeed").valueAsNumber * universe.velocityfac;
+            var maxMass = document.getElementById("randomMass").valueAsNumber;
+
+            universe.generateRandom(amount, range, maxSpeed, maxMass);
+        }
+    }, false);
+
+    document.getElementById("randomOrbital").addEventListener("change", function(e) {
+        document.getElementById("randomRange").disabled = e.target.checked;
+        document.getElementById("randomSpeed").disabled = e.target.checked;
+        document.getElementById("randomMass").disabled = e.target.checked;
     }, false);
 }
 
