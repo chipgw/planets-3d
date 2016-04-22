@@ -1,8 +1,54 @@
 var universe, camera, placing;
 
+function loadFile (filename) {
+    var reader = new FileReader();
+
+    reader.onload = function() {
+        loadDOM(new DOMParser().parseFromString(this.result, "text/xml"));
+    };
+    reader.readAsText(filename);
+}
+
+function loadUrl(url) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("GET", url, false);
+    xmlHttp.send(null);
+    loadDOM(xmlHttp.responseXML);
+}
+
+function loadDOM(parsed) {
+    var planetsXML = parsed.getElementsByTagName("planet");
+
+    if(planetsXML.length === 0){
+        alert("Error loading simulation: no planets found!\nIs the file a valid universe file?");
+        return;
+    }
+
+    universe.deleteAll();
+
+    for(var i = 0; i < planetsXML.length; ++i) {
+        var planet = planetsXML[i];
+
+        var position = [parseFloat(planet.getElementsByTagName("position")[0].getAttribute("x")),
+                        parseFloat(planet.getElementsByTagName("position")[0].getAttribute("y")),
+                        parseFloat(planet.getElementsByTagName("position")[0].getAttribute("z"))];
+
+        var velocity = [parseFloat(planet.getElementsByTagName("velocity")[0].getAttribute("x")) * universe.velocityfac,
+                        parseFloat(planet.getElementsByTagName("velocity")[0].getAttribute("y")) * universe.velocityfac,
+                        parseFloat(planet.getElementsByTagName("velocity")[0].getAttribute("z")) * universe.velocityfac];
+
+        var mass = parseFloat(planet.getAttribute("mass"));
+
+        universe.addPlanet(position, velocity, mass);
+    }
+
+    console.log("loaded " + planetsXML.length + " planets.");
+}
+
+
 function initFileUI(dropTarget) {
     document.getElementById("loadFile").addEventListener("change", function(e) {
-        universe.loadFile(e.target.files[0]);
+        loadFile(e.target.files[0]);
         document.getElementById("loadFileForm").reset();
     }, false);
 
@@ -23,9 +69,8 @@ function initFileUI(dropTarget) {
     dropTarget.addEventListener("drop", function(e) {
         e.stopPropagation();
         e.preventDefault();
-        if (e.dataTransfer.files.length > 0) {
-            universe.loadFile(e.dataTransfer.files[0]);
-        }
+        if (e.dataTransfer.files.length > 0)
+            loadFile(e.dataTransfer.files[0]);
     }, false);
 }
 
@@ -286,7 +331,7 @@ function init() {
     window.onresize();
 
     try {
-//        universe.loadUrl("systems/default.xml");
+        loadUrl("systems/default.xml");
     } catch (e) { }
 
     requestAnimationFrame(animate);

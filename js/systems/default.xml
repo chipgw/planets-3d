@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<planets-3d-universe>
+    <planet mass="60">
+        <position x="0" y="15.9356" z="0"/>
+        <velocity x="0" y="0.295752" z="0"/>
+    </planet>
+    <planet mass="60">
+        <position x="0.113207" y="-6.11844" z="-37.9908"/>
+        <velocity x="-1.05125" y="-0.147713" z="0.0773815"/>
+    </planet>
+    <planet mass="60">
+        <position x="-0.113207" y="-6.11844" z="37.9908"/>
+        <velocity x="1.05125" y="-0.147713" z="-0.0773815"/>
+    </planet>
+</planets-3d-universe>
