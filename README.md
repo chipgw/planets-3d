@@ -24,6 +24,23 @@ Building
 * If you want to use a different generator than your platform default, add `-G <generator>` to the cmake command, with your desired generator. A list of generators can be found by running `cmake -h`.
 * The project files should now be generated in `build`.
 
+Web interface using Emscripten:
+===============================
+
+Dependencies:
+-------------
+
+* [CMake]
+* [GLM]
+* [Emscripten]
+
+Building
+--------
+* Clone or download the source code.
+* In the source folder, create a `build` folder.
+* In the build folder, run `cmake .. -DCMAKE_TOOLCHAIN_FILE=<EmscriptenRoot>/cmake/Modules/Platform/Emscripten.cmake -G "<generator>"`, where `<EmscriptenRoot>` is the path to the Emscripten installation, and `<generator>` is `Unix Makefiles` on Linux & OSX and `MinGW Makefiles` on Widnows.
+* Then run `make` or `mingw32-make`.
+
 License
 -------
 [MIT License]
@@ -35,4 +52,5 @@ License
 [TinyXml]:http://www.grinninglizard.com/tinyxml/
 [SDL]:http://www.libsdl.org
 [SDL_image]:http://www.libsdl.org/projects/SDL_image
+[Emscripten]:http://kripken.github.io/emscripten-site/
 [MIT License]:LICENSE
