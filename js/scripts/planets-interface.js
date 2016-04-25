@@ -288,5 +288,7 @@ function init() {
         loadUrl("systems/default.xml");
     } catch (e) { }
 
+    document.body.removeChild(document.getElementById("loading"));
+
     requestAnimationFrame(animate);
 }
