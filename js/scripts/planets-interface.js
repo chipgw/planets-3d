@@ -10,6 +10,10 @@ function initFileUI(dropTarget) {
         document.getElementById("loadFile").click();
     }, false);
 
+    document.getElementById("menuSaveFile").addEventListener("click", function(e) {
+        downloadDOM(generateDOM());
+    }, false);
+
     dropTarget.addEventListener("dragenter", function(e) {
         e.stopPropagation();
         e.preventDefault();
