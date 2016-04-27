@@ -278,6 +278,24 @@ function init() {
         }
     }, false);
 
+    document.addEventListener("keydown", function(e) {
+        /* CTRL+S */
+        if (e.keyCode === 83 && (e.ctrlKey)) {
+            downloadDOM(generateDOM());
+            e.preventDefault();
+        }
+        /* CTRL+O */
+        if (e.keyCode === 79 && (e.ctrlKey)) {
+            document.getElementById("loadFile").click();
+            e.preventDefault();
+        }
+        /* DEL */
+        if (e.keyCode === 46) {
+            universe.remove(universe.selected);
+            e.preventDefault();
+        }
+    }, false);
+
     initFileUI(canvas);
     initMenu();
     initSpeedPopup();
