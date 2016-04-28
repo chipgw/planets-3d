@@ -1,5 +1,5 @@
 
-function loadFile (filename) {
+function loadFile(filename) {
     var reader = new FileReader();
 
     reader.onload = function() {
@@ -96,4 +96,17 @@ function downloadDOM(doc) {
     var blob = new Blob([x.serializeToString(doc)], { type: "text/xml" })
 
     saveAs(blob, "universe.xml");
+}
+
+function saveLocalStorage(name) {
+    if (typeof(Storage) !== "undefined") {
+        var x = new XMLSerializer();
+
+        localStorage.setItem(name, x.serializeToString(generateDOM()));
+    }
+}
+
+function loadLocalStorage(name) {
+    if (typeof(Storage) !== "undefined")
+        loadDOM(new DOMParser().parseFromString(localStorage.getItem(name), "text/xml"));
 }

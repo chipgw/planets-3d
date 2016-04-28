@@ -14,6 +14,19 @@ function initFileUI(dropTarget) {
         downloadDOM(generateDOM());
     }, false);
 
+    document.getElementById("menuOpenLocal").addEventListener("click", function(e) {
+        /* TODO - List saved files... */
+        var name = prompt("Name of system:");
+
+        loadLocalStorage(name);
+    }, false);
+
+    document.getElementById("menuSaveLocal").addEventListener("click", function(e) {
+        var name = prompt("Name of system:");
+
+        saveLocalStorage(name);
+    }, false);
+
     dropTarget.addEventListener("dragenter", function(e) {
         e.stopPropagation();
         e.preventDefault();
