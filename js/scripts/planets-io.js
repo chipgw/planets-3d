@@ -102,11 +102,11 @@ function saveLocalStorage(name) {
     if (typeof(Storage) !== "undefined") {
         var x = new XMLSerializer();
 
-        localStorage.setItem(name, x.serializeToString(generateDOM()));
+        localStorage.setItem("planets-" + name, x.serializeToString(generateDOM()));
     }
 }
 
 function loadLocalStorage(name) {
     if (typeof(Storage) !== "undefined")
-        loadDOM(new DOMParser().parseFromString(localStorage.getItem(name), "text/xml"));
+        loadDOM(new DOMParser().parseFromString(localStorage.getItem("planets-" + name), "text/xml"));
 }
