@@ -16,9 +16,7 @@
     </div>
 
     <div class="menu">
-      <input type="button" id="menuOpenLocal" value="Open">
       <input type="button" id="menuOpenFile" value="Open File">
-      <input type="button" id="menuSaveLocal" value="Save">
       <input type="button" id="menuSaveFile" value="Save File">
       <input type="button" id="menuDelete" value="Delete Selected">
       <input type="button" id="menuStop" value="Stop Selected">
@@ -119,6 +117,25 @@
           </tr>
           <tr>
             <th colspan="2"><input type="button" class="tableInput" id="randomGenerateButton" value="Generate"></th>
+          </tr>
+        </table>
+      </div>
+      <div id="localStoragePopup">
+        <h1>Saves</h1>
+        <table>
+          <tr>
+            <th>File Name:</th>
+            <th><input type="text" class="tableInput" id="localStorageName"></th>
+          </tr>
+          <tr>
+            <th><input type="button" id="menuLoadLocal" value="Load"></th>
+            <th><input type="button" id="menuSaveLocal" value="Save"></th>
+          </tr>
+          <tr>
+            <th colspan="2">
+              <!-- Filled in js. -->
+              <ul id="savesList"></ul>
+            </th>
           </tr>
         </table>
       </div>

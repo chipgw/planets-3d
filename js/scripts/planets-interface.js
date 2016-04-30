@@ -14,19 +14,6 @@ function initFileUI(dropTarget) {
         downloadDOM(generateDOM());
     }, false);
 
-    document.getElementById("menuOpenLocal").addEventListener("click", function(e) {
-        /* TODO - List saved files... */
-        var name = prompt("Name of system:");
-
-        loadLocalStorage(name);
-    }, false);
-
-    document.getElementById("menuSaveLocal").addEventListener("click", function(e) {
-        var name = prompt("Name of system:");
-
-        saveLocalStorage(name);
-    }, false);
-
     dropTarget.addEventListener("dragenter", function(e) {
         e.stopPropagation();
         e.preventDefault();
@@ -212,6 +199,40 @@ function initRandomPopup() {
     }, false);
 }
 
+function initLocalStoragePopup() {
+    initPopup("localStoragePopup");
+
+    var updateList = function() {
+        var list = document.getElementById("savesList");
+
+        while (list.firstChild)
+            list.removeChild(list.firstChild);
+
+        for (var i = 0; i < localStorage.length; i++) {
+
+            var name = localStorage.key(i);
+
+            if (name.startsWith("planets-")) {
+                var entry = document.createElement('li');
+                entry.appendChild(document.createTextNode(name.slice(8)));
+                list.appendChild(entry);
+            }
+        }
+    }
+
+    document.getElementById("menuLoadLocal").addEventListener("click", function(e) {
+        loadLocalStorage(document.getElementById("localStorageName").value);
+    }, false);
+
+    document.getElementById("menuSaveLocal").addEventListener("click", function(e) {
+        saveLocalStorage(document.getElementById("localStorageName").value);
+
+        updateList();
+    }, false);
+
+    updateList();
+}
+
 function init() {
     var canvas = document.getElementById("canvas");
 
@@ -315,6 +336,7 @@ function init() {
     initViewSettings();
     initCreatePlanetPopup();
     initRandomPopup();
+    initLocalStoragePopup();
 
     /* Call this once to make sure it's the right size. */
     window.onresize();
