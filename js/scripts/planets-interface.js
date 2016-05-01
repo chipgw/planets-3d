@@ -208,27 +208,51 @@ function initLocalStoragePopup() {
         while (list.firstChild)
             list.removeChild(list.firstChild);
 
-        for (var i = 0; i < localStorage.length; i++) {
+        var tr = document.createElement('tr');
+        var th1 = document.createElement('th');
+        var th2 = document.createElement('th');
+        var text = document.createElement('input');
+        var button = document.createElement('input');
 
+        text.type = "text";
+        text.class = "tableInput";
+
+        button.type = "button";
+        button.value = "Save";
+        button.class = "tableInput";
+        button.addEventListener("click", function(e) {
+            saveLocalStorage(text.value);
+
+            updateList();
+        }, false);
+
+        th1.appendChild(text);
+        th2.appendChild(button);
+        tr.appendChild(th1);
+        tr.appendChild(th2);
+        list.appendChild(tr);
+
+        for (var i = 0; i < localStorage.length; i++) {
             var name = localStorage.key(i);
 
             if (name.startsWith("planets-")) {
-                var entry = document.createElement('li');
-                entry.appendChild(document.createTextNode(name.slice(8)));
-                list.appendChild(entry);
+                var tr = document.createElement('tr');
+                var th = document.createElement('th');
+                var button = document.createElement('input');
+
+                button.type = "button";
+                button.value = name.slice(8);
+                button.class = "tableInput";
+                button.addEventListener("click", function(e) {
+                    loadLocalStorage(e.target.value);
+                }, false);
+
+                th.appendChild(button);
+                tr.appendChild(th);
+                list.appendChild(tr);
             }
         }
     }
-
-    document.getElementById("menuLoadLocal").addEventListener("click", function(e) {
-        loadLocalStorage(document.getElementById("localStorageName").value);
-    }, false);
-
-    document.getElementById("menuSaveLocal").addEventListener("click", function(e) {
-        saveLocalStorage(document.getElementById("localStorageName").value);
-
-        updateList();
-    }, false);
 
     updateList();
 }
