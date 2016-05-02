@@ -215,11 +215,11 @@ function initLocalStoragePopup() {
         var button = document.createElement('input');
 
         text.type = "text";
-        text.class = "tableInput";
+        text.className = "tableInput";
 
         button.type = "button";
         button.value = "Save";
-        button.class = "tableInput";
+        button.className = "tableInput";
         button.addEventListener("click", function(e) {
             saveLocalStorage(text.value);
 
@@ -237,18 +237,32 @@ function initLocalStoragePopup() {
 
             if (name.startsWith("planets-")) {
                 var tr = document.createElement('tr');
-                var th = document.createElement('th');
-                var button = document.createElement('input');
+                var th1 = document.createElement('th');
+                var th2 = document.createElement('th');
+                var loadButton = document.createElement('input');
+                var delButton = document.createElement('input');
 
-                button.type = "button";
-                button.value = name.slice(8);
-                button.class = "tableInput";
-                button.addEventListener("click", function(e) {
+                loadButton.type = "button";
+                loadButton.value = name.slice(8);
+                loadButton.className = "tableInput";
+                loadButton.addEventListener("click", function(e) {
                     loadLocalStorage(e.target.value);
                 }, false);
 
-                th.appendChild(button);
-                tr.appendChild(th);
+                delButton.type = "button";
+                delButton.value = "X";
+                delButton.className = "tableInput";
+                delButton.fileName = name;
+                delButton.addEventListener("click", function(e) {
+                    localStorage.removeItem(e.target.fileName);
+
+                    updateList();
+                }, false);
+
+                th1.appendChild(loadButton);
+                th2.appendChild(delButton);
+                tr.appendChild(th1);
+                tr.appendChild(th2);
                 list.appendChild(tr);
             }
         }
