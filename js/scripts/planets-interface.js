@@ -159,6 +159,34 @@ function initViewSettings() {
     }, false);
 }
 
+function initCameraControls() {
+    initPopup("cameraPopup");
+
+    document.getElementById("followPrevious").addEventListener("click", function(e) {
+        camera.followPrevious();
+    }, false);
+
+    document.getElementById("followNext").addEventListener("click", function(e) {
+        camera.followNext();
+    }, false);
+
+    document.getElementById("followPlain").addEventListener("click", function(e) {
+        camera.followPlainAverage();
+    }, false);
+
+    document.getElementById("followWeighted").addEventListener("click", function(e) {
+        camera.followWeightedAverage();
+    }, false);
+
+    document.getElementById("followSelected").addEventListener("click", function(e) {
+        camera.followSelection();
+    }, false);
+
+    document.getElementById("clearFollow").addEventListener("click", function(e) {
+        camera.clearFollow();
+    }, false);
+}
+
 function initCreatePlanetPopup() {
     initPopup("createPlanetPopup");
 
@@ -372,6 +400,7 @@ function init() {
     initMenu();
     initSpeedPopup();
     initViewSettings();
+    initCameraControls();
     initCreatePlanetPopup();
     initRandomPopup();
     initLocalStoragePopup();
