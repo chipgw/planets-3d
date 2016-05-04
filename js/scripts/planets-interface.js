@@ -34,9 +34,8 @@ function initFileUI(dropTarget) {
 
 function initMenu() {
     document.getElementById("menuClear").addEventListener("click", function(e) {
-        if (confirm("Are you sure you want to destroy the universe?")) {
+        if (confirm("Are you sure you want to destroy the universe?"))
             universe.deleteAll();
-        }
     }, false);
 
     document.getElementById("menuCenter").addEventListener("click", function(e) {
@@ -249,7 +248,8 @@ function initLocalStoragePopup() {
         button.value = "Save";
         button.className = "tableInput";
         button.addEventListener("click", function(e) {
-            saveLocalStorage(text.value);
+            if (localStorage.getItem("planets-" + text.value) === null || confirm("Overwrite existing save?"))
+                saveLocalStorage(text.value);
 
             updateList();
         }, false);
@@ -274,7 +274,8 @@ function initLocalStoragePopup() {
                 loadButton.value = name.slice(8);
                 loadButton.className = "tableInput";
                 loadButton.addEventListener("click", function(e) {
-                    loadLocalStorage(e.target.value);
+                    if (universe.size() === 0 || confirm("Load selected universe? (The current universe will not be saved)"))
+                        loadLocalStorage(e.target.value);
                 }, false);
 
                 delButton.type = "button";
@@ -282,7 +283,8 @@ function initLocalStoragePopup() {
                 delButton.className = "tableInput";
                 delButton.fileName = name;
                 delButton.addEventListener("click", function(e) {
-                    localStorage.removeItem(e.target.fileName);
+                    if (confirm("Are you sure you want to delete the saved universe?"))
+                        localStorage.removeItem(e.target.fileName);
 
                     updateList();
                 }, false);

@@ -49,9 +49,8 @@ function initShaderProgram(vsh, fsh) {
     GLctx.attachShader(program, fragment);
     GLctx.linkProgram(program);
 
-    if (!GLctx.getProgramParameter(program, GLctx.LINK_STATUS)) {
+    if (!GLctx.getProgramParameter(program, GLctx.LINK_STATUS))
         alert("Could not initialise shader");
-    }
 
     GLctx.useProgram(program);
 
