@@ -301,120 +301,124 @@ function initLocalStoragePopup() {
     updateList();
 }
 
-function init() {
-    var canvas = document.getElementById("canvas");
+var Module = {
+    onRuntimeInitialized: function() {
+        var canvas = document.getElementById("canvas");
 
-    initGL();
+        console.log("init");
 
-    window.onresize = function(e) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        camera.resizeViewport(window.innerWidth, window.innerHeight);
-        GLctx.viewport(0, 0, window.innerWidth, window.innerHeight);
-    };
+        initGL();
 
-    universe = new Module.PlanetsUniverse();
+        window.onresize = function(e) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            camera.resizeViewport(window.innerWidth, window.innerHeight);
+            GLctx.viewport(0, 0, window.innerWidth, window.innerHeight);
+        };
 
-    camera = new Module.Camera(universe);
+        universe = new Module.PlanetsUniverse();
 
-    placing = new Module.PlacingInterface(universe);
+        camera = new Module.Camera(universe);
 
-    /* To track the button being pressed during mousemove. */
-    var button = -1;
+        placing = new Module.PlacingInterface(universe);
 
-    /* Variables for tracking the mouse and getting motion delta. */
-    var lastMouseX, lastMouseY;
+        /* To track the button being pressed during mousemove. */
+        var button = -1;
 
-    canvas.addEventListener("mousedown", function(e) {
-        button = e.button;
-    }, false);
-    canvas.addEventListener("mousemove", function(e) {
-        var deltaX = lastMouseX - e.clientX;
-        var deltaY = lastMouseY - e.clientY;
+        /* Variables for tracking the mouse and getting motion delta. */
+        var lastMouseX, lastMouseY;
 
-        var placingBools = placing.handleMouseMove([e.clientX, e.clientY], [deltaX, deltaY], camera);
+        canvas.addEventListener("mousedown", function(e) {
+            button = e.button;
+        }, false);
+        canvas.addEventListener("mousemove", function(e) {
+            var deltaX = lastMouseX - e.clientX;
+            var deltaY = lastMouseY - e.clientY;
 
-        if (!placingBools[0]) {
-            switch (button) {
-            case 1:
-                camera.distance += deltaY;
-                break;
-            case 2:
-                camera.zrotation -= deltaX * 0.05;
-                camera.xrotation -= deltaY * 0.02;
-                break;
+            var placingBools = placing.handleMouseMove([e.clientX, e.clientY], [deltaX, deltaY], camera);
+
+            if (!placingBools[0]) {
+                switch (button) {
+                case 1:
+                    camera.distance += deltaY;
+                    break;
+                case 2:
+                    camera.zrotation -= deltaX * 0.05;
+                    camera.xrotation -= deltaY * 0.02;
+                    break;
+                }
+
+                camera.bound();
+            } else if (placingBools[1]) {
+                /* TODO - Implement. */
             }
 
-            camera.bound();
-        } else if (placingBools[1]) {
-            /* TODO - Implement. */
-        }
+            /* Keep track of these values for the next event. */
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
 
-        /* Keep track of these values for the next event. */
-        lastMouseX = e.clientX;
-        lastMouseY = e.clientY;
-
-        e.preventDefault();
-    }, false);
-
-    /* Letting go of mouse button anywhere needs to reset the button for dragging. */
-    document.addEventListener("mouseup", function(e) {
-        button = -1;
-    }, false);
-
-    canvas.addEventListener("click", function(e) {
-        if (e.button === 0 && !placing.handleMouseClick([e.clientX, e.clientY], camera))
-            camera.selectUnder([e.clientX, e.clientY], 1);
-    }, false);
-
-    canvas.addEventListener("dblclick", function(e) {
-        if (e.button === 0 && placing.step === Module.PlacingStep.NotPlacing)
-            camera.followSelection();
-    }, false);
-
-    canvas.addEventListener("wheel", function(e) {
-        if (!placing.handleMouseWheel(e.deltaY * -0.01)) {
-            camera.distance += camera.distance * e.deltaY * 0.01;
-
-            camera.bound();
-        }
-    }, false);
-
-    document.addEventListener("keydown", function(e) {
-        /* CTRL+S */
-        if (e.keyCode === 83 && (e.ctrlKey)) {
-            downloadDOM(generateDOM());
             e.preventDefault();
-        }
-        /* CTRL+O */
-        if (e.keyCode === 79 && (e.ctrlKey)) {
-            document.getElementById("loadFile").click();
-            e.preventDefault();
-        }
-        /* DEL */
-        if (e.keyCode === 46) {
-            universe.remove(universe.selected);
-            e.preventDefault();
-        }
-    }, false);
+        }, false);
 
-    initFileUI(canvas);
-    initMenu();
-    initSpeedPopup();
-    initViewSettings();
-    initCameraControls();
-    initCreatePlanetPopup();
-    initRandomPopup();
-    initLocalStoragePopup();
+        /* Letting go of mouse button anywhere needs to reset the button for dragging. */
+        document.addEventListener("mouseup", function(e) {
+            button = -1;
+        }, false);
 
-    /* Call this once to make sure it's the right size. */
-    window.onresize();
+        canvas.addEventListener("click", function(e) {
+            if (e.button === 0 && !placing.handleMouseClick([e.clientX, e.clientY], camera))
+                camera.selectUnder([e.clientX, e.clientY], 1);
+        }, false);
 
-    try {
-        loadUrl("systems/default.xml");
-    } catch (e) { }
+        canvas.addEventListener("dblclick", function(e) {
+            if (e.button === 0 && placing.step === Module.PlacingStep.NotPlacing)
+                camera.followSelection();
+        }, false);
 
-    document.body.removeChild(document.getElementById("loading"));
+        canvas.addEventListener("wheel", function(e) {
+            if (!placing.handleMouseWheel(e.deltaY * -0.01)) {
+                camera.distance += camera.distance * e.deltaY * 0.01;
 
-    requestAnimationFrame(animate);
+                camera.bound();
+            }
+        }, false);
+
+        document.addEventListener("keydown", function(e) {
+            /* CTRL+S */
+            if (e.keyCode === 83 && (e.ctrlKey)) {
+                downloadDOM(generateDOM());
+                e.preventDefault();
+            }
+            /* CTRL+O */
+            if (e.keyCode === 79 && (e.ctrlKey)) {
+                document.getElementById("loadFile").click();
+                e.preventDefault();
+            }
+            /* DEL */
+            if (e.keyCode === 46) {
+                universe.remove(universe.selected);
+                e.preventDefault();
+            }
+        }, false);
+
+        initFileUI(canvas);
+        initMenu();
+        initSpeedPopup();
+        initViewSettings();
+        initCameraControls();
+        initCreatePlanetPopup();
+        initRandomPopup();
+        initLocalStoragePopup();
+
+        /* Call this once to make sure it's the right size. */
+        window.onresize();
+
+        try {
+            loadUrl("systems/default.xml");
+        } catch (e) { }
+
+        document.body.removeChild(document.getElementById("loading"));
+
+        requestAnimationFrame(animate);
+    }
 }
