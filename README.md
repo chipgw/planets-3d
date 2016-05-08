@@ -26,6 +26,7 @@ Building
 
 Web interface using Emscripten:
 ===============================
+[Demo]
 
 Dependencies:
 -------------
@@ -53,4 +54,5 @@ License
 [SDL]:http://www.libsdl.org
 [SDL_image]:http://www.libsdl.org/projects/SDL_image
 [Emscripten]:http://kripken.github.io/emscripten-site/
+[Demo]:http://chipgw.github.io/planets/
 [MIT License]:LICENSE
