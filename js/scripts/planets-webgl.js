@@ -45,6 +45,11 @@ function initShaderProgram(vsh, fsh) {
     var fragment = initShader(document.getElementById(fsh));
 
     var program = GLctx.createProgram();
+
+    /* Make sure the attributes are bound to the same values used in C++. */
+    GLctx.bindAttribLocation(program, 0, "vertex");
+    GLctx.bindAttribLocation(program, 1, "uv");
+
     GLctx.attachShader(program, vertex);
     GLctx.attachShader(program, fragment);
     GLctx.linkProgram(program);
