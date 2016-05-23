@@ -242,10 +242,13 @@ function animate(time) {
     if (lastTime === null)
         lastTime = time;
 
-    var delta = Math.min(time - lastTime, 10.0);
+    var delta = Math.min(time - lastTime, 10.0) * 1000;
     lastTime = time;
 
-    universe.advance(delta * 1000);
+    universe.advance(delta);
+
+    gamepad.pollInput();
+    gamepad.doAxisInput(delta);
 
     paint();
 

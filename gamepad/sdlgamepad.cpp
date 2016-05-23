@@ -99,7 +99,7 @@ void PlanetsGamepad::doControllerButtonPress(const uint8_t& button) {
     }
 }
 
-void PlanetsGamepad::doControllerAxisInput(int64_t delay) {
+void PlanetsGamepad::doControllerAxisInput(int32_t delay) {
     /* TODO - lots of magic numbers in this function... */
     if (controller != nullptr) {
         /* We only need it as a float, might as well not call and convert it repeatedly... */

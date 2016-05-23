@@ -1,5 +1,7 @@
 var universe, camera, placing;
 
+var gamepad;
+
 function initFileUI(dropTarget) {
     document.getElementById("loadFile").addEventListener("change", function(e) {
         loadFile(e.target.files[0]);
@@ -305,8 +307,6 @@ var Module = {
     onRuntimeInitialized: function() {
         var canvas = document.getElementById("canvas");
 
-        console.log("init");
-
         initGL();
 
         window.onresize = function(e) {
@@ -321,6 +321,9 @@ var Module = {
         camera = new Module.Camera(universe);
 
         placing = new Module.PlacingInterface(universe);
+
+        gamepad = new Module.Gamepad(universe, camera, placing);
+        gamepad.init();
 
         /* To track the button being pressed during mousemove. */
         var button = -1;

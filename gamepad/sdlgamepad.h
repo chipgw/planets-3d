@@ -32,7 +32,7 @@ public:
     void handleEvent(SDL_Event& e);
 
     void doControllerButtonPress(const Uint8& button);
-    void doControllerAxisInput(int64_t delay);
+    void doControllerAxisInput(int32_t delay);
 
     PlanetsGamepad(PlanetsUniverse& u, Camera& c, PlacingInterface& p) : universe(u), camera(c), placing(p) { }
 
