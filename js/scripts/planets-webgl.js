@@ -245,7 +245,8 @@ function animate(time) {
     var delta = Math.min(time - lastTime, 10.0) * 1000;
     lastTime = time;
 
-    universe.advance(delta);
+    if (placing.step === Module.PlacingStep.NotPlacing || placing.step === Module.PlacingStep.Firing)
+        universe.advance(delta);
 
     gamepad.pollInput();
     gamepad.doAxisInput(delta);
