@@ -18,6 +18,7 @@ public:
     void drawSolid();
     void drawWire();
     void drawCircle();
+    void drawArrow(float length);
 };
 
 Spheres::Spheres() {
@@ -93,6 +94,49 @@ void Spheres::drawCircle() {
     glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, 0);
 }
 
+void Spheres::drawArrow(float length) {
+    float verts[] = {  0.1f, 0.1f, 0.0f,
+                       0.1f,-0.1f, 0.0f,
+                      -0.1f,-0.1f, 0.0f,
+                      -0.1f, 0.1f, 0.0f,
+
+                       0.1f, 0.1f, length,
+                       0.1f,-0.1f, length,
+                      -0.1f,-0.1f, length,
+                      -0.1f, 0.1f, length,
+
+                       0.2f, 0.2f, length,
+                       0.2f,-0.2f, length,
+                      -0.2f,-0.2f, length,
+                      -0.2f, 0.2f, length,
+
+                       0.0f, 0.0f, length + 0.4f };
+
+    static const GLubyte indexes[] = {  0,  1,  2,       2,  3,  0,
+
+                                        1,  0,  5,       4,  5,  0,
+                                        2,  1,  6,       5,  6,  1,
+                                        3,  2,  7,       6,  7,  2,
+                                        0,  3,  4,       7,  4,  3,
+
+                                        5,  4,  9,       8,  9,  4,
+                                        6,  5, 10,       9, 10,  5,
+                                        7,  6, 11,      10, 11,  6,
+                                        4,  7,  8,      11,  8,  7,
+
+                                        9,  8, 12,
+                                       10,  9, 12,
+                                       11, 10, 12,
+                                        8, 11, 12 };
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, verts);
+    glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
+}
+
 EMSCRIPTEN_BINDINGS(sphere) {
     emscripten::class_<Spheres>("Spheres")
             .constructor()
@@ -102,5 +146,6 @@ EMSCRIPTEN_BINDINGS(sphere) {
             .function("drawSolid",  &Spheres::drawSolid)
             .function("drawWire",   &Spheres::drawWire)
             .function("drawCircle", &Spheres::drawCircle)
+            .function("drawArrow",  &Spheres::drawArrow)
             ;
 }

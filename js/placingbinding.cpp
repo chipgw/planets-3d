@@ -3,6 +3,8 @@
 #include <placinginterface.h>
 #include <bind.h>
 #include <glm/vec2.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtx/transform.hpp>
 
 /* Need to wrap these functions because I can't pass Planets without getting them copied for some reason... */
 glm::vec3 getPlacingPosition(PlacingInterface& interface) {
@@ -21,6 +23,17 @@ TwoBool handleMouseMove(PlacingInterface& interface, glm::ivec2 pos, glm::ivec2 
     TwoBool ret;
     ret.b1 = interface.handleMouseMove(pos, delta, cam, ret.b2);
     return ret;
+}
+
+float getArrowLength(PlacingInterface& placing) {
+    return glm::length(placing.planet.velocity);
+}
+
+glm::mat4 getArrowMat(PlacingInterface& placing) {
+    glm::mat4 matrix = glm::translate(placing.planet.position);
+    matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
+    matrix *= placing.rotation;
+    return matrix;
 }
 
 EMSCRIPTEN_BINDINGS(placinginterface) {
@@ -49,6 +62,8 @@ EMSCRIPTEN_BINDINGS(placinginterface) {
             .function("getRadius",                  &getPlacingRadius)
             .function("getOrbitalCircleMat",        &PlacingInterface::getOrbitalCircleMat)
             .function("getOrbitedCircleMat",        &PlacingInterface::getOrbitedCircleMat)
+            .function("getArrowLength",             &getArrowLength)
+            .function("getArrowMat",                &getArrowMat)
             .property("step",                       &PlacingInterface::step)
             ;
 }
