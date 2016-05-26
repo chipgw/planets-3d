@@ -65,5 +65,7 @@ EMSCRIPTEN_BINDINGS(placinginterface) {
             .function("getArrowLength",             &getArrowLength)
             .function("getArrowMat",                &getArrowMat)
             .property("step",                       &PlacingInterface::step)
+            .property("firingMass",                 &PlacingInterface::firingMass)
+            .property("firingSpeed",                &PlacingInterface::firingSpeed)
             ;
 }

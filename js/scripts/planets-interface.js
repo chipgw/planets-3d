@@ -144,7 +144,7 @@ function initSpeedPopup() {
 }
 
 function initViewSettings() {
-    initPopup("viewPopup");
+    initPopup("viewPopup", true);
 
     document.getElementById("pathLength").addEventListener("change", function(e) {
         universe.pathLength = e.target.valueAsNumber;
@@ -225,6 +225,22 @@ function initRandomPopup() {
         document.getElementById("randomRange").disabled = e.target.checked;
         document.getElementById("randomSpeed").disabled = e.target.checked;
         document.getElementById("randomMass").disabled = e.target.checked;
+    }, false);
+}
+
+function initFiringPopup() {
+    initPopup("firingPopup");
+
+    document.getElementById("toggleFiringButton").addEventListener("click", function(e) {
+        placing.enableFiringMode(placing.step !== Module.PlacingStep.Firing);
+    }, false);
+
+    document.getElementById("firingMass").addEventListener("change", function(e) {
+        placing.firingMass = e.target.valueAsNumber;
+    }, false);
+
+    document.getElementById("firingSpeed").addEventListener("change", function(e) {
+        placing.firingSpeed = e.target.valueAsNumber / universe.velocityfac;
     }, false);
 }
 
@@ -411,6 +427,7 @@ var Module = {
         initCameraControls();
         initCreatePlanetPopup();
         initRandomPopup();
+        initFiringPopup();
         initLocalStoragePopup();
 
         /* Call this once to make sure it's the right size. */
