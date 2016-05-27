@@ -110,3 +110,34 @@ function loadLocalStorage(name) {
     if (typeof(Storage) !== "undefined")
         loadDOM(new DOMParser().parseFromString(localStorage.getItem("planets-" + name), "text/xml"));
 }
+
+function getBase64() {
+    var json = [];
+
+    var curKey = 0;
+    /* Will be the first key in the list. */
+    var startKey = universe.nextKey(0);
+
+    while (curKey !== startKey) {
+        if (curKey === 0)
+            curKey = universe.nextKey(0);
+
+        json.push([universe.getPlanetPosition(curKey),
+                   universe.getPlanetVelocity(curKey),
+                   universe.getPlanetMass(curKey)])
+
+        curKey = universe.nextKey(curKey);
+    }
+
+    return window.btoa(JSON.stringify(json));
+}
+
+function loadBase64(enc) {
+    var arr = JSON.parse(window.atob(enc));
+
+    universe.deleteAll();
+
+    for (var i = 0; i < arr.length; i++) {
+        universe.addPlanet(arr[i][0], arr[i][1], arr[i][2]);
+    }
+}

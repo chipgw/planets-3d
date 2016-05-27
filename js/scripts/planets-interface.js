@@ -434,7 +434,11 @@ var Module = {
         window.onresize();
 
         try {
-            loadUrl("systems/default.xml");
+            /* Attempt to load from URL. */
+            loadBase64(window.location.search.substring(1));
+
+            if (universe.size() === 0)
+                loadUrl("systems/default.xml");
         } catch (e) { }
 
         document.body.removeChild(document.getElementById("loading"));
