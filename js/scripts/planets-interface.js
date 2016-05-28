@@ -436,10 +436,11 @@ var Module = {
         try {
             /* Attempt to load from URL. */
             loadBase64(window.location.search.substring(1));
-
-            if (universe.size() === 0)
+        } catch (e) {
+            try {
                 loadUrl("systems/default.xml");
-        } catch (e) { }
+            } catch (e) { }
+        }
 
         document.body.removeChild(document.getElementById("loading"));
 
