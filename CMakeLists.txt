@@ -97,6 +97,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/textures/planet.png" "images/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/scripts/*" "scripts/")
+    copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/scripts/thirdparty/*" "scripts/thirdparty/")
     copy_to_bin(${PROJECT_NAME}_js $<TARGET_FILE:${PROJECT_NAME}_js> "scripts/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/stylesheets/*" "stylesheets/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/systems/*" "systems/")

@@ -129,11 +129,11 @@ function getBase64() {
         curKey = universe.nextKey(curKey);
     }
 
-    return window.btoa(JSON.stringify(json));
+    return LZString.compressToEncodedURIComponent(JSON.stringify(json));
 }
 
 function loadBase64(enc) {
-    var arr = JSON.parse(window.atob(enc));
+    var arr = JSON.parse(LZString.decompressFromEncodedURIComponent(enc));
 
     universe.deleteAll();
 
