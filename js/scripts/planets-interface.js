@@ -16,6 +16,10 @@ function initFileUI(dropTarget) {
         downloadDOM(generateDOM());
     }, false);
 
+    document.getElementById("menuGetURL").addEventListener("click", function(e) {
+        window.prompt("Sharable URL:", location.protocol + '//' + location.host + location.pathname + "?" + getBase64());
+    }, false);
+
     dropTarget.addEventListener("dragenter", function(e) {
         e.stopPropagation();
         e.preventDefault();
