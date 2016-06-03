@@ -669,15 +669,16 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
     }
 }
 
+const SDL_MessageBoxButtonData buttonsNoYes[] = {
+    { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No" },
+    { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" }
+};
+
 void PlanetsWindow::onClose() {
-    const SDL_MessageBoxButtonData buttons[] = {
-        { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No" },
-        { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" }
-    };
     const SDL_MessageBoxData messageboxdata = {
         SDL_MESSAGEBOX_WARNING, windowSDL,
         "Exit Planets3D?", "The universe will not be saved.",
-        SDL_arraysize(buttons), buttons, nullptr
+        SDL_arraysize(buttonsNoYes), buttonsNoYes, nullptr
     };
 
     int result;
@@ -685,14 +686,10 @@ void PlanetsWindow::onClose() {
 }
 
 void PlanetsWindow::newUniverse() {
-    const SDL_MessageBoxButtonData buttons[] = {
-        { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No" },
-        { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" }
-    };
     const SDL_MessageBoxData messageboxdata = {
         SDL_MESSAGEBOX_WARNING, windowSDL,
         "Destroy Universe?", "The universe will not be saved.",
-        SDL_arraysize(buttons), buttons, nullptr
+        SDL_arraysize(buttonsNoYes), buttonsNoYes, nullptr
     };
 
     int result;
