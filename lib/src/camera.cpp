@@ -9,6 +9,7 @@ Camera::Camera(PlanetsUniverse& u) : universe(u) {
     reset();
 }
 
+/* Wrap a radian value to the [-pi, pi] range. */
 float wrapRad(float rad) {
     return glm::mod(rad + glm::pi<float>(), glm::pi<float>() * 2.0f) - glm::pi<float>();
 }
@@ -101,6 +102,7 @@ key_type Camera::selectUnder(const glm::ivec2& pos, float scale) {
     universe.resetSelected();
     float nearest = std::numeric_limits<float>::max();
 
+    /* Square the scale value, because we need it squared later. */
     scale *= scale;
 
     Ray ray = getRay(pos);
@@ -133,19 +135,24 @@ void Camera::clearFollow() {
 
 void Camera::followNext() {
     if (universe.isValid(universe.following = universe.nextKey(universe.following)))
+        /* This may already be set, but set it anyway in case it isn't. */
         followingState = Single;
 }
 
 void Camera::followPrevious() {
     if (universe.isValid(universe.following = universe.prevKey(universe.following)))
+        /* This may already be set, but set it anyway in case it isn't. */
         followingState = Single;
 }
 
 void Camera::followSelection() {
-    universe.following = universe.selected;
-    followingState = Single;
+    if (universe.isSelectedValid()) {
+        universe.following = universe.selected;
+        followingState = Single;
+    }
 }
 
 glm::ivec2 Camera::getCenterScreen() const {
-     return glm::ivec2(viewport.z / 2, viewport.w / 2);
+    /* Use the viewport values to calculate pixel coordinate of the center of the screen. */
+    return glm::ivec2(viewport.z / 2, viewport.w / 2);
 }
