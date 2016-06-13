@@ -19,6 +19,7 @@ using std::uniform_real_distribution;
 
 PlanetsUniverse::PlanetsUniverse() : generator(std::chrono::system_clock::now().time_since_epoch().count()) { }
 
+/* Emscripten does IO from javascript. */
 #ifndef EMSCRIPTEN
 int PlanetsUniverse::load(const std::string& filename, bool clear) {
     TiXmlDocument doc(filename);
@@ -33,6 +34,7 @@ int PlanetsUniverse::load(const std::string& filename, bool clear) {
     if (clear)
         deleteAll();
 
+    /* keep track of how many planets were loaded. */
     int loaded = 0;
 
     for (TiXmlElement* element = root->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
@@ -54,6 +56,7 @@ int PlanetsUniverse::load(const std::string& filename, bool clear) {
                                                 std::stof(sub->Attribute("y")),
                                                 std::stof(sub->Attribute("z")));
                 else if (sub->ValueStr() == "velocity")
+                    /* Velocity is saved with velocity factor. */
                     planet.velocity = glm::vec3(std::stof(sub->Attribute("x")),
                                                 std::stof(sub->Attribute("y")),
                                                 std::stof(sub->Attribute("z"))) * velocityfac;
@@ -94,6 +97,7 @@ void PlanetsUniverse::save(const std::string& filename) {
         planet->LinkEndChild(position);
 
         TiXmlElement* velocity = new TiXmlElement("velocity");
+        /* Velocity is saved with velocity factor. */
         velocity->SetAttribute("x", std::to_string(i->second.velocity.x / velocityfac));
         velocity->SetAttribute("y", std::to_string(i->second.velocity.y / velocityfac));
         velocity->SetAttribute("z", std::to_string(i->second.velocity.z / velocityfac));
@@ -110,8 +114,8 @@ void PlanetsUniverse::save(const std::string& filename) {
 #endif
 
 void PlanetsUniverse::advance(float time) {
-    time *= simspeed;
-    time /= stepsPerFrame;
+    /* Factor the simulation speed and number of steps into the time value. */
+    time *= simspeed / stepsPerFrame;
 
     for (int s = 0; s < stepsPerFrame; ++s) {
         iterator i = planets.begin();
@@ -133,7 +137,11 @@ void PlanetsUniverse::advance(float time) {
                         /* Set the position and velocity to the wieghted average between the planets. */
                         i->second.position = o->second.position * o->second.mass() + i->second.position * i->second.mass();
                         i->second.velocity = o->second.velocity * o->second.mass() + i->second.velocity * i->second.mass();
+
+                        /* Add the masses together. */
                         i->second.setMass(i->second.mass() + o->second.mass());
+
+                        /* Finish the weighted average calculation. */
                         i->second.position /= i->second.mass();
                         i->second.velocity /= i->second.mass();
 
