@@ -34,6 +34,7 @@ Dependencies:
 * [CMake]
 * [GLM]
 * [Emscripten]
+* [SDL] 2.0 or greater. (Will be auto-downloaded by Emscripten)
 
 Building
 --------
