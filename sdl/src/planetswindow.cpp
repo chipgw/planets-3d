@@ -10,13 +10,6 @@
 #include <glm/gtx/norm.hpp>
 #include <SDL_image.h>
 
-#ifdef PLANETS3D_WITH_GLEW
-#include <GL/glew.h>
-#else
-#define GL_GLEXT_PROTOTYPES
-#include <GL/glcorearb.h>
-#endif
-
 PlanetsWindow::PlanetsWindow(int argc, char* argv[]) : placing(universe), camera(universe), gamepad(universe, camera, placing) {
     initSDL();
     initGL();
@@ -147,72 +140,6 @@ unsigned int PlanetsWindow::loadTexture(const char* filename) {
     SDL_FreeSurface(converted);
 
     return texture;
-}
-
-GLuint compileShader(const char* source, GLenum shaderType) {
-    GLuint shader = glCreateShader(shaderType);
-
-    glShaderSource(shader, 1, (const GLchar**)&source, 0);
-
-    glCompileShader(shader);
-
-    int isCompiled, maxLength;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
-
-    if (maxLength > 1) {
-        char* infoLog = new char[maxLength];
-
-        glGetShaderInfoLog(shader, maxLength, &maxLength, infoLog);
-
-        if (isCompiled == GL_FALSE) {
-            printf("ERROR: failed to compile shader!\n\tLog: %s", infoLog);
-            delete[] infoLog;
-
-            return 0;
-        } else {
-            printf("INFO: succesfully compiled shader.\n\tLog: %s", infoLog);
-            delete[] infoLog;
-        }
-    } else if (isCompiled == GL_FALSE) {
-        printf("ERROR: failed to compile shader! No log availible.\n");
-        return 0;
-    }
-    return shader;
-}
-
-int linkShaderProgram(GLuint vsh, GLuint fsh) {
-    GLuint program = glCreateProgram();
-
-    glAttachShader(program, vsh);
-    glAttachShader(program, fsh);
-
-    glLinkProgram(program);
-
-    int isLinked, maxLength;
-    glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
-    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
-
-    if (maxLength > 1) {
-        char* infoLog = new char[maxLength];
-
-        glGetProgramInfoLog(program, maxLength, &maxLength, infoLog);
-
-        if (isLinked == GL_FALSE) {
-            printf("ERROR: failed to link shader program!\n\tLog: %s", infoLog);
-            delete[] infoLog;
-
-            return 0;
-        } else {
-            printf("INFO: succesfully linked shader.\n\tLog: %s", infoLog);
-            delete[] infoLog;
-        }
-    } else if (isLinked == GL_FALSE) {
-        printf("ERROR: failed to link shader program! No log availible.\n");
-        return 0;
-    }
-
-    return program;
 }
 
 void PlanetsWindow::initShaders() {
