@@ -34,6 +34,7 @@ class PlanetsWindow{
 
     /* Graphics settings */
     bool drawTrails = false;
+    bool drawPlanarCircles = false;
 
     Grid grid;
 

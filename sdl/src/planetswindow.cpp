@@ -403,6 +403,21 @@ void PlanetsWindow::paint() {
 
     glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
+    if (drawPlanarCircles) {
+        glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(0.8f)));
+
+        for (const auto& i : universe) {
+            glm::vec3 pos = i.second.position;
+            pos.z = 0;
+
+            glm::mat4 matrix = glm::translate(pos);
+            matrix = glm::scale(matrix, glm::vec3(i.second.radius() + camera.distance * 0.02f));
+
+            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+            glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
+        }
+    }
+
     if ((placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet) && universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
 
@@ -546,6 +561,9 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
         break;
     case SDLK_t:
         drawTrails = !drawTrails;
+        break;
+    case SDLK_y:
+        drawPlanarCircles = !drawPlanarCircles;
         break;
     case SDLK_g:
         grid.toggle();
