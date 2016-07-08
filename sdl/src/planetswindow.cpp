@@ -398,6 +398,20 @@ void PlanetsWindow::paint() {
         glDepthMask(GL_TRUE);
     }
 
+    if (drawPlanarCircles) {
+        glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(0.8f)));
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+
+        for (const auto& i : universe) {
+            float verts[] = {
+                i.second.position.x, i.second.position.y, 0,
+                i.second.position.x, i.second.position.y, i.second.position.z,
+            };
+            glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, verts);
+            glDrawArrays(GL_LINES, 0, 2);
+        }
+    }
+
     glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
 
