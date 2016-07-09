@@ -104,5 +104,5 @@ public:
     void toggleFullscreen();
 
     /* Runs the event/drawing loop and doesn't return until window is closed. */
-    int run();
+    void run();
 };

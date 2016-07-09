@@ -66,7 +66,6 @@ void PlanetsWindow::initSDL() {
 
     SDL_GL_SetSwapInterval(0);
 
-    /* TODO - I may want to handle the cursor myself... */
     SDL_ShowCursor(SDL_ENABLE);
 
     SDL_GameControllerEventState(SDL_ENABLE);
@@ -212,7 +211,7 @@ void PlanetsWindow::initBuffers() {
     circleLineCount = circle.lineCount;
 }
 
-int PlanetsWindow::run() {
+void PlanetsWindow::run() {
     running = true;
 
     typedef std::chrono::high_resolution_clock clock;
@@ -260,10 +259,6 @@ int PlanetsWindow::run() {
     printf("Total Frames: %i.\n", totalFrames);
     printf("Average Draw Time: %fms.\n", (duration_cast<microseconds>(current - start_time).count() * 1.0e-3f) / float(totalFrames));
     printf("Average Framerate: %f fps.\n", (1.0f / (duration_cast<microseconds>(current - start_time).count() / float(totalFrames))) * 1.0e6f);
-
-    /* TODO - There might be some places where we should return something other than 0. (i.e. on a fatal error.)
-     * If not why should this return anything? */
-    return 0;
 }
 
 void PlanetsWindow::paint() {

@@ -184,7 +184,6 @@ bool PlacingInterface::handleAnalogStick(const glm::vec2& pos, const bool& modif
         break;
     case OrbitalPlane:
         if (universe.isSelectedValid()) {
-            /* TODO - this doesn't work as well as it did with the mouse, need to find a better method */
             rotation *= glm::rotate(pos.x, glm::vec3(1.0f, 0.0f, 0.0f));
             rotation *= glm::rotate(pos.y, glm::vec3(0.0f, 1.0f, 0.0f));
             planet.position = universe.getSelected().position + glm::vec3(rotation[0] * orbitalRadius);

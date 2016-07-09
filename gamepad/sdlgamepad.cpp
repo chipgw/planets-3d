@@ -74,7 +74,6 @@ void PlanetsGamepad::doControllerButtonPress(const uint8_t& button) {
     case SDL_CONTROLLER_BUTTON_B:
         /* If trigger is not being held down pause/resume. */
         if (speedTriggerLast < triggerDeadzone)
-            /* TODO - This messes up the interface... */
             universe.simspeed = universe.simspeed <= 0.0f ? 1.0f : 0.0f;
 
         /* If the trigger is being held down lock to current speed. */
