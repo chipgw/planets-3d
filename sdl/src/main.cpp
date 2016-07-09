@@ -3,6 +3,8 @@
 int main(int argc, char* argv[]) {
     PlanetsWindow window(argc, argv);
 
-    return window.run();
+    window.run();
+
+    return 0;
 }
 
