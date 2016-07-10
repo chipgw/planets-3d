@@ -3,11 +3,15 @@ var spheres, context, grid;
 var colorShader, colorCameraMat, colorModelMat, colorColor;
 var textureShader, textureCameraMat, textureModelMat, planetTexture;
 
-const IDENTITY_MATRIX = [1.0, 0.0, 0.0, 0.0,
-                         0.0, 1.0, 0.0, 0.0,
-                         0.0, 0.0, 1.0, 0.0,
-                         0.0, 0.0, 0.0, 1.0];
+/* Convinience function to create a matrix with a position and scale value. */
+function makeMat(pos, scale) {
+    return [scale, 0.0, 0.0, 0.0,
+            0.0, scale, 0.0, 0.0,
+            0.0, 0.0, scale, 0.0,
+            pos[0], pos[1], pos[2], 1.0 ]
+}
 
+/* Init an individual shader component from DOM element. */
 function initShader(element) {
     if (!element)
         return null;
@@ -40,6 +44,7 @@ function initShader(element) {
     return shader;
 }
 
+/* Load and compile a shader brogram based on vertex and fragment shader element IDs. */
 function initShaderProgram(vsh, fsh) {
     var vertex = initShader(document.getElementById(vsh));
     var fragment = initShader(document.getElementById(fsh));
@@ -135,15 +140,7 @@ function paint() {
         if (curKey === 0)
             curKey = universe.nextKey(0);
 
-        var pos = universe.getPlanetPosition(curKey);
-        var radius = universe.getPlanetRadius(curKey);
-
-        var planetMat = [radius, 0.0, 0.0, 0.0,
-                         0.0, radius, 0.0, 0.0,
-                         0.0, 0.0, radius, 0.0,
-                         pos[0], pos[1], pos[2], 1.0 ]
-
-        GLctx.uniformMatrix4fv(textureModelMat, false, planetMat);
+        GLctx.uniformMatrix4fv(textureModelMat, false, makeMat(universe.getPlanetPosition(curKey), universe.getPlanetRadius(curKey)));
 
         spheres.drawSolid()
 
@@ -159,15 +156,7 @@ function paint() {
     GLctx.uniform4fv(colorColor, [0.0, 1.0, 0.0, 1.0]);
 
     if (placing.step !== Module.PlacingStep.NotPlacing && placing.step !== Module.PlacingStep.Firing) {
-        var pos = placing.getPosition();
-        var radius = placing.getRadius();
-
-        var planetMat = [radius, 0.0, 0.0, 0.0,
-                         0.0, radius, 0.0, 0.0,
-                         0.0, 0.0, radius, 0.0,
-                         pos[0], pos[1], pos[2], 1.0 ]
-
-        GLctx.uniformMatrix4fv(colorModelMat, false, planetMat);
+        GLctx.uniformMatrix4fv(colorModelMat, false, makeMat(placing.getPosition(),  placing.getRadius()));
 
         spheres.drawWire()
 
@@ -192,17 +181,22 @@ function paint() {
             spheres.drawArrow(length);
         }
     } else if (universe.isSelectedValid()) {
-        var pos = universe.getPlanetPosition(universe.selected);
-        var radius = universe.getPlanetRadius(universe.selected) * 1.02;
-
-        var planetMat = [radius, 0.0, 0.0, 0.0,
-                         0.0, radius, 0.0, 0.0,
-                         0.0, 0.0, radius, 0.0,
-                         pos[0], pos[1], pos[2], 1.0 ]
-
-        GLctx.uniformMatrix4fv(colorModelMat, false, planetMat);
+        GLctx.uniformMatrix4fv(colorModelMat, false, makeMat(universe.getPlanetPosition(universe.selected),
+                                                             universe.getPlanetRadius(universe.selected) * 1.02));
 
         spheres.drawWire();
+    }
+
+    /* TODO - Hide when camera is following something. */
+    if (gamepad.attached && placing.step === Module.PlacingStep.NotPlacing) {
+        spheres.bindCircle();
+        GLctx.disable(GLctx.DEPTH_TEST);
+        GLctx.uniform4fv(colorColor, [0.0, 1.0, 1.0, 1.0]);
+
+        GLctx.uniformMatrix4fv(colorModelMat, false, makeMat(camera.position, camera.distance * 4.0e-3));
+
+        spheres.drawCircle();
+        GLctx.enable(GLctx.DEPTH_TEST);
     }
 
     if (grid.enabled) {
@@ -264,3 +258,8 @@ function animate(time) {
 
     requestAnimationFrame(animate);
 }
+
+const IDENTITY_MATRIX = [1.0, 0.0, 0.0, 0.0,
+                         0.0, 1.0, 0.0, 0.0,
+                         0.0, 0.0, 1.0, 0.0,
+                         0.0, 0.0, 0.0, 1.0];
