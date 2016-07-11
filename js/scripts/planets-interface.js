@@ -2,6 +2,14 @@ var universe, camera, placing;
 
 var gamepad;
 
+function inFrame () {
+    try {
+        return window.top !== window.self;
+    } catch (e) {
+        return true;
+    }
+}
+
 function initFileUI(dropTarget) {
     document.getElementById("loadFile").addEventListener("change", function(e) {
         loadFile(e.target.files[0]);
@@ -16,9 +24,15 @@ function initFileUI(dropTarget) {
         downloadDOM(generateDOM());
     }, false);
 
-    document.getElementById("menuGetURL").addEventListener("click", function(e) {
-        window.prompt("Sharable URL:", location.protocol + '//' + location.host + location.pathname + "?" + getBase64());
-    }, false);
+    var urlButton = document.getElementById("menuGetURL");
+
+    /* If we are in a frame the "Get URL" functionality doesn't work right. */
+    if (inFrame())
+        urlButton.parentElement.removeChild(urlButton)
+    else
+        urlButton.addEventListener("click", function(e) {
+            window.prompt("Sharable URL:", location.protocol + '//' + location.host + location.pathname + "?" + getBase64());
+        }, false);
 
     dropTarget.addEventListener("dragenter", function(e) {
         e.stopPropagation();
