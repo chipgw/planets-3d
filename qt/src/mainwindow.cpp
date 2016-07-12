@@ -276,6 +276,10 @@ void MainWindow::on_actionPlanet_Colors_toggled(bool value) {
     ui->centralwidget->drawPlanetColors = value;
 }
 
+void MainWindow::on_actionDraw_Planar_Circles_toggled(bool value) {
+    ui->centralwidget->drawPlanarCircles = value;
+}
+
 void MainWindow::on_actionHide_Planets_toggled(bool value) {
     ui->centralwidget->hidePlanets = value;
 

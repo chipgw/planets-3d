@@ -43,6 +43,7 @@ private slots:
     void on_actionDraw_Paths_toggled(bool value);
     void on_actionPlanet_Colors_toggled(bool value);
     void on_actionHide_Planets_toggled(bool value);
+    void on_actionDraw_Planar_Circles_toggled(bool value);
 
     void on_randomOrbitalCheckBox_toggled(bool checked);
     void on_generateRandomPushButton_clicked();

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1200</width>
     <height>956</height>
    </rect>
   </property>
@@ -23,7 +23,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1200</width>
      <height>21</height>
     </rect>
    </property>
@@ -686,6 +686,7 @@
    <addaction name="actionDraw_Paths"/>
    <addaction name="actionPlanet_Colors"/>
    <addaction name="actionHide_Planets"/>
+   <addaction name="actionDraw_Planar_Circles"/>
   </widget>
   <widget class="QDockWidget" name="info_DockWidget">
    <property name="windowTitle">
@@ -966,6 +967,14 @@
   <action name="actionClear">
    <property name="text">
     <string>&amp;Clear</string>
+   </property>
+  </action>
+  <action name="actionDraw_Planar_Circles">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Draw Planar Circles</string>
    </property>
   </action>
  </widget>

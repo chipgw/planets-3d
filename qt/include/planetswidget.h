@@ -85,6 +85,8 @@ public:
     bool drawPlanetTrails = false;
     /* Do we draw wireframe colors? */
     bool drawPlanetColors = false;
+    /* Draw a circle for each planet on the XY plane, along with a connecting line. */
+    bool drawPlanarCircles = false;
     /* Do we hide the textured planet spheres? */
     bool hidePlanets = false;
 
