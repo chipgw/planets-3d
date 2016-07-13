@@ -257,6 +257,8 @@ function animate(time) {
     paint();
 
     requestAnimationFrame(animate);
+
+    document.getElementById("speedRange").value = universe.speed
 }
 
 const IDENTITY_MATRIX = [1.0, 0.0, 0.0, 0.0,
