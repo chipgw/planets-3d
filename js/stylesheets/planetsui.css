@@ -58,8 +58,17 @@ body {
     display: none;
 }
 
-.menu {
+.uiContainer {
     position: fixed;
+    width: 100%;
+
+    /* Don't steal events from the canvas. */
+    pointer-events: none;
+}
+
+.menu {
+    /* Accept events that the parent div ignores. */
+    pointer-events: auto;
 }
 
 input[type="range"] {
@@ -76,9 +85,7 @@ input[type="range"] {
 }
 
 #popupBar {
-    position: fixed;
-    right: 0;
-    top: 0;
+    float: right;
 }
 
 #popupBar div {
@@ -94,6 +101,9 @@ input[type="range"] {
     background: -o-linear-gradient(top, #eee 0%, #ccc 100%); /* Opera 11.10+ */
     background: -ms-linear-gradient(top, #eee 0%, #ccc 100%); /* IE10+ */
     background: linear-gradient(to bottom, #eee 0%, #ccc 100%); /* W3C */
+
+    /* Accept events that the parent div ignores. */
+    pointer-events: auto;
 }
 
 #popupBar h1 {

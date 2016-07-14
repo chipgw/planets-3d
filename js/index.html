@@ -15,154 +15,156 @@
       </form>
     </div>
 
-    <div class="menu">
-      <input type="button" id="menuOpenFile" value="Open File">
-      <input type="button" id="menuSaveFile" value="Save File">
-      <input type="button" id="menuGetURL" value="Get URL">
-      <input type="button" id="menuDelete" value="Delete Selected">
-      <input type="button" id="menuStop" value="Stop Selected">
-      <input type="button" id="menuClear" value="Clear Universe">
-      <input type="button" id="menuCenter" value="Center Universe">
-      <input type="button" id="menuFullscreen" value="Toggle Fullscreen">
-      <input type="button" id="menuInteractive" value="Place Planet">
-      <input type="button" id="menuOrbital" value="Place Orbital">
-    </div>
+    <div class="uiContainer">
+      <div id="popupBar">
+        <div id="speedPopup">
+          <h1>Speed Control</h1>
+          <table>
+            <tr>
+              <th colspan="2"><input type="range" class="tableInput" id="speedRange" step="0.1" min="0" max="64" value="1"></th>
+            </tr>
+            <tr>
+              <!-- TODO - add icons to buttons -->
+              <th><input type="button" class="tableInput" id="speedPauseResume" value="Pause"></th>
+              <th><input type="button" class="tableInput" id="speedFastForward" value="Fast Forward"></th>
+            </tr>
+          </table>
+        </div>
+        <div id="viewPopup">
+          <h1>View Settings</h1>
+          <table>
+            <tr>
+              <th>Path Length:</th>
+              <th><input type="range" class="tableInput" id="pathLength" min="0" max="4096" value="256"></th>
+            </tr>
+            <tr>
+              <th>Path Delta Size:</th>
+              <th><input type="range" class="tableInput" id="pathDistance" min="0.1" max="10" step="0.1" value="1"></th>
+            </tr>
+            <tr>
+              <th>Draw Grid:</th>
+              <th><input type="checkbox" class="tableInput" id="drawGrid"></th>
+            </tr>
+            <tr>
+              <th>Draw Trails:</th>
+              <th><input type="checkbox" class="tableInput" id="drawTrails"></th>
+            </tr>
+          </table>
+        </div>
+        <div id="cameraPopup">
+          <h1>Camera Controls</h1>
+          <table>
+            <tr>
+              <th colspan="2"><input type="button" class="tableInput" id="followSelected" value="Follow Selected"></th>
+            </tr>
+            <tr>
+              <th colspan="2"><input type="button" class="tableInput" id="clearFollow" value="Clear Follow"></th>
+            </tr>
+            <tr>
+              <th><input type="button" class="tableInput" id="followPrevious" value="Follow Previous"></th>
+              <th><input type="button" class="tableInput" id="followNext" value="Follow Next"></th>
+            </tr>
+            <tr>
+              <th colspan="2">Follow Average:</th>
+            </tr>
+            <tr>
+              <th><input type="button" class="tableInput" id="followPlain" value="Plain"></th>
+              <th><input type="button" class="tableInput" id="followWeighted" value="Weighted"></th>
+            </tr>
+          </table>
+        </div>
+        <div id="createPlanetPopup">
+          <h1>Create Planet</h1>
+          <table>
+            <tr>
+              <th/>
+              <th>X</th>
+              <th>Y</th>
+              <th>Z</th>
+            </tr>
+            <tr>
+              <th>Position:</th>
+              <th><input type="number" class="tableInput" id="createPositionX" value="0"></th>
+              <th><input type="number" class="tableInput" id="createPositionY" value="0"></th>
+              <th><input type="number" class="tableInput" id="createPositionZ" value="0"></th>
+            </tr>
+            <tr>
+              <th>Velocity:</th>
+              <th><input type="number" class="tableInput" id="createVelocityX" value="0"></th>
+              <th><input type="number" class="tableInput" id="createVelocityY" value="0"></th>
+              <th><input type="number" class="tableInput" id="createVelocityZ" value="0"></th>
+            </tr>
+            <tr>
+              <th>Mass:</th>
+              <th colspan="3"><input type="number" class="tableInput" id="createMass" min="0" step="100" value="100"></th>
+            </tr>
+            <tr>
+              <th colspan="4"><input type="button" class="tableInput" id="createPlanetButton" value="Create"></th>
+            </tr>
+          </table>
+        </div>
+        <div id="randomPopup">
+          <h1>Planet Generator</h1>
+          <table>
+            <tr>
+              <th>Orbital:</th>
+              <th><input type="checkbox" class="tableInput" id="randomOrbital"></th>
+            </tr>
+            <tr>
+              <th>Amount:</th>
+              <th><input type="number" class="tableInput" id="randomAmount" min="0" max="50" value="10"></th>
+            </tr>
+            <tr>
+              <th>Range:</th>
+              <th><input type="number" class="tableInput" id="randomRange" value="1000"></th>
+            </tr>
+            <tr>
+              <th>Max Speed:</th>
+              <th><input type="number" class="tableInput" id="randomSpeed" step="0.1" value="1.0"></th>
+            </tr>
+            <tr>
+              <th>Max Mass:</th>
+              <th><input type="number" class="tableInput" id="randomMass" min="0" step="100" value="200"></th>
+            </tr>
+            <tr>
+              <th colspan="2"><input type="button" class="tableInput" id="randomGenerateButton" value="Generate"></th>
+            </tr>
+          </table>
+        </div>
+        <div id="firingPopup">
+        <h1>Firing Mode</h1>
+          <table>
+            <tr>
+              <th>Mass:</th>
+              <th><input type="number" class="tableInput" id="firingMass" min="0" max="1000" value="1"></th>
+            </tr>
+            <tr>
+              <th>Speed:</th>
+              <th><input type="number" class="tableInput" id="firingSpeed" min="0" max="50" value="10"></th>
+            </tr>
+            <tr>
+              <!-- TODO - Somehow give feedback on whether it is currently enabled. -->
+              <th colspan="2"><input type="button" class="tableInput" id="toggleFiringButton" value="Toggle Firing Mode"></th>
+            </tr>
+          </table>
+        </div>
+        <div id="localStoragePopup">
+          <h1>Saves</h1>
+          <table id="savesList"></table>
+        </div>
+      </div>
 
-    <div id="popupBar">
-      <div id="speedPopup">
-        <h1>Speed Control</h1>
-        <table>
-          <tr>
-            <th colspan="2"><input type="range" class="tableInput" id="speedRange" step="0.1" min="0" max="64" value="1"></th>
-          </tr>
-          <tr>
-            <!-- TODO - add icons to buttons -->
-            <th><input type="button" class="tableInput" id="speedPauseResume" value="Pause"></th>
-            <th><input type="button" class="tableInput" id="speedFastForward" value="Fast Forward"></th>
-          </tr>
-        </table>
-      </div>
-      <div id="viewPopup">
-        <h1>View Settings</h1>
-        <table>
-          <tr>
-            <th>Path Length:</th>
-            <th><input type="range" class="tableInput" id="pathLength" min="0" max="4096" value="256"></th>
-          </tr>
-          <tr>
-            <th>Path Delta Size:</th>
-            <th><input type="range" class="tableInput" id="pathDistance" min="0.1" max="10" step="0.1" value="1"></th>
-          </tr>
-          <tr>
-            <th>Draw Grid:</th>
-            <th><input type="checkbox" class="tableInput" id="drawGrid"></th>
-          </tr>
-          <tr>
-            <th>Draw Trails:</th>
-            <th><input type="checkbox" class="tableInput" id="drawTrails"></th>
-          </tr>
-        </table>
-      </div>
-      <div id="cameraPopup">
-        <h1>Camera Controls</h1>
-        <table>
-          <tr>
-            <th colspan="2"><input type="button" class="tableInput" id="followSelected" value="Follow Selected"></th>
-          </tr>
-          <tr>
-            <th colspan="2"><input type="button" class="tableInput" id="clearFollow" value="Clear Follow"></th>
-          </tr>
-          <tr>
-            <th><input type="button" class="tableInput" id="followPrevious" value="Follow Previous"></th>
-            <th><input type="button" class="tableInput" id="followNext" value="Follow Next"></th>
-          </tr>
-          <tr>
-            <th colspan="2">Follow Average:</th>
-          </tr>
-          <tr>
-            <th><input type="button" class="tableInput" id="followPlain" value="Plain"></th>
-            <th><input type="button" class="tableInput" id="followWeighted" value="Weighted"></th>
-          </tr>
-        </table>
-      </div>
-      <div id="createPlanetPopup">
-        <h1>Create Planet</h1>
-        <table>
-          <tr>
-            <th/>
-            <th>X</th>
-            <th>Y</th>
-            <th>Z</th>
-          </tr>
-          <tr>
-            <th>Position:</th>
-            <th><input type="number" class="tableInput" id="createPositionX" value="0"></th>
-            <th><input type="number" class="tableInput" id="createPositionY" value="0"></th>
-            <th><input type="number" class="tableInput" id="createPositionZ" value="0"></th>
-          </tr>
-          <tr>
-            <th>Velocity:</th>
-            <th><input type="number" class="tableInput" id="createVelocityX" value="0"></th>
-            <th><input type="number" class="tableInput" id="createVelocityY" value="0"></th>
-            <th><input type="number" class="tableInput" id="createVelocityZ" value="0"></th>
-          </tr>
-          <tr>
-            <th>Mass:</th>
-            <th colspan="3"><input type="number" class="tableInput" id="createMass" min="0" step="100" value="100"></th>
-          </tr>
-          <tr>
-            <th colspan="4"><input type="button" class="tableInput" id="createPlanetButton" value="Create"></th>
-          </tr>
-        </table>
-      </div>
-      <div id="randomPopup">
-        <h1>Planet Generator</h1>
-        <table>
-          <tr>
-            <th>Orbital:</th>
-            <th><input type="checkbox" class="tableInput" id="randomOrbital"></th>
-          </tr>
-          <tr>
-            <th>Amount:</th>
-            <th><input type="number" class="tableInput" id="randomAmount" min="0" max="50" value="10"></th>
-          </tr>
-          <tr>
-            <th>Range:</th>
-            <th><input type="number" class="tableInput" id="randomRange" value="1000"></th>
-          </tr>
-          <tr>
-            <th>Max Speed:</th>
-            <th><input type="number" class="tableInput" id="randomSpeed" step="0.1" value="1.0"></th>
-          </tr>
-          <tr>
-            <th>Max Mass:</th>
-            <th><input type="number" class="tableInput" id="randomMass" min="0" step="100" value="200"></th>
-          </tr>
-          <tr>
-            <th colspan="2"><input type="button" class="tableInput" id="randomGenerateButton" value="Generate"></th>
-          </tr>
-        </table>
-      </div>
-      <div id="firingPopup">
-      <h1>Firing Mode</h1>
-        <table>
-          <tr>
-            <th>Mass:</th>
-            <th><input type="number" class="tableInput" id="firingMass" min="0" max="1000" value="1"></th>
-          </tr>
-          <tr>
-            <th>Speed:</th>
-            <th><input type="number" class="tableInput" id="firingSpeed" min="0" max="50" value="10"></th>
-          </tr>
-          <tr>
-            <!-- TODO - Somehow give feedback on whether it is currently enabled. -->
-            <th colspan="2"><input type="button" class="tableInput" id="toggleFiringButton" value="Toggle Firing Mode"></th>
-          </tr>
-        </table>
-      </div>
-      <div id="localStoragePopup">
-        <h1>Saves</h1>
-        <table id="savesList"></table>
+      <div class="menu">
+        <input type="button" id="menuOpenFile" value="Open File">
+        <input type="button" id="menuSaveFile" value="Save File">
+        <input type="button" id="menuGetURL" value="Get URL">
+        <input type="button" id="menuDelete" value="Delete Selected">
+        <input type="button" id="menuStop" value="Stop Selected">
+        <input type="button" id="menuClear" value="Clear Universe">
+        <input type="button" id="menuCenter" value="Center Universe">
+        <input type="button" id="menuFullscreen" value="Toggle Fullscreen">
+        <input type="button" id="menuInteractive" value="Place Planet">
+        <input type="button" id="menuOrbital" value="Place Orbital">
       </div>
     </div>
 
