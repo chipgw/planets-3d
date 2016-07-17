@@ -355,7 +355,7 @@ void MainWindow::updateRecentFileActions() {
 }
 
 void MainWindow::openRecentFile() {
-    /* Getthe QAction that sent the signal. If it wasn't a QAction, just ignore it. */
+    /* Get the QAction that sent the signal. If it wasn't a QAction, just ignore it. */
     if (QAction* action = qobject_cast<QAction*>(sender())) {
         /* tooltip = full path to the file. */
         QString path = action->toolTip();

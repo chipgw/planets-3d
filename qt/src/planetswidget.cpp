@@ -335,13 +335,11 @@ void PlanetsWidget::render() {
             glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, verts);
             glDrawArrays(GL_LINES, 0, 2);
         }
-    }
 
-    circleVerts.bind();
-    circleLines.bind();
-    shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
+        circleVerts.bind();
+        circleLines.bind();
+        shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
 
-    if (drawPlanarCircles) {
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(0.8f)));
 
         for (const auto& i : universe) {
@@ -354,6 +352,8 @@ void PlanetsWidget::render() {
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
             glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
         }
+        circleVerts.release();
+        circleLines.release();
     }
 
     if (grid.draw) {
