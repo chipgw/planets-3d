@@ -231,7 +231,8 @@ void PlanetsWindow::run() {
             /* Put a bunch of information into the title. */
             SDL_SetWindowTitle(windowSDL, ("Planets3D  [" + std::to_string(1000000 / delay) + "fps, " + std::to_string(delay / 1000) + "ms " +
                                            std::to_string(universe.size()) + " planet(s), " + std::to_string(universe.simspeed) + "x speed, " +
-                                           std::to_string(universe.stepsPerFrame) + " step(s), " +  std::to_string(universe.pathLength) + " path length]").c_str());
+                                           std::to_string(universe.stepsPerFrame) + " step(s), " +
+                                           std::to_string(universe.pathLength) + " path length]").c_str());
 
         /* Don't do delays larger than a second. */
         delay = std::min(delay, 1000000);
@@ -370,13 +371,16 @@ void PlanetsWindow::paint() {
     }
 
     if (grid.draw) {
+        /* Update the grid's scale and alphafac based on the camera. */
         grid.update(camera);
 
         glDepthMask(GL_FALSE);
 
+        /* TODO - Store in VBO. */
         glVertexAttribPointer(vertex, 2, GL_FLOAT, GL_FALSE, 0, grid.points.data());
 
         glm::vec4 color = grid.color;
+        /* The alphafac value is for the larger of the two grids. */
         color.a *= grid.alphafac;
 
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(grid.scale))));
@@ -385,15 +389,18 @@ void PlanetsWindow::paint() {
         glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
 
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::scale(glm::vec3(grid.scale * 0.5f))));
+        /* The smaller grid disappears as the big one appears. */
         color.a = grid.color.a - color.a;
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
 
         glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
 
+        /* Draw to the depth buffer again. */
         glDepthMask(GL_TRUE);
     }
 
     if (drawPlanarCircles) {
+        /* First draw the lines from the circle center to the planet location. */
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(0.8f)));
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 
@@ -407,19 +414,20 @@ void PlanetsWindow::paint() {
         }
     }
 
+    /* Binding the circle is used for planar circles, the orbital circle, and the controller center. */
     glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
 
     glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
     if (drawPlanarCircles) {
-        glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(0.8f)));
-
+        /* Then we draw a circle at the XY position of every planet. */
         for (const auto& i : universe) {
             glm::vec3 pos = i.second.position;
             pos.z = 0;
 
             glm::mat4 matrix = glm::translate(pos);
+            /* Make the circle start at the planet's radius and increase it slightly the further out the camera is. */
             matrix = glm::scale(matrix, glm::vec3(i.second.radius() + camera.distance * 0.02f));
 
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
@@ -427,7 +435,8 @@ void PlanetsWindow::paint() {
         }
     }
 
-    if ((placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet) && universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
+    if ((placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet)
+            && universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
 
         glm::mat4 newRadiusMatrix = placing.getOrbitalCircleMat();
