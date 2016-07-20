@@ -32,6 +32,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     endif(PLANETS3D_QT5)
 
     option(PLANETS3D_BUILD_TINYXML "Look for TinyXML source files in \"tinyxml\" folder, and build as a static library." OFF)
+    option(PLANETS3D_BENCHMARK "Build a command-line program to test simulation performance without any graphics." OFF)
 
     if(${CMAKE_GENERATOR} MATCHES "Visual Studio*")
         add_definitions(-DPLANETS3D_MSVC_CONFIGURATION="$(ConfigurationName)")
@@ -68,6 +69,11 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         include_directories(${TINYXML_INCLUDE_DIR})
         target_link_libraries(${PROJECT_NAME} ${TINYXML_LIBRARIES})
     endif(PLANETS3D_BUILD_TINYXML)
+
+    if(PLANETS3D_BENCHMARK)
+        add_executable(${PROJECT_NAME}_benchmark "bench/bench.cpp")
+        target_link_libraries(${PROJECT_NAME}_benchmark ${PROJECT_NAME})
+    endif(PLANETS3D_BENCHMARK)
 
     if(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
         find_package(SDL2 REQUIRED)

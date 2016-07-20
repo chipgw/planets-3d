@@ -85,6 +85,7 @@ public:
     inline const_iterator find(const key_type& key) const { return planets.find(key); }
     inline list_type::size_type size() const { return planets.size(); }
 
+    inline void randSeed(unsigned int seed) { generator.seed(seed); }
 
     /* Make the weighted average position and velocity of all planets 0.
      * After this if all the planets merged into one it would be stationary at the origin. */
