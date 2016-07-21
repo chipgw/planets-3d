@@ -13,12 +13,12 @@ int main() {
     /* Test a thousand steps. */
     universe.stepsPerFrame = 1000;
 
-    uint32_t sizes[] = { 20, 100, 500 };
+    size_t sizes[] = { 20, 100, 200, 500 };
 
-    for (uint32_t size : sizes) {
+    for (size_t size : sizes) {
         universe.generateRandom(size, 1000.0f, 1.0f, 1000.0f);
 
-        printf("Simulating %i planets...\n", size);
+        printf("Simulating %zu planets...\n", size);
 
         high_resolution_clock::time_point start = high_resolution_clock::now();
 
@@ -28,8 +28,8 @@ int main() {
 
         auto delay = duration_cast<milliseconds>(end - start).count();
 
-        printf("%i steps with %i planets took %ims, average step time: %fms.\n", universe.stepsPerFrame, size, delay, delay / float(universe.stepsPerFrame));
-        printf("Ended with %i planets.\n", universe.size());
+        printf("%i steps with %zu planets took %lims, average step time: %fms.\n", universe.stepsPerFrame, size, delay, delay / float(universe.stepsPerFrame));
+        printf("Ended with %zu planets.\n", universe.size());
 
         fflush(stdout);
 
