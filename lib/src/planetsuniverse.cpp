@@ -116,6 +116,7 @@ void PlanetsUniverse::save(const std::string& filename) {
 void PlanetsUniverse::advance(float time) {
     /* Factor the simulation speed and number of steps into the time value. */
     time *= simspeed / stepsPerFrame;
+    float gconsttime = gravityconst * time;
 
     for (int s = 0; s < stepsPerFrame; ++s) {
         iterator i = planets.begin();
@@ -133,7 +134,7 @@ void PlanetsUniverse::advance(float time) {
                     float distancesqr = glm::length2(direction);
 
                     /* Planets are close enough to merge. */
-                    if (distancesqr < glm::pow(i->second.radius() + o->second.radius(), 2.0f)) {
+                    if (distancesqr < (i->second.radius() + o->second.radius()) * (i->second.radius() + o->second.radius())) {
                         /* Set the position and velocity to the wieghted average between the planets. */
                         i->second.position = o->second.position * o->second.mass() + i->second.position * i->second.mass();
                         i->second.velocity = o->second.velocity * o->second.mass() + i->second.velocity * i->second.mass();
@@ -157,11 +158,11 @@ void PlanetsUniverse::advance(float time) {
                         o = planets.erase(o);
                     } else {
                         /* The gravity math to calculate the force between the planets. */
-                        direction *= gravityconst * time * ((o->second.mass() * i->second.mass()) / distancesqr) * glm::fastInverseSqrt(distancesqr);
+                        direction *= gconsttime / distancesqr * glm::fastInverseSqrt(distancesqr);
 
                         /* Apply the force to the velocity of both planets. */
-                        i->second.velocity += direction / i->second.mass();
-                        o->second.velocity -= direction / o->second.mass();
+                        i->second.velocity += direction * o->second.mass();
+                        o->second.velocity -= direction * i->second.mass();
 
                         /* Keep going. (Not in for loop because of the possibility of erase() getting called.) */
                         ++o;
