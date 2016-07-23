@@ -12,7 +12,7 @@
 
 class PlanetsUniverse {
 public:
-    typedef std::map<key_type, Planet> list_type;
+    typedef std::vector<Planet> list_type;
     typedef list_type::iterator iterator;
     typedef list_type::const_iterator const_iterator;
 
@@ -35,7 +35,7 @@ public:
     std::vector<glm::vec3>::size_type pathLength = 200;
     float pathRecordDistance = 0.25f;
 
-    key_type selected = 0, following = 0;
+    key_type selected = -1, following = -1;
 
     /* Speed multiplier for simulation. */
     float simspeed = 1.0f;
@@ -43,7 +43,7 @@ public:
     int stepsPerFrame = 20;
 
     /* Make new planets. */
-    EXPORT key_type addPlanet(const Planet& planet, key_type keyHint = 0);
+    EXPORT key_type addPlanet(const Planet& planet);
     EXPORT void generateRandom(const int& count, const float& positionRange, const float& maxVelocity, const float& maxMass);
     EXPORT key_type addOrbital(Planet& around, const float& radius, const float& mass, const glm::mat4& plane);
     EXPORT void generateRandomOrbital(const int& count, key_type target);
@@ -60,16 +60,16 @@ public:
     EXPORT void advance(float time);
 
     inline bool isEmpty() const { return planets.size() == 0; }
-    inline bool isValid(const key_type& key) const { return planets.count(key) > 0; }
-    inline void remove(const key_type& key) { planets.erase(key); }
+    inline bool isValid(const key_type& key) const { return -1 < key && key < planets.size(); }
     inline Planet& operator [] (const key_type& key) { return planets.at(key); }
+    EXPORT void remove(const key_type key, const key_type replacement = -1);
 
     /* Is a planet selected? */
-    inline bool isSelectedValid() const { return planets.count(selected) > 0; }
+    inline bool isSelectedValid() const { return isValid(selected); }
     /* Get the currently selected planet. Don't call without checking for validity first. */
-    inline Planet& getSelected() { return planets.at(selected); }
+    inline Planet& getSelected() { return planets[selected]; }
     /* Deselect the currently selected planet. */
-    inline void resetSelected() { selected = 0; }
+    inline void resetSelected() { selected = -1; }
 
     /* Get a key for a random planet in the list. Will always retun a valid key unless universe is empty. */
     EXPORT key_type getRandomPlanet();
@@ -82,7 +82,6 @@ public:
     inline iterator end() { return planets.end(); }
     inline const_iterator cbegin() const { return planets.cbegin(); }
     inline const_iterator cend() const { return planets.cend(); }
-    inline const_iterator find(const key_type& key) const { return planets.find(key); }
     inline list_type::size_type size() const { return planets.size(); }
 
     inline void randSeed(unsigned int seed) { generator.seed(seed); }
@@ -94,5 +93,5 @@ public:
     /* Functions for destroying stuff. */
     inline void deleteAll() { planets.clear(); resetSelected(); }
     EXPORT void deleteEscapees();
-    inline void deleteSelected() { if (isSelectedValid()) planets.erase(selected); }
+    inline void deleteSelected() { if (isSelectedValid()) remove(selected); }
 };

@@ -283,8 +283,8 @@ void PlanetsWindow::paint() {
     glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
     for (const auto& i : universe) {
-        glm::mat4 matrix = glm::translate(i.second.position);
-        matrix = glm::scale(matrix, glm::vec3(i.second.radius()));
+        glm::mat4 matrix = glm::translate(i.position);
+        matrix = glm::scale(matrix, glm::vec3(i.radius()));
         glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
         glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
     }
@@ -317,8 +317,8 @@ void PlanetsWindow::paint() {
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 
         for (const auto& i : universe) {
-            glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, i.second.path.data());
-            glDrawArrays(GL_LINE_STRIP, 0, GLsizei(i.second.path.size()));
+            glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, i.path.data());
+            glDrawArrays(GL_LINE_STRIP, 0, GLsizei(i.path.size()));
         }
     }
 
@@ -406,8 +406,8 @@ void PlanetsWindow::paint() {
 
         for (const auto& i : universe) {
             float verts[] = {
-                i.second.position.x, i.second.position.y, 0,
-                i.second.position.x, i.second.position.y, i.second.position.z,
+                i.position.x, i.position.y, 0,
+                i.position.x, i.position.y, i.position.z,
             };
             glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, verts);
             glDrawArrays(GL_LINES, 0, 2);
@@ -423,12 +423,12 @@ void PlanetsWindow::paint() {
     if (drawPlanarCircles) {
         /* Then we draw a circle at the XY position of every planet. */
         for (const auto& i : universe) {
-            glm::vec3 pos = i.second.position;
+            glm::vec3 pos = i.position;
             pos.z = 0;
 
             glm::mat4 matrix = glm::translate(pos);
             /* Make the circle start at the planet's radius and increase it slightly the further out the camera is. */
-            matrix = glm::scale(matrix, glm::vec3(i.second.radius() + camera.distance * 0.02f));
+            matrix = glm::scale(matrix, glm::vec3(i.radius() + camera.distance * 0.02f));
 
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
             glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);

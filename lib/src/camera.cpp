@@ -49,7 +49,7 @@ const glm::mat4& Camera::setup() {
         case PlainAverage:
             position = glm::vec3();
             for (const auto& i : universe)
-                position += i.second.position;
+                position += i.position;
 
             position /= universe.size();
             break;
@@ -58,8 +58,8 @@ const glm::mat4& Camera::setup() {
             float totalMass = 0.0f;
 
             for (const auto& i : universe) {
-                position += i.second.position * i.second.mass();
-                totalMass += i.second.mass();
+                position += i.position * i.mass();
+                totalMass += i.mass();
             }
             position /= totalMass;
             break;
@@ -108,9 +108,9 @@ key_type Camera::selectUnder(const glm::ivec2& pos, float scale) {
     Ray ray = getRay(pos);
 
     /* Go through each planet and see if the ray intersects it. */
-    for (const auto& i : universe) {
+    for (int i = 0; i < universe.size(); ++i) {
         /* Find the directional vector from the ray origin to the planet. */
-        glm::vec3 difference = i.second.position - ray.origin;
+        glm::vec3 difference = universe[i].position - ray.origin;
 
         float dot = glm::dot(difference, ray.direction);
 
@@ -119,8 +119,8 @@ key_type Camera::selectUnder(const glm::ivec2& pos, float scale) {
 
         /* distance^2 - dot^2 is the closest the ray gets to the planet's center point.
          * Comparing to the planet radius tells whether or not it intersects. */
-        if (distance < nearest && (distance - dot * dot) <= (i.second.radius() * i.second.radius() * scale)) {
-            universe.selected = i.first;
+        if (distance < nearest && (distance - dot * dot) <= (universe[i].radius() * universe[i].radius() * scale)) {
+            universe.selected = i;
             nearest = distance;
         }
     }
@@ -129,7 +129,7 @@ key_type Camera::selectUnder(const glm::ivec2& pos, float scale) {
 }
 
 void Camera::clearFollow() {
-    universe.following = 0;
+    universe.following = -1;
     followingState = FollowNone;
 }
 

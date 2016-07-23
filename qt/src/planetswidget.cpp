@@ -186,8 +186,8 @@ void PlanetsWidget::render() {
 
         for (const auto& i : universe) {
             /* Set up a matrix for the planet's position and size. */
-            glm::mat4 matrix = glm::translate(i.second.position);
-            matrix = glm::scale(matrix, glm::vec3(i.second.radius() * drawScale));
+            glm::mat4 matrix = glm::translate(i.position);
+            matrix = glm::scale(matrix, glm::vec3(i.radius() * drawScale));
             glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
             /* Draw the high resolution sphere. */
@@ -210,10 +210,7 @@ void PlanetsWidget::render() {
     lowResSphereVerts.bind();
     lowResSphereLines.bind();
 
-    if (drawPlanetColors)
-        for (const auto& i : universe)
-            drawPlanetWireframe(i.second, i.first);
-    else if (!hidePlanets && universe.isSelectedValid())
+    if (!hidePlanets && universe.isSelectedValid())
         drawPlanetWireframe(universe.getSelected());
 
     lowResSphereVerts.release();
@@ -224,8 +221,8 @@ void PlanetsWidget::render() {
         shaderColor.setUniformValue(shaderColor_color, trailColor);
 
         for (const auto& i : universe) {
-            shaderColor.setAttributeArray(vertex, GL_FLOAT, i.second.path.data(), 3);
-            glDrawArrays(GL_LINE_STRIP, 0, GLsizei(i.second.path.size()));
+            shaderColor.setAttributeArray(vertex, GL_FLOAT, i.path.data(), 3);
+            glDrawArrays(GL_LINE_STRIP, 0, GLsizei(i.path.size()));
         }
     }
 
@@ -330,8 +327,8 @@ void PlanetsWidget::render() {
         /* Draw a line from the planet's 3D position to the 2D circle's center. */
         for (const auto& i : universe) {
             float verts[] = {
-                i.second.position.x, i.second.position.y, 0,
-                i.second.position.x, i.second.position.y, i.second.position.z,
+                i.position.x, i.position.y, 0,
+                i.position.x, i.position.y, i.position.z,
             };
             glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, verts);
             glDrawArrays(GL_LINES, 0, 2);
@@ -343,11 +340,11 @@ void PlanetsWidget::render() {
 
         /* Draw the circle on the XY plane. */
         for (const auto& i : universe) {
-            glm::vec3 pos = i.second.position;
+            glm::vec3 pos = i.position;
             pos.z = 0;
 
             glm::mat4 matrix = glm::translate(pos);
-            matrix = glm::scale(matrix, glm::vec3(i.second.radius() * drawScale + camera.distance * 0.02f));
+            matrix = glm::scale(matrix, glm::vec3(i.radius() * drawScale + camera.distance * 0.02f));
 
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
             glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);

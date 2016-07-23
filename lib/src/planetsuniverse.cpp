@@ -12,8 +12,6 @@
 #include <tinyxml.h>
 #endif
 
-#define RGB_MASK 0x00ffffff
-
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
 
@@ -42,14 +40,6 @@ int PlanetsUniverse::load(const std::string& filename, bool clear) {
             Planet planet;
             planet.setMass(std::stof(element->Attribute("mass")));
 
-            key_type color = 0;
-
-            try {
-                std::string colorStr = element->Attribute("color");
-                colorStr.replace(0, 1, "");
-                color = std::stoul(colorStr, nullptr, 16);
-            } catch(...) { /* Just ignore if it doesn't work. It isn't that critical. */ }
-
             for (TiXmlElement* sub = element->FirstChildElement(); sub != nullptr; sub = sub->NextSiblingElement()) {
                 if (sub->ValueStr() == "position")
                     planet.position = glm::vec3(std::stof(sub->Attribute("x")),
@@ -61,7 +51,7 @@ int PlanetsUniverse::load(const std::string& filename, bool clear) {
                                                 std::stof(sub->Attribute("y")),
                                                 std::stof(sub->Attribute("z"))) * velocityfac;
             }
-            addPlanet(planet, color);
+            addPlanet(planet);
             ++loaded;
         }
     }
@@ -78,29 +68,19 @@ void PlanetsUniverse::save(const std::string& filename) {
 
     for (const_iterator i = planets.cbegin(); i != planets.cend(); ++i) {
         TiXmlElement* planet = new TiXmlElement("planet");
-        planet->SetAttribute("mass", std::to_string(i->second.mass()));
-
-        /* Puts uint32_t key into hexadecimal format #RRGGBB (No need to save alpha, as that's always 0xff) */
-        const char* hex = "0123456789abcdef";
-        planet->SetAttribute("color", std::string{'#',
-                                                  hex[i->first >> 20 & 0xf],
-                                                  hex[i->first >> 16 & 0xf],
-                                                  hex[i->first >> 12 & 0xf],
-                                                  hex[i->first >>  8 & 0xf],
-                                                  hex[i->first >>  4 & 0xf],
-                                                  hex[i->first       & 0xf]});
+        planet->SetAttribute("mass", std::to_string(i->mass()));
 
         TiXmlElement* position = new TiXmlElement("position");
-        position->SetAttribute("x", std::to_string(i->second.position.x));
-        position->SetAttribute("y", std::to_string(i->second.position.y));
-        position->SetAttribute("z", std::to_string(i->second.position.z));
+        position->SetAttribute("x", std::to_string(i->position.x));
+        position->SetAttribute("y", std::to_string(i->position.y));
+        position->SetAttribute("z", std::to_string(i->position.z));
         planet->LinkEndChild(position);
 
         TiXmlElement* velocity = new TiXmlElement("velocity");
         /* Velocity is saved with velocity factor. */
-        velocity->SetAttribute("x", std::to_string(i->second.velocity.x / velocityfac));
-        velocity->SetAttribute("y", std::to_string(i->second.velocity.y / velocityfac));
-        velocity->SetAttribute("z", std::to_string(i->second.velocity.z / velocityfac));
+        velocity->SetAttribute("x", std::to_string(i->velocity.x / velocityfac));
+        velocity->SetAttribute("y", std::to_string(i->velocity.y / velocityfac));
+        velocity->SetAttribute("z", std::to_string(i->velocity.z / velocityfac));
         planet->LinkEndChild(velocity);
 
         root->LinkEndChild(planet);
@@ -119,76 +99,78 @@ void PlanetsUniverse::advance(float time) {
     float gconsttime = gravityconst * time;
 
     for (int s = 0; s < stepsPerFrame; ++s) {
-        iterator i = planets.begin();
-        while (i != planets.end()) {
-            /* In case there are planets with negative or empty mass for some reason, we don't want them messing things up. */
-            if (i->second.mass() <= 0.0f) {
-                i = planets.erase(i);
-            } else {
-                /* We only have to run this for planets after the current one,
+        for (iterator i = planets.begin(); i != planets.end();) {
+            /* We only have to run this for planets after the current one,
                  * because all the planets before this have already been calculated with this one. */
-                iterator o = i; ++o;
+            for (iterator o = i + 1; o != planets.end();) {
+                glm::vec3 direction = o->position - i->position;
+                float distancesqr = glm::length2(direction);
 
-                while (o != planets.end()) {
-                    glm::vec3 direction = o->second.position - i->second.position;
-                    float distancesqr = glm::length2(direction);
+                /* Planets are close enough to merge. */
+                if (distancesqr < (i->radius() + o->radius()) * (i->radius() + o->radius())) {
+                    /* Set the position and velocity to the wieghted average between the planets. */
+                    i->position = o->position * o->mass() + i->position * i->mass();
+                    i->velocity = o->velocity * o->mass() + i->velocity * i->mass();
 
-                    /* Planets are close enough to merge. */
-                    if (distancesqr < (i->second.radius() + o->second.radius()) * (i->second.radius() + o->second.radius())) {
-                        /* Set the position and velocity to the wieghted average between the planets. */
-                        i->second.position = o->second.position * o->second.mass() + i->second.position * i->second.mass();
-                        i->second.velocity = o->second.velocity * o->second.mass() + i->second.velocity * i->second.mass();
+                    /* Add the masses together. */
+                    i->setMass(i->mass() + o->mass());
 
-                        /* Add the masses together. */
-                        i->second.setMass(i->second.mass() + o->second.mass());
+                    /* Finish the weighted average calculation. */
+                    i->position /= i->mass();
+                    i->velocity /= i->mass();
 
-                        /* Finish the weighted average calculation. */
-                        i->second.position /= i->second.mass();
-                        i->second.velocity /= i->second.mass();
+                    /* The path would be invalid after this. */
+                    i->path.clear();
 
-                        /* If the one we're deleting happens to be selected, select the remaining planet. */
-                        if (o->first == selected)
-                            selected = i->first;
-                        /* If the planet being followed happens to be the one being deleted, follow the remaining planet. */
-                        if (o->first == following)
-                            following = i->first;
+                    /* This function checks selected and following to make sure they remain valid. */
+                    remove(o - begin(), i - begin());
+                } else {
+                    /* The gravity math to calculate the force between the planets. */
+                    direction *= gconsttime / distancesqr * glm::fastInverseSqrt(distancesqr);
 
-                        /* The path would be invalid after this. */
-                        i->second.path.clear();
-                        o = planets.erase(o);
-                    } else {
-                        /* The gravity math to calculate the force between the planets. */
-                        direction *= gconsttime / distancesqr * glm::fastInverseSqrt(distancesqr);
+                    /* Apply the force to the velocity of both planets. */
+                    i->velocity += direction * o->mass();
+                    o->velocity -= direction * i->mass();
 
-                        /* Apply the force to the velocity of both planets. */
-                        i->second.velocity += direction * o->second.mass();
-                        o->second.velocity -= direction * i->second.mass();
-
-                        /* Keep going. (Not in for loop because of the possibility of erase() getting called.) */
-                        ++o;
-                    }
+                    /* Keep going. (Not in for loop because of the possibility of erase() getting called.) */
+                    ++o;
                 }
-
-                /* Apply the velocity to the position of the planet and update the path. */
-                i->second.position += i->second.velocity * time;
-                i->second.updatePath(pathLength, pathRecordDistance);
-
-                /* Onward! (Same situation as with ++o above.) */
-                ++i;
             }
+
+            /* Apply the velocity to the position of the planet and update the path. */
+            i->position += i->velocity * time;
+            i->updatePath(pathLength, pathRecordDistance);
+
+            /* Onward! (Same situation as with ++o above.) */
+            ++i;
         }
     }
 }
 
-key_type PlanetsUniverse::addPlanet(const Planet& planet, key_type keyHint) {
-    uniform_int_distribution<key_type> color_gen(0xFF000001, 0xFFFFFFFF);
+void PlanetsUniverse::remove(const key_type key, const key_type replacement) {
+    if (!isValid(key))
+        return;
 
-    /* Keep generating until we find an unused key. */
-    while (planets.count(keyHint) > 0 || (keyHint & RGB_MASK) == 0)
-        keyHint = color_gen(generator);
+    /* If the one we're deleting happens to be selected, select the remaining planet. */
+    if (key == selected)
+        selected = replacement;
+    /* If the selected planet is after the one being deleted, it will shift down one location in the list. */
+    else if (key < selected)
+        --selected;
 
-    planets[keyHint] = planet;
-    return keyHint;
+    /* If the planet being followed happens to be the one being deleted, follow the remaining planet. */
+    if (key == following)
+        following = replacement;
+    /* If the planet being followed is after the one being deleted, it will shift down one location in the list. */
+    else if (key < following)
+        --following;
+
+    planets.erase(begin() + key);
+}
+
+key_type PlanetsUniverse::addPlanet(const Planet& planet) {
+    planets.push_back(planet);
+    return planets.size() - 1;
 }
 
 void PlanetsUniverse::generateRandom(const int& count, const float& positionRange, const float& maxVelocity, const float& maxMass) {
@@ -212,12 +194,12 @@ key_type PlanetsUniverse::addOrbital(Planet& around, const float& radius, const 
     glm::vec3 velocity = glm::vec3(plane[1]) * speed;
 
     /* The x column is the relative position of the orbiting planet. */
-    key_type planet = addPlanet(Planet(around.position + glm::vec3(plane[0]) * radius, around.velocity + velocity, mass));
+    Planet planet(around.position + glm::vec3(plane[0]) * radius, around.velocity + velocity, mass);
 
     /* Apply force on the planet being orbited in the opposite direction of the resulting planets velocity. */
     around.velocity -= velocity * (mass / around.mass());
 
-    return planet;
+    return addPlanet(planet);
 }
 
 void PlanetsUniverse::generateRandomOrbital(const int& count, key_type target) {
@@ -249,8 +231,8 @@ void PlanetsUniverse::deleteEscapees() {
     float totalMass = 0.0f;
 
     for (const auto& planet : planets) {
-        averagePosition += planet.second.position * planet.second.mass();
-        totalMass += planet.second.mass();
+        averagePosition += planet.position * planet.mass();
+        totalMass += planet.mass();
     }
 
     averagePosition /= totalMass;
@@ -258,9 +240,9 @@ void PlanetsUniverse::deleteEscapees() {
     /* The squared distance from the center outside of which we delete things. */
     const float limits2 = 1.0e12f;
 
-    for (iterator i = planets.begin(); i != planets.end();) {
-        if (glm::distance2(i->second.position, averagePosition) > limits2)
-            i = planets.erase(i);
+    for (int i = 0; i < size();) {
+        if (glm::distance2(planets[i].position, averagePosition) > limits2)
+            remove(i);
         else
             ++i;
     }
@@ -271,22 +253,17 @@ key_type PlanetsUniverse::getRandomPlanet() {
         return 0;
 
     uniform_int_distribution<list_type::size_type> random_n(0, size() - 1);
-    auto iter = begin();
-    std::advance(iter, random_n(generator));
 
-    return iter->first;
+    return random_n(generator);
 }
 
 key_type PlanetsUniverse::nextKey(key_type key) const {
     if (!isEmpty()) {
-        const_iterator current = find(key);
-
-        if (current == cend() || ++current == cend())
-            /* If the planet was not found or the planet was the last in the list, start at the beginning. */
-            current = cbegin();
+        if (++key >= size())
+            return 0;
 
         /* Get the key back from the iterator. */
-        return current->first;
+        return key;
     }
 
     return 0;
@@ -294,20 +271,12 @@ key_type PlanetsUniverse::nextKey(key_type key) const {
 
 key_type PlanetsUniverse::prevKey(key_type key) const {
     if (!isEmpty()) {
-        const_iterator current = find(key);
-
-        if (current == cend()) {
-            /* If the planet was not found, start at the beginning. */
-            current = cbegin();
-        } else {
-            /* If the planet was the first planet in the list, start at the end. */
-            if (current == cbegin())
-                current = cend();
-            --current;
-        }
+        /* If key is > size that probably means integer underflow. */
+        if (--key > size() || key < 0)
+            return 0;
 
         /* Get the key back from the iterator. */
-        return current->first;
+        return key;
     }
 
     return 0;
@@ -319,9 +288,9 @@ void PlanetsUniverse::centerAll() {
     float totalMass = 0.0f;
 
     for (const auto& planet : planets) {
-        averagePosition += planet.second.position * planet.second.mass();
-        averageVelocity += planet.second.velocity * planet.second.mass();
-        totalMass += planet.second.mass();
+        averagePosition += planet.position * planet.mass();
+        averageVelocity += planet.velocity * planet.mass();
+        totalMass += planet.mass();
     }
 
     averagePosition /= totalMass;
@@ -332,9 +301,9 @@ void PlanetsUniverse::centerAll() {
     /* Don't bother centering if we're already reasonably centered. */
     if (!glm::isNull(averagePosition, epsilon) || !glm::isNull(averageVelocity, epsilon)) {
         for (auto& planet : planets) {
-            planet.second.position -= averagePosition;
-            planet.second.velocity -= averageVelocity;
-            planet.second.path.clear();
+            planet.position -= averagePosition;
+            planet.velocity -= averageVelocity;
+            planet.path.clear();
         }
     }
 }

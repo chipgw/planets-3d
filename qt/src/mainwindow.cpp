@@ -272,10 +272,6 @@ void MainWindow::on_actionDraw_Paths_toggled(bool value) {
     ui->centralwidget->drawPlanetTrails = value;
 }
 
-void MainWindow::on_actionPlanet_Colors_toggled(bool value) {
-    ui->centralwidget->drawPlanetColors = value;
-}
-
 void MainWindow::on_actionDraw_Planar_Circles_toggled(bool value) {
     ui->centralwidget->drawPlanarCircles = value;
 }
