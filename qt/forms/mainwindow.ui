@@ -53,7 +53,6 @@
     </property>
     <addaction name="actionGrid"/>
     <addaction name="actionDraw_Paths"/>
-    <addaction name="actionPlanet_Colors"/>
     <addaction name="actionHide_Planets"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -684,7 +683,6 @@
    </attribute>
    <addaction name="actionGrid"/>
    <addaction name="actionDraw_Paths"/>
-   <addaction name="actionPlanet_Colors"/>
    <addaction name="actionHide_Planets"/>
    <addaction name="actionDraw_Planar_Circles"/>
   </widget>
@@ -726,16 +724,6 @@
      </item>
      <item row="2" column="1">
       <widget class="QLabel" name="massLabel"/>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="colorLabel"/>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="colorTextLlabel">
-       <property name="text">
-        <string>Color:</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </widget>
@@ -879,14 +867,6 @@
   <action name="actionAbout_Qt">
    <property name="text">
     <string>About &amp;Qt</string>
-   </property>
-  </action>
-  <action name="actionPlanet_Colors">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Planet Colors</string>
    </property>
   </action>
   <action name="actionInteractive_Orbital_Placement">
