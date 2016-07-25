@@ -48,8 +48,8 @@ void drawTrails(PlanetsUniverse& universe) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     for (const auto& i : universe) {
-        glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, i.second.path.data());
-        glDrawArrays(GL_LINE_STRIP, 0, GLsizei(i.second.path.size()));
+        glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, i.path.data());
+        glDrawArrays(GL_LINE_STRIP, 0, GLsizei(i.path.size()));
     }
 }
 
@@ -80,8 +80,6 @@ EMSCRIPTEN_BINDINGS(planets_universe) {
             .function("isEmpty",                &PlanetsUniverse::isEmpty)
             .function("isSelectedValid",        &PlanetsUniverse::isSelectedValid)
             .function("isValid",                &PlanetsUniverse::isValid)
-            .function("nextKey",                &PlanetsUniverse::nextKey)
-            .function("prevKey",                &PlanetsUniverse::prevKey)
             .function("remove",                 &PlanetsUniverse::remove)
             .function("resetSelected",          &PlanetsUniverse::resetSelected)
             .function("size",                   &PlanetsUniverse::size)

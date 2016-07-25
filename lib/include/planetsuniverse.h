@@ -74,9 +74,6 @@ public:
     /* Get a key for a random planet in the list. Will always retun a valid key unless universe is empty. */
     EXPORT key_type getRandomPlanet();
 
-    EXPORT key_type nextKey(key_type key) const;
-    EXPORT key_type prevKey(key_type key) const;
-
     /* Iterators and stuff. */
     inline iterator begin() { return planets.begin(); }
     inline iterator end() { return planets.end(); }

@@ -114,19 +114,12 @@ function loadLocalStorage(name) {
 function getBase64() {
     var json = [];
 
-    var curKey = 0;
-    /* Will be the first key in the list. */
-    var startKey = universe.nextKey(0);
+    for (var i = 0; i < universe.size(); ++i) {
+        json.push([universe.getPlanetPosition(i),
+                   universe.getPlanetVelocity(i),
+                   universe.getPlanetMass(i)])
 
-    while (curKey !== startKey) {
-        if (curKey === 0)
-            curKey = universe.nextKey(0);
-
-        json.push([universe.getPlanetPosition(curKey),
-                   universe.getPlanetVelocity(curKey),
-                   universe.getPlanetMass(curKey)])
-
-        curKey = universe.nextKey(curKey);
+        curKey = universe.nextKey(i);
     }
 
     return LZString.compressToEncodedURIComponent(JSON.stringify(json));

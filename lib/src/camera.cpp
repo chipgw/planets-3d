@@ -134,13 +134,13 @@ void Camera::clearFollow() {
 }
 
 void Camera::followNext() {
-    if (universe.isValid(universe.following = universe.nextKey(universe.following)))
+    if (universe.isValid(++universe.following) || universe.isValid(universe.following = 0))
         /* This may already be set, but set it anyway in case it isn't. */
         followingState = Single;
 }
 
 void Camera::followPrevious() {
-    if (universe.isValid(universe.following = universe.prevKey(universe.following)))
+    if (universe.isValid(--universe.following) || universe.isValid(universe.following = universe.size() - 1))
         /* This may already be set, but set it anyway in case it isn't. */
         followingState = Single;
 }

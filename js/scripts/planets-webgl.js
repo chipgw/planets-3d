@@ -130,21 +130,12 @@ function paint() {
 
     GLctx.uniformMatrix4fv(textureCameraMat, false, cameraMat);
 
-    var curKey = 0;
-    /* Will be the first key in the list. */
-    var startKey = universe.nextKey(0);
-
     spheres.bindSolid()
 
-    while (curKey !== startKey) {
-        if (curKey === 0)
-            curKey = universe.nextKey(0);
-
-        GLctx.uniformMatrix4fv(textureModelMat, false, makeMat(universe.getPlanetPosition(curKey), universe.getPlanetRadius(curKey)));
+    for (var i = 0; i < universe.size(); ++i) {
+        GLctx.uniformMatrix4fv(textureModelMat, false, makeMat(universe.getPlanetPosition(i), universe.getPlanetRadius(i)));
 
         spheres.drawSolid()
-
-        curKey = universe.nextKey(curKey);
     }
 
     GLctx.useProgram(colorShader);

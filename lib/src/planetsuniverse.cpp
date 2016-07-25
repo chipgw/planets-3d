@@ -257,31 +257,6 @@ key_type PlanetsUniverse::getRandomPlanet() {
     return random_n(generator);
 }
 
-key_type PlanetsUniverse::nextKey(key_type key) const {
-    if (!isEmpty()) {
-        if (++key >= size())
-            return 0;
-
-        /* Get the key back from the iterator. */
-        return key;
-    }
-
-    return 0;
-}
-
-key_type PlanetsUniverse::prevKey(key_type key) const {
-    if (!isEmpty()) {
-        /* If key is > size that probably means integer underflow. */
-        if (--key > size() || key < 0)
-            return 0;
-
-        /* Get the key back from the iterator. */
-        return key;
-    }
-
-    return 0;
-}
-
 void PlanetsUniverse::centerAll() {
     /* We need the weighted average position and velocity to center. */
     glm::vec3 averagePosition, averageVelocity;
