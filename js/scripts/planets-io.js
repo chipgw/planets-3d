@@ -53,17 +53,10 @@ function generateDOM() {
 
         var root = doc.createElement("planets-3d-universe");
 
-        var curKey = 0;
-        /* Will be the first key in the list. */
-        var startKey = universe.nextKey(0);
-
-        while (curKey !== startKey) {
-            if (curKey === 0)
-                curKey = universe.nextKey(0);
-
-            var pos = universe.getPlanetPosition(curKey);
-            var vel = universe.getPlanetVelocity(curKey);
-            var mass = universe.getPlanetMass(curKey);
+        for (var i = 0; i < universe.size(); ++i) {
+            var pos = universe.getPlanetPosition(i);
+            var vel = universe.getPlanetVelocity(i);
+            var mass = universe.getPlanetMass(i);
 
             var p = doc.createElement("planet");
 
@@ -80,8 +73,6 @@ function generateDOM() {
             p.appendChild(velXML);
 
             root.appendChild(p);
-
-            curKey = universe.nextKey(curKey);
         }
 
         doc.appendChild(root);
