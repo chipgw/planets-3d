@@ -44,9 +44,9 @@ public:
 
     /* Make new planets. */
     EXPORT key_type addPlanet(const Planet& planet);
-    EXPORT void generateRandom(const int& count, const float& positionRange, const float& maxVelocity, const float& maxMass);
+    EXPORT void generateRandom(const size_t& count, const float& positionRange, const float& maxVelocity, const float& maxMass);
     EXPORT key_type addOrbital(Planet& around, const float& radius, const float& mass, const glm::mat4& plane);
-    EXPORT void generateRandomOrbital(const int& count, key_type target);
+    EXPORT void generateRandomOrbital(const size_t& count, key_type target);
 
 #ifndef EMSCRIPTEN
     /* Load and save from an XML file. Sets error string and returns false on an error. */

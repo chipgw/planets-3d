@@ -101,7 +101,7 @@ void PlanetsUniverse::advance(float time) {
     for (int s = 0; s < stepsPerFrame; ++s) {
         for (iterator i = planets.begin(); i != planets.end();) {
             /* We only have to run this for planets after the current one,
-                 * because all the planets before this have already been calculated with this one. */
+             * because all the planets before this have already been calculated with this one. */
             for (iterator o = i + 1; o != planets.end();) {
                 glm::vec3 direction = o->position - i->position;
                 float distancesqr = glm::length2(direction);
@@ -173,7 +173,7 @@ key_type PlanetsUniverse::addPlanet(const Planet& planet) {
     return planets.size() - 1;
 }
 
-void PlanetsUniverse::generateRandom(const int& count, const float& positionRange, const float& maxVelocity, const float& maxMass) {
+void PlanetsUniverse::generateRandom(const size_t& count, const float& positionRange, const float& maxVelocity, const float& maxMass) {
     uniform_real_distribution<float> position(-positionRange, positionRange);
     uniform_real_distribution<float> velocity(-maxVelocity, maxVelocity);
     uniform_real_distribution<float> mass(min_mass, maxMass);
@@ -202,7 +202,7 @@ key_type PlanetsUniverse::addOrbital(Planet& around, const float& radius, const 
     return addPlanet(planet);
 }
 
-void PlanetsUniverse::generateRandomOrbital(const int& count, key_type target) {
+void PlanetsUniverse::generateRandomOrbital(const size_t& count, key_type target) {
     /* We need a planet to orbit around. */
     if (!isEmpty()) {
         /* Ensure we have a valid target planet, if none was provided select at random. */
