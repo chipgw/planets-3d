@@ -60,7 +60,8 @@ public:
     EXPORT void advance(float time);
 
     inline bool isEmpty() const { return planets.size() == 0; }
-    inline bool isValid(const key_type& key) const { return -1 < key && key < planets.size(); }
+    /* As size_t is unsigned, any keys less than the universe size are valid and any others are not. */
+    inline bool isValid(const key_type& key) const { return key < planets.size(); }
     inline Planet& operator [] (const key_type& key) { return planets.at(key); }
     EXPORT void remove(const key_type key, const key_type replacement = -1);
 
