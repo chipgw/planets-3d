@@ -3,7 +3,6 @@
 #include <chrono>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_query.hpp>
-#include <glm/gtx/fast_square_root.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/random.hpp>
 #include <cstdio>
@@ -93,6 +92,18 @@ void PlanetsUniverse::save(const std::string& filename) {
 }
 #endif
 
+/* Basically the Quake method, just using unions to look nicer.
+ * Performance is identical to the Quake version, and a wee bit faster than GLM because GLM has some extra template stuff. */
+float fastInverseSqrt(float x){
+    union {
+      float f;
+      int i;
+    } u = { x };
+    u.i = 0x5f3759df - (u.i >> 1);
+    u.f = u.f*(1.5f - x*0.5f*u.f*u.f);
+    return u.f;
+}
+
 void PlanetsUniverse::advance(float time) {
     /* Factor the simulation speed and number of steps into the time value. */
     time *= simspeed / stepsPerFrame;
@@ -104,7 +115,8 @@ void PlanetsUniverse::advance(float time) {
              * because all the planets before this have already been calculated with this one. */
             for (iterator o = i + 1; o != planets.end();) {
                 glm::vec3 direction = o->position - i->position;
-                float distancesqr = glm::length2(direction);
+                /* Don't use glm::length2 because it involves a conversion and extra multiply & add operations for a forth component. */
+                float distancesqr = direction.x * direction.x + direction.y * direction.y + direction.z * direction.z;
 
                 /* Planets are close enough to merge. */
                 if (distancesqr < (i->radius() + o->radius()) * (i->radius() + o->radius())) {
@@ -126,7 +138,7 @@ void PlanetsUniverse::advance(float time) {
                     remove(o - begin(), i - begin());
                 } else {
                     /* The gravity math to calculate the force between the planets. */
-                    direction *= gconsttime / distancesqr * glm::fastInverseSqrt(distancesqr);
+                    direction *= gconsttime / distancesqr * fastInverseSqrt(distancesqr);
 
                     /* Apply the force to the velocity of both planets. */
                     i->velocity += direction * o->mass();
