@@ -13,7 +13,7 @@ int main() {
     /* Test a thousand steps. */
     universe.stepsPerFrame = 1000;
 
-    size_t sizes[] = { 20, 100, 200, 500 };
+    size_t sizes[] = { 20, 100, 200, 500, 800 };
 
     for (size_t size : sizes) {
         universe.generateRandom(size, 1000.0f, 1.0f, 1000.0f);

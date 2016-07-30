@@ -18,6 +18,7 @@ PlanetsUniverse::PlanetsUniverse() : generator(std::chrono::system_clock::now().
 
 /* Emscripten does IO from javascript. */
 #ifndef EMSCRIPTEN
+
 int PlanetsUniverse::load(const std::string& filename, bool clear) {
     TiXmlDocument doc(filename);
 
@@ -31,7 +32,7 @@ int PlanetsUniverse::load(const std::string& filename, bool clear) {
     if (clear)
         deleteAll();
 
-    /* keep track of how many planets were loaded. */
+    /* Keep track of how many planets were loaded. */
     int loaded = 0;
 
     for (TiXmlElement* element = root->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
@@ -65,31 +66,33 @@ void PlanetsUniverse::save(const std::string& filename) {
 
     TiXmlElement* root = new TiXmlElement("planets-3d-universe");
 
-    for (const_iterator i = planets.cbegin(); i != planets.cend(); ++i) {
-        TiXmlElement* planet = new TiXmlElement("planet");
-        planet->SetAttribute("mass", std::to_string(i->mass()));
+    for (const Planet& planet : planets) {
+        TiXmlElement* element = new TiXmlElement("planet");
+        element->SetAttribute("mass", std::to_string(planet.mass()));
 
         TiXmlElement* position = new TiXmlElement("position");
-        position->SetAttribute("x", std::to_string(i->position.x));
-        position->SetAttribute("y", std::to_string(i->position.y));
-        position->SetAttribute("z", std::to_string(i->position.z));
-        planet->LinkEndChild(position);
+        position->SetAttribute("x", std::to_string(planet.position.x));
+        position->SetAttribute("y", std::to_string(planet.position.y));
+        position->SetAttribute("z", std::to_string(planet.position.z));
+        element->LinkEndChild(position);
 
         TiXmlElement* velocity = new TiXmlElement("velocity");
         /* Velocity is saved with velocity factor. */
-        velocity->SetAttribute("x", std::to_string(i->velocity.x / velocityfac));
-        velocity->SetAttribute("y", std::to_string(i->velocity.y / velocityfac));
-        velocity->SetAttribute("z", std::to_string(i->velocity.z / velocityfac));
-        planet->LinkEndChild(velocity);
+        velocity->SetAttribute("x", std::to_string(planet.velocity.x / velocityfac));
+        velocity->SetAttribute("y", std::to_string(planet.velocity.y / velocityfac));
+        velocity->SetAttribute("z", std::to_string(planet.velocity.z / velocityfac));
+        element->LinkEndChild(velocity);
 
-        root->LinkEndChild(planet);
+        root->LinkEndChild(element);
     }
 
     doc.LinkEndChild(root);
 
     if (!doc.SaveFile(filename))
+        /* If TinyXML had an error, throw it. */
         throw std::runtime_error(doc.ErrorDesc());
 }
+
 #endif
 
 /* Basically the Quake method, just using unions to look nicer.
