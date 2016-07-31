@@ -444,11 +444,14 @@ void PlanetsWidget::takeScreenshot() {
 }
 
 void PlanetsWidget::mouseMoveEvent(QMouseEvent* e) {
+    /* Get the movement delta using the stored position from the last event. */
     glm::ivec2 delta(lastMousePos.x() - e->x(), lastMousePos.y() - e->y());
 
     bool holdCursor = false;
 
+    /* Start by sending the event to the placing system. */
     if (!placing.handleMouseMove(glm::ivec2(e->x(), e->y()), delta, camera, holdCursor)) {
+        /* If the placing system didn't use it, check if the buttons for camera control are pressed. */
         if (e->buttons().testFlag(Qt::MiddleButton)) {
             camera.distance -= delta.y * camera.distance * 1.0e-2f;
             setCursor(Qt::SizeVerCursor);
@@ -459,10 +462,13 @@ void PlanetsWidget::mouseMoveEvent(QMouseEvent* e) {
 
             camera.bound();
 
+            /* When rotating the camera we keep the cursor in place. */
             holdCursor = true;
         }
     }
+
     if (holdCursor) {
+        /* Keep the mouse in one place by setting it back to the last position. */
         QCursor::setPos(mapToGlobal(lastMousePos));
         setCursor(Qt::BlankCursor);
     } else {

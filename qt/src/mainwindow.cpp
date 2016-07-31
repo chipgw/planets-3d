@@ -146,6 +146,7 @@ void MainWindow::on_speed_Dial_valueChanged(int value) {
     ui->centralwidget->universe.simspeed = float(value * speeddialmax) / ui->speed_Dial->maximum();
     ui->speedDisplay_lcdNumber->display(ui->centralwidget->universe.simspeed);
 
+    /* Make sure speed related UI elements are up to date. */
     ui->PauseResume_Button->setText(value == 0 ? tr("Resume") : tr("Pause"));
     ui->PauseResume_Button->setIcon(QIcon(value == 0 ? ":/icons/silk/control_play_blue.png" : ":/icons/silk/control_pause_blue.png"));
 }
@@ -179,6 +180,7 @@ void MainWindow::on_actionOpen_Simulation_triggered() {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Simulation"), "", tr("Simulation files (*.xml);;All Files (*.*)"));
 
     if (!filename.isEmpty()) {
+        /* IO functions can throw errors. */
         try {
             int loaded = ui->centralwidget->universe.load(filename.toStdString());
             ui->statusbar->showMessage(("Loaded %1 planets from \"" + filename + '"').arg(loaded), 8000);
@@ -193,6 +195,7 @@ void MainWindow::on_actionAppend_Simulation_triggered() {
     QString filename = QFileDialog::getOpenFileName(this, tr("Append Simulation"), "", tr("Simulation files (*.xml);;All Files (*.*)"));
 
     if (!filename.isEmpty()) {
+        /* IO functions can throw errors. */
         try {
             int loaded = ui->centralwidget->universe.load(filename.toStdString(), false);
             ui->statusbar->showMessage(("Loaded %1 planets from \"" + filename + '"').arg(loaded), 8000);
@@ -208,6 +211,7 @@ bool MainWindow::on_actionSave_Simulation_triggered() {
         QString filename = QFileDialog::getSaveFileName(this, tr("Save Simulation"), "", tr("Simulation files (*.xml)"));
 
         if (!filename.isEmpty()) {
+            /* IO functions can throw errors. */
             try {
                 ui->centralwidget->universe.save(filename.toStdString());
                 ui->statusbar->showMessage("Simulation saved to \"" + filename + '"', 8000);
@@ -297,6 +301,7 @@ void MainWindow::on_generateRandomPushButton_clicked() {
                                                    ui->randomSpeedDoubleSpinBox->value() * ui->centralwidget->universe.velocityfac,
                                                    ui->randomMassDoubleSpinBox->value());
     else if (ui->centralwidget->universe.isEmpty())
+        /* If orbital is checked but the universe is empty, we can'tgenerate. */
         QMessageBox::warning(this, tr("Can't generate planets!"), tr("Nothing for new planets to orbit around!"));
     else
         ui->centralwidget->universe.generateRandomOrbital(ui->randomAmountSpinBox->value(), ui->centralwidget->universe.selected);
@@ -353,7 +358,7 @@ void MainWindow::updateRecentFileActions() {
 void MainWindow::openRecentFile() {
     /* Get the QAction that sent the signal. If it wasn't a QAction, just ignore it. */
     if (QAction* action = qobject_cast<QAction*>(sender())) {
-        /* tooltip = full path to the file. */
+        /* The tooltip is full path to the file. */
         QString path = action->toolTip();
 
         try {
@@ -380,6 +385,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event) {
 
 void MainWindow::dropEvent(QDropEvent* event) {
     for (const QUrl& url : event->mimeData()->urls()) {
+        /* IO functions can throw errors. */
         try {
             int loaded = ui->centralwidget->universe.load(url.toLocalFile().toStdString());
 
@@ -417,6 +423,7 @@ void MainWindow::frameUpdate() {
     else
         planetCountLabel->setText(tr("%1 planets").arg(ui->centralwidget->universe.size()));
 
+    /* If the simulation speed is different from the dial's value, update the dial (which will also update the other speed UI elements). */
     if (int(ui->centralwidget->universe.simspeed * ui->speed_Dial->maximum() / speeddialmax) != ui->speed_Dial->value())
         ui->speed_Dial->setValue(int(ui->centralwidget->universe.simspeed * ui->speed_Dial->maximum() / speeddialmax));
 
@@ -437,6 +444,7 @@ void MainWindow::frameUpdate() {
 
 const int MainWindow::speeddialmax = 64;
 
+/* All the settings strings. */
 const QString MainWindow::categoryMainWindow =      "MainWindow";
 const QString MainWindow::categoryGraphics =        "Graphics";
 const QString MainWindow::settingGeometry =         "geometry";

@@ -97,7 +97,7 @@ void PlanetsUniverse::save(const std::string& filename) {
 
 /* Basically the Quake method, just using unions to look nicer.
  * Performance is identical to the Quake version, and a wee bit faster than GLM because GLM has some extra template stuff. */
-float fastInverseSqrt(float x){
+float fastInverseSqrt(float x) {
     union {
       float f;
       int i;
