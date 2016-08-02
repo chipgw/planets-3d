@@ -107,18 +107,19 @@ void PlanetsUniverse::advance(float time) {
     /* Factor the simulation speed and number of steps into the time value. */
     time *= simspeed / stepsPerFrame;
     float gconsttime = gravityconst * time;
+    iterator e = planets.end();
 
     for (int s = 0; s < stepsPerFrame; ++s) {
-        for (iterator i = planets.begin(); i != planets.end();) {
+        for (iterator i = planets.begin(); i != e;) {
             /* We only have to run this for planets after the current one,
              * because all the planets before this have already been calculated with this one. */
-            for (iterator o = i + 1; o != planets.end();) {
+            for (iterator o = i + 1; o != e;) {
                 glm::vec3 direction = o->position - i->position;
                 /* Don't use glm::length2 because it involves a conversion and extra multiply & add operations for a forth component. */
-                float distancesqr = direction.x * direction.x + direction.y * direction.y + direction.z * direction.z;
+                float force = direction.x * direction.x + direction.y * direction.y + direction.z * direction.z;
 
                 /* Planets are close enough to merge. */
-                if (distancesqr < (i->radius() + o->radius()) * (i->radius() + o->radius())) {
+                if (force < (i->radius() + o->radius()) * (i->radius() + o->radius())) {
                     /* Set the position and velocity to the wieghted average between the planets. */
                     i->position = o->position * o->mass() + i->position * i->mass();
                     i->velocity = o->velocity * o->mass() + i->velocity * i->mass();
@@ -135,13 +136,14 @@ void PlanetsUniverse::advance(float time) {
 
                     /* This function checks selected and following to make sure they remain valid. */
                     remove(o - begin(), i - begin());
+                    e = planets.end();
                 } else {
                     /* The gravity math to calculate the force between the planets. */
-                    direction *= gconsttime / distancesqr * fastInverseSqrt(distancesqr);
+                    force = gconsttime / force * fastInverseSqrt(force);
 
                     /* Apply the force to the velocity of both planets. */
-                    i->velocity += direction * o->mass();
-                    o->velocity -= direction * i->mass();
+                    i->velocity += force * o->mass() * direction;
+                    o->velocity -= force * i->mass() * direction;
 
                     /* Keep going. (Not in for loop because of the possibility of erase() getting called.) */
                     ++o;
