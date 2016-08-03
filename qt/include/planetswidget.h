@@ -126,7 +126,7 @@ protected:
     /* Mouse event functions, these pass data to the PlacingInterface. */
     void mouseMoveEvent(QMouseEvent* e);
     void mousePressEvent(QMouseEvent* e);
-    void mouseReleaseEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent*);
     void mouseDoubleClickEvent(QMouseEvent* e);
     void wheelEvent(QWheelEvent* e);
 

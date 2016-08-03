@@ -181,11 +181,6 @@ void PlanetsUniverse::remove(const key_type key, const key_type replacement) {
     planets.erase(begin() + key);
 }
 
-key_type PlanetsUniverse::addPlanet(const Planet& planet) {
-    planets.push_back(planet);
-    return planets.size() - 1;
-}
-
 void PlanetsUniverse::generateRandom(const size_t& count, const float& positionRange, const float& maxVelocity, const float& maxMass) {
     uniform_real_distribution<float> position(-positionRange, positionRange);
     uniform_real_distribution<float> velocity(-maxVelocity, maxVelocity);
@@ -262,8 +257,7 @@ void PlanetsUniverse::deleteEscapees() {
 }
 
 key_type PlanetsUniverse::getRandomPlanet() {
-    if (isEmpty())
-        return 0;
+    if (isEmpty()) return 0;
 
     uniform_int_distribution<list_type::size_type> random_n(0, size() - 1);
 

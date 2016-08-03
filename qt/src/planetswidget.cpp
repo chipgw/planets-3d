@@ -217,6 +217,7 @@ void PlanetsWidget::render() {
     lowResSphereLines.release();
 
     if (drawPlanetTrails) {
+        /* Trails are in world space, no model matrix needed. */
         shaderColor.setUniformValue(shaderColor_modelMatrix, QMatrix4x4());
         shaderColor.setUniformValue(shaderColor_color, trailColor);
 
@@ -334,6 +335,7 @@ void PlanetsWidget::render() {
             glDrawArrays(GL_LINES, 0, 2);
         }
 
+        /* Circles... */
         circleVerts.bind();
         circleLines.bind();
         shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
@@ -349,6 +351,7 @@ void PlanetsWidget::render() {
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
             glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
         }
+        /* No more circles... */
         circleVerts.release();
         circleLines.release();
     }
@@ -391,6 +394,7 @@ void PlanetsWidget::render() {
         circleVerts.bind();
         circleLines.bind();
 
+        /* Nice and small at the camera position... */
         glm::mat4 matrix = glm::translate(camera.position);
         matrix = glm::scale(matrix, glm::vec3(camera.distance * 4.0e-3f));
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
@@ -407,11 +411,14 @@ void PlanetsWidget::render() {
 }
 
 void PlanetsWidget::takeScreenshot() {
+    /* Keep track of how long the screenshot takes. */
     QElapsedTimer t;
     t.start();
 
+    /* We need the OpenGL context to be active. */
     makeCurrent();
 
+    /* Find the next file in the format "shotXXXX.png" */
     QString filename = screenshotDir.absoluteFilePath("shot%1.png");
     int i = 0;
     while (QFile::exists(filename.arg(++i, 4, 10, QChar('0'))));
@@ -508,7 +515,8 @@ void PlanetsWidget::mousePressEvent(QMouseEvent* e) {
     }
 }
 
-void PlanetsWidget::mouseReleaseEvent(QMouseEvent* e) {
+void PlanetsWidget::mouseReleaseEvent(QMouseEvent*) {
+    /* Any mouse button that gets released resets the cursor. */
     setCursor(Qt::ArrowCursor);
 }
 

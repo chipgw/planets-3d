@@ -43,7 +43,7 @@ public:
     int stepsPerFrame = 20;
 
     /* Make new planets. */
-    EXPORT key_type addPlanet(const Planet& planet);
+    inline key_type addPlanet(const Planet& planet) { planets.push_back(planet); return planets.size() - 1; }
     EXPORT void generateRandom(const size_t& count, const float& positionRange, const float& maxVelocity, const float& maxMass);
     EXPORT key_type addOrbital(Planet& around, const float& radius, const float& mass, const glm::mat4& plane);
     EXPORT void generateRandomOrbital(const size_t& count, key_type target);
