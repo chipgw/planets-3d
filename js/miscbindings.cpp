@@ -3,6 +3,12 @@
 #include <bind.h>
 #include <glm/vec2.hpp>
 
+int bench();
+
+EMSCRIPTEN_BINDINGS(bench) {
+    emscripten::function("bench", &bench);
+}
+
 EMSCRIPTEN_BINDINGS(vectors) {
     /* TODO - Do we need functions for vectors? */
     emscripten::value_array<glm::vec3>("vec3")

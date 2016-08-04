@@ -4,7 +4,11 @@
 
 using namespace std::chrono;
 
+#ifdef EMSCRIPTEN
+int bench() {
+#else
 int main() {
+#endif
     PlanetsUniverse universe;
 
     /* Use a constant seed for consistency. */

@@ -99,7 +99,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
     file(GLOB JS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/js/*.*" "${CMAKE_CURRENT_SOURCE_DIR}/js/*/*.*" )
 
-    add_executable(${PROJECT_NAME}_js ${LIB_SOURCES} ${LIB_HEADERS} ${JS_SOURCES} "gamepad/sdlgamepad.h" "gamepad/sdlgamepad.cpp")
+    add_executable(${PROJECT_NAME}_js ${LIB_SOURCES} ${LIB_HEADERS} ${JS_SOURCES} "gamepad/sdlgamepad.h" "gamepad/sdlgamepad.cpp" "bench/bench.cpp")
 
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/textures/planet.png" "images/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/scripts/*" "scripts/")
