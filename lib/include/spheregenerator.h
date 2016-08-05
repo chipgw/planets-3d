@@ -16,7 +16,7 @@ public:
     static const uint32_t vertexCount = slices;
     static const uint32_t lineCount = slices * 2;
 
-    Vertex verts[vertexCount];
+    glm::vec3 verts[vertexCount];
     uint32_t lines[lineCount];
 
     Circle();
@@ -28,9 +28,9 @@ template <uint32_t slices> Circle<slices>::Circle() {
     uint32_t currentLine = 0;
 
     for (uint32_t current = 0; current < slices; ++current) {
-        verts[current].position[0] = glm::cos(current * step);
-        verts[current].position[1] = glm::sin(current * step);
-        verts[current].position[2] = 0.0f;
+        verts[current][0] = glm::cos(current * step);
+        verts[current][1] = glm::sin(current * step);
+        verts[current][2] = 0.0f;
 
         if (current == (slices - 1)) {
             lines[currentLine++] = current;

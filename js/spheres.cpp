@@ -44,7 +44,7 @@ Spheres::Spheres() {
 
     glGenBuffers(1, &circleVBO);
     glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
-    glBufferData(GL_ARRAY_BUFFER, circle.vertexCount * sizeof(Vertex), circle.verts, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, circle.vertexCount * sizeof(glm::vec3), circle.verts, GL_STATIC_DRAW);
 
     glGenBuffers(1, &circleLineIBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
@@ -79,7 +79,7 @@ void Spheres::bindCircle() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
 
     glDisableVertexAttribArray(uv);
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
 }
 
 void Spheres::drawSolid() {

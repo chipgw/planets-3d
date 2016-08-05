@@ -114,7 +114,7 @@ void PlanetsWidget::initializeGL() {
 
     circleVerts.create();
     circleVerts.bind();
-    circleVerts.allocate(circle.verts, circle.vertexCount * sizeof(Vertex));
+    circleVerts.allocate(circle.verts, circle.vertexCount * sizeof(glm::vec3));
 
     circleLines.create();
     circleLines.bind();
@@ -297,7 +297,7 @@ void PlanetsWidget::render() {
             circleLines.bind();
 
             shaderColor.setUniformValue(shaderColor_color, trailColor);
-            shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
+            shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(glm::vec3));
 
             /* Draw both circles. */
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(newRadiusMatrix));
@@ -338,7 +338,7 @@ void PlanetsWidget::render() {
         /* Circles... */
         circleVerts.bind();
         circleLines.bind();
-        shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
+        shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(glm::vec3));
 
         /* Draw the circle on the XY plane. */
         for (const auto& i : universe) {
@@ -399,7 +399,7 @@ void PlanetsWidget::render() {
         matrix = glm::scale(matrix, glm::vec3(camera.distance * 4.0e-3f));
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-        shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(Vertex));
+        shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(glm::vec3));
         glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
 
         circleVerts.release();
