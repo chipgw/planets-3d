@@ -52,10 +52,10 @@ public:
     uint32_t triangles[triangleCount];
     uint32_t lines[lineCount];
 
-    Sphere(bool flipV = false);
+    Sphere();
 };
 
-template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::Sphere(bool flipV) {
+template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::Sphere() {
     float vstep = glm::pi<float>() / stacks;
     float hstep = (2.0f * glm::pi<float>()) / slices;
 
@@ -77,7 +77,7 @@ template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::Sphere(bool 
             verts[current].normal = verts[current].position;
 
             verts[current].uv.x = float(h) / float(slices);
-            verts[current].uv.y = flipV ? 1.0f - float(v) / float(stacks) : float(v) / float(stacks);
+            verts[current].uv.y = float(v) / float(stacks);
 
             if (h != slices && v != stacks) {
                 triangles[currentTriangle++] = current;
