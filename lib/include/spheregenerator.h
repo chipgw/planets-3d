@@ -86,6 +86,11 @@ template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::Sphere() {
             /* The vertex normal is the same as the position, which is already normalized. */
             verts[current].normal = verts[current].position;
 
+            /* Tangents are 90 degrees off from the circle coordinate with no z. */
+            verts[current].tangent.x = glm::sin(h * hstep);
+            verts[current].tangent.y = -glm::cos(h * hstep);
+            verts[current].tangent.z = 0;
+
             /* The texture coordinate is simply how far along we are in our slizes/stacks. */
             verts[current].uv.x = float(h) / float(slices);
             verts[current].uv.y = float(v) / float(stacks);
