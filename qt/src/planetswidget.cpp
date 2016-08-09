@@ -36,14 +36,18 @@ void PlanetsWidget::initializeGL() {
     shaderTexture.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture.fsh");
 
     /* Bind the attribute handles. */
-    shaderTexture.bindAttributeLocation("vertex", vertex);
-    shaderTexture.bindAttributeLocation("uv", uv);
+    shaderTexture.bindAttributeLocation("vertex",   vertex);
+    shaderTexture.bindAttributeLocation("normal",   normal);
+    shaderTexture.bindAttributeLocation("tangent",  tangent);
+    shaderTexture.bindAttributeLocation("uv",       uv);
 
     shaderTexture.link();
 
     /* Get the uniform values */
     shaderTexture_cameraMatrix = shaderTexture.uniformLocation("cameraMatrix");
+    shaderTexture_viewMatrix = shaderTexture.uniformLocation("viewMatrix");
     shaderTexture_modelMatrix = shaderTexture.uniformLocation("modelMatrix");
+    shaderTexture_lightDir = shaderTexture.uniformLocation("lightDir");
 
     /* Load the shaders from the qrc. */
     shaderColor.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/color.vsh");
@@ -84,9 +88,11 @@ void PlanetsWidget::initializeGL() {
     shaderColor.enableAttributeArray(vertex);
 
     /* The one and only texture. */
-    QImage img(":/textures/planet.png");
+    QImage diff(":/textures/planet_diffuse.png");
+    QImage nrm(":/textures/planet_nrm.png");
 
-    texture = new QOpenGLTexture(img);
+    texture_diff = new QOpenGLTexture(diff);
+    texture_nrm = new QOpenGLTexture(nrm);
 
     /* Begin vertex/index buffer allocation. */
 
@@ -169,20 +175,34 @@ void PlanetsWidget::render() {
         /* Only used for drawing the planets. */
         shaderTexture.bind();
 
+        shaderTexture.setUniformValue("texture_diff", 0);
+        shaderTexture.setUniformValue("texture_nrm", 1);
+
         /* Upload the updated camera matrix. */
         glUniformMatrix4fv(shaderTexture_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
+        glUniformMatrix4fv(shaderTexture_viewMatrix, 1, GL_FALSE, glm::value_ptr(camera.view));
 
+        glm::vec3 light = glm::vec3(0.57735f);
+        light = glm::vec3(camera.view * glm::vec4(light, 0.0f));
+        glUniform3fv(shaderTexture_lightDir, 1, glm::value_ptr(light));
+
+        shaderTexture.enableAttributeArray(normal);
+        shaderTexture.enableAttributeArray(tangent);
         shaderTexture.enableAttributeArray(uv);
 
-        /* Our one and only texture, which apparently doesn't stay bound between frames... */
-        texture->bind();
+        glActiveTexture(GL_TEXTURE0);
+        texture_diff->bind();
+        glActiveTexture(GL_TEXTURE1);
+        texture_nrm->bind();
 
         highResSphereVerts.bind();
         highResSphereTris.bind();
 
         /* Set up the attribute buffers once for all planets. */
-        shaderTexture.setAttributeBuffer(vertex, GL_FLOAT, 0,                       3, sizeof(Vertex));
-        shaderTexture.setAttributeBuffer(uv,     GL_FLOAT, offsetof(Vertex, uv),    2, sizeof(Vertex));
+        shaderTexture.setAttributeBuffer(vertex,    GL_FLOAT, 0,                            3, sizeof(Vertex));
+        shaderTexture.setAttributeBuffer(normal,    GL_FLOAT, offsetof(Vertex, normal),     3, sizeof(Vertex));
+        shaderTexture.setAttributeBuffer(tangent,   GL_FLOAT, offsetof(Vertex, tangent),    3, sizeof(Vertex));
+        shaderTexture.setAttributeBuffer(uv,        GL_FLOAT, offsetof(Vertex, uv),         2, sizeof(Vertex));
 
         for (const auto& i : universe) {
             /* Set up a matrix for the planet's position and size. */
@@ -197,7 +217,9 @@ void PlanetsWidget::render() {
         highResSphereVerts.release();
         highResSphereTris.release();
 
-        /* That's the only thing that uses the uv coords. */
+        /* That's the only thing that uses then normals, tangents, and uv coords. */
+        shaderTexture.disableAttributeArray(normal);
+        shaderTexture.disableAttributeArray(tangent);
         shaderTexture.disableAttributeArray(uv);
     }
 
@@ -543,5 +565,7 @@ void PlanetsWidget::drawPlanetWireframe(const Planet& planet, const QColor& colo
 
 const QColor PlanetsWidget::trailColor = QColor(0xcc, 0xff, 0xff, 0xff);
 
-const int PlanetsWidget::vertex = 0;
-const int PlanetsWidget::uv     = 1;
+const int PlanetsWidget::vertex     = 0;
+const int PlanetsWidget::normal     = 1;
+const int PlanetsWidget::tangent    = 2;
+const int PlanetsWidget::uv         = 3;

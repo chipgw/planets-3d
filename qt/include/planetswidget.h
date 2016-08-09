@@ -26,16 +26,17 @@ class PlanetsWidget : public QOpenGLWidget, public QOpenGLFunctions {
 private:
     /* GL shader and uniform handles for texture shader. */
     QOpenGLShaderProgram shaderTexture;
-    int shaderTexture_cameraMatrix, shaderTexture_modelMatrix;
+    int shaderTexture_cameraMatrix, shaderTexture_viewMatrix, shaderTexture_modelMatrix, shaderTexture_lightDir;
 
     /* GL shader and uniform handles for color shader. */
     QOpenGLShaderProgram shaderColor;
     int shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
 
     /* GL vertex attribute handles. */
-    const static int vertex, uv;
+    const static int vertex, normal, tangent, uv;
 
-    QOpenGLTexture* texture;
+    QOpenGLTexture* texture_diff;
+    QOpenGLTexture* texture_nrm;
 
     Camera camera;
 

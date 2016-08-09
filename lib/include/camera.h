@@ -34,6 +34,7 @@ public:
 
     /* The perspective camera matrix, before transformations are applied. */
     glm::mat4 projection;
+    glm::mat4 view;
     /* The final camera matrix with all transformations applied, pass this to OpenGL. */
     glm::mat4 camera;
 

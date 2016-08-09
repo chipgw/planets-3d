@@ -67,13 +67,15 @@ const glm::mat4& Camera::setup() {
     }
 
     /* First move the camera the distance amount back on Z. */
-    camera = glm::translate(projection, glm::vec3(0.0f, 0.0f, -distance));
+    view = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -distance));
     /* Rotate camera around x axis, subtract pi/2 to make the rotation origin be the camera on the y axis. */
-    camera = glm::rotate(camera, xrotation - glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
+    view = glm::rotate(view, xrotation - glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
     /* Rotate the camera on the z axis. */
-    camera = glm::rotate(camera, zrotation, glm::vec3(0.0f, 0.0f, 1.0f));
+    view = glm::rotate(view, zrotation, glm::vec3(0.0f, 0.0f, 1.0f));
     /* Finally, translate to the position. */
-    camera = glm::translate(camera, -position);
+    view = glm::translate(view, -position);
+
+    camera = projection * view;
 
     /* Return the camera matrix. */
     return camera;

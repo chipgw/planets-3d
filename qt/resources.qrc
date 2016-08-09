@@ -27,11 +27,12 @@
         <file>icons/silk/camera.png</file>
         <file>icons/silk/zoom.png</file>
         <file>icons/silk/eye.png</file>
-        <file>../textures/planet.png</file>
         <file>shaders/color.fsh</file>
         <file>shaders/texture.fsh</file>
         <file>shaders/color.vsh</file>
         <file>shaders/texture.vsh</file>
         <file>icons/world.png</file>
+        <file>../textures/planet_diffuse.png</file>
+        <file>../textures/planet_nrm.png</file>
     </qresource>
 </RCC>
