@@ -105,7 +105,10 @@ void PlanetsWindow::initGL() {
 
     glEnableVertexAttribArray(vertex);
 
-    planetTexture = loadTexture("planet.png");
+    glActiveTexture(GL_TEXTURE0);
+    planetTexture_diff = loadTexture("planet_diffuse.png");
+    glActiveTexture(GL_TEXTURE1);
+    planetTexture_nrm = loadTexture("planet_nrm.png");
 
     initBuffers();
 }
@@ -157,11 +160,11 @@ void PlanetsWindow::initShaders() {
     shaderColor_cameraMatrix    = glGetUniformLocation(shaderColor, "cameraMatrix");
     shaderColor_modelMatrix     = glGetUniformLocation(shaderColor, "modelMatrix");
 
-    glBindAttribLocation(shaderColor, vertex, "vertex");
 
     /* Compile the textured shader included in shaders.h as const char*. */
     GLuint shaderTexture_vsh = compileShader(texture_vertex_src,   GL_VERTEX_SHADER);
     GLuint shaderTexture_fsh = compileShader(texture_fragment_src, GL_FRAGMENT_SHADER);
+
     shaderTexture = linkShaderProgram(shaderTexture_vsh, shaderTexture_fsh);
 
     /* These aren't needed anymore... */
@@ -171,10 +174,12 @@ void PlanetsWindow::initShaders() {
     /* Get the uniform locations from the texture shader. */
     glUseProgram(shaderTexture);
     shaderTexture_cameraMatrix  = glGetUniformLocation(shaderTexture, "cameraMatrix");
+    shaderTexture_viewMatrix    = glGetUniformLocation(shaderTexture, "viewMatrix");
     shaderTexture_modelMatrix   = glGetUniformLocation(shaderTexture, "modelMatrix");
+    shaderTexture_lightDir      = glGetUniformLocation(shaderTexture, "lightDir");
 
-    glBindAttribLocation(shaderTexture, vertex, "vertex");
-    glBindAttribLocation(shaderTexture, uv,     "uv");
+    glUniform1i(glGetUniformLocation(shaderTexture, "texture_diff"), 0);
+    glUniform1i(glGetUniformLocation(shaderTexture, "texture_nrm"), 1);
 }
 
 void PlanetsWindow::initBuffers() {
@@ -269,18 +274,28 @@ void PlanetsWindow::paint() {
 
     camera.setup();
 
-    /* We only use the texture shader and uv's for drawing the textured planets. */
+    /* We only use the texture shader, normals, tangents, and uv's for drawing the shaded planets. */
     glUseProgram(shaderTexture);
+    glEnableVertexAttribArray(normal);
+    glEnableVertexAttribArray(tangent);
     glEnableVertexAttribArray(uv);
 
+    /* Update the light direction in view space. */
+    glm::vec3 light = glm::vec3(0.57735f);
+    light = glm::vec3(camera.view * glm::vec4(light, 0.0f));
+    glUniform3fv(shaderTexture_lightDir, 1, glm::value_ptr(light));
+
+    /* Upload the updated camera matrix. */
     glUniformMatrix4fv(shaderTexture_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
-    glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+    glUniformMatrix4fv(shaderTexture_viewMatrix, 1, GL_FALSE, glm::value_ptr(camera.view));
 
     glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
 
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+    glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glVertexAttribPointer(normal,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->normal));
+    glVertexAttribPointer(tangent,  3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->tangent));
+    glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->uv));
 
     for (const auto& i : universe) {
         glm::mat4 matrix = glm::translate(i.position);
@@ -290,14 +305,18 @@ void PlanetsWindow::paint() {
     }
 
     /* Now the texture shader and uv's don't get used until next frame. */
+    glDisableVertexAttribArray(normal);
+    glDisableVertexAttribArray(tangent);
     glDisableVertexAttribArray(uv);
     glUseProgram(shaderColor);
 
     glUniformMatrix4fv(shaderColor_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 
+    /* Bind the low resolution wireframe sphere. */
     glBindBuffer(GL_ARRAY_BUFFER, lowResVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lowResLineIBO);
+    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
     /* Draw a green wireframe sphere around the selected planet if there is one. */
     if (universe.isSelectedValid())
@@ -676,9 +695,5 @@ void PlanetsWindow::drawPlanetWireframe(const Planet& planet, const uint32_t& co
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * 1.05f));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
     glDrawElements(GL_LINES, lowResLineCount, GL_UNSIGNED_INT, 0);
 }
-
-const GLuint PlanetsWindow::vertex = 0;
-const GLuint PlanetsWindow::uv     = 1;

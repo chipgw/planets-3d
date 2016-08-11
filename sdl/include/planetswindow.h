@@ -41,17 +41,14 @@ class PlanetsWindow{
     /* Store the window width and height (in pixels) for use with mouse events. */
     glm::ivec2 windowSize;
 
-    /* OpenGL vertex attribute handles. */
-    const static unsigned int vertex, uv;
-
     /* GL shader and uniform handles for texture shader. */
-    unsigned int shaderTexture, shaderTexture_cameraMatrix, shaderTexture_modelMatrix;
+    unsigned int shaderTexture, shaderTexture_cameraMatrix, shaderTexture_viewMatrix, shaderTexture_modelMatrix, shaderTexture_lightDir;
 
     /* GL shader and uniform handles for flat color shader. */
     unsigned int shaderColor, shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
 
-    /* Currently the only texture used. */
-    unsigned int planetTexture;
+    /* The diffuse and normalmap textures for planets. */
+    unsigned int planetTexture_diff, planetTexture_nrm;
 
     unsigned int highResVBO, highResTriIBO, highResTriCount;
     unsigned int lowResVBO, lowResLineIBO, lowResLineCount;

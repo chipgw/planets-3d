@@ -56,6 +56,11 @@ GLuint linkShaderProgram(GLuint vsh, GLuint fsh) {
     glAttachShader(program, vsh);
     glAttachShader(program, fsh);
 
+    glBindAttribLocation(program, vertex,   "vertex");
+    glBindAttribLocation(program, normal,   "normal");
+    glBindAttribLocation(program, tangent,  "tangent");
+    glBindAttribLocation(program, uv,       "uv");
+
     glLinkProgram(program);
 
     int isLinked, maxLength;
