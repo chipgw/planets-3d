@@ -607,12 +607,12 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
         break;
     case SDLK_KP_PLUS:
         if (universe.simspeed <= 0.0f)
-            universe.simspeed = 1.0f;
+            universe.simspeed = 0.25f;
         else if (universe.simspeed < 64.0f)
             universe.simspeed *= 2.0f;
         break;
     case SDLK_KP_MINUS:
-        if (universe.simspeed <= 1.0f)
+        if (universe.simspeed <= 0.25f)
             universe.simspeed = 0.0f;
         else
             universe.simspeed *= 0.5f;
