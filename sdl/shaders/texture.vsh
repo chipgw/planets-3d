@@ -1,4 +1,3 @@
-R"(
 attribute vec4 vertex;
 attribute vec3 normal;
 attribute vec3 tangent;
@@ -21,4 +20,3 @@ void main() {
     vec3 t = normalize(viewMatrix * vec4(tangent, 0.0)).xyz;
     N = mat3(t, -cross(n, t), n);
 }
-)"

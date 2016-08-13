@@ -115,6 +115,31 @@ endif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 #---------------------------------------------
 
 if(PLANETS3D_SDL)
+    # Places resource files into a .cpp and .hpp file. (stolen from stackoverflow with some tweaks)
+    function(CREATE_RESOURCES OUTFILE)
+        set(OUTHPP "${CMAKE_CURRENT_BINARY_DIR}/${OUTFILE}.hpp")
+        set(OUTCPP "${CMAKE_CURRENT_BINARY_DIR}/${OUTFILE}.cpp")
+
+        # Create output files.
+        file(WRITE ${OUTHPP} "#pragma once\n#include <cstddef>\n")
+        file(WRITE ${OUTCPP} "#include \"${OUTFILE}.hpp\"\n")
+
+        # Iterate through input files
+        foreach(FILE ${ARGN})
+            # Get short filename
+            string(REGEX MATCH "([^/]+)$" FILENAME ${FILE})
+            # Replace filename spaces & extension separator for C compatibility
+            string(REGEX REPLACE "\\.| |-" "_" FILENAME ${FILENAME})
+            # Read hex data from file
+            file(READ ${FILE} FILEDATA HEX)
+            # Convert hex data for C compatibility
+            string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," FILEDATA ${FILEDATA})
+            # Append data to output file
+            file(APPEND ${OUTHPP} "extern const unsigned char ${FILENAME}[];\nextern const size_t ${FILENAME}_size;\n")
+            file(APPEND ${OUTCPP} "const unsigned char ${FILENAME}[] = {${FILEDATA}0x00};\nconst size_t ${FILENAME}_size = sizeof(${FILENAME});\n")
+        endforeach()
+    endfunction()
+
     if(WIN32)
         set(PLANETS3D_WITH_GLEW ON)
     else(WIN32)
@@ -128,7 +153,11 @@ if(PLANETS3D_SDL)
 
     file(GLOB SDL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sdl/src/*.cpp")
 
-    add_executable(${PROJECT_NAME}_sdl WIN32 ${SDL_SOURCES} ${SDL_HEADERS} ${SDL_WINDRES} ${SDL_SHADERS})
+    create_resources(res "${CMAKE_SOURCE_DIR}/sdl/shaders/color.vsh" "${CMAKE_SOURCE_DIR}/sdl/shaders/color.fsh"
+        "${CMAKE_SOURCE_DIR}/sdl/shaders/texture.vsh" "${CMAKE_SOURCE_DIR}/sdl/shaders/texture.fsh"
+        "${CMAKE_SOURCE_DIR}/textures/planet_diffuse.png" "${CMAKE_SOURCE_DIR}/textures/planet_nrm.png")
+
+    add_executable(${PROJECT_NAME}_sdl WIN32 ${SDL_SOURCES} ${SDL_HEADERS} ${SDL_WINDRES} ${SDL_SHADERS} res.cpp)
 
     if(MSVC)
         target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_SDLMAIN_LIBRARY})
@@ -148,9 +177,6 @@ if(PLANETS3D_SDL)
     find_package(OpenGL REQUIRED)
     include_directories(${OPENGL_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_LIBRARY} ${PROJECT_NAME}_gamepad ${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
-
-    copy_to_bin(${PROJECT_NAME}_sdl "${CMAKE_SOURCE_DIR}/textures/planet_diffuse.png")
-    copy_to_bin(${PROJECT_NAME}_sdl "${CMAKE_SOURCE_DIR}/textures/planet_nrm.png")
 endif(PLANETS3D_SDL)
 
 #---------------------------------------------

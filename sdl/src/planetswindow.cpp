@@ -10,6 +10,8 @@
 #include <glm/gtx/norm.hpp>
 #include <SDL_image.h>
 
+#include "res.hpp"
+
 PlanetsWindow::PlanetsWindow(int argc, char* argv[]) : placing(universe), camera(universe), gamepad(universe, camera, placing) {
     initSDL();
     initGL();
@@ -106,15 +108,15 @@ void PlanetsWindow::initGL() {
     glEnableVertexAttribArray(vertex);
 
     glActiveTexture(GL_TEXTURE0);
-    planetTexture_diff = loadTexture("planet_diffuse.png");
+    planetTexture_diff = loadTexture(SDL_RWFromConstMem(planet_diffuse_png, planet_diffuse_png_size));
     glActiveTexture(GL_TEXTURE1);
-    planetTexture_nrm = loadTexture("planet_nrm.png");
+    planetTexture_nrm = loadTexture(SDL_RWFromConstMem(planet_nrm_png, planet_nrm_png_size));
 
     initBuffers();
 }
 
-unsigned int PlanetsWindow::loadTexture(const char* filename) {
-    SDL_Surface* image = IMG_Load(filename);
+unsigned int PlanetsWindow::loadTexture(SDL_RWops* io) {
+    SDL_Surface* image = IMG_Load_RW(io, SDL_FALSE);
 
     if (image == nullptr) {
         /* Qt Creator's output panel doesn't seem to like the '\r' character for some reason... */
@@ -146,8 +148,8 @@ unsigned int PlanetsWindow::loadTexture(const char* filename) {
 
 void PlanetsWindow::initShaders() {
     /* Compile the flat color shader included in shaders.h as const char*. */
-    GLuint shaderColor_vsh = compileShader(color_vertex_src,     GL_VERTEX_SHADER);
-    GLuint shaderColor_fsh = compileShader(color_fragment_src,   GL_FRAGMENT_SHADER);
+    GLuint shaderColor_vsh = compileShader(color_vsh,     GL_VERTEX_SHADER);
+    GLuint shaderColor_fsh = compileShader(color_fsh,   GL_FRAGMENT_SHADER);
     shaderColor = linkShaderProgram(shaderColor_vsh, shaderColor_fsh);
 
     /* These aren't needed anymore... */
@@ -162,8 +164,8 @@ void PlanetsWindow::initShaders() {
 
 
     /* Compile the textured shader included in shaders.h as const char*. */
-    GLuint shaderTexture_vsh = compileShader(texture_vertex_src,   GL_VERTEX_SHADER);
-    GLuint shaderTexture_fsh = compileShader(texture_fragment_src, GL_FRAGMENT_SHADER);
+    GLuint shaderTexture_vsh = compileShader(texture_vsh,   GL_VERTEX_SHADER);
+    GLuint shaderTexture_fsh = compileShader(texture_fsh, GL_FRAGMENT_SHADER);
 
     shaderTexture = linkShaderProgram(shaderTexture_vsh, shaderTexture_fsh);
 

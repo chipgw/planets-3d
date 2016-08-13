@@ -1,4 +1,3 @@
-R"(
 uniform sampler2D texture_diff;
 uniform sampler2D texture_nrm;
 
@@ -15,4 +14,3 @@ void main() {
 
     gl_FragColor = vec4(vec3(light) * texture2D(texture_diff, texCoord).rgb, 1.0);
 }
-)"

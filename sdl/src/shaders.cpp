@@ -1,23 +1,8 @@
 #include "shaders.h"
 #include <cstdio>
 
-/* Embed shader source code as c-style strings. */
-
-const char* color_vertex_src =
-        #include "../shaders/color.vsh"
-        ;
-const char* color_fragment_src =
-        #include "../shaders/color.fsh"
-        ;
-const char* texture_vertex_src =
-        #include "../shaders/texture.vsh"
-        ;
-const char* texture_fragment_src =
-        #include "../shaders/texture.fsh"
-        ;
-
 /* Compile a shader from source string. */
-GLuint compileShader(const char* source, GLenum shaderType) {
+GLuint compileShader(const unsigned char* source, GLenum shaderType) {
     GLuint shader = glCreateShader(shaderType);
 
     glShaderSource(shader, 1, (const GLchar**)&source, 0);
