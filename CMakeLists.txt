@@ -15,14 +15,17 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/include" "${CMAKE_CURRENT_S
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
+# Retrieve the current git sha1 for use inthe configured version.cpp.
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 
+# Macro to copy a file orfolder to the directory where binaries are built to.
 macro(copy_to_bin)
     make_directory("${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${ARGV2}")
     add_custom_command(TARGET ${ARGV0} COMMAND ${CMAKE_COMMAND} -E copy "${ARGV1}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${ARGV2}")
 endmacro()
 
+# Options for native builds.
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     option(PLANETS3D_QT5 "Build Qt Interface Executable" OFF)
     option(PLANETS3D_SDL "Build SDL Interface Executable" OFF)
@@ -34,6 +37,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     option(PLANETS3D_BUILD_TINYXML "Look for TinyXML source files in \"tinyxml\" folder, and build as a static library." OFF)
     option(PLANETS3D_BENCHMARK "Build a command-line program to test simulation performance without any graphics." OFF)
 
+    # Visual Studio projects have multiple build configurations in one generated project file...
     if(${CMAKE_GENERATOR} MATCHES "Visual Studio*")
         add_definitions(-DPLANETS3D_MSVC_CONFIGURATION="$(ConfigurationName)")
     endif()
@@ -59,12 +63,14 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     add_library(${PROJECT_NAME} SHARED ${LIB_SOURCES} ${LIB_HEADERS})
 
     if(PLANETS3D_BUILD_TINYXML)
+        # Build TinyXML from source files in the tinyxml folder.
         add_definitions(-DTIXML_USE_STL)
         file(GLOB TinyXML_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tinyxml/*.cpp")
         add_library(TinyXML ${TinyXML_SOURCES})
         include_directories("${CMAKE_CURRENT_SOURCE_DIR}/tinyxml/")
         target_link_libraries(${PROJECT_NAME} TinyXML)
     else(PLANETS3D_BUILD_TINYXML)
+        # Locate the prebuilt version of TinyXML. (Can be very fussy on Windows.)
         find_package(TinyXML REQUIRED)
         include_directories(${TINYXML_INCLUDE_DIR})
         target_link_libraries(${PROJECT_NAME} ${TINYXML_LIBRARIES})
@@ -75,6 +81,8 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         target_link_libraries(${PROJECT_NAME}_benchmark ${PROJECT_NAME})
     endif(PLANETS3D_BENCHMARK)
 
+    # The SDL gamepad support works with both interfaces from the same source code,
+    # but it doesn't go in the library because that doesn't require SDL.
     if(PLANETS3D_SDL OR PLANETS3D_QT_USE_SDL_GAMEPAD)
         find_package(SDL2 REQUIRED)
         include_directories(${SDL2_INCLUDE_DIR} "gamepad")
@@ -97,10 +105,13 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     set(CMAKE_CXX_FLAGS "--bind -s FULL_ES2=1 -s USE_SDL=2 -std=c++11")
     set(CMAKE_CXX_FLAGS_DEBUG "-s DEMANGLE_SUPPORT=1 -g")
 
+    # Included for IDE support.
     file(GLOB JS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/js/*.*" "${CMAKE_CURRENT_SOURCE_DIR}/js/*/*.*" )
 
     add_executable(${PROJECT_NAME}_js ${LIB_SOURCES} ${LIB_HEADERS} ${JS_SOURCES} "gamepad/sdlgamepad.h" "gamepad/sdlgamepad.cpp" "bench/bench.cpp")
 
+    # All these files that the JS interface needs...
+    # TODO - Find a way to make them copy again any time they change.
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/textures/planet.png" "images/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/scripts/*" "scripts/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/scripts/thirdparty/*" "scripts/thirdparty/")
@@ -141,25 +152,30 @@ if(PLANETS3D_SDL)
     endfunction()
 
     if(WIN32)
+        # GLEW is required on Windows.
         set(PLANETS3D_WITH_GLEW ON)
     else(WIN32)
+        # Elsewhere including glcorearb.h usually works, but we leave the possibility of using GLEW open.
         option(PLANETS3D_WITH_GLEW "Use GLEW to load OpenGL functions. (SDL interface only)" OFF)
     endif(WIN32)
 
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/sdl/include")
 
+    # For IDE usage.
     file(GLOB SDL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sdl/include/*.h")
+
+    # For the resource system and IDE usage.
     file(GLOB SDL_SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/sdl/shaders/*")
 
     file(GLOB SDL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sdl/src/*.cpp")
 
-    create_resources(res "${CMAKE_SOURCE_DIR}/sdl/shaders/color.vsh" "${CMAKE_SOURCE_DIR}/sdl/shaders/color.fsh"
-        "${CMAKE_SOURCE_DIR}/sdl/shaders/texture.vsh" "${CMAKE_SOURCE_DIR}/sdl/shaders/texture.fsh"
-        "${CMAKE_SOURCE_DIR}/textures/planet_diffuse.png" "${CMAKE_SOURCE_DIR}/textures/planet_nrm.png")
+    # Use that resource generation script to generate res.hpp and res.cpp.
+    create_resources(res ${SDL_SHADERS} "${CMAKE_SOURCE_DIR}/textures/planet_diffuse.png" "${CMAKE_SOURCE_DIR}/textures/planet_nrm.png")
 
     add_executable(${PROJECT_NAME}_sdl WIN32 ${SDL_SOURCES} ${SDL_HEADERS} ${SDL_WINDRES} ${SDL_SHADERS} res.cpp)
 
     if(MSVC)
+        # MSVC needs to link to SDL's main wrapper.
         target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_SDLMAIN_LIBRARY})
     endif(MSVC)
 
@@ -184,6 +200,7 @@ endif(PLANETS3D_SDL)
 #---------------------------------------------
 
 if(PLANETS3D_QT5)
+    # Find all the source files. Again, headers are included to show up in IDE.
     file(GLOB QT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/qt/include/*.h")
     file(GLOB QT_SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/qt/shaders/*")
 
@@ -192,15 +209,18 @@ if(PLANETS3D_QT5)
     set(QT_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/qt/resources.qrc")
 
     if(WIN32)
+        # For the windows exe icon and version information.
         set(QT_WINDRES "${CMAKE_CURRENT_BINARY_DIR}/qt/Planets3D.rc")
         configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt/Planets3D.rc.in" "${QT_WINDRES}" @ONLY)
     else(WIN32)
+        # Nothing replaces it on other platforms.
         set(QT_WINDRES "")
     endif(WIN32)
 
     find_package(Qt5OpenGL)
     set(CMAKE_AUTOMOC ON)
 
+    # Use Qt's tools to generate resource and UI code.
     qt5_add_resources(QT_RESOURCES_RCC ${QT_RESOURCES})
     qt5_wrap_ui(QT_FORM_CODE ${QT_FORMS})
 
@@ -210,6 +230,7 @@ if(PLANETS3D_QT5)
     target_link_libraries(${PROJECT_NAME}_qt Qt5::OpenGL Planets3D)
 
     if(PLANETS3D_QT_USE_SDL_GAMEPAD)
+        # Link to the SDL gamepad code and enable it.
         target_link_libraries(${PROJECT_NAME}_qt ${PROJECT_NAME}_gamepad ${SDL2_LIBRARY})
         add_definitions(-DPLANETS3D_QT_USE_SDL_GAMEPAD)
     endif(PLANETS3D_QT_USE_SDL_GAMEPAD)
