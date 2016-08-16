@@ -4,12 +4,12 @@ is a 3D gravitational simulator.
 
 Dependencies:
 -------------
-* [CMake]
+* [CMake] 3.2 or greater.
 * [GLM]
 * [TinyXml]
 
 For Qt interface:
-* [Qt] 5.4 or later.
+* [Qt] 5.4 or greater.
 * [SDL] 2.0 or greater. (Optional for controller support. Add `-DPLANETS3D_QT_USE_SDL_GAMEPAD=On` to enable)
 
 For SDL interface:
@@ -31,7 +31,7 @@ Web interface using Emscripten:
 Dependencies:
 -------------
 
-* [CMake]
+* [CMake] 3.2 or later.
 * [GLM]
 * [Emscripten]
 * [SDL] 2.0 or greater. (Will be auto-downloaded by Emscripten)
@@ -40,7 +40,7 @@ Building
 --------
 * Clone or download the source code.
 * In the source folder, create a `build` folder.
-* In the build folder, run `cmake .. -DCMAKE_TOOLCHAIN_FILE=<EmscriptenRoot>/cmake/Modules/Platform/Emscripten.cmake -G "<generator>"`, where `<EmscriptenRoot>` is the path to the Emscripten installation, and `<generator>` is `Unix Makefiles` on Linux & OSX and `MinGW Makefiles` on Widnows.
+* In the build folder, run `cmake .. -DCMAKE_TOOLCHAIN_FILE=<EmscriptenRoot>/cmake/Modules/Platform/Emscripten.cmake -G "<generator>"`, where `<EmscriptenRoot>` is the path to the Emscripten installation, and `<generator>` is `Unix Makefiles` on Linux & OSX and `MinGW Makefiles` on Windows.
 * Then run `make` or `mingw32-make`.
 
 License
@@ -48,8 +48,8 @@ License
 [MIT License]
 
 
-[CMake]:http://www.cmake.org
-[Qt]:http://www.qt.io
+[CMake]:https://www.cmake.org
+[Qt]:https://www.qt.io
 [GLM]:http://glm.g-truc.net/
 [TinyXml]:http://www.grinninglizard.com/tinyxml/
 [SDL]:http://www.libsdl.org
