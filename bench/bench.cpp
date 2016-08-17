@@ -1,7 +1,10 @@
 #include <planet.h>
 #include <planetsuniverse.h>
 #include <chrono>
+#include <iostream>
+#include <iomanip>
 
+using namespace std;
 using namespace std::chrono;
 
 #ifdef EMSCRIPTEN
@@ -14,15 +17,19 @@ int main() {
     /* Use a constant seed for consistency. */
     universe.randSeed(0);
 
-    /* Test a thousand steps. */
-    universe.stepsPerFrame = 1000;
+    /* Start with a thousand steps. */
+    universe.stepsPerFrame = 2000;
 
     size_t sizes[] = { 20, 100, 200, 500, 800 };
+
+    /* Col:  |- 6-||-- 8--||---   16   ---||---   16   ---| doesn't matter,  Align left. */
+    cout << "steps planets total time      average step    remaining planets" << left << endl;
 
     for (size_t size : sizes) {
         universe.generateRandom(size, 1000.0f, 1.0f, 1000.0f);
 
-        printf("Simulating %zu planets...\n", size);
+        cout << setw(6) << universe.stepsPerFrame
+             << setw(8) << size;
 
         high_resolution_clock::time_point start = high_resolution_clock::now();
 
@@ -30,15 +37,19 @@ int main() {
 
         high_resolution_clock::time_point end = high_resolution_clock::now();
 
-        auto delay = duration_cast<milliseconds>(end - start).count();
+        double delay = duration_cast<duration<double, std::milli>>(end - start).count();
 
-        printf("%i steps with %zu planets took %lims, average step time: %fms.\n", universe.stepsPerFrame, size, delay, delay / float(universe.stepsPerFrame));
-        printf("Ended with %zu planets.\n", universe.size());
+        cout << setw(16) << to_string(delay) + "ms"
+             << setw(16) << to_string(delay / double(universe.stepsPerFrame)) + "ms"
+             << universe.size() << endl;
 
         fflush(stdout);
 
         /* Clear the thing for the next one. */
         universe.deleteAll();
+
+        /* Reduce the number of steps as the amount of planets increases. */
+        universe.stepsPerFrame -= 250;
     }
 
     return 0;
