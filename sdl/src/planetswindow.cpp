@@ -43,8 +43,8 @@ PlanetsWindow::~PlanetsWindow() {
 }
 
 void PlanetsWindow::initSDL() {
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) == -1) {
         printf("ERROR: Unable to init SDL! \"%s\"", SDL_GetError());
@@ -82,10 +82,12 @@ void PlanetsWindow::initGL() {
         printf("GLEW ERROR: %s", glewGetErrorString(glewstatus));
         abort();
     }
-    if (!GLEW_VERSION_4_0) {
-        printf("WARNING: OpenGL 4.0 support NOT detected, things probably won't work.");
+    if (!GLEW_VERSION_3_3) {
+        printf("WARNING: OpenGL 3.3 support NOT detected, things probably won't work.");
     }
 #endif
+
+    printf("GL Vendor: \"%s\", Renderer: \"%s\".\n", glGetString(GL_VENDOR), glGetString(GL_RENDERER));
 
     initShaders();
 

@@ -1,4 +1,6 @@
-attribute vec4 vertex;
+#version 330
+
+in vec4 vertex;
 
 uniform mat4 cameraMatrix;
 uniform mat4 modelMatrix;

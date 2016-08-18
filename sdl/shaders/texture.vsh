@@ -1,15 +1,17 @@
-attribute vec4 vertex;
-attribute vec3 normal;
-attribute vec3 tangent;
-attribute vec2 uv;
+#version 330
+
+in vec4 vertex;
+in vec3 normal;
+in vec3 tangent;
+in vec2 uv;
 
 uniform mat4 cameraMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 
-varying vec2 texCoord;
+out vec2 texCoord;
 
-varying mat3 N;
+out mat3 N;
 
 void main() {
     gl_Position = cameraMatrix * modelMatrix * vertex;
