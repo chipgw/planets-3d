@@ -227,7 +227,9 @@ void PlanetsWindow::run() {
     using std::chrono::duration_cast;
     using std::chrono::microseconds;
 
+    /* To track the total running time of the program. */
     clock::time_point start_time = clock::now();
+    /* To track the time spent per frame. */
     clock::time_point last_time = start_time;
 
     while (running) {
@@ -263,12 +265,15 @@ void PlanetsWindow::run() {
         fflush(stdout);
     }
 
+    typedef std::chrono::duration<double> dsec;
+    typedef std::chrono::duration<double, std::milli> dms;
+
     /* Output stats to the console. */
     clock::time_point current = clock::now();
-    printf("Total Time: %f seconds.\n", (duration_cast<microseconds>(current - start_time).count() * 1.0e-6f));
-    printf("Total Frames: %i.\n", totalFrames);
-    printf("Average Draw Time: %fms.\n", (duration_cast<microseconds>(current - start_time).count() * 1.0e-3f) / float(totalFrames));
-    printf("Average Framerate: %f fps.\n", (1.0f / (duration_cast<microseconds>(current - start_time).count() / float(totalFrames))) * 1.0e6f);
+    printf("Total Time: %f seconds.\n", (duration_cast<dsec>(current - start_time).count()));
+    printf("Total Frames: %ju.\n", totalFrames);
+    printf("Average Draw Time: %fms.\n", duration_cast<dms>(current - start_time).count() / double(totalFrames));
+    printf("Average Framerate: %f fps.\n", 1.0 / (duration_cast<dsec>(current - start_time).count() / double(totalFrames)));
 }
 
 void PlanetsWindow::paint() {
