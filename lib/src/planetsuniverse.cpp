@@ -106,11 +106,15 @@ static float fastInverseSqrt(float x) {
 void PlanetsUniverse::advance(float time) {
     /* Factor the simulation speed and number of steps into the time value. */
     time *= simspeed / stepsPerFrame;
-    float gconsttime = gravityconst * time;
+
+    /* Premultiply the gravity constant by time so we don't have to keep doing it every time we calculate gravitational force. */
+    const float gconsttime = gravityconst * time;
+
+    /* Store the list end iterator so we don't have to keep retrieving it. */
     iterator e = planets.end();
 
     for (int s = 0; s < stepsPerFrame; ++s) {
-        for (iterator i = planets.begin(); i != e;) {
+        for (iterator i = planets.begin(); i != e; ++i) {
             /* We only have to run this for planets after the current one,
              * because all the planets before this have already been calculated with this one. */
             for (iterator o = i + 1; o != e;) {
@@ -136,6 +140,8 @@ void PlanetsUniverse::advance(float time) {
 
                     /* This function checks selected and following to make sure they remain valid. */
                     remove(o - begin(), i - begin());
+
+                    /* Update the stored list end value. */
                     e = planets.end();
                 } else {
                     /* The gravity math to calculate the force between the planets. */
@@ -153,9 +159,6 @@ void PlanetsUniverse::advance(float time) {
             /* Apply the velocity to the position of the planet and update the path. */
             i->position += i->velocity * time;
             i->updatePath(pathLength, pathRecordDistance);
-
-            /* Onward! (Same situation as with ++o above.) */
-            ++i;
         }
     }
 }
