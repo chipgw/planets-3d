@@ -9,11 +9,13 @@ GLuint compileShader(const unsigned char* source, GLenum shaderType) {
 
     glCompileShader(shader);
 
+    /* Get info about compile status from OpenGL. */
     int isCompiled, maxLength;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
 
     if (maxLength > 1) {
+        /* If there's a log, we print it. */
         char* infoLog = new char[maxLength];
 
         glGetShaderInfoLog(shader, maxLength, &maxLength, infoLog);
@@ -41,6 +43,13 @@ GLuint linkShaderProgram(GLuint vsh, GLuint fsh) {
     glAttachShader(program, vsh);
     glAttachShader(program, fsh);
 
+    /* These can flagged for deletion now, as once they are attached to
+     * a program OpenGL will keep them alive as long as they are needed. */
+    glDeleteShader(vsh);
+    glDeleteShader(fsh);
+
+    /* It doesn't matter if the attributes don't exist in given shaders,
+     * but if they do make sure they are bound to the correct location. */
     glBindAttribLocation(program, vertex,   "vertex");
     glBindAttribLocation(program, normal,   "normal");
     glBindAttribLocation(program, tangent,  "tangent");
@@ -48,11 +57,13 @@ GLuint linkShaderProgram(GLuint vsh, GLuint fsh) {
 
     glLinkProgram(program);
 
+    /* Get info about link status from OpenGL. */
     int isLinked, maxLength;
     glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
     if (maxLength > 1) {
+        /* If there's a log, we print it. */
         char* infoLog = new char[maxLength];
 
         glGetProgramInfoLog(program, maxLength, &maxLength, infoLog);

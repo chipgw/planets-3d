@@ -27,18 +27,29 @@ PlanetsWindow::PlanetsWindow(int argc, char* argv[]) : placing(universe), camera
 }
 
 PlanetsWindow::~PlanetsWindow() {
+    /* Delete vertex & index buffers. */
     glDeleteBuffers(1, &highResVBO);
     glDeleteBuffers(1, &highResTriIBO);
     glDeleteBuffers(1, &lowResVBO);
     glDeleteBuffers(1, &lowResLineIBO);
     glDeleteBuffers(1, &circleVBO);
     glDeleteBuffers(1, &circleLineIBO);
+
+    /* No more shaders. */
     glDeleteProgram(shaderTexture);
     glDeleteProgram(shaderColor);
 
+    /* Die textures. */
+    glDeleteTextures(1, &planetTexture_diff);
+    glDeleteTextures(1, &planetTexture_nrm);
+
+    /* Nice knowin ya OpenGL context. */
     SDL_GL_DeleteContext(contextSDL);
+
+    /* Farewell SDL window. */
     SDL_DestroyWindow(windowSDL);
 
+    /* Go away SDL, we don't need you any more. */
     SDL_Quit();
 }
 
@@ -60,6 +71,7 @@ void PlanetsWindow::initSDL() {
     windowSDL = SDL_CreateWindow("Planets3D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600,
                                  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
 
+    /* We're doomed... */
     if (!windowSDL) {
         printf("ERROR: Unable to create window!");
         abort();
@@ -67,10 +79,13 @@ void PlanetsWindow::initSDL() {
 
     contextSDL = SDL_GL_CreateContext(windowSDL);
 
+    /* Giveus as many frames as possible. */
     SDL_GL_SetSwapInterval(0);
 
+    /* We want to see the cursor. */
     SDL_ShowCursor(SDL_ENABLE);
 
+    /* Events from gamepads are nice... */
     SDL_GameControllerEventState(SDL_ENABLE);
 }
 
@@ -107,6 +122,7 @@ void PlanetsWindow::initGL() {
     glEnable(GL_LINE_SMOOTH);
 #endif
 
+    /* This attribute array is always on. */
     glEnableVertexAttribArray(vertex);
 
     glActiveTexture(GL_TEXTURE0);
