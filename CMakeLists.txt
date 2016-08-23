@@ -169,10 +169,12 @@ if(PLANETS3D_SDL)
 
     file(GLOB SDL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sdl/src/*.cpp")
 
+    file(GLOB IMGUI_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp")
+
     # Use that resource generation script to generate res.hpp and res.cpp.
     create_resources(res ${SDL_SHADERS} "${CMAKE_SOURCE_DIR}/textures/planet_diffuse.png" "${CMAKE_SOURCE_DIR}/textures/planet_nrm.png")
 
-    add_executable(${PROJECT_NAME}_sdl WIN32 ${SDL_SOURCES} ${SDL_HEADERS} ${SDL_WINDRES} ${SDL_SHADERS} res.cpp)
+    add_executable(${PROJECT_NAME}_sdl WIN32 ${SDL_SOURCES} ${IMGUI_SOURCES} ${SDL_HEADERS} ${SDL_WINDRES} ${SDL_SHADERS} res.cpp)
 
     if(MSVC)
         # MSVC needs to link to SDL's main wrapper.

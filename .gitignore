@@ -52,6 +52,9 @@ build
 # For building TinyXML #
 tinyxml
 
+# For dear imgui #
+imgui
+
 
 # Git patch files #
 ###################

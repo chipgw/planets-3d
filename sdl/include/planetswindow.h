@@ -47,6 +47,9 @@ class PlanetsWindow{
     /* GL shader and uniform handles for flat color shader. */
     unsigned int shaderColor, shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
 
+    /* GL shader and uniform handles for dear imgui. */
+    unsigned int shaderUI, shaderUI_matrix;
+
     /* The diffuse and normalmap textures for planets. */
     unsigned int planetTexture_diff, planetTexture_nrm;
 
@@ -65,12 +68,14 @@ class PlanetsWindow{
     void initGL();
     void initShaders();
     void initBuffers();
+    void initUI();
 
     /* Load a texture from a file. */
     unsigned int loadTexture(SDL_RWops* io);
 
     /* Render all the stuffs. */
     void paint();
+    void paintUI(const float delay);
 
     /* Call this to close the window. */
     void onClose();

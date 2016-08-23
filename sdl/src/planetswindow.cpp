@@ -9,12 +9,14 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 #include <SDL_image.h>
+#include <imgui/imgui.h>
 
 #include "res.hpp"
 
 PlanetsWindow::PlanetsWindow(int argc, char* argv[]) : placing(universe), camera(universe), gamepad(universe, camera, placing) {
     initSDL();
     initGL();
+    initUI();
 
     gamepad.closeFunction = std::bind(&PlanetsWindow::onClose, this);
 
@@ -67,6 +69,7 @@ void PlanetsWindow::initSDL() {
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,  8);
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
     windowSDL = SDL_CreateWindow("Planets3D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600,
                                  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
@@ -165,14 +168,10 @@ unsigned int PlanetsWindow::loadTexture(SDL_RWops* io) {
 }
 
 void PlanetsWindow::initShaders() {
-    /* Compile the flat color shader included in shaders.h as const char*. */
-    GLuint shaderColor_vsh = compileShader(color_vsh,     GL_VERTEX_SHADER);
-    GLuint shaderColor_fsh = compileShader(color_fsh,   GL_FRAGMENT_SHADER);
+    /* Compile the flat color shader included in res.h as const char*. */
+    GLuint shaderColor_vsh = compileShader(color_vsh, GL_VERTEX_SHADER);
+    GLuint shaderColor_fsh = compileShader(color_fsh, GL_FRAGMENT_SHADER);
     shaderColor = linkShaderProgram(shaderColor_vsh, shaderColor_fsh);
-
-    /* These aren't needed anymore... */
-    glDeleteShader(shaderColor_vsh);
-    glDeleteShader(shaderColor_fsh);
 
     /* Get the uniform locations from color shader. */
     glUseProgram(shaderColor);
@@ -181,15 +180,11 @@ void PlanetsWindow::initShaders() {
     shaderColor_modelMatrix     = glGetUniformLocation(shaderColor, "modelMatrix");
 
 
-    /* Compile the textured shader included in shaders.h as const char*. */
-    GLuint shaderTexture_vsh = compileShader(texture_vsh,   GL_VERTEX_SHADER);
+    /* Compile the textured shader included in res.h as const char*. */
+    GLuint shaderTexture_vsh = compileShader(texture_vsh, GL_VERTEX_SHADER);
     GLuint shaderTexture_fsh = compileShader(texture_fsh, GL_FRAGMENT_SHADER);
 
     shaderTexture = linkShaderProgram(shaderTexture_vsh, shaderTexture_fsh);
-
-    /* These aren't needed anymore... */
-    glDeleteShader(shaderTexture_vsh);
-    glDeleteShader(shaderTexture_fsh);
 
     /* Get the uniform locations from the texture shader. */
     glUseProgram(shaderTexture);
@@ -200,6 +195,16 @@ void PlanetsWindow::initShaders() {
 
     glUniform1i(glGetUniformLocation(shaderTexture, "texture_diff"), 0);
     glUniform1i(glGetUniformLocation(shaderTexture, "texture_nrm"), 1);
+
+    /* Compile the UI shader included in res.h as const char*. */
+    GLuint shaderUI_vsh = compileShader(ui_vsh, GL_VERTEX_SHADER);
+    GLuint shaderUI_fsh = compileShader(ui_fsh, GL_FRAGMENT_SHADER);
+    shaderUI = linkShaderProgram(shaderUI_vsh, shaderUI_fsh);
+
+    /* Get the uniform locations from UI shader. */
+    glUseProgram(shaderUI);
+    glUniform1i(glGetUniformLocation(shaderUI, "uiTexture"), 0);
+    shaderUI_matrix         = glGetUniformLocation(shaderUI, "matrix");
 }
 
 void PlanetsWindow::initBuffers() {
@@ -234,6 +239,92 @@ void PlanetsWindow::initBuffers() {
     highResTriCount = highResSphere.triangleCount;
     lowResLineCount = lowResSphere.lineCount;
     circleLineCount = circle.lineCount;
+}
+
+static void interfaceRenderFunc(ImDrawData* drawData) {
+    ImGuiIO& io = ImGui::GetIO();
+    GLint viewport[4]; glGetIntegerv(GL_VIEWPORT, viewport);
+    drawData->ScaleClipRects(io.DisplayFramebufferScale);
+
+    glEnableVertexAttribArray(vertex);
+    glEnableVertexAttribArray(uv);
+    glEnableVertexAttribArray(normal);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    constexpr GLenum indexType = sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+
+    for (int n = 0; n < drawData->CmdListsCount; ++n) {
+        const ImDrawList* cmdList = drawData->CmdLists[n];
+        intptr_t idxBufferOffset = 0;
+
+        glVertexAttribPointer(vertex,   2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().pos);
+        glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().uv);
+        glVertexAttribPointer(normal,   4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().col);
+
+        for (const ImDrawCmd* pcmd = cmdList->CmdBuffer.begin(); pcmd != cmdList->CmdBuffer.end(); ++pcmd) {
+            if (pcmd->UserCallback) {
+                pcmd->UserCallback(cmdList, pcmd);
+            } else {
+                glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
+                glScissor((int)pcmd->ClipRect.x, (int)(viewport[3] - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
+                glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, indexType, &cmdList->IdxBuffer[idxBufferOffset]);
+            }
+            idxBufferOffset += pcmd->ElemCount;
+        }
+    }
+
+    /* The defaults that everything else uses. */
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_SCISSOR_TEST);
+}
+
+void PlanetsWindow::initUI() {
+    GLuint fontTexture;
+
+    ImGuiIO& io = ImGui::GetIO();
+    unsigned char* pixels;
+    int width, height;
+    io.Fonts->GetTexDataAsAlpha8(&pixels, &width, &height);
+
+    // Upload texture to graphics system
+    glGenTextures(1, &fontTexture);
+    glBindTexture(GL_TEXTURE_2D, fontTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, pixels);
+
+    // Store our identifier
+    io.Fonts->TexID = reinterpret_cast<void*>(static_cast<intptr_t>(fontTexture));
+
+    // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
+    io.KeyMap[ImGuiKey_Tab] = SDLK_TAB;
+    io.KeyMap[ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;
+    io.KeyMap[ImGuiKey_RightArrow] = SDL_SCANCODE_RIGHT;
+    io.KeyMap[ImGuiKey_UpArrow] = SDL_SCANCODE_UP;
+    io.KeyMap[ImGuiKey_DownArrow] = SDL_SCANCODE_DOWN;
+    io.KeyMap[ImGuiKey_PageUp] = SDL_SCANCODE_PAGEUP;
+    io.KeyMap[ImGuiKey_PageDown] = SDL_SCANCODE_PAGEDOWN;
+    io.KeyMap[ImGuiKey_Home] = SDL_SCANCODE_HOME;
+    io.KeyMap[ImGuiKey_End] = SDL_SCANCODE_END;
+    io.KeyMap[ImGuiKey_Delete] = SDLK_DELETE;
+    io.KeyMap[ImGuiKey_Backspace] = SDLK_BACKSPACE;
+    io.KeyMap[ImGuiKey_Enter] = SDLK_RETURN;
+    io.KeyMap[ImGuiKey_Escape] = SDLK_ESCAPE;
+    io.KeyMap[ImGuiKey_A] = SDLK_a;
+    io.KeyMap[ImGuiKey_C] = SDLK_c;
+    io.KeyMap[ImGuiKey_V] = SDLK_v;
+    io.KeyMap[ImGuiKey_X] = SDLK_x;
+    io.KeyMap[ImGuiKey_Y] = SDLK_y;
+    io.KeyMap[ImGuiKey_Z] = SDLK_z;
+
+    io.RenderDrawListsFn = interfaceRenderFunc;
+
+    io.SetClipboardTextFn = [](const char* text) { SDL_SetClipboardText(text); };
+    io.GetClipboardTextFn = []() { return static_cast<const char*>(SDL_GetClipboardText()); };
 }
 
 void PlanetsWindow::run() {
@@ -272,6 +363,8 @@ void PlanetsWindow::run() {
             universe.advance(float(delay));
 
         paint();
+        paintUI(delay * 1.0e-6f);
+
 
         SDL_GL_SwapWindow(windowSDL);
 
@@ -321,6 +414,11 @@ void PlanetsWindow::paint() {
     glVertexAttribPointer(normal,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->normal));
     glVertexAttribPointer(tangent,  3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->tangent));
     glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->uv));
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, planetTexture_diff);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, planetTexture_nrm);
 
     for (const auto& i : universe) {
         glm::mat4 matrix = glm::translate(i.position);
@@ -508,6 +606,79 @@ void PlanetsWindow::paint() {
 
         glEnable(GL_DEPTH_TEST);
     }
+}
+
+void PlanetsWindow::paintUI(const float delay) {
+    ImGuiIO& io = ImGui::GetIO();
+
+    io.DeltaTime = delay;
+
+    // Setup inputs
+    // (we already got mouse wheel, keyboard keys & characters from SDL_PollEvent())
+    int mx, my;
+    Uint32 mouseMask = SDL_GetMouseState(&mx, &my);
+    if (SDL_GetWindowFlags(windowSDL) & SDL_WINDOW_MOUSE_FOCUS)
+        io.MousePos = ImVec2((float)mx, (float)my);   // Mouse position, in pixels (set to -1,-1 if no mouse / on another screen, etc.)
+    else
+        io.MousePos = ImVec2(-1, -1);
+
+    // If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
+    io.MouseDown[0] = /*g_MousePressed[0] ||*/ (mouseMask & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
+    io.MouseDown[1] = /*g_MousePressed[1] ||*/ (mouseMask & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
+    io.MouseDown[2] = /*g_MousePressed[2] ||*/ (mouseMask & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
+//        g_MousePressed[0] = g_MousePressed[1] = g_MousePressed[2] = false;
+
+//        io.MouseWheel = g_MouseWheel;
+//        g_MouseWheel = 0.0f;
+
+    /* Hide OS cursor if imgui has one. */
+    SDL_ShowCursor(io.MouseDrawCursor ? SDL_FALSE : SDL_TRUE);
+
+    /* Begin UI code. */
+    ImGui::NewFrame();
+
+    static bool show_test_window = false;
+    if (ImGui::Button("Foo"))
+        show_test_window = !show_test_window;
+
+    if (show_test_window) {
+        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+        ImGui::ShowTestWindow(&show_test_window);
+    }
+
+    /* TODO - Actual UI code. */
+
+    /* End UI code. */
+
+    /* Begin rendering code. */
+    int fb_width = (int)(io.DisplaySize.x * io.DisplayFramebufferScale.x);
+    int fb_height = (int)(io.DisplaySize.y * io.DisplayFramebufferScale.y);
+    if (fb_width == 0 || fb_height == 0)
+        return;
+
+    // Backup GL state
+    GLint last_viewport[4]; glGetIntegerv(GL_VIEWPORT, last_viewport);
+
+    // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_SCISSOR_TEST);
+    glActiveTexture(GL_TEXTURE0);
+
+    // Setup orthographic projection matrix
+    glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
+    const glm::mat4 projection( 2.0f/io.DisplaySize.x, 0.0f,                   0.0f, 0.0f,
+                                0.0f,                  2.0f/-io.DisplaySize.y, 0.0f, 0.0f,
+                                0.0f,                  0.0f,                  -1.0f, 0.0f,
+                               -1.0f,                  1.0f,                   0.0f, 1.0f);
+
+    glUseProgram(shaderUI);
+    glUniformMatrix4fv(shaderUI_matrix, 1, GL_FALSE, glm::value_ptr(projection));
+
+    ImGui::Render();
+    /* End rendering code. */
+
+    glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
 }
 
 void PlanetsWindow::toggleFullscreen() {
@@ -711,6 +882,13 @@ void PlanetsWindow::onResized(uint32_t width, uint32_t height) {
     /* Resize the viewport and camera. */
     glViewport(0, 0, width, height);
     camera.resizeViewport(float(width), float(height));
+
+    ImGuiIO& io = ImGui::GetIO();
+    int display_w, display_h;
+    SDL_GL_GetDrawableSize(windowSDL, &display_w, &display_h);
+    io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
+    io.DisplayFramebufferScale = ImVec2(width > 0 ? (static_cast<float>(display_w) / static_cast<float>(width)) : 0,
+                                        height > 0 ? (static_cast<float>(display_h) / static_cast<float>(height)) : 0);
 }
 
 void PlanetsWindow::drawPlanetWireframe(const Planet& planet, const uint32_t& color) {
