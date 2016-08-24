@@ -15,6 +15,7 @@ For Qt interface:
 For SDL interface:
 * [SDL] 2.0 or greater.
 * [SDL_image] 2.0 or greater.
+* [ImGui] 1.49 or greater.
 
 Building
 --------
@@ -54,6 +55,7 @@ License
 [TinyXml]:http://www.grinninglizard.com/tinyxml/
 [SDL]:http://www.libsdl.org
 [SDL_image]:http://www.libsdl.org/projects/SDL_image
+[ImGui]:https://github.com/ocornut/imgui
 [Emscripten]:http://kripken.github.io/emscripten-site/
 [Demo]:http://chipgw.github.io/planets/
 [MIT License]:LICENSE

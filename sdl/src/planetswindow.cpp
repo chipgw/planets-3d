@@ -613,16 +613,17 @@ void PlanetsWindow::paintUI(const float delay) {
 
     io.DeltaTime = delay;
 
-    // Setup inputs
-    // (we already got mouse wheel, keyboard keys & characters from SDL_PollEvent())
+    /* Setup inputs.
+     * TODO - Get mouse wheel, keyboard keys & characters from SDL_PollEvent()... */
     int mx, my;
     Uint32 mouseMask = SDL_GetMouseState(&mx, &my);
+    /* Mouse position, in pixels (set to -1,-1 if no mouse / on another screen, etc.) */
     if (SDL_GetWindowFlags(windowSDL) & SDL_WINDOW_MOUSE_FOCUS)
-        io.MousePos = ImVec2((float)mx, (float)my);   // Mouse position, in pixels (set to -1,-1 if no mouse / on another screen, etc.)
+        io.MousePos = ImVec2((float)mx, (float)my);
     else
         io.MousePos = ImVec2(-1, -1);
 
-    // If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
+    /* If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame. */
     io.MouseDown[0] = /*g_MousePressed[0] ||*/ (mouseMask & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
     io.MouseDown[1] = /*g_MousePressed[1] ||*/ (mouseMask & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
     io.MouseDown[2] = /*g_MousePressed[2] ||*/ (mouseMask & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
@@ -637,16 +638,66 @@ void PlanetsWindow::paintUI(const float delay) {
     /* Begin UI code. */
     ImGui::NewFrame();
 
-    static bool show_test_window = false;
-    if (ImGui::Button("Foo"))
-        show_test_window = !show_test_window;
+    static bool showTestWindow = false;
+    static bool showPlanetGenWindow = false;
 
-    if (show_test_window) {
-        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-        ImGui::ShowTestWindow(&show_test_window);
+    if (ImGui::BeginMainMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("New", "CTRL+N"))
+                newUniverse();
+
+            if (ImGui::MenuItem("Quit", "CTRL+Q"))
+                onClose();
+
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("View")) {
+            if (ImGui::MenuItem("Show Grid", "CTRL+G", grid.draw))
+                grid.toggle();
+
+            if (ImGui::MenuItem("Show Trails", "CTRL+T", drawTrails))
+                drawTrails = !drawTrails;
+
+            if (ImGui::MenuItem("Show Planar Circles", "CTRL+Y", drawPlanarCircles))
+                drawPlanarCircles = !drawPlanarCircles;
+
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("Planet Generator", "", showPlanetGenWindow))
+                showPlanetGenWindow = !showPlanetGenWindow;
+
+            if (ImGui::MenuItem("Show ImGui Test Window", "", showTestWindow))
+                showTestWindow = !showTestWindow;
+
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
     }
 
-    /* TODO - Actual UI code. */
+    if (showPlanetGenWindow) {
+        ImGui::Begin("Random Planet Generator", &showPlanetGenWindow, ImVec2(200, 200));
+
+        static bool orbital = false;
+
+        ImGui::Checkbox("Orbital", &orbital);
+
+        if (ImGui::Button("Generate")) {
+            /* TODO - Add parameter controls. */
+            if (orbital)
+                universe.generateRandomOrbital(1, universe.selected);
+            else
+                universe.generateRandom(10, 1.0e3f, universe.velocityfac, 100.0f);
+        }
+
+        ImGui::End();
+    }
+
+    /* TODO - More UI code. */
+
+    if (showTestWindow) {
+        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+        ImGui::ShowTestWindow(&showTestWindow);
+    }
 
     /* End UI code. */
 
@@ -656,16 +707,13 @@ void PlanetsWindow::paintUI(const float delay) {
     if (fb_width == 0 || fb_height == 0)
         return;
 
-    // Backup GL state
-    GLint last_viewport[4]; glGetIntegerv(GL_VIEWPORT, last_viewport);
-
-    // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled
+    /* Setup render state: no face culling, no depth testing, scissor enabled. */
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_SCISSOR_TEST);
     glActiveTexture(GL_TEXTURE0);
 
-    // Setup orthographic projection matrix
+    /* Setup orthographic projection matrix. */
     glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
     const glm::mat4 projection( 2.0f/io.DisplaySize.x, 0.0f,                   0.0f, 0.0f,
                                 0.0f,                  2.0f/-io.DisplaySize.y, 0.0f, 0.0f,
@@ -675,10 +723,13 @@ void PlanetsWindow::paintUI(const float delay) {
     glUseProgram(shaderUI);
     glUniformMatrix4fv(shaderUI_matrix, 1, GL_FALSE, glm::value_ptr(projection));
 
+    /* Pass the rendering on to ImGui and interfaceRenderFunc(). */
     ImGui::Render();
+
     /* End rendering code. */
 
-    glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
+    /* Make sure the viewport is as it was before rendering. */
+    glViewport(0, 0, windowSize.x, windowSize.y);
 }
 
 void PlanetsWindow::toggleFullscreen() {
@@ -688,6 +739,7 @@ void PlanetsWindow::toggleFullscreen() {
 }
 
 void PlanetsWindow::doEvents() {
+    /* TODO - Send key events and such to ImGui. */
     SDL_Event event;
     while(SDL_PollEvent(&event)) {
         switch (event.type) {
@@ -766,6 +818,7 @@ void PlanetsWindow::doEvents() {
 }
 
 void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
+    /* TODO - Replace just about everything with ImGui controls. */
     switch(key.sym) {
     case SDLK_ESCAPE:
         onClose();
@@ -776,30 +829,11 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
     case SDLK_o:
         placing.beginOrbitalCreation();
         break;
-    case SDLK_n:
-        if (key.mod & KMOD_CTRL)
-            newUniverse();
-        break;
-    case SDLK_m:
-        universe.generateRandomOrbital(1, universe.selected);
-        break;
-    case SDLK_r:
-        universe.generateRandom(10, 1.0e3f, universe.velocityfac, 100.0f);
-        break;
     case SDLK_c:
         universe.centerAll();
         break;
     case SDLK_DELETE:
         universe.deleteSelected();
-        break;
-    case SDLK_t:
-        drawTrails = !drawTrails;
-        break;
-    case SDLK_y:
-        drawPlanarCircles = !drawPlanarCircles;
-        break;
-    case SDLK_g:
-        grid.toggle();
         break;
     case SDLK_KP_PLUS:
         if (universe.simspeed <= 0.0f)
