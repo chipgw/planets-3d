@@ -16,10 +16,10 @@ uint32_t highBit(uint32_t n) {
 void Grid::update(const Camera& camera) {
     /* The resulting amount of vertecies is (range + 1) * 4
      * because there are 4 vertecies for every range value, plus for center lines at 0.  */
-    if (points.size() != (range + 1) * 4) {
+    if (points.size() != (range * 2 + 1) * 4) {
         points.clear();
 
-        float bounds = range / 2.0f;
+        float bounds = range;
         for (float i = -bounds; i <= bounds; ++i) {
             points.push_back(glm::vec2(i, -bounds));
             points.push_back(glm::vec2(i,  bounds));
