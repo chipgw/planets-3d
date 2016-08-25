@@ -427,13 +427,13 @@
         <number>4</number>
        </property>
        <property name="maximum">
-        <number>200</number>
+        <number>64</number>
        </property>
        <property name="singleStep">
-        <number>4</number>
+        <number>2</number>
        </property>
        <property name="value">
-        <number>32</number>
+        <number>16</number>
        </property>
       </widget>
      </item>
