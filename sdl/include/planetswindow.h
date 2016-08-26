@@ -61,7 +61,7 @@ class PlanetsWindow{
 
     /* Called to update universe based on SDL events. */
     void doEvents();
-    void doKeyPress(const SDL_Keysym& key);
+    bool doKeyPress(const SDL_Keysym& key);
 
     /* Initialization functions, called by constructor. */
     void initSDL();
@@ -96,6 +96,10 @@ class PlanetsWindow{
 
     /* Total amount of frames drawn since window creation. */
     uintmax_t totalFrames = 0;
+
+    /* Keep track of the delayof the last fer frames for graphing. */
+    std::array<float, 32> frameTimes;
+    size_t frameTimeOffset = 0;
 
 public:
     /* Create the window, expects command line arguments as passed to a standard main(int argc, char* argv[]) function. */

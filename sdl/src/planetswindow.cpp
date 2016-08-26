@@ -345,6 +345,11 @@ void PlanetsWindow::run() {
         int delay = duration_cast<microseconds>(current - last_time).count();
         last_time = current;
 
+        /* Store in milliseconds. */
+        frameTimes[frameTimeOffset++] = delay * 1.0e-3f;
+        if (frameTimeOffset >= frameTimes.size())
+            frameTimeOffset = 0;
+
         if (delay != 0)
             /* Put a bunch of information into the title. */
             SDL_SetWindowTitle(windowSDL, ("Planets3D  [" + std::to_string(1000000 / delay) + "fps, " + std::to_string(delay / 1000) + "ms " +
@@ -364,7 +369,6 @@ void PlanetsWindow::run() {
 
         paint();
         paintUI(delay * 1.0e-6f);
-
 
         SDL_GL_SwapWindow(windowSDL);
 
@@ -640,31 +644,46 @@ void PlanetsWindow::paintUI(const float delay) {
 
     static bool showTestWindow = false;
     static bool showPlanetGenWindow = false;
+    static bool showSpeedWindow = false;
+    static bool showViewSettingsWindow = false;
 
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
-            if (ImGui::MenuItem("New", "CTRL+N"))
+            if (ImGui::MenuItem("New", "Ctrl+N"))
                 newUniverse();
 
-            if (ImGui::MenuItem("Quit", "CTRL+Q"))
+            if (ImGui::MenuItem("Quit", "Escape"))
                 onClose();
 
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View")) {
-            if (ImGui::MenuItem("Show Grid", "CTRL+G", grid.draw))
+            if (ImGui::MenuItem("Fullscreen", "Alt+Enter", grid.draw))
+                toggleFullscreen();
+
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("Show Grid", "Ctrl+G", grid.draw))
                 grid.toggle();
 
-            if (ImGui::MenuItem("Show Trails", "CTRL+T", drawTrails))
+            if (ImGui::MenuItem("Show Trails", "Ctrl+T", drawTrails))
                 drawTrails = !drawTrails;
 
-            if (ImGui::MenuItem("Show Planar Circles", "CTRL+Y", drawPlanarCircles))
+            if (ImGui::MenuItem("Show Planar Circles", "Ctrl+Y", drawPlanarCircles))
                 drawPlanarCircles = !drawPlanarCircles;
 
             ImGui::Separator();
 
+            /* All the buttons for opening the control windows... */
+
             if (ImGui::MenuItem("Planet Generator", "", showPlanetGenWindow))
                 showPlanetGenWindow = !showPlanetGenWindow;
+
+            if (ImGui::MenuItem("Speed Controls", "", showSpeedWindow))
+                showSpeedWindow = !showSpeedWindow;
+
+            if (ImGui::MenuItem("View Settings", "", showViewSettingsWindow))
+                showViewSettingsWindow = !showViewSettingsWindow;
 
             if (ImGui::MenuItem("Show ImGui Test Window", "", showTestWindow))
                 showTestWindow = !showTestWindow;
@@ -688,6 +707,53 @@ void PlanetsWindow::paintUI(const float delay) {
             else
                 universe.generateRandom(10, 1.0e3f, universe.velocityfac, 100.0f);
         }
+
+        ImGui::End();
+    }
+
+    if (showSpeedWindow) {
+        ImGui::Begin("Speed Controls", &showSpeedWindow, ImVec2(200, 200));
+
+        ImGui::SliderFloat("Speed", &universe.simspeed, 0.0f, 64.0f, "%.3fx");
+
+        if (ImGui::Button("Slow Down")) {
+            if (universe.simspeed <= 0.25f)
+                universe.simspeed = 0.0f;
+            else
+                universe.simspeed *= 0.5f;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button(universe.simspeed <= 0.0f ? "Resume" : "Pause")) {
+            if (universe.simspeed <= 0.0f)
+                universe.simspeed = pauseSpeed;
+            else {
+                pauseSpeed = universe.simspeed;
+                universe.simspeed = 0.0f;
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Fast Forward")) {
+            if (universe.simspeed <= 0.0f)
+                universe.simspeed = 0.25f;
+            else if (universe.simspeed < 64.0f)
+                universe.simspeed *= 2.0f;
+        }
+
+        /* TODO - Perhaps add more stats, and possibly put them in their own window... */
+        if (ImGui::CollapsingHeader("Performance Stats", "perf"))
+            ImGui::PlotLines("Frame Time\n(in ms)", frameTimes.data(), frameTimes.size(), frameTimeOffset, nullptr, 0.0f, 100.0f, ImVec2(0.0f, 160.0f));
+
+        ImGui::End();
+    }
+
+    if (showViewSettingsWindow) {
+        ImGui::Begin("View Settings", &showSpeedWindow, ImVec2(200, 200));
+
+        ImGui::SliderInt("Path Length", (int*)&universe.pathLength, 100, 4000);
+        /* TODO - Is there a way to make this show the non-squared number that is the actual distance it takes to record the new point? */
+        ImGui::SliderFloat("Path Record Distance (squared)", &universe.pathRecordDistance, 0.04f, 100.0f, "%.3f", 2.0f);
+        ImGui::SliderInt("Steps Per Frame", &universe.stepsPerFrame, 1, 4000);
+        ImGui::SliderInt("Grid Size", (int*)&grid.range, 4, 64);
 
         ImGui::End();
     }
@@ -739,6 +805,7 @@ void PlanetsWindow::toggleFullscreen() {
 }
 
 void PlanetsWindow::doEvents() {
+    ImGuiIO& io = ImGui::GetIO();
     /* TODO - Send key events and such to ImGui. */
     SDL_Event event;
     while(SDL_PollEvent(&event)) {
@@ -747,7 +814,17 @@ void PlanetsWindow::doEvents() {
             onClose();
             break;
         case SDL_KEYDOWN:
+            /* TODO - It's probably a bad idea to do both, but until all shortcuts are moved to UI... */
             doKeyPress(event.key.keysym);
+        case SDL_KEYUP:
+            io.KeysDown[event.key.keysym.sym & ~SDLK_SCANCODE_MASK] = (event.type == SDL_KEYDOWN);
+            io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
+            io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
+            io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
+            io.KeySuper = ((SDL_GetModState() & KMOD_GUI) != 0);
+            break;
+        case SDL_TEXTINPUT:
+            io.AddInputCharactersUTF8(event.text.text);
             break;
         case SDL_WINDOWEVENT:
             switch(event.window.event) {
@@ -817,68 +894,27 @@ void PlanetsWindow::doEvents() {
     }
 }
 
-void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
+bool PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
     /* TODO - Replace just about everything with ImGui controls. */
     switch(key.sym) {
-    case SDLK_ESCAPE:
-        onClose();
-        break;
     case SDLK_p:
         placing.beginInteractiveCreation();
-        break;
+        return true;
     case SDLK_o:
         placing.beginOrbitalCreation();
-        break;
+        return true;
     case SDLK_c:
         universe.centerAll();
-        break;
+        return true;
     case SDLK_DELETE:
         universe.deleteSelected();
-        break;
-    case SDLK_KP_PLUS:
-        if (universe.simspeed <= 0.0f)
-            universe.simspeed = 0.25f;
-        else if (universe.simspeed < 64.0f)
-            universe.simspeed *= 2.0f;
-        break;
-    case SDLK_KP_MINUS:
-        if (universe.simspeed <= 0.25f)
-            universe.simspeed = 0.0f;
-        else
-            universe.simspeed *= 0.5f;
-        break;
+        return true;
     case SDLK_RETURN:
         if (key.mod & KMOD_ALT)
             toggleFullscreen();
-        break;
-    case SDLK_SPACE:
-        if (universe.simspeed <= 0.0f)
-            universe.simspeed = pauseSpeed;
-        else {
-            pauseSpeed = universe.simspeed;
-            universe.simspeed = 0.0f;
-        }
-        break;
-    case SDLK_LEFT:
-        if (universe.stepsPerFrame > 1)
-            --universe.stepsPerFrame;
-        break;
-    case SDLK_RIGHT:
-        ++universe.stepsPerFrame;
-        break;
-    case SDLK_UP:
-        if (universe.pathLength < 2000)
-            universe.pathLength *= 2;
-        else
-            universe.pathLength = 4000;
-        break;
-    case SDLK_DOWN:
-        if (universe.pathLength > 200)
-            universe.pathLength /= 2;
-        else
-            universe.pathLength = 100;
-        break;
+        return true;
     }
+    return false;
 }
 
 const SDL_MessageBoxButtonData buttonsNoYes[] = {
