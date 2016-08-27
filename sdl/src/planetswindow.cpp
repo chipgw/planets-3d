@@ -617,24 +617,14 @@ void PlanetsWindow::paintUI(const float delay) {
 
     io.DeltaTime = delay;
 
-    /* Setup inputs.
-     * TODO - Get mouse wheel, keyboard keys & characters from SDL_PollEvent()... */
+    /* Get the mouse position. */
     int mx, my;
-    Uint32 mouseMask = SDL_GetMouseState(&mx, &my);
+    SDL_GetMouseState(&mx, &my);
     /* Mouse position, in pixels (set to -1,-1 if no mouse / on another screen, etc.) */
     if (SDL_GetWindowFlags(windowSDL) & SDL_WINDOW_MOUSE_FOCUS)
         io.MousePos = ImVec2((float)mx, (float)my);
     else
         io.MousePos = ImVec2(-1, -1);
-
-    /* If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame. */
-    io.MouseDown[0] = /*g_MousePressed[0] ||*/ (mouseMask & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
-    io.MouseDown[1] = /*g_MousePressed[1] ||*/ (mouseMask & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
-    io.MouseDown[2] = /*g_MousePressed[2] ||*/ (mouseMask & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
-//        g_MousePressed[0] = g_MousePressed[1] = g_MousePressed[2] = false;
-
-//        io.MouseWheel = g_MouseWheel;
-//        g_MouseWheel = 0.0f;
 
     /* Hide OS cursor if imgui has one. */
     SDL_ShowCursor(io.MouseDrawCursor ? SDL_FALSE : SDL_TRUE);
@@ -814,8 +804,9 @@ void PlanetsWindow::doEvents() {
             onClose();
             break;
         case SDL_KEYDOWN:
-            /* TODO - It's probably a bad idea to do both, but until all shortcuts are moved to UI... */
-            doKeyPress(event.key.keysym);
+            /* If ImGui wants the keyboard, we just send the event, otherwise we use it. */
+            if (!io.WantCaptureKeyboard)
+                doKeyPress(event.key.keysym);
         case SDL_KEYUP:
             io.KeysDown[event.key.keysym.sym & ~SDLK_SCANCODE_MASK] = (event.type == SDL_KEYDOWN);
             io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
@@ -845,14 +836,22 @@ void PlanetsWindow::doEvents() {
             gamepad.handleEvent(event);
             break;
         case SDL_MOUSEWHEEL:
-            if (!placing.handleMouseWheel(event.wheel.y * 0.2f)) {
+            /* If ImGui wants the mouse, we ignore it for placing & camera purposes. */
+            if (!io.WantCaptureMouse && !placing.handleMouseWheel(event.wheel.y * 0.2f)) {
                 camera.distance -= event.wheel.y * camera.distance * 0.1f;
 
                 camera.bound();
             }
+
+            /* Pass to ImGui. */
+            if (event.wheel.y > 0)
+                io.MouseWheel = 1;
+            if (event.wheel.y < 0)
+                io.MouseWheel = -1;
             break;
         case SDL_MOUSEBUTTONUP:
-            if (event.button.button == SDL_BUTTON_LEFT) {
+            /* If ImGui wants the mouse, we ignore it here. */
+            if (!io.WantCaptureMouse && event.button.button == SDL_BUTTON_LEFT) {
                 if (event.button.clicks == 2 && placing.step == PlacingInterface::NotPlacing) {
                     if (universe.isSelectedValid())
                         camera.followSelection();
@@ -868,14 +867,28 @@ void PlanetsWindow::doEvents() {
             }
             /* Always show cursor when mouse button is released. */
             SDL_SetRelativeMouseMode(SDL_FALSE);
-            break;
+
+            /* Continue on to pass event to ImGui. */
+        case SDL_MOUSEBUTTONDOWN:
+            switch (event.button.button) {
+            case SDL_BUTTON_LEFT:
+                io.MouseDown[0] = event.type == SDL_MOUSEBUTTONDOWN;
+                break;
+            case SDL_BUTTON_RIGHT:
+                io.MouseDown[1] = event.type == SDL_MOUSEBUTTONDOWN;
+                break;
+            case SDL_BUTTON_MIDDLE:
+                io.MouseDown[2] = event.type == SDL_MOUSEBUTTONDOWN;
+                break;
+            }
+        break;
         case SDL_MOUSEMOTION:
             /* yrel is inverted compared to the delta calculated in Qt. */
             glm::ivec2 delta(event.motion.xrel, -event.motion.yrel);
 
             bool holdCursor = false;
 
-            if (!placing.handleMouseMove(glm::ivec2(event.motion.x, event.motion.y), delta, camera, holdCursor)) {
+            if (!io.WantCaptureMouse && !placing.handleMouseMove(glm::ivec2(event.motion.x, event.motion.y), delta, camera, holdCursor)) {
                 if (event.motion.state & SDL_BUTTON_MMASK) {
                     camera.distance -= delta.y * camera.distance * 1.0e-2f;
                     camera.bound();
