@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "sdlgamepad.h"
 #include <SDL.h>
+#include <array>
 
 class PlanetsWindow{
     /* Universe and basic interface classes. */

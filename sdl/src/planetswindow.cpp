@@ -648,35 +648,22 @@ void PlanetsWindow::paintUI(const float delay) {
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View")) {
-            if (ImGui::MenuItem("Fullscreen", "Alt+Enter", grid.draw))
+            if (ImGui::MenuItem("Fullscreen", "Alt+Enter", fullscreen))
                 toggleFullscreen();
 
             ImGui::Separator();
 
-            if (ImGui::MenuItem("Show Grid", "Ctrl+G", grid.draw))
-                grid.toggle();
-
-            if (ImGui::MenuItem("Show Trails", "Ctrl+T", drawTrails))
-                drawTrails = !drawTrails;
-
-            if (ImGui::MenuItem("Show Planar Circles", "Ctrl+Y", drawPlanarCircles))
-                drawPlanarCircles = !drawPlanarCircles;
+            ImGui::MenuItem("Show Grid", "Ctrl+G", &grid.draw);
+            ImGui::MenuItem("Show Trails", "Ctrl+T", &drawTrails);
+            ImGui::MenuItem("Show Planar Circles", "Ctrl+Y", &drawPlanarCircles);
 
             ImGui::Separator();
 
             /* All the buttons for opening the control windows... */
-
-            if (ImGui::MenuItem("Planet Generator", "", showPlanetGenWindow))
-                showPlanetGenWindow = !showPlanetGenWindow;
-
-            if (ImGui::MenuItem("Speed Controls", "", showSpeedWindow))
-                showSpeedWindow = !showSpeedWindow;
-
-            if (ImGui::MenuItem("View Settings", "", showViewSettingsWindow))
-                showViewSettingsWindow = !showViewSettingsWindow;
-
-            if (ImGui::MenuItem("Show ImGui Test Window", "", showTestWindow))
-                showTestWindow = !showTestWindow;
+            ImGui::MenuItem("Planet Generator", "", &showPlanetGenWindow);
+            ImGui::MenuItem("Speed Controls", "", &showSpeedWindow);
+            ImGui::MenuItem("View Settings", "", &showViewSettingsWindow);
+            ImGui::MenuItem("Show ImGui Test Window", "", &showTestWindow);
 
             ImGui::EndMenu();
         }
@@ -687,15 +674,27 @@ void PlanetsWindow::paintUI(const float delay) {
         ImGui::Begin("Random Planet Generator", &showPlanetGenWindow, ImVec2(200, 200));
 
         static bool orbital = false;
+        static int amount = 10;
+        static float maxPos = 1.0e3f;
+        static float maxSpeed = 1.0f;
+        static float maxMass = 200.0f;
 
         ImGui::Checkbox("Orbital", &orbital);
 
+        if (ImGui::InputInt("Amount", &amount))
+            amount = std::max(1, amount);
+
+        if (!orbital) {
+            ImGui::SliderFloat("Maximum Position", &maxPos, 1.0f, 1.0e4f, "%.3f", 2.0f);
+            ImGui::SliderFloat("Maximum Speed", &maxSpeed, 0.0f, 200.0f);
+            ImGui::SliderFloat("Maximum Mass", &maxMass, 10.0f, 1.0e4f);
+        }
+
         if (ImGui::Button("Generate")) {
-            /* TODO - Add parameter controls. */
             if (orbital)
-                universe.generateRandomOrbital(1, universe.selected);
+                universe.generateRandomOrbital(amount, universe.selected);
             else
-                universe.generateRandom(10, 1.0e3f, universe.velocityfac, 100.0f);
+                universe.generateRandom(amount, maxPos, maxSpeed * universe.velocityfac, maxMass);
         }
 
         ImGui::End();
@@ -908,7 +907,6 @@ void PlanetsWindow::doEvents() {
 }
 
 bool PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
-    /* TODO - Replace just about everything with ImGui controls. */
     switch(key.sym) {
     case SDLK_p:
         placing.beginInteractiveCreation();
