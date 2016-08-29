@@ -667,6 +667,16 @@ void PlanetsWindow::paintUI(const float delay) {
 
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Create")) {
+            if (ImGui::MenuItem("Interactive Creation", "Ctrl+P"))
+                placing.beginInteractiveCreation();
+
+            if (ImGui::MenuItem("Interactive Orbital", "Ctrl+O", false, universe.isSelectedValid()))
+                placing.beginOrbitalCreation();
+
+            ImGui::EndMenu();
+        }
+
         ImGui::EndMainMenuBar();
     }
 
@@ -906,26 +916,44 @@ void PlanetsWindow::doEvents() {
     }
 }
 
-bool PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
+void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
     switch(key.sym) {
     case SDLK_p:
-        placing.beginInteractiveCreation();
-        return true;
+        if (key.mod & KMOD_CTRL)
+            placing.beginInteractiveCreation();
+        break;
     case SDLK_o:
-        placing.beginOrbitalCreation();
-        return true;
+        if (key.mod & KMOD_CTRL)
+            placing.beginOrbitalCreation();
+        break;
     case SDLK_c:
-        universe.centerAll();
-        return true;
+        if (key.mod & KMOD_ALT)
+            universe.centerAll();
+        break;
     case SDLK_DELETE:
         universe.deleteSelected();
-        return true;
+        break;
     case SDLK_RETURN:
         if (key.mod & KMOD_ALT)
             toggleFullscreen();
-        return true;
+        break;
+    case SDLK_n:
+        if (key.mod & KMOD_CTRL)
+            newUniverse();
+        break;
+    case SDLK_t:
+        if (key.mod & KMOD_CTRL)
+            drawTrails = !drawTrails;
+        break;
+    case SDLK_y:
+        if (key.mod & KMOD_CTRL)
+            drawPlanarCircles = !drawPlanarCircles;
+        break;
+    case SDLK_g:
+        if (key.mod & KMOD_CTRL)
+            grid.toggle();
+        break;
     }
-    return false;
 }
 
 const SDL_MessageBoxButtonData buttonsNoYes[] = {

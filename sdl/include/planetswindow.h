@@ -62,7 +62,7 @@ class PlanetsWindow{
 
     /* Called to update universe based on SDL events. */
     void doEvents();
-    bool doKeyPress(const SDL_Keysym& key);
+    void doKeyPress(const SDL_Keysym& key);
 
     /* Initialization functions, called by constructor. */
     void initSDL();
