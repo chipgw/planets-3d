@@ -325,6 +325,14 @@ void PlanetsWindow::initUI() {
 
     io.SetClipboardTextFn = [](const char* text) { SDL_SetClipboardText(text); };
     io.GetClipboardTextFn = []() { return static_cast<const char*>(SDL_GetClipboardText()); };
+
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    /* Set the window background to stand out from the universe background. */
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.2f, 0.2f, 0.3f, 0.50f);
+
+    /* Reduce the window corner rounding. */
+    style.WindowRounding = 4.0f;
 }
 
 void PlanetsWindow::run() {
@@ -681,7 +689,8 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showPlanetGenWindow) {
-        ImGui::Begin("Random Planet Generator", &showPlanetGenWindow, ImVec2(200, 200));
+        ImGui::SetNextWindowPos(ImVec2(10, 30));
+        ImGui::Begin("Random Planet Generator", &showPlanetGenWindow, ImVec2(360, 160));
 
         static bool orbital = false;
         static int amount = 10;
@@ -711,7 +720,8 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showSpeedWindow) {
-        ImGui::Begin("Speed Controls", &showSpeedWindow, ImVec2(200, 200));
+        ImGui::SetNextWindowPos(ImVec2(10, 200));
+        ImGui::Begin("Speed Controls", &showSpeedWindow, ImVec2(360, 100));
 
         ImGui::SliderFloat("Speed", &universe.simspeed, 0.0f, 64.0f, "%.3fx");
 
@@ -746,7 +756,8 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showViewSettingsWindow) {
-        ImGui::Begin("View Settings", &showSpeedWindow, ImVec2(200, 200));
+        ImGui::SetNextWindowPos(ImVec2(10, 310));
+        ImGui::Begin("View Settings", &showSpeedWindow, ImVec2(360, 120));
 
         ImGui::SliderInt("Path Length", (int*)&universe.pathLength, 100, 4000);
         /* TODO - Is there a way to make this show the non-squared number that is the actual distance it takes to record the new point? */
