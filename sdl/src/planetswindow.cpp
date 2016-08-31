@@ -644,6 +644,7 @@ void PlanetsWindow::paintUI(const float delay) {
     static bool showPlanetGenWindow = false;
     static bool showSpeedWindow = false;
     static bool showViewSettingsWindow = false;
+    static bool showInfoWindow = false;
 
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
@@ -671,6 +672,7 @@ void PlanetsWindow::paintUI(const float delay) {
             ImGui::MenuItem("Planet Generator", "", &showPlanetGenWindow);
             ImGui::MenuItem("Speed Controls", "", &showSpeedWindow);
             ImGui::MenuItem("View Settings", "", &showViewSettingsWindow);
+            ImGui::MenuItem("Show Information Window", "", &showInfoWindow);
             ImGui::MenuItem("Show ImGui Test Window", "", &showTestWindow);
 
             ImGui::EndMenu();
@@ -748,22 +750,40 @@ void PlanetsWindow::paintUI(const float delay) {
                 universe.simspeed *= 2.0f;
         }
 
-        /* TODO - Perhaps add more stats, and possibly put them in their own window... */
-        if (ImGui::CollapsingHeader("Performance Stats", "perf"))
-            ImGui::PlotLines("Frame Time\n(in ms)", frameTimes.data(), frameTimes.size(), frameTimeOffset, nullptr, 0.0f, 100.0f, ImVec2(0.0f, 160.0f));
-
         ImGui::End();
     }
 
     if (showViewSettingsWindow) {
         ImGui::SetNextWindowPos(ImVec2(10, 310));
-        ImGui::Begin("View Settings", &showSpeedWindow, ImVec2(360, 120));
+        ImGui::Begin("View Settings", &showViewSettingsWindow, ImVec2(360, 120));
 
         ImGui::SliderInt("Path Length", (int*)&universe.pathLength, 100, 4000);
         /* TODO - Is there a way to make this show the non-squared number that is the actual distance it takes to record the new point? */
         ImGui::SliderFloat("Path Record Distance (squared)", &universe.pathRecordDistance, 0.04f, 100.0f, "%.3f", 2.0f);
         ImGui::SliderInt("Steps Per Frame", &universe.stepsPerFrame, 1, 4000);
         ImGui::SliderInt("Grid Size", (int*)&grid.range, 4, 64);
+
+        ImGui::End();
+    }
+
+    if (showInfoWindow) {
+        ImGui::SetNextWindowPos(ImVec2(10, 440));
+        ImGui::Begin("Information", &showInfoWindow, ImVec2(360, 160));
+
+        if (universe.isSelectedValid() && ImGui::CollapsingHeader("Selected Planet")) {
+            Planet& p = universe.getSelected();
+            ImGui::Text("Position: x: %f, y: %f, z: %f", p.position.x, p.position.y, p.position.z);
+            ImGui::Text("Velocity: x: %f, y: %f, z: %f", p.velocity.x, p.velocity.y, p.velocity.z);
+            ImGui::Text("Mass:     %f", p.mass());
+            ImGui::Text("Radius:   %f", p.radius());
+        }
+
+        if (ImGui::CollapsingHeader("General Info", ImGuiTreeNodeFlags_DefaultOpen))
+            ImGui::Text("Planet Count: %zu", universe.size());
+
+        /* TODO - Perhaps add more stats, and possibly put them in their own window... */
+        if (ImGui::CollapsingHeader("Performance Stats"))
+            ImGui::PlotLines("Frame Time\n(in ms)", frameTimes.data(), frameTimes.size(), frameTimeOffset, nullptr, 0.0f, 100.0f, ImVec2(0.0f, 160.0f));
 
         ImGui::End();
     }
