@@ -376,6 +376,7 @@ void PlanetsWindow::run() {
             universe.advance(float(delay));
 
         paint();
+        /* UI time is measured in seconds. */
         paintUI(delay * 1.0e-6f);
 
         SDL_GL_SwapWindow(windowSDL);
@@ -640,12 +641,6 @@ void PlanetsWindow::paintUI(const float delay) {
     /* Begin UI code. */
     ImGui::NewFrame();
 
-    static bool showTestWindow = false;
-    static bool showPlanetGenWindow = false;
-    static bool showSpeedWindow = false;
-    static bool showViewSettingsWindow = false;
-    static bool showInfoWindow = false;
-
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("New", "Ctrl+N"))
@@ -672,8 +667,8 @@ void PlanetsWindow::paintUI(const float delay) {
             ImGui::MenuItem("Planet Generator", "", &showPlanetGenWindow);
             ImGui::MenuItem("Speed Controls", "", &showSpeedWindow);
             ImGui::MenuItem("View Settings", "", &showViewSettingsWindow);
-            ImGui::MenuItem("Show Information Window", "", &showInfoWindow);
-            ImGui::MenuItem("Show ImGui Test Window", "", &showTestWindow);
+            ImGui::MenuItem("Information Window", "", &showInfoWindow);
+            ImGui::MenuItem("ImGui Test Window", "", &showTestWindow);
 
             ImGui::EndMenu();
         }
@@ -694,28 +689,22 @@ void PlanetsWindow::paintUI(const float delay) {
         ImGui::SetNextWindowPos(ImVec2(10, 30));
         ImGui::Begin("Random Planet Generator", &showPlanetGenWindow, ImVec2(360, 160));
 
-        static bool orbital = false;
-        static int amount = 10;
-        static float maxPos = 1.0e3f;
-        static float maxSpeed = 1.0f;
-        static float maxMass = 200.0f;
+        ImGui::Checkbox("Orbital", &planetGenOrbital);
 
-        ImGui::Checkbox("Orbital", &orbital);
+        if (ImGui::InputInt("Amount", &planetGenAmount))
+            planetGenAmount = std::max(1, planetGenAmount);
 
-        if (ImGui::InputInt("Amount", &amount))
-            amount = std::max(1, amount);
-
-        if (!orbital) {
-            ImGui::SliderFloat("Maximum Position", &maxPos, 1.0f, 1.0e4f, "%.3f", 2.0f);
-            ImGui::SliderFloat("Maximum Speed", &maxSpeed, 0.0f, 200.0f);
-            ImGui::SliderFloat("Maximum Mass", &maxMass, 10.0f, 1.0e4f);
+        if (!planetGenOrbital) {
+            ImGui::SliderFloat("Maximum Position", &planetGenMaxPos, 1.0f, 1.0e4f, "%.3f", 2.0f);
+            ImGui::SliderFloat("Maximum Speed", &planetGenMaxSpeed, 0.0f, 200.0f);
+            ImGui::SliderFloat("Maximum Mass", &planetGenMaxMass, 10.0f, 1.0e4f);
         }
 
         if (ImGui::Button("Generate")) {
-            if (orbital)
-                universe.generateRandomOrbital(amount, universe.selected);
+            if (planetGenOrbital)
+                universe.generateRandomOrbital(planetGenAmount, universe.selected);
             else
-                universe.generateRandom(amount, maxPos, maxSpeed * universe.velocityfac, maxMass);
+                universe.generateRandom(planetGenAmount, planetGenMaxPos, planetGenMaxSpeed * universe.velocityfac, planetGenMaxMass);
         }
 
         ImGui::End();

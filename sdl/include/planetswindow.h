@@ -102,6 +102,19 @@ class PlanetsWindow{
     std::array<float, 32> frameTimes;
     size_t frameTimeOffset = 0;
 
+    /* UI variables. */
+    bool showTestWindow = false;
+    bool showPlanetGenWindow = false;
+    bool showSpeedWindow = false;
+    bool showViewSettingsWindow = false;
+    bool showInfoWindow = false;
+
+    bool planetGenOrbital = false;
+    int planetGenAmount = 10;
+    float planetGenMaxPos = 1.0e3f;
+    float planetGenMaxSpeed = 1.0f;
+    float planetGenMaxMass = 200.0f;
+
 public:
     /* Create the window, expects command line arguments as passed to a standard main(int argc, char* argv[]) function. */
     PlanetsWindow(int argc, char* argv[]);
