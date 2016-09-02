@@ -668,6 +668,7 @@ void PlanetsWindow::paintUI(const float delay) {
             ImGui::MenuItem("Speed Controls", "", &showSpeedWindow);
             ImGui::MenuItem("View Settings", "", &showViewSettingsWindow);
             ImGui::MenuItem("Information Window", "", &showInfoWindow);
+            ImGui::MenuItem("Firing Mode Settings", "", &showFiringWindow);
             ImGui::MenuItem("ImGui Test Window", "", &showTestWindow);
 
             ImGui::EndMenu();
@@ -757,12 +758,12 @@ void PlanetsWindow::paintUI(const float delay) {
 
     if (showInfoWindow) {
         ImGui::SetNextWindowPos(ImVec2(10, 440));
-        ImGui::Begin("Information", &showInfoWindow, ImVec2(360, 160));
+        ImGui::Begin("Information", &showInfoWindow, ImVec2(360, 200));
 
         if (universe.isSelectedValid() && ImGui::CollapsingHeader("Selected Planet")) {
             Planet& p = universe.getSelected();
             ImGui::Text("Position: x: %f, y: %f, z: %f", p.position.x, p.position.y, p.position.z);
-            ImGui::Text("Velocity: x: %f, y: %f, z: %f", p.velocity.x, p.velocity.y, p.velocity.z);
+            ImGui::Text("Velocity: x: %f, y: %f, z: %f", p.velocity.x / universe.velocityfac, p.velocity.y / universe.velocityfac, p.velocity.z / universe.velocityfac);
             ImGui::Text("Mass:     %f", p.mass());
             ImGui::Text("Radius:   %f", p.radius());
         }
@@ -773,6 +774,25 @@ void PlanetsWindow::paintUI(const float delay) {
         /* TODO - Perhaps add more stats, and possibly put them in their own window... */
         if (ImGui::CollapsingHeader("Performance Stats"))
             ImGui::PlotLines("Frame Time\n(in ms)", frameTimes.data(), frameTimes.size(), frameTimeOffset, nullptr, 0.0f, 100.0f, ImVec2(0.0f, 160.0f));
+
+        ImGui::End();
+    }
+
+    if (showFiringWindow) {
+        ImGui::SetNextWindowPos(ImVec2(10, 650));
+        ImGui::Begin("Firing Settings", &showFiringWindow, ImVec2(360, 160));
+
+        bool firingMode = placing.step == PlacingInterface::Firing;
+
+        if (ImGui::Checkbox("Firing Mode", &firingMode))
+            placing.enableFiringMode(firingMode);
+
+        float speed = placing.firingSpeed / universe.velocityfac;;
+
+        if (ImGui::SliderFloat("Speed", &speed, 0.0f, 1.0e3f, "%.3f", 4.0f))
+            placing.firingSpeed = speed * universe.velocityfac;
+
+        ImGui::SliderFloat("Mass", &placing.firingMass, 1.0f, 1.0e3f);
 
         ImGui::End();
     }

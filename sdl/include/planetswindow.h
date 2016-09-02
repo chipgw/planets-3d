@@ -108,6 +108,7 @@ class PlanetsWindow{
     bool showSpeedWindow = false;
     bool showViewSettingsWindow = false;
     bool showInfoWindow = false;
+    bool showFiringWindow = false;
 
     bool planetGenOrbital = false;
     int planetGenAmount = 10;
