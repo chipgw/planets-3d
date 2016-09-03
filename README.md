@@ -20,9 +20,11 @@ For SDL interface:
 Building
 --------
 * Clone or download the source code.
+* For SDL interface extract ImGui source files in an `imgui` folder.
 * In the source folder, create a `build` folder.
 * In the build folder, run `cmake .. -D<interface>=ON`, where `<interface>` is `PLANETS3D_QT5` or `PLANETS3D_SDL`.
 * If you want to use a different generator than your platform default, add `-G <generator>` to the cmake command, with your desired generator. A list of generators can be found by running `cmake -h`.
+* (Optional) To build TinyXML from source (Useful if you get TinyXML related link errors on Windows) place the source files in a `tinyxml` folder and add `PLANETS3D_BUILD_TINYXML=On` to the cmake command.
 * The project files should now be generated in `build`.
 
 Web interface using Emscripten:
