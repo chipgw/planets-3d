@@ -748,8 +748,12 @@ void PlanetsWindow::paintUI(const float delay) {
         ImGui::Begin("View Settings", &showViewSettingsWindow, ImVec2(360, 120));
 
         ImGui::SliderInt("Path Length", (int*)&universe.pathLength, 100, 4000);
-        /* TODO - Is there a way to make this show the non-squared number that is the actual distance it takes to record the new point? */
-        ImGui::SliderFloat("Path Record Distance (squared)", &universe.pathRecordDistance, 0.04f, 100.0f, "%.3f", 2.0f);
+
+        /* Show the square root of the value, because it is stored in squared units. */
+        float distance = sqrt(universe.pathRecordDistance);
+        if (ImGui::SliderFloat("Path Record Distance", &distance, 0.2f, 10.0f))
+            universe.pathRecordDistance = distance * distance;
+
         ImGui::SliderInt("Steps Per Frame", &universe.stepsPerFrame, 1, 4000);
         ImGui::SliderInt("Grid Size", (int*)&grid.range, 4, 64);
 
@@ -771,7 +775,7 @@ void PlanetsWindow::paintUI(const float delay) {
         if (ImGui::CollapsingHeader("General Info", ImGuiTreeNodeFlags_DefaultOpen))
             ImGui::Text("Planet Count: %zu", universe.size());
 
-        /* TODO - Perhaps add more stats, and possibly put them in their own window... */
+        /* TODO - Perhaps add more stats... */
         if (ImGui::CollapsingHeader("Performance Stats"))
             ImGui::PlotLines("Frame Time\n(in ms)", frameTimes.data(), frameTimes.size(), frameTimeOffset, nullptr, 0.0f, 100.0f, ImVec2(0.0f, 160.0f));
 
@@ -787,8 +791,8 @@ void PlanetsWindow::paintUI(const float delay) {
         if (ImGui::Checkbox("Firing Mode", &firingMode))
             placing.enableFiringMode(firingMode);
 
-        float speed = placing.firingSpeed / universe.velocityfac;;
-
+        /* Show the speed in UI velocity. */
+        float speed = placing.firingSpeed / universe.velocityfac;
         if (ImGui::SliderFloat("Speed", &speed, 0.0f, 1.0e3f, "%.3f", 4.0f))
             placing.firingSpeed = speed * universe.velocityfac;
 
@@ -796,8 +800,6 @@ void PlanetsWindow::paintUI(const float delay) {
 
         ImGui::End();
     }
-
-    /* TODO - More UI code. */
 
     if (showTestWindow) {
         ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
@@ -958,6 +960,9 @@ void PlanetsWindow::doEvents() {
 
 void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
     switch(key.sym) {
+    case SDLK_ESCAPE:
+        onClose();
+        break;
     case SDLK_p:
         if (key.mod & KMOD_CTRL)
             placing.beginInteractiveCreation();
