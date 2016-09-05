@@ -129,9 +129,9 @@ void PlanetsWindow::initGL() {
     glEnableVertexAttribArray(vertex);
 
     glActiveTexture(GL_TEXTURE0);
-    planetTexture_diff = loadTexture(SDL_RWFromConstMem(planet_diffuse_png, planet_diffuse_png_size));
+    planetTexture_diff = loadTexture(SDL_RWFromConstMem(planet_diffuse_png, static_cast<int>(planet_diffuse_png_size)));
     glActiveTexture(GL_TEXTURE1);
-    planetTexture_nrm = loadTexture(SDL_RWFromConstMem(planet_nrm_png, planet_nrm_png_size));
+    planetTexture_nrm = loadTexture(SDL_RWFromConstMem(planet_nrm_png, static_cast<int>(planet_nrm_png_size)));
 
     initBuffers();
 }
@@ -257,7 +257,7 @@ static void interfaceRenderFunc(ImDrawData* drawData) {
 
     for (int n = 0; n < drawData->CmdListsCount; ++n) {
         const ImDrawList* cmdList = drawData->CmdLists[n];
-        intptr_t idxBufferOffset = 0;
+        int idxBufferOffset = 0;
 
         glVertexAttribPointer(vertex,   2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().pos);
         glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().uv);
@@ -267,9 +267,10 @@ static void interfaceRenderFunc(ImDrawData* drawData) {
             if (pcmd->UserCallback) {
                 pcmd->UserCallback(cmdList, pcmd);
             } else {
-                glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
-                glScissor((int)pcmd->ClipRect.x, (int)(viewport[3] - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
-                glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, indexType, &cmdList->IdxBuffer[idxBufferOffset]);
+                glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(reinterpret_cast<intptr_t>(pcmd->TextureId)));
+                glScissor(static_cast<int>(pcmd->ClipRect.x), static_cast<int>(viewport[3] - pcmd->ClipRect.w),
+                          static_cast<int>(pcmd->ClipRect.z - pcmd->ClipRect.x), static_cast<int>(pcmd->ClipRect.w - pcmd->ClipRect.y));
+                glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(pcmd->ElemCount), indexType, &cmdList->IdxBuffer[idxBufferOffset]);
             }
             idxBufferOffset += pcmd->ElemCount;
         }
@@ -350,7 +351,7 @@ void PlanetsWindow::run() {
     while (running) {
         /* Figure out how long the last frame took to render & display, in microseconds. */
         clock::time_point current = clock::now();
-        int delay = duration_cast<microseconds>(current - last_time).count();
+        int delay = static_cast<int>(duration_cast<microseconds>(current - last_time).count());
         last_time = current;
 
         /* Store in milliseconds. */
@@ -387,6 +388,7 @@ void PlanetsWindow::run() {
         fflush(stdout);
     }
 
+    /* Nice high-res decimal representation of time. */
     typedef std::chrono::duration<double> dsec;
     typedef std::chrono::duration<double, std::milli> dms;
 
@@ -423,6 +425,7 @@ void PlanetsWindow::paint() {
     glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
 
+    /* Bind all the vertex attributes for the fully lit sphere. */
     glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
     glVertexAttribPointer(normal,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->normal));
     glVertexAttribPointer(tangent,  3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->tangent));
@@ -444,10 +447,12 @@ void PlanetsWindow::paint() {
     glDisableVertexAttribArray(normal);
     glDisableVertexAttribArray(tangent);
     glDisableVertexAttribArray(uv);
+
+    /* Everything else (other than UI) uses the flat color shader. */
     glUseProgram(shaderColor);
 
+    /* The color shader needs the camera updated too. */
     glUniformMatrix4fv(shaderColor_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
-    glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 
     /* Bind the low resolution wireframe sphere. */
     glBindBuffer(GL_ARRAY_BUFFER, lowResVBO);
@@ -777,7 +782,8 @@ void PlanetsWindow::paintUI(const float delay) {
 
         /* TODO - Perhaps add more stats... */
         if (ImGui::CollapsingHeader("Performance Stats"))
-            ImGui::PlotLines("Frame Time\n(in ms)", frameTimes.data(), frameTimes.size(), frameTimeOffset, nullptr, 0.0f, 100.0f, ImVec2(0.0f, 160.0f));
+            ImGui::PlotLines("Frame Time\n(in ms)", frameTimes.data(), static_cast<int>(frameTimes.size()),
+                             static_cast<int>(frameTimeOffset), nullptr, 0.0f, 100.0f, ImVec2(0.0f, 160.0f));
 
         ImGui::End();
     }
@@ -809,8 +815,8 @@ void PlanetsWindow::paintUI(const float delay) {
     /* End UI code. */
 
     /* Begin rendering code. */
-    int fb_width = (int)(io.DisplaySize.x * io.DisplayFramebufferScale.x);
-    int fb_height = (int)(io.DisplaySize.y * io.DisplayFramebufferScale.y);
+    int fb_width = static_cast<int>(io.DisplaySize.x * io.DisplayFramebufferScale.x);
+    int fb_height = static_cast<int>(io.DisplaySize.y * io.DisplayFramebufferScale.y);
     if (fb_width == 0 || fb_height == 0)
         return;
 
@@ -1038,9 +1044,13 @@ void PlanetsWindow::onResized(uint32_t width, uint32_t height) {
     camera.resizeViewport(float(width), float(height));
 
     ImGuiIO& io = ImGui::GetIO();
+
+    /* Tell ImGui what the viewportsize is. */
+    io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
+
+    /* This has something to do with high DPI displays... */
     int display_w, display_h;
     SDL_GL_GetDrawableSize(windowSDL, &display_w, &display_h);
-    io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
     io.DisplayFramebufferScale = ImVec2(width > 0 ? (static_cast<float>(display_w) / static_cast<float>(width)) : 0,
                                         height > 0 ? (static_cast<float>(display_h) / static_cast<float>(height)) : 0);
 }
