@@ -674,7 +674,9 @@ void PlanetsWindow::paintUI(const float delay) {
             ImGui::MenuItem("View Settings", "", &showViewSettingsWindow);
             ImGui::MenuItem("Information Window", "", &showInfoWindow);
             ImGui::MenuItem("Firing Mode Settings", "", &showFiringWindow);
+#ifndef NDEBUG
             ImGui::MenuItem("ImGui Test Window", "", &showTestWindow);
+#endif
 
             ImGui::EndMenu();
         }
@@ -807,10 +809,12 @@ void PlanetsWindow::paintUI(const float delay) {
         ImGui::End();
     }
 
+#ifndef NDEBUG
     if (showTestWindow) {
         ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
         ImGui::ShowTestWindow(&showTestWindow);
     }
+#endif
 
     /* End UI code. */
 
@@ -853,7 +857,6 @@ void PlanetsWindow::toggleFullscreen() {
 
 void PlanetsWindow::doEvents() {
     ImGuiIO& io = ImGui::GetIO();
-    /* TODO - Send key events and such to ImGui. */
     SDL_Event event;
     while(SDL_PollEvent(&event)) {
         switch (event.type) {

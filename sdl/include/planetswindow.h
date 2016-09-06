@@ -103,12 +103,15 @@ class PlanetsWindow{
     size_t frameTimeOffset = 0;
 
     /* UI variables. */
-    bool showTestWindow = false;
     bool showPlanetGenWindow = false;
     bool showSpeedWindow = false;
     bool showViewSettingsWindow = false;
     bool showInfoWindow = false;
     bool showFiringWindow = false;
+
+#ifndef NDEBUG
+    bool showTestWindow = false;
+#endif
 
     bool planetGenOrbital = false;
     int planetGenAmount = 10;
