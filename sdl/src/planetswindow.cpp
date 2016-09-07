@@ -290,7 +290,7 @@ void PlanetsWindow::initUI() {
     int width, height;
     io.Fonts->GetTexDataAsAlpha8(&pixels, &width, &height);
 
-    // Upload texture to graphics system
+    /* Upload the font texture to OpenGL. */
     glGenTextures(1, &fontTexture);
     glBindTexture(GL_TEXTURE_2D, fontTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -298,10 +298,10 @@ void PlanetsWindow::initUI() {
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, pixels);
 
-    // Store our identifier
+    /* Store the font texture handle. */
     io.Fonts->TexID = reinterpret_cast<void*>(static_cast<intptr_t>(fontTexture));
 
-    // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
+    /* Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array. */
     io.KeyMap[ImGuiKey_Tab] = SDLK_TAB;
     io.KeyMap[ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;
     io.KeyMap[ImGuiKey_RightArrow] = SDL_SCANCODE_RIGHT;
@@ -322,6 +322,7 @@ void PlanetsWindow::initUI() {
     io.KeyMap[ImGuiKey_Y] = SDLK_y;
     io.KeyMap[ImGuiKey_Z] = SDLK_z;
 
+    /* The function to render ImDrawData. */
     io.RenderDrawListsFn = interfaceRenderFunc;
 
     io.SetClipboardTextFn = [](const char* text) { SDL_SetClipboardText(text); };
@@ -337,6 +338,7 @@ void PlanetsWindow::initUI() {
 }
 
 void PlanetsWindow::run() {
+    /* Remains true from here until application closes. */
     running = true;
 
     typedef std::chrono::high_resolution_clock clock;
@@ -437,9 +439,12 @@ void PlanetsWindow::paint() {
     glBindTexture(GL_TEXTURE_2D, planetTexture_nrm);
 
     for (const auto& i : universe) {
+        /* Create a matrix translated by the position and scaled by the radius. */
         glm::mat4 matrix = glm::translate(i.position);
         matrix = glm::scale(matrix, glm::vec3(i.radius()));
         glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+        /* Render all the triangles... */
         glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
     }
 
@@ -463,9 +468,11 @@ void PlanetsWindow::paint() {
     if (universe.isSelectedValid())
         drawPlanetWireframe(universe.getSelected());
 
+    /* For any valid placing states other than firing, draw the templateplanet. */
     if (placing.step != PlacingInterface::NotPlacing && placing.step != PlacingInterface::Firing)
         drawPlanetWireframe(placing.planet);
 
+    /* Don't use the spheres any more. */
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -483,10 +490,13 @@ void PlanetsWindow::paint() {
     }
 
     if (placing.step == PlacingInterface::FreeVelocity) {
+        /* How long does the velocity arrow need to be? */
         float length = glm::length(placing.planet.velocity) / universe.velocityfac;
 
+        /* If it is zero don't render it. */
         if (length > 0.0f) {
             glm::mat4 matrix = glm::translate(placing.planet.position);
+            /* Scale the arrow by the template's radius. */
             matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
             matrix *= placing.rotation;
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
