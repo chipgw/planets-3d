@@ -29,6 +29,8 @@ PlanetsWindow::PlanetsWindow(int argc, char* argv[]) : placing(universe), camera
 }
 
 PlanetsWindow::~PlanetsWindow() {
+    ImGui::Shutdown();
+
     /* Delete vertex & index buffers. */
     glDeleteBuffers(1, &highResVBO);
     glDeleteBuffers(1, &highResTriIBO);
@@ -704,7 +706,7 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showPlanetGenWindow) {
-        ImGui::SetNextWindowPos(ImVec2(10, 30));
+        ImGui::SetNextWindowPos(ImVec2(10, 30), ImGuiSetCond_FirstUseEver);
         ImGui::Begin("Random Planet Generator", &showPlanetGenWindow, ImVec2(360, 160));
 
         ImGui::Checkbox("Orbital", &planetGenOrbital);
@@ -729,7 +731,7 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showSpeedWindow) {
-        ImGui::SetNextWindowPos(ImVec2(10, 200));
+        ImGui::SetNextWindowPos(ImVec2(10, 200), ImGuiSetCond_FirstUseEver);
         ImGui::Begin("Speed Controls", &showSpeedWindow, ImVec2(360, 100));
 
         ImGui::SliderFloat("Speed", &universe.simspeed, 0.0f, 64.0f, "%.3fx");
@@ -761,7 +763,7 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showViewSettingsWindow) {
-        ImGui::SetNextWindowPos(ImVec2(10, 310));
+        ImGui::SetNextWindowPos(ImVec2(10, 310), ImGuiSetCond_FirstUseEver);
         ImGui::Begin("View Settings", &showViewSettingsWindow, ImVec2(360, 120));
 
         ImGui::SliderInt("Path Length", (int*)&universe.pathLength, 100, 4000);
@@ -778,8 +780,8 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showInfoWindow) {
-        ImGui::SetNextWindowPos(ImVec2(10, 440));
-        ImGui::Begin("Information", &showInfoWindow, ImVec2(360, 200));
+        ImGui::SetNextWindowPos(ImVec2(10, 440), ImGuiSetCond_FirstUseEver);
+        ImGui::Begin("Information", &showInfoWindow, ImVec2(360, 320));
 
         if (universe.isSelectedValid() && ImGui::CollapsingHeader("Selected Planet")) {
             Planet& p = universe.getSelected();
@@ -792,16 +794,23 @@ void PlanetsWindow::paintUI(const float delay) {
         if (ImGui::CollapsingHeader("General Info", ImGuiTreeNodeFlags_DefaultOpen))
             ImGui::Text("Planet Count: %zu", universe.size());
 
-        /* TODO - Perhaps add more stats... */
-        if (ImGui::CollapsingHeader("Performance Stats"))
+        if (ImGui::CollapsingHeader("Statistics")) {
             ImGui::PlotLines("Frame Time\n(in ms)", frameTimes.data(), static_cast<int>(frameTimes.size()),
                              static_cast<int>(frameTimeOffset), nullptr, 0.0f, 100.0f, ImVec2(0.0f, 160.0f));
+
+            ImGui::PlotLines("Frame Rate\n(in fps)",
+                             [](void* data, int idx) { return 1000.0f / reinterpret_cast<float*>(data)[idx]; },
+                             frameTimes.data(), static_cast<int>(frameTimes.size()),
+                             static_cast<int>(frameTimeOffset), nullptr, 0.0f, FLT_MAX, ImVec2(0.0f, 120.0f));
+
+            /* TODO - Perhaps add more stats... */
+        }
 
         ImGui::End();
     }
 
     if (showFiringWindow) {
-        ImGui::SetNextWindowPos(ImVec2(10, 650));
+        ImGui::SetNextWindowPos(ImVec2(10, 770), ImGuiSetCond_FirstUseEver);
         ImGui::Begin("Firing Settings", &showFiringWindow, ImVec2(360, 160));
 
         bool firingMode = placing.step == PlacingInterface::Firing;

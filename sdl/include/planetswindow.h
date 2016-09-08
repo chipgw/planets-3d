@@ -99,7 +99,7 @@ class PlanetsWindow{
     uintmax_t totalFrames = 0;
 
     /* Keep track of the delayof the last fer frames for graphing. */
-    std::array<float, 32> frameTimes;
+    std::array<float, 80> frameTimes;
     size_t frameTimeOffset = 0;
 
     /* UI variables. */
