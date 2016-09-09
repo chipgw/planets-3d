@@ -42,10 +42,14 @@ PlanetsWindow::~PlanetsWindow() {
     /* No more shaders. */
     glDeleteProgram(shaderTexture);
     glDeleteProgram(shaderColor);
+    glDeleteProgram(shaderUI);
 
     /* Die textures. */
     glDeleteTextures(1, &planetTexture_diff);
     glDeleteTextures(1, &planetTexture_nrm);
+
+    GLuint fontTexture = static_cast<GLuint>(reinterpret_cast<intptr_t>(ImGui::GetIO().Fonts->TexID));
+    glDeleteTextures(1, &fontTexture);
 
     /* Nice knowin ya OpenGL context. */
     SDL_GL_DeleteContext(contextSDL);
@@ -206,7 +210,7 @@ void PlanetsWindow::initShaders() {
     /* Get the uniform locations from UI shader. */
     glUseProgram(shaderUI);
     glUniform1i(glGetUniformLocation(shaderUI, "uiTexture"), 0);
-    shaderUI_matrix         = glGetUniformLocation(shaderUI, "matrix");
+    shaderUI_matrix = glGetUniformLocation(shaderUI, "matrix");
 }
 
 void PlanetsWindow::initBuffers() {
