@@ -690,7 +690,14 @@ void PlanetsWindow::paintUI(const float delay) {
             ImGui::MenuItem("View Settings", "", &showViewSettingsWindow);
             ImGui::MenuItem("Information Window", "", &showInfoWindow);
             ImGui::MenuItem("Firing Mode Settings", "", &showFiringWindow);
+
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("Open All Windows", ""))
+                showPlanetGenWindow = showSpeedWindow = showViewSettingsWindow = showInfoWindow = showFiringWindow = true;
+
 #ifndef NDEBUG
+            ImGui::Separator();
             ImGui::MenuItem("ImGui Test Window", "", &showTestWindow);
 #endif
 
@@ -878,6 +885,9 @@ void PlanetsWindow::toggleFullscreen() {
     SDL_SetWindowFullscreen(windowSDL, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 }
 
+/* On the SDL side, 0 is invalid, 1 is LEFT, 2 is MIDDLE, 3 is RIGHT, 4 is X1, 5 is X2. */
+constexpr int BTN_MAP[] = { 0, 0, 2, 1, 3, 4 };
+
 void PlanetsWindow::doEvents() {
     ImGuiIO& io = ImGui::GetIO();
     SDL_Event event;
@@ -892,10 +902,10 @@ void PlanetsWindow::doEvents() {
                 doKeyPress(event.key.keysym);
         case SDL_KEYUP:
             io.KeysDown[event.key.keysym.sym & ~SDLK_SCANCODE_MASK] = (event.type == SDL_KEYDOWN);
-            io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
-            io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
-            io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
-            io.KeySuper = ((SDL_GetModState() & KMOD_GUI) != 0);
+            io.KeyShift = (SDL_GetModState() & KMOD_SHIFT) != 0;
+            io.KeyCtrl = (SDL_GetModState() & KMOD_CTRL) != 0;
+            io.KeyAlt = (SDL_GetModState() & KMOD_ALT) != 0;
+            io.KeySuper = (SDL_GetModState() & KMOD_GUI) != 0;
             break;
         case SDL_TEXTINPUT:
             io.AddInputCharactersUTF8(event.text.text);
@@ -934,37 +944,30 @@ void PlanetsWindow::doEvents() {
             break;
         case SDL_MOUSEBUTTONUP:
             /* If ImGui wants the mouse, we ignore it here. */
-            if (!io.WantCaptureMouse && event.button.button == SDL_BUTTON_LEFT) {
-                if (event.button.clicks == 2 && placing.step == PlacingInterface::NotPlacing) {
-                    if (universe.isSelectedValid())
-                        camera.followSelection();
-                    else
-                        camera.clearFollow();
-                } else {
-                    glm::ivec2 pos(event.button.x, event.button.y);
-                    if (!placing.handleMouseClick(pos, camera))
-                        camera.selectUnder(pos);
+            if (!io.WantCaptureMouse) {
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    if (event.button.clicks == 2 && placing.step == PlacingInterface::NotPlacing) {
+                        if (universe.isSelectedValid())
+                            camera.followSelection();
+                        else
+                            camera.clearFollow();
+                    } else {
+                        glm::ivec2 pos(event.button.x, event.button.y);
+                        if (!placing.handleMouseClick(pos, camera))
+                            camera.selectUnder(pos);
+                    }
+                } else if ((event.button.button == SDL_BUTTON_MIDDLE || event.button.button == SDL_BUTTON_RIGHT) && event.button.clicks == 2) {
+                    camera.reset();
                 }
-            } else if ((event.button.button == SDL_BUTTON_MIDDLE || event.button.button == SDL_BUTTON_RIGHT) && event.button.clicks == 2) {
-                camera.reset();
             }
+
             /* Always show cursor when mouse button is released. */
             SDL_SetRelativeMouseMode(SDL_FALSE);
 
             /* Continue on to pass event to ImGui. */
         case SDL_MOUSEBUTTONDOWN:
-            switch (event.button.button) {
-            case SDL_BUTTON_LEFT:
-                io.MouseDown[0] = event.type == SDL_MOUSEBUTTONDOWN;
-                break;
-            case SDL_BUTTON_RIGHT:
-                io.MouseDown[1] = event.type == SDL_MOUSEBUTTONDOWN;
-                break;
-            case SDL_BUTTON_MIDDLE:
-                io.MouseDown[2] = event.type == SDL_MOUSEBUTTONDOWN;
-                break;
-            }
-        break;
+            io.MouseDown[BTN_MAP[event.button.button]] = event.type == SDL_MOUSEBUTTONDOWN;
+            break;
         case SDL_MOUSEMOTION:
             /* yrel is inverted compared to the delta calculated in Qt. */
             glm::ivec2 delta(event.motion.xrel, -event.motion.yrel);
