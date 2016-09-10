@@ -51,6 +51,9 @@ PlanetsWindow::~PlanetsWindow() {
     GLuint fontTexture = static_cast<GLuint>(reinterpret_cast<intptr_t>(ImGui::GetIO().Fonts->TexID));
     glDeleteTextures(1, &fontTexture);
 
+    for (SDL_Cursor* c : cursors)
+        SDL_FreeCursor(c);
+
     /* Nice knowin ya OpenGL context. */
     SDL_GL_DeleteContext(contextSDL);
 
@@ -96,6 +99,15 @@ void PlanetsWindow::initSDL() {
 
     /* Events from gamepads are nice... */
     SDL_GameControllerEventState(SDL_ENABLE);
+
+    /* The cursors desired by ImGui. */
+    cursors[0] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+    cursors[1] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM);
+    cursors[2] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
+    cursors[3] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENS);
+    cursors[4] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
+    cursors[5] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENESW);
+    cursors[6] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENWSE);
 }
 
 void PlanetsWindow::initGL() {
@@ -655,6 +667,8 @@ void PlanetsWindow::paintUI(const float delay) {
         io.MousePos = ImVec2((float)mx, (float)my);
     else
         io.MousePos = ImVec2(-1, -1);
+
+    SDL_SetCursor(cursors[ImGui::GetMouseCursor()]);
 
     /* Hide OS cursor if imgui has one. */
     SDL_ShowCursor(io.MouseDrawCursor ? SDL_FALSE : SDL_TRUE);

@@ -119,6 +119,8 @@ class PlanetsWindow{
     float planetGenMaxSpeed = 1.0f;
     float planetGenMaxMass = 200.0f;
 
+    std::array<SDL_Cursor*, 7> cursors;
+
 public:
     /* Create the window, expects command line arguments as passed to a standard main(int argc, char* argv[]) function. */
     PlanetsWindow(int argc, char* argv[]);
