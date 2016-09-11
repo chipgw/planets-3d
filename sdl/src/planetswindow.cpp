@@ -197,7 +197,6 @@ void PlanetsWindow::initShaders() {
     shaderColor_cameraMatrix    = glGetUniformLocation(shaderColor, "cameraMatrix");
     shaderColor_modelMatrix     = glGetUniformLocation(shaderColor, "modelMatrix");
 
-
     /* Compile the textured shader included in res.h as const char*. */
     GLuint shaderTexture_vsh = compileShader(texture_vsh, GL_VERTEX_SHADER);
     GLuint shaderTexture_fsh = compileShader(texture_fsh, GL_FRAGMENT_SHADER);
@@ -261,15 +260,13 @@ void PlanetsWindow::initBuffers() {
 
 static void interfaceRenderFunc(ImDrawData* drawData) {
     ImGuiIO& io = ImGui::GetIO();
-    GLint viewport[4]; glGetIntegerv(GL_VIEWPORT, viewport);
     drawData->ScaleClipRects(io.DisplayFramebufferScale);
 
-    glEnableVertexAttribArray(vertex);
-    glEnableVertexAttribArray(uv);
-    glEnableVertexAttribArray(normal);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    int fb_width = static_cast<int>(io.DisplaySize.x * io.DisplayFramebufferScale.x);
+    int fb_height = static_cast<int>(io.DisplaySize.y * io.DisplayFramebufferScale.y);
+    if (fb_width == 0 || fb_height == 0)
+        return;
+    glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
 
     constexpr GLenum indexType = sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
@@ -286,18 +283,13 @@ static void interfaceRenderFunc(ImDrawData* drawData) {
                 pcmd->UserCallback(cmdList, pcmd);
             } else {
                 glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(reinterpret_cast<intptr_t>(pcmd->TextureId)));
-                glScissor(static_cast<int>(pcmd->ClipRect.x), static_cast<int>(viewport[3] - pcmd->ClipRect.w),
+                glScissor(static_cast<int>(pcmd->ClipRect.x), static_cast<int>(fb_height - pcmd->ClipRect.w),
                           static_cast<int>(pcmd->ClipRect.z - pcmd->ClipRect.x), static_cast<int>(pcmd->ClipRect.w - pcmd->ClipRect.y));
                 glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(pcmd->ElemCount), indexType, &cmdList->IdxBuffer[idxBufferOffset]);
             }
             idxBufferOffset += pcmd->ElemCount;
         }
     }
-
-    /* The defaults that everything else uses. */
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_SCISSOR_TEST);
 }
 
 void PlanetsWindow::initUI() {
@@ -863,10 +855,6 @@ void PlanetsWindow::paintUI(const float delay) {
     /* End UI code. */
 
     /* Begin rendering code. */
-    int fb_width = static_cast<int>(io.DisplaySize.x * io.DisplayFramebufferScale.x);
-    int fb_height = static_cast<int>(io.DisplaySize.y * io.DisplayFramebufferScale.y);
-    if (fb_width == 0 || fb_height == 0)
-        return;
 
     /* Setup render state: no face culling, no depth testing, scissor enabled. */
     glDisable(GL_CULL_FACE);
@@ -875,7 +863,6 @@ void PlanetsWindow::paintUI(const float delay) {
     glActiveTexture(GL_TEXTURE0);
 
     /* Setup orthographic projection matrix. */
-    glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
     const glm::mat4 projection( 2.0f/io.DisplaySize.x, 0.0f,                   0.0f, 0.0f,
                                 0.0f,                  2.0f/-io.DisplaySize.y, 0.0f, 0.0f,
                                 0.0f,                  0.0f,                  -1.0f, 0.0f,
@@ -884,10 +871,22 @@ void PlanetsWindow::paintUI(const float delay) {
     glUseProgram(shaderUI);
     glUniformMatrix4fv(shaderUI_matrix, 1, GL_FALSE, glm::value_ptr(projection));
 
+    glEnableVertexAttribArray(vertex);
+    glEnableVertexAttribArray(uv);
+    glEnableVertexAttribArray(normal);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
     /* Pass the rendering on to ImGui and interfaceRenderFunc(). */
     ImGui::Render();
 
     /* End rendering code. */
+
+    /* Restore GL settings to the defaults that everything else uses. */
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_SCISSOR_TEST);
 
     /* Make sure the viewport is as it was before rendering. */
     glViewport(0, 0, windowSize.x, windowSize.y);
