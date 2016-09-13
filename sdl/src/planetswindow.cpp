@@ -981,6 +981,15 @@ void PlanetsWindow::doEvents() {
         case SDL_MOUSEBUTTONDOWN:
             io.MouseDown[BTN_MAP[event.button.button]] = event.type == SDL_MOUSEBUTTONDOWN;
             break;
+        case SDL_DROPFILE:
+            try {
+                universe.load(event.drop.file);
+            } catch (std::exception e) {
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Unable to load file dropped on window", e.what(), windowSDL);
+            }
+
+            SDL_free(event.drop.file);
+            break;
         case SDL_MOUSEMOTION:
             /* yrel is inverted compared to the delta calculated in Qt. */
             glm::ivec2 delta(event.motion.xrel, -event.motion.yrel);
