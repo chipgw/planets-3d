@@ -925,6 +925,16 @@ void PlanetsWindow::doEvents() {
             break;
         case SDL_WINDOWEVENT:
             switch(event.window.event) {
+            case SDL_WINDOWEVENT_FOCUS_LOST:
+                if (universe.simspeed > 0.0f) {
+                    pauseSpeed = universe.simspeed;
+                    universe.simspeed = 0.0f;
+                }
+                break;
+            case SDL_WINDOWEVENT_FOCUS_GAINED:
+                if (pauseSpeed > 0.0f && universe.simspeed <= 0.0f)
+                    universe.simspeed = pauseSpeed;
+                break;
             case SDL_WINDOWEVENT_RESIZED:
                 /* We don't want anyone resizing the window with a width or height of 0. */
                 if (event.window.data1 < 1 || event.window.data2 < 1) {
