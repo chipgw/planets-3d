@@ -955,6 +955,7 @@ void PlanetsWindow::doEvents() {
             /* If ImGui wants the mouse, we ignore it for placing & camera purposes. */
             if (!io.WantCaptureMouse && !placing.handleMouseWheel(event.wheel.y * 0.2f)) {
                 camera.distance -= event.wheel.y * camera.distance * 0.1f;
+                camera.zrotation -= event.wheel.x * 0.05f;
 
                 camera.bound();
             }
