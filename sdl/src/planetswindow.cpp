@@ -1,6 +1,7 @@
 #include "planetswindow.h"
 #include "shaders.h"
 #include "spheregenerator.h"
+#include "version.h"
 
 #include <algorithm>
 #include <chrono>
@@ -718,6 +719,10 @@ void PlanetsWindow::paintUI(const float delay) {
 
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Help")) {
+            ImGui::MenuItem("About", "F1", &showAboutWindow);
+            ImGui::EndMenu();
+        }
 
         ImGui::EndMainMenuBar();
     }
@@ -841,6 +846,25 @@ void PlanetsWindow::paintUI(const float delay) {
             placing.firingSpeed = speed * universe.velocityfac;
 
         ImGui::SliderFloat("Mass", &placing.firingMass, 1.0f, 1.0e3f);
+
+        ImGui::End();
+    }
+
+    if (showAboutWindow) {
+        ImGui::SetNextWindowPosCenter();
+        ImGui::SetNextWindowSize(ImVec2(400, 200));
+        ImGui::Begin("About", &showAboutWindow, ImGuiWindowFlags_NoResize| ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+
+        ImGui::TextWrapped("Planets3D is a simple 3D gravitational simulator");
+        ImGui::NewLine();
+        ImGui::TextWrapped("Website: github.com/chipgw/planets-3d");
+        ImGui::NewLine();
+        if (ImGui::CollapsingHeader("Build Info")) {
+            ImGui::TextWrapped("  Git sha1: %s", version::git_revision);
+            ImGui::TextWrapped("  Build type: %s", version::build_type);
+            ImGui::TextWrapped("  Compiler: %s", version::compiler);
+            ImGui::TextWrapped("  CMake Version: %s", version::cmake_version);
+        }
 
         ImGui::End();
     }
@@ -1065,6 +1089,9 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
     case SDLK_g:
         if (key.mod & KMOD_CTRL)
             grid.toggle();
+        break;
+    case SDLK_F1:
+        showAboutWindow = !showAboutWindow;
         break;
     }
 }

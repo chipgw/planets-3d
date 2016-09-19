@@ -108,6 +108,7 @@ class PlanetsWindow{
     bool showViewSettingsWindow = false;
     bool showInfoWindow = false;
     bool showFiringWindow = false;
+    bool showAboutWindow = false;
 
 #ifndef NDEBUG
     bool showTestWindow = false;
