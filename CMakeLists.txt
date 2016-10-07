@@ -112,7 +112,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
     # All these files that the JS interface needs...
     # TODO - Find a way to make them copy again any time they change.
-    copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/textures/planet.png" "images/")
+    copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/textures/*" "images/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/scripts/*" "scripts/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/scripts/thirdparty/*" "scripts/thirdparty/")
     copy_to_bin(${PROJECT_NAME}_js $<TARGET_FILE:${PROJECT_NAME}_js> "scripts/")

@@ -1,7 +1,8 @@
 var spheres, context, grid;
 
 var colorShader, colorCameraMat, colorModelMat, colorColor;
-var textureShader, textureCameraMat, textureModelMat, planetTexture;
+var textureShader, textureCameraMat, textureViewMat, textureModelMat, textureLightDir;
+var planetTextureDiff, planetTextureNrm;
 
 /* Convinience function to create a matrix with a position and scale value. */
 function makeMat(pos, scale) {
@@ -95,9 +96,15 @@ function initGL() {
     textureShader = initShaderProgram("texture-vertex", "texture-fragment");
 
     textureCameraMat = GLctx.getUniformLocation(textureShader, "cameraMatrix");
+    textureViewMat = GLctx.getUniformLocation(textureShader, "viewMatrix");
     textureModelMat = GLctx.getUniformLocation(textureShader, "modelMatrix");
+    textureLightDir = GLctx.getUniformLocation(textureShader, "lightDir");
 
-    planetTexture = loadTexture("images/planet.png");
+    planetTextureDiff = loadTexture("images/planet_diffuse.png");
+    planetTextureNrm = loadTexture("images/planet_nrm.png");
+
+    GLctx.uniform1i(GLctx.getUniformLocation(textureShader, "texture_diff"), 0);
+    GLctx.uniform1i(GLctx.getUniformLocation(textureShader, "texture_nrm"), 1);
 
     spheres = new Module.Spheres();
 
@@ -126,11 +133,22 @@ function paint() {
 
     var cameraMat = camera.setup();
 
+    /* Use the light & texture shader for drawing the planets. */
     GLctx.useProgram(textureShader);
 
+    /* Bind the view and camera matricies. */
+    GLctx.uniformMatrix4fv(textureViewMat, false, camera.viewMat);
     GLctx.uniformMatrix4fv(textureCameraMat, false, cameraMat);
 
+    GLctx.activeTexture(GLctx.TEXTURE0);
+    GLctx.bindTexture(GLctx.TEXTURE_2D, planetTextureDiff)
+    GLctx.activeTexture(GLctx.TEXTURE1);
+    GLctx.bindTexture(GLctx.TEXTURE_2D, planetTextureNrm)
+
     spheres.bindSolid()
+
+    /* Update the view-space light vector. */
+    GLctx.uniform3fv(textureLightDir, camera.getLightDir());
 
     for (var i = 0; i < universe.size(); ++i) {
         GLctx.uniformMatrix4fv(textureModelMat, false, makeMat(universe.getPlanetPosition(i), universe.getPlanetRadius(i)));

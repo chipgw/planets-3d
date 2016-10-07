@@ -62,8 +62,12 @@ void Spheres::bindSolid() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
 
     glEnableVertexAttribArray(uv);
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(uv,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+    glEnableVertexAttribArray(normal);
+    glEnableVertexAttribArray(tangent);
+    glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+    glVertexAttribPointer(normal,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+    glVertexAttribPointer(tangent,  3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
 }
 
 void Spheres::bindWire() {
@@ -71,6 +75,8 @@ void Spheres::bindWire() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lowResLineIBO);
 
     glDisableVertexAttribArray(uv);
+    glDisableVertexAttribArray(normal);
+    glDisableVertexAttribArray(tangent);
     glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 }
 
@@ -79,6 +85,8 @@ void Spheres::bindCircle() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
 
     glDisableVertexAttribArray(uv);
+    glDisableVertexAttribArray(normal);
+    glDisableVertexAttribArray(tangent);
     glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
 }
 

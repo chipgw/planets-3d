@@ -63,6 +63,11 @@ EMSCRIPTEN_BINDINGS(mat4) {
     emscripten::function("getIdentityMatrix", &getIdentityMatrix);
 }
 
+glm::vec3 getLightDir(Camera& camera) {
+    const glm::vec3 light = glm::vec3(0.57735f);
+    return glm::vec3(camera.view * glm::vec4(light, 0.0f));
+}
+
 EMSCRIPTEN_BINDINGS(camera) {
     emscripten::class_<Camera>("Camera")
             .constructor<PlanetsUniverse&>()
@@ -77,9 +82,11 @@ EMSCRIPTEN_BINDINGS(camera) {
             .function("resizeViewport",         &Camera::resizeViewport)
             .function("selectUnder",            &Camera::selectUnder)
             .function("setup",                  &Camera::setup)
+            .function("getLightDir",            &getLightDir)
             .property("position",               &Camera::position)
             .property("distance",               &Camera::distance)
             .property("xrotation",              &Camera::xrotation)
             .property("zrotation",              &Camera::zrotation)
+            .property("viewMat",                &Camera::view)
             ;
 }
