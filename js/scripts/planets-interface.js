@@ -173,6 +173,10 @@ function initViewSettings() {
         universe.pathRecordDistance *= universe.pathRecordDistance;
     }, false);
 
+    document.getElementById("gridSize").addEventListener("change", function(e) {
+        grid.range = e.target.valueAsNumber;
+    }, false);
+
     document.getElementById("drawGrid").addEventListener("change", function(e) {
         grid.enabled = e.target.checked;
     }, false);
