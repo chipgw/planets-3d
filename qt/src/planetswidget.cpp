@@ -235,6 +235,9 @@ void PlanetsWidget::render() {
     if (!hidePlanets && universe.isSelectedValid())
         drawPlanetWireframe(universe.getSelected());
 
+    if (placing.step != PlacingInterface::NotPlacing && placing.step != PlacingInterface::Firing)
+        drawPlanetWireframe(placing.planet);
+
     lowResSphereVerts.release();
     lowResSphereLines.release();
 
@@ -249,98 +252,74 @@ void PlanetsWidget::render() {
         }
     }
 
-    switch (placing.step) {
-    case PlacingInterface::FreeVelocity: {
+    if (placing.step == PlacingInterface::FreeVelocity && !glm::equal(placing.planet.velocity, glm::vec3())[0]) {
         float length = glm::length(placing.planet.velocity) / universe.velocityfac;
 
-        if (length > 0.0f) {
-            glm::mat4 matrix = glm::translate(placing.planet.position);
-            matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
-            matrix *= placing.rotation;
-            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
-            shaderColor.setUniformValue(shaderColor_color, trailColor);
+        glm::mat4 matrix = glm::translate(placing.planet.position);
+        matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
+        matrix *= placing.rotation;
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+        shaderColor.setUniformValue(shaderColor_color, trailColor);
 
-            /* A simple arrow. */
-            float verts[] = {  0.1f, 0.1f, 0.0f,
-                               0.1f,-0.1f, 0.0f,
-                              -0.1f,-0.1f, 0.0f,
-                              -0.1f, 0.1f, 0.0f,
+        /* A simple arrow. */
+        float verts[] = {  0.1f, 0.1f, 0.0f,
+                           0.1f,-0.1f, 0.0f,
+                          -0.1f,-0.1f, 0.0f,
+                          -0.1f, 0.1f, 0.0f,
 
-                               0.1f, 0.1f, length,
-                               0.1f,-0.1f, length,
-                              -0.1f,-0.1f, length,
-                              -0.1f, 0.1f, length,
+                           0.1f, 0.1f, length,
+                           0.1f,-0.1f, length,
+                          -0.1f,-0.1f, length,
+                          -0.1f, 0.1f, length,
 
-                               0.2f, 0.2f, length,
-                               0.2f,-0.2f, length,
-                              -0.2f,-0.2f, length,
-                              -0.2f, 0.2f, length,
+                           0.2f, 0.2f, length,
+                           0.2f,-0.2f, length,
+                          -0.2f,-0.2f, length,
+                          -0.2f, 0.2f, length,
 
-                               0.0f, 0.0f, length + 0.4f };
+                           0.0f, 0.0f, length + 0.4f };
 
-            static const GLubyte indexes[] = {  0,  1,  2,       2,  3,  0,
+        static const GLubyte indexes[] = {  0,  1,  2,       2,  3,  0,
 
-                                                1,  0,  5,       4,  5,  0,
-                                                2,  1,  6,       5,  6,  1,
-                                                3,  2,  7,       6,  7,  2,
-                                                0,  3,  4,       7,  4,  3,
+                                            1,  0,  5,       4,  5,  0,
+                                            2,  1,  6,       5,  6,  1,
+                                            3,  2,  7,       6,  7,  2,
+                                            0,  3,  4,       7,  4,  3,
 
-                                                5,  4,  9,       8,  9,  4,
-                                                6,  5, 10,       9, 10,  5,
-                                                7,  6, 11,      10, 11,  6,
-                                                4,  7,  8,      11,  8,  7,
+                                            5,  4,  9,       8,  9,  4,
+                                            6,  5, 10,       9, 10,  5,
+                                            7,  6, 11,      10, 11,  6,
+                                            4,  7,  8,      11,  8,  7,
 
-                                                9,  8, 12,
-                                               10,  9, 12,
-                                               11, 10, 12,
-                                                8, 11, 12 };
+                                            9,  8, 12,
+                                           10,  9, 12,
+                                           11, 10, 12,
+                                            8, 11, 12 };
 
-            shaderColor.setAttributeArray(vertex, GL_FLOAT, verts, 3);
-            glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
-        }
+        shaderColor.setAttributeArray(vertex, GL_FLOAT, verts, 3);
+        glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
     }
-    case PlacingInterface::FreePositionXY:
-    case PlacingInterface::FreePositionZ:
-        lowResSphereVerts.bind();
-        lowResSphereLines.bind();
 
-        drawPlanetWireframe(placing.planet);
+    if ((placing.step == PlacingInterface::OrbitalPlane || placing.step == PlacingInterface::OrbitalPlanet)
+        && universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
+        glm::mat4 newRadiusMatrix = placing.getOrbitalCircleMat();
+        glm::mat4 oldRadiusMatrix = placing.getOrbitedCircleMat();
 
-        lowResSphereVerts.release();
-        lowResSphereLines.release();
-        break;
-    case PlacingInterface::OrbitalPlane:
-    case PlacingInterface::OrbitalPlanet:
-        if (universe.isSelectedValid() && placing.orbitalRadius > 0.0f) {
-            glm::mat4 newRadiusMatrix = placing.getOrbitalCircleMat();
-            glm::mat4 oldRadiusMatrix = placing.getOrbitedCircleMat();
+        circleVerts.bind();
+        circleLines.bind();
 
-            circleVerts.bind();
-            circleLines.bind();
+        shaderColor.setUniformValue(shaderColor_color, trailColor);
+        shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(glm::vec3));
 
-            shaderColor.setUniformValue(shaderColor_color, trailColor);
-            shaderColor.setAttributeBuffer(vertex, GL_FLOAT, 0, 3, sizeof(glm::vec3));
+        /* Draw both circles. */
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(newRadiusMatrix));
+        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
 
-            /* Draw both circles. */
-            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(newRadiusMatrix));
-            glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(oldRadiusMatrix));
+        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
 
-            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(oldRadiusMatrix));
-            glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
-
-            circleVerts.release();
-            circleLines.release();
-
-            lowResSphereVerts.bind();
-            lowResSphereLines.bind();
-
-            drawPlanetWireframe(placing.planet);
-
-            lowResSphereVerts.release();
-            lowResSphereLines.release();
-        }
-        break;
-    default: break;
+        circleVerts.release();
+        circleLines.release();
     }
 
     if (drawPlanarCircles) {
