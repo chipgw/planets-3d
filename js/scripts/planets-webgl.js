@@ -196,8 +196,7 @@ function paint() {
         spheres.drawWire();
     }
 
-    /* TODO - Hide when camera is following something. */
-    if (gamepad.attached && placing.step === Module.PlacingStep.NotPlacing) {
+    if (gamepad.attached && placing.step === Module.PlacingStep.NotPlacing && camera.followingState === Module.FollowingState.FollowNone) {
         spheres.bindCircle();
         GLctx.disable(GLctx.DEPTH_TEST);
         GLctx.uniform4fv(colorColor, [0.0, 1.0, 1.0, 1.0]);

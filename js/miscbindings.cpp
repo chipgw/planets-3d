@@ -69,6 +69,12 @@ glm::vec3 getLightDir(Camera& camera) {
 }
 
 EMSCRIPTEN_BINDINGS(camera) {
+    emscripten::enum_<Camera::FollowingState>("FollowingState")
+            .value("FollowNone",        Camera::FollowNone)
+            .value("Single",            Camera::Single)
+            .value("PlainAverage",      Camera::PlainAverage)
+            .value("WeightedAverage",   Camera::WeightedAverage)
+            ;
     emscripten::class_<Camera>("Camera")
             .constructor<PlanetsUniverse&>()
             .function("bound",                  &Camera::bound)
@@ -88,5 +94,6 @@ EMSCRIPTEN_BINDINGS(camera) {
             .property("xrotation",              &Camera::xrotation)
             .property("zrotation",              &Camera::zrotation)
             .property("viewMat",                &Camera::view)
+            .property("followingState",         &Camera::followingState)
             ;
 }
