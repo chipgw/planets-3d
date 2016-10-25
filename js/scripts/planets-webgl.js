@@ -169,9 +169,11 @@ function paint() {
 
         spheres.drawWire()
 
+        GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
+
+        /* Draw two circles to show the relative orbits of both the planets. */
         if ((placing.step === Module.PlacingStep.OrbitalPlane || placing.step === Module.PlacingStep.OrbitalPlanet) && universe.isSelectedValid()) {
             spheres.bindCircle();
-            GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
 
             GLctx.uniformMatrix4fv(colorModelMat, false, placing.getOrbitalCircleMat());
             spheres.drawCircle();
@@ -185,8 +187,6 @@ function paint() {
 
             GLctx.uniformMatrix4fv(colorModelMat, false, placing.getArrowMat());
 
-            GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
-
             spheres.drawArrow(length);
         }
     } else if (universe.isSelectedValid()) {
@@ -196,8 +196,10 @@ function paint() {
         spheres.drawWire();
     }
 
+    /* A circle in the center of the view to show where the gamepad is focused.
+     * Not needed when placing or following as the target planet serves the same function. */
     if (gamepad.attached && placing.step === Module.PlacingStep.NotPlacing && camera.followingState === Module.FollowingState.FollowNone) {
-        spheres.bindCircle();
+        /* Draw it over everything. */
         GLctx.disable(GLctx.DEPTH_TEST);
         GLctx.uniform4fv(colorColor, [0.0, 1.0, 1.0, 1.0]);
 
@@ -217,10 +219,7 @@ function paint() {
         var color = grid.color;
         color[3] *= grid.alphafac;
 
-        var gridMat = [grid.scale, 0.0, 0.0, 0.0,
-                       0.0, grid.scale, 0.0, 0.0,
-                       0.0, 0.0, grid.scale, 0.0,
-                       0.0, 0.0, 0.0, 1.0 ]
+        var gridMat = makeMat(grid.scale, [0.0, 0.0, 0.0]);
 
         GLctx.uniformMatrix4fv(colorModelMat, false, gridMat);
 
@@ -228,6 +227,7 @@ function paint() {
 
         grid.draw();
 
+        /* Modify the matrix to be half the size. */
         gridMat[0] *= 0.5; gridMat[5] *= 0.5; gridMat[10] *= 0.5;
         GLctx.uniformMatrix4fv(colorModelMat, false, gridMat);
 
@@ -243,6 +243,7 @@ function paint() {
         GLctx.uniformMatrix4fv(colorModelMat, false, IDENTITY_MATRIX);
         GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
 
+        /* The actual drawing of the trails is handled in C++. */
         universe.drawTrails();
     }
 }
@@ -253,9 +254,11 @@ function animate(time) {
     if (lastTime === null)
         lastTime = time;
 
+    /* Limit advance time to 10 seconds. */
     var delta = Math.min(time - lastTime, 10.0) * 1000;
     lastTime = time;
 
+    /* We don't advancewhen placing. */
     if (placing.step === Module.PlacingStep.NotPlacing || placing.step === Module.PlacingStep.Firing)
         universe.advance(delta);
 
@@ -266,6 +269,7 @@ function animate(time) {
 
     requestAnimationFrame(animate);
 
+    /* Keep the speed slider updated. */
     document.getElementById("speedRange").value = universe.speed
 }
 
