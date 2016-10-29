@@ -390,9 +390,12 @@ var Module = {
                 }
 
                 camera.bound();
-            } else if (placingBools[1]) {
-                /* TODO - Implement. */
             }
+
+            /* Make sure the cursor visibility is correct. */
+            /* TODO - If possible, keep mouse from moving when hidden. */
+            canvas.style.cursor = placingBools[1] ? 'none' : 'auto';
+
 
             /* Keep track of these values for the next event. */
             lastMouseX = e.clientX;
