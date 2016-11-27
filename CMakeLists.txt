@@ -65,7 +65,8 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     if(PLANETS3D_BUILD_TINYXML)
         # Build TinyXML from source files in the tinyxml folder.
         add_definitions(-DTIXML_USE_STL)
-        file(GLOB TinyXML_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tinyxml/*.cpp")
+        # All TinyXML sources that we care about (i.e. that aren't tests) start with "tiny"...
+        file(GLOB TinyXML_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tinyxml/tiny*.cpp")
         add_library(TinyXML ${TinyXML_SOURCES})
         include_directories("${CMAKE_CURRENT_SOURCE_DIR}/tinyxml/")
         target_link_libraries(${PROJECT_NAME} TinyXML)
