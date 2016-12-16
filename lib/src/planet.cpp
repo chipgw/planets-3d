@@ -1,7 +1,7 @@
 #include "planet.h"
 #include <glm/gtx/norm.hpp>
 
-Planet::Planet(glm::vec3 p, glm::vec3 v, float m) : position(p), velocity(v) {
+Planet::Planet(glm::vec3 p, glm::vec3 v, float m) : position(p), velocity(v), materialID(-1) {
     setMass(m);
 }
 

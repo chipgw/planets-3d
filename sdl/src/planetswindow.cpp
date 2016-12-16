@@ -46,8 +46,10 @@ PlanetsWindow::~PlanetsWindow() {
     glDeleteProgram(shaderUI);
 
     /* Die textures. */
-    glDeleteTextures(1, &planetTexture_diff);
-    glDeleteTextures(1, &planetTexture_nrm);
+    for (int i = 0; i < NUM_PLANET_TEXTURES; ++i) {
+        glDeleteTextures(1, &planetTextures_diff[i]);
+        glDeleteTextures(1, &planetTextures_nrm[i]);
+    }
 
     GLuint fontTexture = static_cast<GLuint>(reinterpret_cast<intptr_t>(ImGui::GetIO().Fonts->TexID));
     glDeleteTextures(1, &fontTexture);
@@ -147,10 +149,20 @@ void PlanetsWindow::initGL() {
     /* This attribute array is always on. */
     glEnableVertexAttribArray(vertex);
 
-    glActiveTexture(GL_TEXTURE0);
-    planetTexture_diff = loadTexture(SDL_RWFromConstMem(planet_diffuse_png, static_cast<int>(planet_diffuse_png_size)));
-    glActiveTexture(GL_TEXTURE1);
-    planetTexture_nrm = loadTexture(SDL_RWFromConstMem(planet_nrm_png, static_cast<int>(planet_nrm_png_size)));
+    planetTextures_diff[0]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse.png", "r"));
+    planetTextures_nrm[0]   = loadTexture(SDL_RWFromFile("textures/planet_nrm.png", "r"));
+    planetTextures_diff[1]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_01.png", "r"));
+    planetTextures_nrm[1]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_01.png", "r"));
+    planetTextures_diff[2]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_02.png", "r"));
+    planetTextures_nrm[2]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_02.png", "r"));
+    planetTextures_diff[3]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_03.png", "r"));
+    planetTextures_nrm[3]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_03.png", "r"));
+    planetTextures_diff[4]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_04.png", "r"));
+    planetTextures_nrm[4]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_04.png", "r"));
+    planetTextures_diff[5]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_05.png", "r"));
+    planetTextures_nrm[5]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_05.png", "r"));
+    planetTextures_diff[6]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_06.png", "r"));
+    planetTextures_nrm[6]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_06.png", "r"));
 
     initBuffers();
 }
@@ -444,20 +456,29 @@ void PlanetsWindow::paint() {
     glVertexAttribPointer(tangent,  3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->tangent));
     glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->uv));
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, planetTexture_diff);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, planetTexture_nrm);
+    for (int i = 0; i < NUM_PLANET_TEXTURES; ++i) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, planetTextures_diff[i]);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, planetTextures_nrm[i]);
 
-    for (const auto& i : universe) {
-        /* Create a matrix translated by the position and scaled by the radius. */
-        glm::mat4 matrix = glm::translate(i.position);
-        matrix = glm::scale(matrix, glm::vec3(i.radius()));
-        glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+        for (Planet& planet : universe) {
+            if (planet.materialID > NUM_PLANET_TEXTURES)
+                planet.materialID = rand() % NUM_PLANET_TEXTURES;
 
-        /* Render all the triangles... */
-        glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
+            if (planet.materialID != i)
+                continue;
+
+            /* Create a matrix translated by the position and scaled by the radius. */
+            glm::mat4 matrix = glm::translate(planet.position);
+            matrix = glm::scale(matrix, glm::vec3(planet.radius()));
+            glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+            /* Render all the triangles... */
+            glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
+        }
     }
+
 
     /* Now the texture shader and uv's don't get used until next frame. */
     glDisableVertexAttribArray(normal);

@@ -173,7 +173,7 @@ if(PLANETS3D_SDL)
     file(GLOB IMGUI_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp")
 
     # Use that resource generation script to generate res.hpp and res.cpp.
-    create_resources(res ${SDL_SHADERS} "${CMAKE_SOURCE_DIR}/textures/planet_diffuse.png" "${CMAKE_SOURCE_DIR}/textures/planet_nrm.png")
+    create_resources(res ${SDL_SHADERS})
 
     add_executable(${PROJECT_NAME}_sdl WIN32 ${SDL_SOURCES} ${IMGUI_SOURCES} ${SDL_HEADERS} ${SDL_WINDRES} ${SDL_SHADERS} res.cpp)
 
@@ -196,6 +196,7 @@ if(PLANETS3D_SDL)
     find_package(OpenGL REQUIRED)
     include_directories(${OPENGL_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_LIBRARY} ${PROJECT_NAME}_gamepad ${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
+    copy_to_bin(${PROJECT_NAME}_sdl "${CMAKE_SOURCE_DIR}/textures/*" "textures/")
 endif(PLANETS3D_SDL)
 
 #---------------------------------------------

@@ -17,6 +17,8 @@ public:
 
     std::vector<glm::vec3> path;
 
+    uint8_t materialID;
+
     /* Add a point to the path if the planet is specified distance (in units squared) from the last point. */
     void updatePath(size_t pathLength, float pathRecordDistance);
 

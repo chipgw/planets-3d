@@ -12,6 +12,8 @@
 #include <SDL.h>
 #include <array>
 
+#define NUM_PLANET_TEXTURES 7
+
 class PlanetsWindow{
     /* Universe and basic interface classes. */
     PlanetsUniverse universe;
@@ -52,7 +54,8 @@ class PlanetsWindow{
     unsigned int shaderUI, shaderUI_matrix;
 
     /* The diffuse and normalmap textures for planets. */
-    unsigned int planetTexture_diff, planetTexture_nrm;
+    unsigned int planetTextures_diff[NUM_PLANET_TEXTURES];
+    unsigned int planetTextures_nrm[NUM_PLANET_TEXTURES];
 
     unsigned int highResVBO, highResTriIBO, highResTriCount;
     unsigned int lowResVBO, lowResLineIBO, lowResLineCount;
