@@ -21,6 +21,8 @@ class QMouseEvent;
 #include "sdlgamepad.h"
 #endif
 
+#define NUM_PLANET_TEXTURES 7
+
 class PlanetsWidget : public QOpenGLWidget, public QOpenGLFunctions {
     Q_OBJECT
 private:
@@ -35,8 +37,8 @@ private:
     /* GL vertex attribute handles. */
     const static int vertex, normal, tangent, uv;
 
-    QOpenGLTexture* texture_diff;
-    QOpenGLTexture* texture_nrm;
+    QOpenGLTexture* textures_diff[NUM_PLANET_TEXTURES];
+    QOpenGLTexture* textures_nrm[NUM_PLANET_TEXTURES];
 
     Camera camera;
 

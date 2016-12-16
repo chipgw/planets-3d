@@ -87,12 +87,20 @@ void PlanetsWidget::initializeGL() {
     /* This vertex attribute should always be enabled. */
     shaderColor.enableAttributeArray(vertex);
 
-    /* The one and only texture. */
-    QImage diff(":/textures/planet_diffuse.png");
-    QImage nrm(":/textures/planet_nrm.png");
-
-    texture_diff = new QOpenGLTexture(diff);
-    texture_nrm = new QOpenGLTexture(nrm);
+    textures_diff[0] = new QOpenGLTexture(QImage("textures/planet_diffuse.png"));
+    textures_nrm[0] = new QOpenGLTexture(QImage("textures/planet_nrm.png"));
+    textures_diff[1] = new QOpenGLTexture(QImage("textures/planet_diffuse_01.png"));
+    textures_nrm[1] = new QOpenGLTexture(QImage("textures/planet_nrm_01.png"));
+    textures_diff[2] = new QOpenGLTexture(QImage("textures/planet_diffuse_02.png"));
+    textures_nrm[2] = new QOpenGLTexture(QImage("textures/planet_nrm_02.png"));
+    textures_diff[3] = new QOpenGLTexture(QImage("textures/planet_diffuse_03.png"));
+    textures_nrm[3] = new QOpenGLTexture(QImage("textures/planet_nrm_03.png"));
+    textures_diff[4] = new QOpenGLTexture(QImage("textures/planet_diffuse_04.png"));
+    textures_nrm[4] = new QOpenGLTexture(QImage("textures/planet_nrm_04.png"));
+    textures_diff[5] = new QOpenGLTexture(QImage("textures/planet_diffuse_05.png"));
+    textures_nrm[5] = new QOpenGLTexture(QImage("textures/planet_nrm_05.png"));
+    textures_diff[6] = new QOpenGLTexture(QImage("textures/planet_diffuse_06.png"));
+    textures_nrm[6] = new QOpenGLTexture(QImage("textures/planet_nrm_06.png"));
 
     /* Begin vertex/index buffer allocation. */
 
@@ -190,11 +198,6 @@ void PlanetsWidget::render() {
         shaderTexture.enableAttributeArray(tangent);
         shaderTexture.enableAttributeArray(uv);
 
-        glActiveTexture(GL_TEXTURE0);
-        texture_diff->bind();
-        glActiveTexture(GL_TEXTURE1);
-        texture_nrm->bind();
-
         highResSphereVerts.bind();
         highResSphereTris.bind();
 
@@ -204,14 +207,27 @@ void PlanetsWidget::render() {
         shaderTexture.setAttributeBuffer(tangent,   GL_FLOAT, offsetof(Vertex, tangent),    3, sizeof(Vertex));
         shaderTexture.setAttributeBuffer(uv,        GL_FLOAT, offsetof(Vertex, uv),         2, sizeof(Vertex));
 
-        for (const auto& i : universe) {
-            /* Set up a matrix for the planet's position and size. */
-            glm::mat4 matrix = glm::translate(i.position);
-            matrix = glm::scale(matrix, glm::vec3(i.radius() * drawScale));
-            glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+        for (int i = 0; i < NUM_PLANET_TEXTURES; ++i) {
+            glActiveTexture(GL_TEXTURE0);
+            textures_diff[i]->bind();
+            glActiveTexture(GL_TEXTURE1);
+            textures_nrm[i]->bind();
 
-            /* Draw the high resolution sphere. */
-            glDrawElements(GL_TRIANGLES, highResSphereTriCount, GL_UNSIGNED_INT, nullptr);
+            for (Planet& planet : universe) {
+                if (planet.materialID > NUM_PLANET_TEXTURES)
+                    planet.materialID = rand() % NUM_PLANET_TEXTURES;
+
+                if (planet.materialID != i)
+                    continue;
+
+                /* Set up a matrix for the planet's position and size. */
+                glm::mat4 matrix = glm::translate(planet.position);
+                matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
+                glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+                /* Draw the high resolution sphere. */
+                glDrawElements(GL_TRIANGLES, highResSphereTriCount, GL_UNSIGNED_INT, nullptr);
+            }
         }
 
         highResSphereVerts.release();

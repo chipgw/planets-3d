@@ -22,7 +22,8 @@ get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 # Macro to copy a file orfolder to the directory where binaries are built to.
 macro(copy_to_bin)
     make_directory("${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${ARGV2}")
-    add_custom_command(TARGET ${ARGV0} COMMAND ${CMAKE_COMMAND} -E copy "${ARGV1}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${ARGV2}")
+    file(GLOB TARGET_FILES ${ARGV1})
+    add_custom_command(TARGET ${ARGV0} COMMAND ${CMAKE_COMMAND} -E copy ${TARGET_FILES} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${ARGV2}")
 endmacro()
 
 # Options for native builds.
@@ -81,6 +82,8 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         add_executable(${PROJECT_NAME}_benchmark "bench/bench.cpp")
         target_link_libraries(${PROJECT_NAME}_benchmark ${PROJECT_NAME})
     endif(PLANETS3D_BENCHMARK)
+
+    copy_to_bin(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/textures/*" "textures/")
 
     # The SDL gamepad support works with both interfaces from the same source code,
     # but it doesn't go in the library because that doesn't require SDL.
@@ -196,7 +199,6 @@ if(PLANETS3D_SDL)
     find_package(OpenGL REQUIRED)
     include_directories(${OPENGL_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_LIBRARY} ${PROJECT_NAME}_gamepad ${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
-    copy_to_bin(${PROJECT_NAME}_sdl "${CMAKE_SOURCE_DIR}/textures/*" "textures/")
 endif(PLANETS3D_SDL)
 
 #---------------------------------------------
