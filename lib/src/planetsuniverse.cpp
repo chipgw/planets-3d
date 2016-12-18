@@ -40,6 +40,10 @@ int PlanetsUniverse::load(const std::string& filename, bool clear) {
             Planet planet;
             planet.setMass(std::stof(element->Attribute("mass")));
 
+            try {
+                planet.materialID = std::stoi(element->Attribute("material"));
+            } catch(...) { }
+
             for (TiXmlElement* sub = element->FirstChildElement(); sub != nullptr; sub = sub->NextSiblingElement()) {
                 if (sub->ValueStr() == "position")
                     planet.position = glm::vec3(std::stof(sub->Attribute("x")),
@@ -69,6 +73,8 @@ void PlanetsUniverse::save(const std::string& filename) {
     for (const Planet& planet : planets) {
         TiXmlElement* element = new TiXmlElement("planet");
         element->SetAttribute("mass", std::to_string(planet.mass()));
+
+        element->SetAttribute("material", std::to_string(planet.materialID));
 
         TiXmlElement* position = new TiXmlElement("position");
         position->SetAttribute("x", std::to_string(planet.position.x));

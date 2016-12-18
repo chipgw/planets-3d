@@ -207,6 +207,8 @@ void PlanetsWidget::render() {
         shaderTexture.setAttributeBuffer(tangent,   GL_FLOAT, offsetof(Vertex, tangent),    3, sizeof(Vertex));
         shaderTexture.setAttributeBuffer(uv,        GL_FLOAT, offsetof(Vertex, uv),         2, sizeof(Vertex));
 
+        std::uniform_int_distribution<int> material(0, NUM_PLANET_TEXTURES);
+
         for (int i = 0; i < NUM_PLANET_TEXTURES; ++i) {
             glActiveTexture(GL_TEXTURE0);
             textures_diff[i]->bind();
@@ -215,7 +217,7 @@ void PlanetsWidget::render() {
 
             for (Planet& planet : universe) {
                 if (planet.materialID > NUM_PLANET_TEXTURES)
-                    planet.materialID = rand() % NUM_PLANET_TEXTURES;
+                    planet.materialID = material(universe.generator);
 
                 if (planet.materialID != i)
                     continue;
