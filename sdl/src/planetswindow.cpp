@@ -431,14 +431,15 @@ void PlanetsWindow::paint() {
 
     camera.setup();
 
-    /* We only use the texture shader, normals, tangents, and uv's for drawing the shaded planets. */
+    /* We only use the texture shader, normals, tangents, and uvs for drawing the shaded planets. */
     glUseProgram(shaderTexture);
     glEnableVertexAttribArray(normal);
     glEnableVertexAttribArray(tangent);
     glEnableVertexAttribArray(uv);
 
-    /* Update the light direction in view space. */
+    /* This is just vec3(1.0) normalized. */
     glm::vec3 light = glm::vec3(0.57735f);
+    /* Put the light direction into view space. */
     light = glm::vec3(camera.view * glm::vec4(light, 0.0f));
     glUniform3fv(shaderTexture_lightDir, 1, glm::value_ptr(light));
 
@@ -464,9 +465,11 @@ void PlanetsWindow::paint() {
         glBindTexture(GL_TEXTURE_2D, planetTextures_nrm[i]);
 
         for (Planet& planet : universe) {
+            /* If the materialis invalid, generate a valid one. */
             if (planet.materialID > NUM_PLANET_TEXTURES)
                 planet.materialID = material(universe.generator);
 
+            /* If it isn't the current material, skip it. We've either already rendered it or will render it later. */
             if (planet.materialID != i)
                 continue;
 
@@ -480,8 +483,7 @@ void PlanetsWindow::paint() {
         }
     }
 
-
-    /* Now the texture shader and uv's don't get used until next frame. */
+    /* Now the texture shader, normals, tangents, and uvs don't get used until next frame. */
     glDisableVertexAttribArray(normal);
     glDisableVertexAttribArray(tangent);
     glDisableVertexAttribArray(uv);
@@ -526,7 +528,7 @@ void PlanetsWindow::paint() {
         /* How long does the velocity arrow need to be? */
         float length = glm::length(placing.planet.velocity) / universe.velocityfac;
 
-        /* If it is zero don't render it. */
+        /* If it's zero don't render it. */
         if (length > 0.0f) {
             glm::mat4 matrix = glm::translate(placing.planet.position);
             /* Scale the arrow by the template's radius. */
@@ -833,6 +835,12 @@ void PlanetsWindow::paintUI(const float delay) {
             ImGui::Text("Velocity: x: %f, y: %f, z: %f", p.velocity.x / universe.velocityfac, p.velocity.y / universe.velocityfac, p.velocity.z / universe.velocityfac);
             ImGui::Text("Mass:     %f", p.mass());
             ImGui::Text("Radius:   %f", p.radius());
+            /* The materialID is a uint8_t, so it won't work directly with SliderInt(),
+             * but SliderInt() just converts to a float and calls SliderFloat(), so why bother with an int in between? */
+            float mat = p.materialID;
+            /* TODO - Perhaps there would be a better place to put this than the information window? */
+            if (ImGui::SliderFloat("Material", &mat, 0, NUM_PLANET_TEXTURES-1, "%.0f"))
+                p.materialID = static_cast<uint8_t>(mat);
         }
 
         if (ImGui::CollapsingHeader("General Info", ImGuiTreeNodeFlags_DefaultOpen))
