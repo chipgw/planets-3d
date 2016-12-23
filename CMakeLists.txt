@@ -15,7 +15,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/include" "${CMAKE_CURRENT_S
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
-# Retrieve the current git sha1 for use inthe configured version.cpp.
+# Retrieve the current git sha1, for use in the configured version.cpp.
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 
@@ -51,7 +51,7 @@ include_directories(${GLM_INCLUDE_DIR})
 # Library
 #---------------------------------------------
 
-# files not needed in build, but included so they show up in IDE.
+# Headers are not needed to build, but are included so they show up in IDE.
 file(GLOB LIB_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/lib/include/*.h")
 
 file(GLOB LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/lib/src/*.cpp")
@@ -83,7 +83,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         target_link_libraries(${PROJECT_NAME}_benchmark ${PROJECT_NAME})
     endif(PLANETS3D_BENCHMARK)
 
-    copy_to_bin(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/textures/*" "textures/")
+    # Both interfaces use the textures folder, so copy it if either one is enabled.
+    if(PLANETS3D_SDL OR PLANETS3D_QT)
+        copy_to_bin(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/textures/*" "textures/")
+    endif(PLANETS3D_SDL OR PLANETS3D_QT)
 
     # The SDL gamepad support works with both interfaces from the same source code,
     # but it doesn't go in the library because that doesn't require SDL.
@@ -110,7 +113,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     set(CMAKE_CXX_FLAGS_DEBUG "-s DEMANGLE_SUPPORT=1 -g")
 
     # Included for IDE support.
-    file(GLOB JS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/js/*.*" "${CMAKE_CURRENT_SOURCE_DIR}/js/*/*.*" )
+    file(GLOB JS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/js/*.*" "${CMAKE_CURRENT_SOURCE_DIR}/js/*/*.*")
 
     add_executable(${PROJECT_NAME}_js ${LIB_SOURCES} ${LIB_HEADERS} ${JS_SOURCES} "gamepad/sdlgamepad.h" "gamepad/sdlgamepad.cpp" "bench/bench.cpp")
 
@@ -216,12 +219,9 @@ if(PLANETS3D_QT5)
     set(QT_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/qt/resources.qrc")
 
     if(WIN32)
-        # For the windows exe icon and version information.
+        # For Windows icon and version information.
         set(QT_WINDRES "${CMAKE_CURRENT_BINARY_DIR}/qt/Planets3D.rc")
         configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt/Planets3D.rc.in" "${QT_WINDRES}" @ONLY)
-    else(WIN32)
-        # Nothing replaces it on other platforms.
-        set(QT_WINDRES "")
     endif(WIN32)
 
     find_package(Qt5OpenGL)
@@ -234,7 +234,7 @@ if(PLANETS3D_QT5)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/qt/include" ${Qt5OpenGL_INCLUDE_DIRS})
     add_executable(${PROJECT_NAME}_qt WIN32 ${QT_SOURCES} ${QT_FORM_CODE} ${QT_HEADERS} ${QT_RESOURCES_RCC} ${QT_WINDRES} ${QT_SHADERS})
 
-    target_link_libraries(${PROJECT_NAME}_qt Qt5::OpenGL Planets3D)
+    target_link_libraries(${PROJECT_NAME}_qt ${PROJECT_NAME} Qt5::OpenGL)
 
     if(PLANETS3D_QT_USE_SDL_GAMEPAD)
         # Link to the SDL gamepad code and enable it.
