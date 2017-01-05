@@ -182,6 +182,12 @@ if(PLANETS3D_SDL)
     # Use that resource generation script to generate res.hpp and res.cpp.
     create_resources(res ${SDL_SHADERS})
 
+    if(WIN32)
+        # For Windows icon and version information.
+        set(SDL_WINDRES "${CMAKE_CURRENT_BINARY_DIR}/sdl/Planets3D.rc")
+        configure_file("${CMAKE_CURRENT_SOURCE_DIR}/sdl/Planets3D.rc.in" "${SDL_WINDRES}" @ONLY)
+    endif(WIN32)
+
     add_executable(${PROJECT_NAME}_sdl WIN32 ${SDL_SOURCES} ${IMGUI_SOURCES} ${SDL_HEADERS} ${SDL_WINDRES} ${SDL_SHADERS} res.cpp)
 
     if(MSVC)
