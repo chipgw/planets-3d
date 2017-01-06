@@ -739,6 +739,20 @@
        </property>
       </widget>
      </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="materialLabel">
+       <property name="text">
+        <string>Material</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="materialSpinBox">
+       <property name="maximum">
+        <number>6</number>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>

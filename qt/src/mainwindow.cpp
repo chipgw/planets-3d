@@ -417,6 +417,11 @@ bool MainWindow::event(QEvent* event) {
     return QMainWindow::event(event);
 }
 
+void MainWindow::on_materialSpinBox_valueChanged(int value) {
+    if (ui->centralwidget->universe.isSelectedValid())
+        ui->centralwidget->universe.getSelected().materialID = value;
+}
+
 void MainWindow::frameUpdate() {
     if (ui->centralwidget->universe.size() == 1)
         planetCountLabel->setText(tr("1 planet"));
@@ -436,11 +441,14 @@ void MainWindow::frameUpdate() {
         ui->velocityLabel->setText(QString("x: %0, y: %1, z: %2").arg(velocity.x).arg(velocity.y).arg(velocity.z));
         ui->massLabel->setNum(selected.mass());
         ui->radiusLabel->setNum(selected.radius());
+        ui->materialSpinBox->setEnabled(true);
+        ui->materialSpinBox->setValue(selected.materialID);
     } else {
         ui->positionLabel->setText("");
         ui->velocityLabel->setText("");
         ui->massLabel->setText("");
         ui->radiusLabel->setText("");
+        ui->materialSpinBox->setEnabled(false);
     }
 }
 

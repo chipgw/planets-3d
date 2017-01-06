@@ -51,6 +51,8 @@ private slots:
 
     void on_actionClear_triggered();
 
+    void on_materialSpinBox_valueChanged(int value);
+
     /* Called on GL frame swap to update status bar messages and any other controls that may need it. */
     void frameUpdate();
 
