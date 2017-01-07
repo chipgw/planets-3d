@@ -385,10 +385,8 @@ void PlanetsWindow::run() {
 
         if (delay != 0)
             /* Put a bunch of information into the title. */
-            SDL_SetWindowTitle(windowSDL, ("Planets3D  [" + std::to_string(1000000 / delay) + "fps, " + std::to_string(delay / 1000) + "ms " +
-                                           std::to_string(universe.size()) + " planet(s), " + std::to_string(universe.simspeed) + "x speed, " +
-                                           std::to_string(universe.stepsPerFrame) + " step(s), " +
-                                           std::to_string(universe.pathLength) + " path length]").c_str());
+            SDL_SetWindowTitle(windowSDL, ("Planets3D  [" + std::to_string(1000000 / delay) + "fps, " +
+                                           std::to_string(universe.size()) + " planet(s)]").c_str());
 
         /* Don't do delays larger than a second. */
         delay = std::min(delay, 1000000);
