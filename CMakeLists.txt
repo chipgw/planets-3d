@@ -133,32 +133,9 @@ endif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 # SDL Interface
 #---------------------------------------------
 
+include(CreateResources)
+
 if(PLANETS3D_SDL)
-    # Places resource files into a .cpp and .hpp file. (stolen from stackoverflow with some tweaks)
-    function(CREATE_RESOURCES OUTFILE)
-        set(OUTHPP "${CMAKE_CURRENT_BINARY_DIR}/${OUTFILE}.hpp")
-        set(OUTCPP "${CMAKE_CURRENT_BINARY_DIR}/${OUTFILE}.cpp")
-
-        # Create output files.
-        file(WRITE ${OUTHPP} "#pragma once\n#include <cstddef>\n")
-        file(WRITE ${OUTCPP} "#include \"${OUTFILE}.hpp\"\n")
-
-        # Iterate through input files
-        foreach(FILE ${ARGN})
-            # Get short filename
-            string(REGEX MATCH "([^/]+)$" FILENAME ${FILE})
-            # Replace filename spaces & extension separator for C compatibility
-            string(REGEX REPLACE "\\.| |-" "_" FILENAME ${FILENAME})
-            # Read hex data from file
-            file(READ ${FILE} FILEDATA HEX)
-            # Convert hex data for C compatibility
-            string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," FILEDATA ${FILEDATA})
-            # Append data to output file
-            file(APPEND ${OUTHPP} "extern const unsigned char ${FILENAME}[];\nextern const size_t ${FILENAME}_size;\n")
-            file(APPEND ${OUTCPP} "const unsigned char ${FILENAME}[] = {${FILEDATA}0x00};\nconst size_t ${FILENAME}_size = sizeof(${FILENAME});\n")
-        endforeach()
-    endfunction()
-
     if(WIN32)
         # GLEW is required on Windows.
         set(PLANETS3D_WITH_GLEW ON)
@@ -180,7 +157,7 @@ if(PLANETS3D_SDL)
     file(GLOB IMGUI_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp")
 
     # Use that resource generation script to generate res.hpp and res.cpp.
-    create_resources(res ${SDL_SHADERS})
+    create_resources(OUTPUT res TEXT ${SDL_SHADERS})
 
     if(WIN32)
         # For Windows icon and version information.
