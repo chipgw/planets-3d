@@ -454,7 +454,7 @@ void PlanetsWindow::paint() {
     glVertexAttribPointer(tangent,  3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->tangent));
     glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->uv));
 
-    std::uniform_int_distribution<int> material(0, NUM_PLANET_TEXTURES);
+    std::uniform_int_distribution<int> material(0, NUM_PLANET_TEXTURES-1);
 
     for (int i = 0; i < NUM_PLANET_TEXTURES; ++i) {
         glActiveTexture(GL_TEXTURE0);
