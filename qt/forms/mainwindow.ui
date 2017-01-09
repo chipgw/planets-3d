@@ -54,6 +54,7 @@
     <addaction name="actionGrid"/>
     <addaction name="actionDraw_Paths"/>
     <addaction name="actionHide_Planets"/>
+    <addaction name="actionDraw_Planar_Circles"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
