@@ -1172,8 +1172,8 @@ void PlanetsWindow::onResized(uint32_t width, uint32_t height) {
                                         height > 0 ? (static_cast<float>(display_h) / static_cast<float>(height)) : 0);
 }
 
-void PlanetsWindow::drawPlanetWireframe(const Planet& planet, const uint32_t& color) {
-    glUniform4fv(shaderColor_color, 1, glm::value_ptr(uintColorToVec4(color)));
+void PlanetsWindow::drawPlanetWireframe(const Planet& planet, const glm::vec4& color) {
+    glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
 
     glm::mat4 matrix = glm::translate(planet.position);
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * 1.05f));
