@@ -10,6 +10,7 @@
 #include <glm/gtx/norm.hpp>
 #include <SDL_image.h>
 #include <imgui/imgui.h>
+#include <sstream>
 
 #include "res.hpp"
 
@@ -125,7 +126,15 @@ void PlanetsWindow::initGL() {
         puts("WARNING: OpenGL 3.0 support NOT detected, things probably won't work.");
 #endif
 
-    printf("GL Vendor: \"%s\", Renderer: \"%s\".\n", glGetString(GL_VENDOR), glGetString(GL_RENDERER));
+    std::stringstream info;
+    info << "Version:      " << glGetString(GL_VERSION) << std::endl
+         << "Vendor:       " << glGetString(GL_VENDOR) << std::endl
+         << "Renderer:     " << glGetString(GL_RENDERER) << std::endl
+         << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+    glInfo = info.str();
+
+    printf("OpenGL Info:\n%s", glInfo.data());
 
     initShaders();
 
@@ -855,6 +864,9 @@ void PlanetsWindow::paintUI(const float delay) {
 
             /* TODO - Perhaps add more stats... */
         }
+
+        if (ImGui::CollapsingHeader("OpenGL Info"))
+            ImGui::TextWrapped(glInfo.data());
 
         ImGui::End();
     }

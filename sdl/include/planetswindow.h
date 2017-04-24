@@ -120,6 +120,8 @@ class PlanetsWindow{
 
     std::array<SDL_Cursor*, 7> cursors;
 
+    std::string glInfo;
+
 public:
     /* Create the window, expects command line arguments as passed to a standard main(int argc, char* argv[]) function. */
     PlanetsWindow(int argc, char* argv[]);
