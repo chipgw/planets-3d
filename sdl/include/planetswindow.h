@@ -96,7 +96,7 @@ class PlanetsWindow{
     /* Total amount of frames drawn since window creation. */
     uintmax_t totalFrames = 0;
 
-    /* Keep track of the delayof the last fer frames for graphing. */
+    /* Keep track of the delay of the last 80 frames for graphing. */
     std::array<float, 80> frameTimes;
     size_t frameTimeOffset = 0;
 

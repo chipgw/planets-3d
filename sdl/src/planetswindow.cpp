@@ -88,7 +88,7 @@ void PlanetsWindow::initSDL() {
 
     /* We're doomed... */
     if (!windowSDL) {
-        printf("ERROR: Unable to create window!");
+        puts("ERROR: Unable to create window!");
         abort();
     }
 
@@ -331,6 +331,9 @@ void PlanetsWindow::initUI() {
 
     /* Store the font texture handle. */
     io.Fonts->TexID = reinterpret_cast<void*>(static_cast<intptr_t>(fontTexture));
+
+    /* Texture is uploaded, we don't need the font pixel data any more. */
+    io.Fonts->ClearTexData();
 
     /* Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array. */
     io.KeyMap[ImGuiKey_Tab] = SDLK_TAB;
@@ -915,7 +918,6 @@ void PlanetsWindow::paintUI(const float delay) {
         ImGui::ShowTestWindow(&showTestWindow);
     }
 #endif
-
     /* End UI code. */
 
     /* Begin rendering code. */
@@ -935,7 +937,6 @@ void PlanetsWindow::paintUI(const float delay) {
     glUseProgram(shaderUI);
     glUniformMatrix4fv(shaderUI_matrix, 1, GL_FALSE, glm::value_ptr(projection));
 
-    glEnableVertexAttribArray(vertex);
     glEnableVertexAttribArray(uv);
     glEnableVertexAttribArray(normal);
 
