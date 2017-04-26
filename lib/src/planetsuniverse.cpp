@@ -41,7 +41,9 @@ int PlanetsUniverse::load(const std::string& filename, bool clear) {
             planet.setMass(std::stof(element->Attribute("mass")));
 
             try {
-                planet.materialID = std::stoi(element->Attribute("material"));
+                const char* mat = element->Attribute("material");
+                if (mat)
+                    planet.materialID = std::stoi(mat);
             } catch(...) { }
 
             for (TiXmlElement* sub = element->FirstChildElement(); sub != nullptr; sub = sub->NextSiblingElement()) {
