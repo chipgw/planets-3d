@@ -3,7 +3,6 @@
 #include "spheregenerator.h"
 #include "version.h"
 #include <algorithm>
-#include <chrono>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -375,19 +374,13 @@ void PlanetsWindow::run() {
     /* Remains true from here until application closes. */
     running = true;
 
-    typedef std::chrono::high_resolution_clock clock;
-    using std::chrono::duration_cast;
-    using std::chrono::microseconds;
-
-    /* To track the total running time of the program. */
-    clock::time_point start_time = clock::now();
     /* To track the time spent per frame. */
-    clock::time_point last_time = start_time;
+    Uint64 last_time = SDL_GetPerformanceCounter();
 
     while (running) {
         /* Figure out how long the last frame took to render & display, in microseconds. */
-        clock::time_point current = clock::now();
-        int delay = static_cast<int>(duration_cast<microseconds>(current - last_time).count());
+        Uint64 current = SDL_GetPerformanceCounter();
+        int delay = static_cast<int>((current - last_time)*1000000 / SDL_GetPerformanceFrequency());
         last_time = current;
 
         /* Store in milliseconds. */
@@ -422,16 +415,11 @@ void PlanetsWindow::run() {
         fflush(stdout);
     }
 
-    /* Nice high-res decimal representation of time. */
-    typedef std::chrono::duration<double> dsec;
-    typedef std::chrono::duration<double, std::milli> dms;
-
     /* Output stats to the console. */
-    clock::time_point current = clock::now();
-    printf("Total Time: %f seconds.\n", (duration_cast<dsec>(current - start_time).count()));
+    printf("Total Time: %f seconds.\n", SDL_GetTicks() * 1.0e-3);
     printf("Total Frames: %ju.\n", totalFrames);
-    printf("Average Draw Time: %fms.\n", duration_cast<dms>(current - start_time).count() / double(totalFrames));
-    printf("Average Framerate: %f fps.\n", 1.0 / (duration_cast<dsec>(current - start_time).count() / double(totalFrames)));
+    printf("Average Draw Time: %fms.\n", SDL_GetTicks() / double(totalFrames));
+    printf("Average Framerate: %f fps.\n", 1.0 / (SDL_GetTicks() * 1.0e-3 / double(totalFrames)));
 }
 
 void PlanetsWindow::paint() {

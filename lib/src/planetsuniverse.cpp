@@ -1,6 +1,5 @@
 #include "planetsuniverse.h"
 #include "planet.h"
-#include <chrono>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_query.hpp>
 #include <glm/gtx/rotate_vector.hpp>
@@ -14,7 +13,7 @@
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
 
-PlanetsUniverse::PlanetsUniverse() : generator(std::chrono::system_clock::now().time_since_epoch().count()) { }
+PlanetsUniverse::PlanetsUniverse() : generator(std::random_device()()) { }
 
 /* Emscripten does IO from javascript. */
 #ifndef EMSCRIPTEN
@@ -42,8 +41,7 @@ int PlanetsUniverse::load(const std::string& filename, bool clear) {
 
             try {
                 const char* mat = element->Attribute("material");
-                if (mat)
-                    planet.materialID = std::stoi(mat);
+                if (mat) planet.materialID = std::stoi(mat);
             } catch(...) { }
 
             for (TiXmlElement* sub = element->FirstChildElement(); sub != nullptr; sub = sub->NextSiblingElement()) {
