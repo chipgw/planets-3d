@@ -5,6 +5,8 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/random.hpp>
 #include <cstdio>
+#include <algorithm>
+#include <array>
 
 #ifndef EMSCRIPTEN
 #include <tinyxml.h>
@@ -13,7 +15,14 @@
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
 
-PlanetsUniverse::PlanetsUniverse() : generator(std::random_device()()) { }
+PlanetsUniverse::PlanetsUniverse() {
+    /* This should be a better way to seed a mersenne twister engine than just using a single uint. */
+    std::random_device random_dev;
+    std::array<unsigned int, std::mt19937::state_size> random_data;
+    std::generate(random_data.begin(), random_data.end(), std::ref(random_dev));
+    std::seed_seq seeds(random_data.begin(), random_data.end());
+    generator.seed(seeds);
+}
 
 /* Emscripten does IO from javascript. */
 #ifndef EMSCRIPTEN

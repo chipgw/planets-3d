@@ -16,7 +16,7 @@ public:
     typedef list_type::iterator iterator;
     typedef list_type::const_iterator const_iterator;
 
-    std::default_random_engine generator;
+    std::mt19937 generator;
 
 private:
     list_type planets;
