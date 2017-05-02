@@ -6,6 +6,7 @@
 #include <glm/gtc/random.hpp>
 #include <cstdio>
 #include <algorithm>
+#include <functional>
 #include <array>
 
 #ifndef EMSCRIPTEN
