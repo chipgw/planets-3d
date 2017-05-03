@@ -14,7 +14,7 @@
 
 #define NUM_PLANET_TEXTURES 7
 
-class PlanetsWindow{
+class PlanetsWindow {
     /* Universe and basic interface classes. */
     PlanetsUniverse universe;
     PlacingInterface placing;
@@ -38,6 +38,7 @@ class PlanetsWindow{
     /* Graphics settings */
     bool drawTrails = false;
     bool drawPlanarCircles = false;
+    float drawScale = 1.0f;
 
     Grid grid;
 

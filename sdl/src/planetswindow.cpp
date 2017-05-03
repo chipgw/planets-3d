@@ -473,7 +473,7 @@ void PlanetsWindow::paint() {
 
             /* Create a matrix translated by the position and scaled by the radius. */
             glm::mat4 matrix = glm::translate(planet.position);
-            matrix = glm::scale(matrix, glm::vec3(planet.radius()));
+            matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
             glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
             /* Render all the triangles... */
@@ -631,7 +631,7 @@ void PlanetsWindow::paint() {
 
             glm::mat4 matrix = glm::translate(pos);
             /* Make the circle start at the planet's radius and increase it slightly the further out the camera is. */
-            matrix = glm::scale(matrix, glm::vec3(i.radius() + camera.distance * 0.02f));
+            matrix = glm::scale(matrix, glm::vec3(i.radius() * drawScale + camera.distance * 0.02f));
 
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
             glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
@@ -819,6 +819,8 @@ void PlanetsWindow::paintUI(const float delay) {
 
         ImGui::SliderInt("Steps Per Frame", &universe.stepsPerFrame, 1, 4000);
         ImGui::SliderInt("Grid Size", (int*)&grid.range, 4, 64);
+
+        ImGui::SliderFloat("Planet Scale", &drawScale, 1.0f, 8.0f);
 
         ImGui::End();
     }
@@ -1031,7 +1033,7 @@ void PlanetsWindow::doEvents() {
                     } else {
                         glm::ivec2 pos(event.button.x, event.button.y);
                         if (!placing.handleMouseClick(pos, camera))
-                            camera.selectUnder(pos);
+                            camera.selectUnder(pos, drawScale);
                     }
                 } else if ((event.button.button == SDL_BUTTON_MIDDLE || event.button.button == SDL_BUTTON_RIGHT) && event.button.clicks == 2) {
                     camera.reset();
@@ -1177,7 +1179,7 @@ void PlanetsWindow::drawPlanetWireframe(const Planet& planet, const glm::vec4& c
     glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
 
     glm::mat4 matrix = glm::translate(planet.position);
-    matrix = glm::scale(matrix, glm::vec3(planet.radius() * 1.05f));
+    matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale * 1.05f));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
     glDrawElements(GL_LINES, lowResLineCount, GL_UNSIGNED_INT, 0);
