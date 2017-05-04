@@ -71,8 +71,7 @@ private:
 
     Ui::MainWindow* ui;
 
-    /* the maximum value of the simulation speed dial. */
-    static const int speeddialmax;
+    /* The last thing the speed dial was set to. */
     int speedDialMemory;
 
     QSettings settings;

@@ -23,19 +23,22 @@ public:
         WeightedAverage
     };
 
-    /* What are we following? */
+    /* What are we following? (The actual following planet is in PlanetsUniverse, where it can be updated when a planet is removed.) */
     FollowingState followingState;
 
-    /* Values to transform the camera by. Rotation values are in radians. */
+    /* Where the camera's center of rotation is. */
     glm::vec3 position;
+    /* How far back the camera is from the center of rotation. */
     float distance;
+    /* What angles the camera is rotated to around the above position, in radians. */
     float xrotation;
     float zrotation;
 
     /* The perspective camera matrix, before transformations are applied. */
     glm::mat4 projection;
+    /* The matrix to transform from world into eye space, no projection applied. */
     glm::mat4 view;
-    /* The final camera matrix with all transformations applied, pass this to OpenGL. */
+    /* The final camera matrix with all transformations applied. Pass this to OpenGL. */
     glm::mat4 camera;
 
     EXPORT Camera(PlanetsUniverse& universe);

@@ -117,13 +117,13 @@ key_type Camera::selectUnder(const glm::ivec2& pos, float scale) {
         float dot = glm::dot(difference, ray.direction);
 
         /* Getting distance^2 works just fine for us, no need to sqrt. */
-        float distance = glm::length2(difference);
+        float distance2 = glm::length2(difference);
 
         /* distance^2 - dot^2 is the closest the ray gets to the planet's center point.
          * Comparing to the planet radius tells whether or not it intersects. */
-        if (distance < nearest && (distance - dot * dot) <= (universe[i].radius() * universe[i].radius() * scale)) {
+        if (distance < nearest && (distance2 - dot * dot) <= (universe[i].radius() * universe[i].radius() * scale)) {
             universe.selected = i;
-            nearest = distance;
+            nearest = distance2;
         }
     }
 

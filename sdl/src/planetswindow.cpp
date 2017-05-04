@@ -524,7 +524,7 @@ void PlanetsWindow::paint() {
 
     if (placing.step == PlacingInterface::FreeVelocity) {
         /* How long does the velocity arrow need to be? */
-        float length = glm::length(placing.planet.velocity) / universe.velocityfac;
+        float length = glm::length(placing.planet.velocity) / universe.velocityFactor;
 
         /* If it's zero don't render it. */
         if (length > 0.0f) {
@@ -768,7 +768,7 @@ void PlanetsWindow::paintUI(const float delay) {
             if (planetGenOrbital)
                 universe.generateRandomOrbital(planetGenAmount, universe.selected);
             else
-                universe.generateRandom(planetGenAmount, planetGenMaxPos, planetGenMaxSpeed * universe.velocityfac, planetGenMaxMass);
+                universe.generateRandom(planetGenAmount, planetGenMaxPos, planetGenMaxSpeed * universe.velocityFactor, planetGenMaxMass);
         }
 
         ImGui::End();
@@ -778,29 +778,29 @@ void PlanetsWindow::paintUI(const float delay) {
         ImGui::SetNextWindowPos(ImVec2(10, 200), ImGuiSetCond_FirstUseEver);
         ImGui::Begin("Speed Controls", &showSpeedWindow, ImVec2(360, 100));
 
-        ImGui::SliderFloat("Speed", &universe.simspeed, 0.0f, 64.0f, "%.3fx");
+        ImGui::SliderFloat("Speed", &universe.simulationSpeed, 0.0f, 64.0f, "%.3fx");
 
         if (ImGui::Button("Slow Down")) {
-            if (universe.simspeed <= 0.25f)
-                universe.simspeed = 0.0f;
+            if (universe.simulationSpeed <= 0.25f)
+                universe.simulationSpeed = 0.0f;
             else
-                universe.simspeed *= 0.5f;
+                universe.simulationSpeed *= 0.5f;
         }
         ImGui::SameLine();
-        if (ImGui::Button(universe.simspeed <= 0.0f ? "Resume" : "Pause")) {
-            if (universe.simspeed <= 0.0f)
-                universe.simspeed = pauseSpeed;
+        if (ImGui::Button(universe.simulationSpeed <= 0.0f ? "Resume" : "Pause")) {
+            if (universe.simulationSpeed <= 0.0f)
+                universe.simulationSpeed = pauseSpeed;
             else {
-                pauseSpeed = universe.simspeed;
-                universe.simspeed = 0.0f;
+                pauseSpeed = universe.simulationSpeed;
+                universe.simulationSpeed = 0.0f;
             }
         }
         ImGui::SameLine();
         if (ImGui::Button("Fast Forward")) {
-            if (universe.simspeed <= 0.0f)
-                universe.simspeed = 0.25f;
-            else if (universe.simspeed < 64.0f)
-                universe.simspeed *= 2.0f;
+            if (universe.simulationSpeed <= 0.0f)
+                universe.simulationSpeed = 0.25f;
+            else if (universe.simulationSpeed < 64.0f)
+                universe.simulationSpeed *= 2.0f;
         }
 
         ImGui::End();
@@ -832,7 +832,8 @@ void PlanetsWindow::paintUI(const float delay) {
         if (universe.isSelectedValid() && ImGui::CollapsingHeader("Selected Planet")) {
             Planet& p = universe.getSelected();
             ImGui::Text("Position: x: %f, y: %f, z: %f", p.position.x, p.position.y, p.position.z);
-            ImGui::Text("Velocity: x: %f, y: %f, z: %f", p.velocity.x / universe.velocityfac, p.velocity.y / universe.velocityfac, p.velocity.z / universe.velocityfac);
+            ImGui::Text("Velocity: x: %f, y: %f, z: %f",
+                        p.velocity.x / universe.velocityFactor, p.velocity.y / universe.velocityFactor, p.velocity.z / universe.velocityFactor);
             ImGui::Text("Mass:     %f", p.mass());
             ImGui::Text("Radius:   %f", p.radius());
             /* The materialID is a uint8_t, so it won't work directly with SliderInt(),
@@ -874,9 +875,9 @@ void PlanetsWindow::paintUI(const float delay) {
             placing.enableFiringMode(firingMode);
 
         /* Show the speed in UI velocity. */
-        float speed = placing.firingSpeed / universe.velocityfac;
+        float speed = placing.firingSpeed / universe.velocityFactor;
         if (ImGui::SliderFloat("Speed", &speed, 0.0f, 1.0e3f, "%.3f", 4.0f))
-            placing.firingSpeed = speed * universe.velocityfac;
+            placing.firingSpeed = speed * universe.velocityFactor;
 
         ImGui::SliderFloat("Mass", &placing.firingMass, 1.0f, 1.0e3f);
 
@@ -981,14 +982,14 @@ void PlanetsWindow::doEvents() {
         case SDL_WINDOWEVENT:
             switch(event.window.event) {
             case SDL_WINDOWEVENT_FOCUS_LOST:
-                if (universe.simspeed > 0.0f) {
-                    pauseSpeed = universe.simspeed;
-                    universe.simspeed = 0.0f;
+                if (universe.simulationSpeed > 0.0f) {
+                    pauseSpeed = universe.simulationSpeed;
+                    universe.simulationSpeed = 0.0f;
                 }
                 break;
             case SDL_WINDOWEVENT_FOCUS_GAINED:
-                if (pauseSpeed > 0.0f && universe.simspeed <= 0.0f)
-                    universe.simspeed = pauseSpeed;
+                if (pauseSpeed > 0.0f && universe.simulationSpeed <= 0.0f)
+                    universe.simulationSpeed = pauseSpeed;
                 break;
             case SDL_WINDOWEVENT_RESIZED:
                 /* We don't want anyone resizing the window with a width or height of 0. */

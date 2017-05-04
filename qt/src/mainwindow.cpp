@@ -8,6 +8,9 @@
 #include <QMimeData>
 #include <QUrl>
 
+/* the maximum value of the simulation speed dial. */
+constexpr int speedDialMax = 64;
+
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), speedDialMemory(0),
     settings(QSettings::IniFormat, QSettings::UserScope, QApplication::organizationName(), QApplication::applicationName()) {
     /* Set up the UI from the .ui file. */
@@ -15,10 +18,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->PauseResume_Button->setFocus();
 
     /*Set the limits defined in the universe. */
-    ui->newMass_SpinBox->setMinimum(ui->centralwidget->universe.min_mass);
-    ui->newMass_SpinBox->setMaximum(ui->centralwidget->universe.max_mass);
-    ui->firingMassSpinBox->setMinimum(ui->centralwidget->universe.min_mass);
-    ui->firingMassSpinBox->setMaximum(ui->centralwidget->universe.max_mass);
+    ui->newMass_SpinBox->setMinimum(ui->centralwidget->universe.minimumMass);
+    ui->newMass_SpinBox->setMaximum(ui->centralwidget->universe.maximumMass);
+    ui->firingMassSpinBox->setMinimum(ui->centralwidget->universe.minimumMass);
+    ui->firingMassSpinBox->setMaximum(ui->centralwidget->universe.maximumMass);
 
     connect(ui->actionExit, &QAction::triggered, this, &QMainWindow::close);
     connect(ui->actionAbout_Qt, &QAction::triggered, QApplication::instance(), &QApplication::aboutQt);
@@ -133,7 +136,8 @@ void MainWindow::closeEvent(QCloseEvent* e) {
 void MainWindow::on_createPlanet_PushButton_clicked() {
     ui->centralwidget->universe.selected = ui->centralwidget->universe.addPlanet(
                 Planet(glm::vec3(ui->newPosX_SpinBox->value(),      ui->newPosY_SpinBox->value(),      ui->newPosZ_SpinBox->value()),
-                       glm::vec3(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value()) * ui->centralwidget->universe.velocityfac,
+                       glm::vec3(ui->newVelocityX_SpinBox->value(), ui->newVelocityY_SpinBox->value(), ui->newVelocityZ_SpinBox->value())
+                       * ui->centralwidget->universe.velocityFactor,
                        ui->newMass_SpinBox->value()));
 }
 
@@ -143,8 +147,8 @@ void MainWindow::on_actionClear_Velocity_triggered() {
 }
 
 void MainWindow::on_speed_Dial_valueChanged(int value) {
-    ui->centralwidget->universe.simspeed = float(value * speeddialmax) / ui->speed_Dial->maximum();
-    ui->speedDisplay_lcdNumber->display(ui->centralwidget->universe.simspeed);
+    ui->centralwidget->universe.simulationSpeed = float(value * speedDialMax) / ui->speed_Dial->maximum();
+    ui->speedDisplay_lcdNumber->display(ui->centralwidget->universe.simulationSpeed);
 
     /* Make sure speed related UI elements are up to date. */
     ui->PauseResume_Button->setText(value == 0 ? tr("Resume") : tr("Pause"));
@@ -164,7 +168,7 @@ void MainWindow::on_PauseResume_Button_clicked() {
 void MainWindow::on_FastForward_Button_clicked() {
     /* If it's at the max or zero, set to the value that gives a simspeed of 1. */
     if (ui->speed_Dial->value() == ui->speed_Dial->maximum() || ui->speed_Dial->value() == 0)
-        ui->speed_Dial->setValue(ui->speed_Dial->maximum() / speeddialmax);
+        ui->speed_Dial->setValue(ui->speed_Dial->maximum() / speedDialMax);
     /* Otherwise just double it, the max limit is handled by the widget. */
     else
         ui->speed_Dial->setValue(ui->speed_Dial->value() * 2);
@@ -261,7 +265,7 @@ void MainWindow::on_trailRecordDistanceDoubleSpinBox_valueChanged(double value) 
 }
 
 void MainWindow::on_firingVelocityDoubleSpinBox_valueChanged(double value) {
-    ui->centralwidget->placing.firingSpeed = value * ui->centralwidget->universe.velocityfac;
+    ui->centralwidget->placing.firingSpeed = value * ui->centralwidget->universe.velocityFactor;
 }
 
 void MainWindow::on_firingMassSpinBox_valueChanged(int value) {
@@ -298,7 +302,7 @@ void MainWindow::on_randomOrbitalCheckBox_toggled(bool checked) {
 void MainWindow::on_generateRandomPushButton_clicked() {
     if (!ui->randomOrbitalCheckBox->isChecked())
         ui->centralwidget->universe.generateRandom(ui->randomAmountSpinBox->value(), ui->randomRangeDoubleSpinBox->value(),
-                                                   ui->randomSpeedDoubleSpinBox->value() * ui->centralwidget->universe.velocityfac,
+                                                   ui->randomSpeedDoubleSpinBox->value() * ui->centralwidget->universe.velocityFactor,
                                                    ui->randomMassDoubleSpinBox->value());
     else if (ui->centralwidget->universe.isEmpty())
         /* If orbital is checked but the universe is empty, we can'tgenerate. */
@@ -404,12 +408,12 @@ bool MainWindow::event(QEvent* event) {
     switch (event->type()) {
     case QEvent::WindowActivate:
         /* If paused, resume. */
-        if (ui->centralwidget->universe.simspeed <= 0.0f)
+        if (ui->centralwidget->universe.simulationSpeed <= 0.0f)
             on_PauseResume_Button_clicked();
         break;
     case QEvent::WindowDeactivate:
         /* If running, pause. */
-        if (ui->centralwidget->universe.simspeed > 0.0f)
+        if (ui->centralwidget->universe.simulationSpeed > 0.0f)
             on_PauseResume_Button_clicked();
         break;
     default: break;
@@ -429,13 +433,13 @@ void MainWindow::frameUpdate() {
         planetCountLabel->setText(tr("%1 planets").arg(ui->centralwidget->universe.size()));
 
     /* If the simulation speed is different from the dial's value, update the dial (which will also update the other speed UI elements). */
-    if (int(ui->centralwidget->universe.simspeed * ui->speed_Dial->maximum() / speeddialmax) != ui->speed_Dial->value())
-        ui->speed_Dial->setValue(int(ui->centralwidget->universe.simspeed * ui->speed_Dial->maximum() / speeddialmax));
+    if (int(ui->centralwidget->universe.simulationSpeed * ui->speed_Dial->maximum() / speedDialMax) != ui->speed_Dial->value())
+        ui->speed_Dial->setValue(int(ui->centralwidget->universe.simulationSpeed * ui->speed_Dial->maximum() / speedDialMax));
 
     if (ui->centralwidget->universe.isSelectedValid()) {
         const Planet& selected = ui->centralwidget->universe.getSelected();
 
-        glm::vec3 velocity = selected.velocity / ui->centralwidget->universe.velocityfac;
+        glm::vec3 velocity = selected.velocity / ui->centralwidget->universe.velocityFactor;
 
         ui->positionLabel->setText(QString("x: %0, y: %1, z: %2").arg(selected.position.x).arg(selected.position.y).arg(selected.position.z));
         ui->velocityLabel->setText(QString("x: %0, y: %1, z: %2").arg(velocity.x).arg(velocity.y).arg(velocity.z));
@@ -451,8 +455,6 @@ void MainWindow::frameUpdate() {
         ui->materialSpinBox->setEnabled(false);
     }
 }
-
-const int MainWindow::speeddialmax = 64;
 
 /* All the settings strings. */
 const QString MainWindow::categoryMainWindow =      "MainWindow";

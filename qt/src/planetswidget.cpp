@@ -9,6 +9,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 
+constexpr int vertex    = 0;
+constexpr int normal    = 1;
+constexpr int tangent   = 2;
+constexpr int uv        = 3;
+
 PlanetsWidget::PlanetsWidget(QWidget* parent) : QOpenGLWidget(parent), placing(universe), camera(universe),
     screenshotDir(QDir::homePath() + "/Pictures/Planets3D-Screenshots/"), highResSphereTris(QOpenGLBuffer::IndexBuffer),
 #ifdef PLANETS3D_QT_USE_SDL_GAMEPAD
@@ -271,7 +276,7 @@ void PlanetsWidget::render() {
     }
 
     if (placing.step == PlacingInterface::FreeVelocity && !glm::equal(placing.planet.velocity, glm::vec3())[0]) {
-        float length = glm::length(placing.planet.velocity) / universe.velocityfac;
+        float length = glm::length(placing.planet.velocity) / universe.velocityFactor;
 
         glm::mat4 matrix = glm::translate(placing.planet.position);
         matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
@@ -561,8 +566,3 @@ void PlanetsWidget::drawPlanetWireframe(const Planet& planet, const QColor& colo
 }
 
 const QColor PlanetsWidget::trailColor = QColor(0xcc, 0xff, 0xff, 0xff);
-
-const int PlanetsWidget::vertex     = 0;
-const int PlanetsWidget::normal     = 1;
-const int PlanetsWidget::tangent    = 2;
-const int PlanetsWidget::uv         = 3;

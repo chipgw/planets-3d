@@ -16,6 +16,9 @@
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
 
+/* The gravity constant. */
+constexpr float gravityConstant = 6.667e-11f;
+
 PlanetsUniverse::PlanetsUniverse() {
     /* This should be a better way to seed a mersenne twister engine than just using a single uint. */
     std::random_device random_dev;
@@ -63,7 +66,7 @@ int PlanetsUniverse::load(const std::string& filename, bool clear) {
                     /* Velocity is saved with velocity factor. */
                     planet.velocity = glm::vec3(std::stof(sub->Attribute("x")),
                                                 std::stof(sub->Attribute("y")),
-                                                std::stof(sub->Attribute("z"))) * velocityfac;
+                                                std::stof(sub->Attribute("z"))) * velocityFactor;
             }
             addPlanet(planet);
             ++loaded;
@@ -94,9 +97,9 @@ void PlanetsUniverse::save(const std::string& filename) {
 
         TiXmlElement* velocity = new TiXmlElement("velocity");
         /* Velocity is saved with velocity factor. */
-        velocity->SetAttribute("x", std::to_string(planet.velocity.x / velocityfac));
-        velocity->SetAttribute("y", std::to_string(planet.velocity.y / velocityfac));
-        velocity->SetAttribute("z", std::to_string(planet.velocity.z / velocityfac));
+        velocity->SetAttribute("x", std::to_string(planet.velocity.x / velocityFactor));
+        velocity->SetAttribute("y", std::to_string(planet.velocity.y / velocityFactor));
+        velocity->SetAttribute("z", std::to_string(planet.velocity.z / velocityFactor));
         element->LinkEndChild(velocity);
 
         root->LinkEndChild(element);
@@ -121,10 +124,10 @@ static float fastInverseSqrt(float x) {
 
 void PlanetsUniverse::advance(float time) {
     /* Factor the simulation speed and number of steps into the time value. */
-    time *= simspeed / stepsPerFrame;
+    time *= simulationSpeed / stepsPerFrame;
 
     /* Premultiply the gravity constant by time so we don't have to keep doing it every time we calculate gravitational force. */
-    const float gconsttime = gravityconst * time;
+    const float gconsttime = gravityConstant * time;
 
     /* Store the list end iterator so we don't have to keep retrieving it. */
     iterator e = planets.end();
@@ -203,7 +206,7 @@ void PlanetsUniverse::remove(const key_type key, const key_type replacement) {
 void PlanetsUniverse::generateRandom(const size_t& count, const float& positionRange, const float& maxVelocity, const float& maxMass) {
     uniform_real_distribution<float> position(-positionRange, positionRange);
     uniform_real_distribution<float> velocity(-maxVelocity, maxVelocity);
-    uniform_real_distribution<float> mass(min_mass, maxMass);
+    uniform_real_distribution<float> mass(minimumMass, maxMass);
 
     for (int i = 0; i < count; ++i)
         addPlanet(Planet(glm::vec3(position(generator), position(generator), position(generator)),
@@ -215,7 +218,7 @@ void PlanetsUniverse::generateRandom(const size_t& count, const float& positionR
  * Doing so would be very complicated. IDK if it'd even be possible... I'll have to look into it sometime. */
 key_type PlanetsUniverse::addOrbital(Planet& around, const float& radius, const float& mass, const glm::mat4& plane) {
     /* Calculate the speed based on gravitational force and distance. */
-    float speed = sqrt((around.mass() * around.mass() * gravityconst) / ((around.mass() + mass) * radius));
+    float speed = sqrt((around.mass() * around.mass() * gravityConstant) / ((around.mass() + mass) * radius));
 
     /* Velocity is the y column of the plane matrix * speed. */
     glm::vec3 velocity = glm::vec3(plane[1]) * speed;
@@ -240,7 +243,7 @@ void PlanetsUniverse::generateRandomOrbital(const size_t& count, key_type target
 
         uniform_real_distribution<float> angle(-glm::pi<float>(), glm::pi<float>());
         uniform_real_distribution<float> radius(around.radius() * 1.5f, around.radius() * 80.0f);
-        uniform_real_distribution<float> mass(min_mass, around.mass() * 0.2f);
+        uniform_real_distribution<float> mass(minimumMass, around.mass() * 0.2f);
 
         for (int i = 0; i < count; ++i) {
             glm::mat4 plane;

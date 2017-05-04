@@ -74,7 +74,7 @@ void PlanetsGamepad::doControllerButtonPress(const uint8_t& button) {
     case SDL_CONTROLLER_BUTTON_B:
         /* If trigger is not being held down pause/resume. */
         if (speedTriggerLast < triggerDeadzone)
-            universe.simspeed = universe.simspeed <= 0.0f ? 1.0f : 0.0f;
+            universe.simulationSpeed = universe.simulationSpeed <= 0.0f ? 1.0f : 0.0f;
 
         /* If the trigger is being held down lock to current speed. */
         speedTriggerInUse = false;
@@ -150,8 +150,8 @@ void PlanetsGamepad::doControllerAxisInput(int32_t delay) {
 
         /* If the trigger has gone from disengaged (< deadzone) to engaged (> deadzone) we enable using it as speed input. */
         if (speedTriggerInUse || (speedTriggerCurrent > triggerDeadzone && speedTriggerLast <= triggerDeadzone)) {
-            universe.simspeed = float(speedTriggerCurrent * 8) / int16_max;
-            universe.simspeed *= universe.simspeed;
+            universe.simulationSpeed = float(speedTriggerCurrent * 8) / int16_max;
+            universe.simulationSpeed *= universe.simulationSpeed;
 
             speedTriggerInUse = true;
         }

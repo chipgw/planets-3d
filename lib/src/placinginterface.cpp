@@ -6,8 +6,8 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-PlacingInterface::PlacingInterface(PlanetsUniverse& u) : universe(u), firingSpeed(universe.velocityfac * 10.0f) {
-    planet.velocity.y = universe.velocityfac;
+PlacingInterface::PlacingInterface(PlanetsUniverse& u) : universe(u), firingSpeed(universe.velocityFactor * 10.0f) {
+    planet.velocity.y = universe.velocityFactor;
 }
 
 bool PlacingInterface::handleMouseMove(const glm::ivec2& pos, const glm::ivec2& delta, const Camera& camera, bool& holdMouse) {
@@ -121,10 +121,10 @@ bool PlacingInterface::handleMouseWheel(float delta) {
     case FreePositionZ:
     case OrbitalPlanet:
     case OrbitalPlane:
-        planet.setMass(glm::clamp(planet.mass() + delta * planet.mass(), universe.min_mass, universe.max_mass));
+        planet.setMass(glm::clamp(planet.mass() + delta * planet.mass(), universe.minimumMass, universe.maximumMass));
         return true;
     case FreeVelocity:
-        planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) + delta * universe.velocityfac);
+        planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) + delta * universe.velocityFactor);
         return true;
     }
     return false;
@@ -138,10 +138,10 @@ bool PlacingInterface::handleAnalogStick(const glm::vec2& pos, const bool& modif
         case FreePositionZ:
         case OrbitalPlanet:
         case OrbitalPlane:
-            planet.setMass(glm::clamp(planet.mass() - y * planet.mass(), universe.min_mass, universe.max_mass));
+            planet.setMass(glm::clamp(planet.mass() - y * planet.mass(), universe.minimumMass, universe.maximumMass));
             return true;
         case FreeVelocity:
-            planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) - y * universe.velocityfac);
+            planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) - y * universe.velocityFactor);
             return true;
         }
     }

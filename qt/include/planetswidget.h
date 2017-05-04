@@ -34,9 +34,6 @@ private:
     QOpenGLShaderProgram shaderColor;
     int shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
 
-    /* GL vertex attribute handles. */
-    const static int vertex, normal, tangent, uv;
-
     QOpenGLTexture* textures_diff[NUM_PLANET_TEXTURES];
     QOpenGLTexture* textures_nrm[NUM_PLANET_TEXTURES];
 
