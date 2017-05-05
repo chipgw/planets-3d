@@ -19,7 +19,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 
-# Macro to copy a file orfolder to the directory where binaries are built to.
+# Macro to copy a file or folder to the directory where binaries are built to.
 macro(copy_to_bin)
     make_directory("${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${ARGV2}")
     file(GLOB TARGET_FILES ${ARGV1})
@@ -123,10 +123,11 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/textures/planet_nrm.png" "images/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/scripts/*" "scripts/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/scripts/thirdparty/*" "scripts/thirdparty/")
-    copy_to_bin(${PROJECT_NAME}_js $<TARGET_FILE:${PROJECT_NAME}_js> "scripts/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/stylesheets/*" "stylesheets/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/systems/*" "systems/")
     copy_to_bin(${PROJECT_NAME}_js "${CMAKE_SOURCE_DIR}/js/index.html")
+    # This file doesn't work with the macro because the TARGET_FILE value isn't available until the build step.
+    add_custom_command(TARGET ${PROJECT_NAME}_js COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}_js> "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/scripts/")
 endif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
 #---------------------------------------------

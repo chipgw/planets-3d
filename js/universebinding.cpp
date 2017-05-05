@@ -53,6 +53,10 @@ void drawTrails(PlanetsUniverse& universe) {
     }
 }
 
+float getVelocityFac(PlanetsUniverse&) {
+    return PlanetsUniverse::velocityFactor;
+}
+
 EMSCRIPTEN_BINDINGS(planets_universe) {
     emscripten::class_<PlanetsUniverse>("PlanetsUniverse")
             .constructor()
@@ -83,12 +87,12 @@ EMSCRIPTEN_BINDINGS(planets_universe) {
             .function("remove",                 &PlanetsUniverse::remove)
             .function("resetSelected",          &PlanetsUniverse::resetSelected)
             .function("size",                   &PlanetsUniverse::size)
+            .function("velocityfac",            &getVelocityFac)
             .property("following",              &PlanetsUniverse::following)
             .property("pathLength",             &PlanetsUniverse::pathLength)
             .property("pathRecordDistance",     &PlanetsUniverse::pathRecordDistance)
             .property("selected",               &PlanetsUniverse::selected)
-            .property("speed",                  &PlanetsUniverse::simspeed)
+            .property("speed",                  &PlanetsUniverse::simulationSpeed)
             .property("stepsPerFrame",          &PlanetsUniverse::stepsPerFrame)
-            .property("velocityfac",            &PlanetsUniverse::velocityfac)
             ;
 }

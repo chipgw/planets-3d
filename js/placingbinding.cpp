@@ -1,7 +1,7 @@
 #include <planetsuniverse.h>
 #include <camera.h>
 #include <placinginterface.h>
-#include <bind.h>
+#include <emscripten/bind.h>
 #include <glm/vec2.hpp>
 #include <glm/geometric.hpp>
 #include <glm/gtx/transform.hpp>

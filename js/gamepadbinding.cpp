@@ -1,5 +1,5 @@
 #include <sdlgamepad.h>
-#include <bind.h>
+#include <emscripten/bind.h>
 #include <planetsuniverse.h>
 #include <camera.h>
 #include <placinginterface.h>

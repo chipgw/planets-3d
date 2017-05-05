@@ -32,9 +32,9 @@ function loadDOM(parsed) {
                         parseFloat(planet.getElementsByTagName("position")[0].getAttribute("y")),
                         parseFloat(planet.getElementsByTagName("position")[0].getAttribute("z"))];
 
-        var velocity = [parseFloat(planet.getElementsByTagName("velocity")[0].getAttribute("x")) * universe.velocityfac,
-                        parseFloat(planet.getElementsByTagName("velocity")[0].getAttribute("y")) * universe.velocityfac,
-                        parseFloat(planet.getElementsByTagName("velocity")[0].getAttribute("z")) * universe.velocityfac];
+        var velocity = [parseFloat(planet.getElementsByTagName("velocity")[0].getAttribute("x")) * universe.velocityfac(),
+                        parseFloat(planet.getElementsByTagName("velocity")[0].getAttribute("y")) * universe.velocityfac(),
+                        parseFloat(planet.getElementsByTagName("velocity")[0].getAttribute("z")) * universe.velocityfac()];
 
         var mass = parseFloat(planet.getAttribute("mass"));
 
@@ -66,9 +66,9 @@ function generateDOM() {
             posXML.setAttribute("z", pos[2]);
             p.appendChild(posXML);
             var velXML = doc.createElement("velocity");
-            velXML.setAttribute("x", vel[0] / universe.velocityfac);
-            velXML.setAttribute("y", vel[1] / universe.velocityfac);
-            velXML.setAttribute("z", vel[2] / universe.velocityfac);
+            velXML.setAttribute("x", vel[0] / universe.velocityfac());
+            velXML.setAttribute("y", vel[1] / universe.velocityfac());
+            velXML.setAttribute("z", vel[2] / universe.velocityfac());
             p.setAttribute("mass", mass);
             p.appendChild(velXML);
 

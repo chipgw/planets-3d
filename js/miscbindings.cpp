@@ -1,6 +1,6 @@
 #include <planetsuniverse.h>
 #include <camera.h>
-#include <bind.h>
+#include <emscripten/bind.h>
 #include <glm/vec2.hpp>
 
 int bench();

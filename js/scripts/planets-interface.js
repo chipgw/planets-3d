@@ -217,9 +217,9 @@ function initCreatePlanetPopup() {
         var position = [document.getElementById("createPositionX").valueAsNumber,
                         document.getElementById("createPositionY").valueAsNumber,
                         document.getElementById("createPositionZ").valueAsNumber];
-        var velocity = [document.getElementById("createVelocityX").valueAsNumber * universe.velocityfac,
-                        document.getElementById("createVelocityY").valueAsNumber * universe.velocityfac,
-                        document.getElementById("createVelocityZ").valueAsNumber * universe.velocityfac];
+        var velocity = [document.getElementById("createVelocityX").valueAsNumber * universe.velocityfac(),
+                        document.getElementById("createVelocityY").valueAsNumber * universe.velocityfac(),
+                        document.getElementById("createVelocityZ").valueAsNumber * universe.velocityfac()];
         var mass = document.getElementById("createMass").valueAsNumber;
 
         universe.selected = universe.addPlanet(position, velocity, mass);
@@ -236,7 +236,7 @@ function initRandomPopup() {
             universe.generateRandomOrbital(amount, universe.selected);
         } else {
             var range = document.getElementById("randomRange").valueAsNumber;
-            var maxSpeed = document.getElementById("randomSpeed").valueAsNumber * universe.velocityfac;
+            var maxSpeed = document.getElementById("randomSpeed").valueAsNumber * universe.velocityfac();
             var maxMass = document.getElementById("randomMass").valueAsNumber;
 
             universe.generateRandom(amount, range, maxSpeed, maxMass);
@@ -262,7 +262,7 @@ function initFiringPopup() {
     }, false);
 
     document.getElementById("firingSpeed").addEventListener("change", function(e) {
-        placing.firingSpeed = e.target.valueAsNumber / universe.velocityfac;
+        placing.firingSpeed = e.target.valueAsNumber / universe.velocityfac();
     }, false);
 }
 
