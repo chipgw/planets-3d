@@ -219,7 +219,7 @@ function paint() {
         var color = grid.color;
         color[3] *= grid.alphafac;
 
-        var gridMat = makeMat(grid.scale, [0.0, 0.0, 0.0]);
+        var gridMat = makeMat([0.0, 0.0, 0.0], grid.scale);
 
         GLctx.uniformMatrix4fv(colorModelMat, false, gridMat);
 
