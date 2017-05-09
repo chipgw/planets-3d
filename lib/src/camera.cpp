@@ -75,6 +75,7 @@ const glm::mat4& Camera::setup() {
     /* Finally, translate to the position. */
     view = glm::translate(view, -position);
 
+    /* Combine the view and projection to get the final camera matrix. */
     camera = projection * view;
 
     /* Return the camera matrix. */

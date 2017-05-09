@@ -112,7 +112,7 @@ void PlanetsUniverse::save(const std::string& filename) {
         throw std::runtime_error(doc.ErrorDesc());
 }
 
-#endif
+#endif /* Done with IO stuff that's excluded from Emscripten builds. */
 
 /* Basically the Quake method, tweaked for as much performance as I could get. */
 static float fastInverseSqrt(float x) {

@@ -258,7 +258,7 @@ function animate(time) {
     var delta = Math.min(time - lastTime, 10.0) * 1000;
     lastTime = time;
 
-    /* We don't advancewhen placing. */
+    /* We don't advance when placing. */
     if (placing.step === Module.PlacingStep.NotPlacing || placing.step === Module.PlacingStep.Firing)
         universe.advance(delta);
 

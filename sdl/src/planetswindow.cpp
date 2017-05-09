@@ -175,7 +175,7 @@ void PlanetsWindow::initGL() {
 }
 
 unsigned int PlanetsWindow::loadTexture(SDL_RWops* io) {
-    SDL_Surface* image = IMG_Load_RW(io, SDL_FALSE);
+    SDL_Surface* image = IMG_Load_RW(io, SDL_TRUE);
 
     if (image == nullptr) {
         /* Qt Creator's output panel doesn't seem to like the '\r' character for some reason... */

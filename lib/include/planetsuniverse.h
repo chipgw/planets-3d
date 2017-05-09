@@ -23,7 +23,7 @@ private:
 
 public:
     /* The factor for apparent velocity.
-     * (UI velocity * this = actual velocity, because it would be really really small if done right.) */
+     * (UI velocity * this = actual velocity, because it would be really really small if done directly.) */
     constexpr static float velocityFactor = 1.0e-5f;
 
     /* UI limits on planet size. */

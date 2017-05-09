@@ -23,11 +23,11 @@ int main() {
     size_t sizes[] = { 20, 100, 200, 500, 800 };
 
 #ifndef NDEBUG
-    cout << "WARNING: Debug builds benchmarks can take an extremely long time,"
+    cout << "WARNING: Debug builds benchmarks can take an extremely long time, "
             "and aren't always indicative of release build performance." << endl;
 #endif
 
-    /* Col:  |- 6-||-- 8--||---   16   ---||---   16   ---| doesn't matter,  Align left. */
+    /* Col:  |- 6-||-- 8--||---   16   ---||---   16   ---| doesn't matter, Align left. */
     cout << "steps planets total time      average step    remaining planets" << left << endl;
 
     for (size_t size : sizes) {
