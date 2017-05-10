@@ -76,7 +76,7 @@ class PlanetsWindow {
     void initUI();
 
     /* Load a texture from a file. */
-    unsigned int loadTexture(SDL_RWops* io);
+    unsigned int loadTexture(const char *file);
 
     /* Render all the stuffs. */
     void paint();

@@ -156,26 +156,26 @@ void PlanetsWindow::initGL() {
     /* This attribute array is always on. */
     glEnableVertexAttribArray(vertex);
 
-    planetTextures_diff[0]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse.png", "r"));
-    planetTextures_nrm[0]   = loadTexture(SDL_RWFromFile("textures/planet_nrm.png", "r"));
-    planetTextures_diff[1]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_01.png", "r"));
-    planetTextures_nrm[1]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_01.png", "r"));
-    planetTextures_diff[2]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_02.png", "r"));
-    planetTextures_nrm[2]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_02.png", "r"));
-    planetTextures_diff[3]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_03.png", "r"));
-    planetTextures_nrm[3]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_03.png", "r"));
-    planetTextures_diff[4]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_04.png", "r"));
-    planetTextures_nrm[4]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_04.png", "r"));
-    planetTextures_diff[5]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_05.png", "r"));
-    planetTextures_nrm[5]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_05.png", "r"));
-    planetTextures_diff[6]  = loadTexture(SDL_RWFromFile("textures/planet_diffuse_06.png", "r"));
-    planetTextures_nrm[6]   = loadTexture(SDL_RWFromFile("textures/planet_nrm_06.png", "r"));
+    planetTextures_diff[0]  = loadTexture("textures/planet_diffuse.png");
+    planetTextures_nrm[0]   = loadTexture("textures/planet_nrm.png");
+    planetTextures_diff[1]  = loadTexture("textures/planet_diffuse_01.png");
+    planetTextures_nrm[1]   = loadTexture("textures/planet_nrm_01.png");
+    planetTextures_diff[2]  = loadTexture("textures/planet_diffuse_02.png");
+    planetTextures_nrm[2]   = loadTexture("textures/planet_nrm_02.png");
+    planetTextures_diff[3]  = loadTexture("textures/planet_diffuse_03.png");
+    planetTextures_nrm[3]   = loadTexture("textures/planet_nrm_03.png");
+    planetTextures_diff[4]  = loadTexture("textures/planet_diffuse_04.png");
+    planetTextures_nrm[4]   = loadTexture("textures/planet_nrm_04.png");
+    planetTextures_diff[5]  = loadTexture("textures/planet_diffuse_05.png");
+    planetTextures_nrm[5]   = loadTexture("textures/planet_nrm_05.png");
+    planetTextures_diff[6]  = loadTexture("textures/planet_diffuse_06.png");
+    planetTextures_nrm[6]   = loadTexture("textures/planet_nrm_06.png");
 
     initBuffers();
 }
 
-unsigned int PlanetsWindow::loadTexture(SDL_RWops* io) {
-    SDL_Surface* image = IMG_Load_RW(io, SDL_TRUE);
+unsigned int PlanetsWindow::loadTexture(const char* file) {
+    SDL_Surface* image = IMG_Load(file);
 
     if (image == nullptr) {
         /* Qt Creator's output panel doesn't seem to like the '\r' character for some reason... */
