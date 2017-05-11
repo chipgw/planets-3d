@@ -370,6 +370,39 @@ void PlanetsWindow::initUI() {
     style.WindowRounding = 4.0f;
 }
 
+#ifdef PLANETS3D_WITH_NFD
+
+#include <nfd.h>
+
+void PlanetsWindow::openFile() {
+    nfdchar_t* outPath = NULL;
+    nfdresult_t result = NFD_OpenDialog("xml", NULL, &outPath);
+
+    if (result == NFD_OKAY) {
+        universe.load(outPath);
+        free(outPath);
+    } else if (result == NFD_CANCEL) {
+        puts("User pressed cancel.");
+    } else {
+        printf("Error: %s\n", NFD_GetError());
+    }
+}
+
+void PlanetsWindow::saveFile() {
+    nfdchar_t* outPath = NULL;
+    nfdresult_t result = NFD_SaveDialog("xml", NULL, &outPath);
+
+    if (result == NFD_OKAY) {
+        universe.save(outPath);
+        free(outPath);
+    } else if (result == NFD_CANCEL) {
+        puts("User pressed cancel.");
+    } else {
+        printf("Error: %s\n", NFD_GetError());
+    }
+}
+#endif
+
 void PlanetsWindow::run() {
     /* Remains true from here until application closes. */
     running = true;
@@ -695,6 +728,14 @@ void PlanetsWindow::paintUI(const float delay) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("New", "Ctrl+N"))
                 newUniverse();
+
+#ifdef PLANETS3D_WITH_NFD
+            if (ImGui::MenuItem("Open", "Ctrl+O"))
+                openFile();
+
+            if (ImGui::MenuItem("Save", "Ctrl+S"))
+                saveFile();
+#endif
 
             if (ImGui::MenuItem("Quit", "Escape"))
                 onClose();

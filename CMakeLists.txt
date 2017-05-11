@@ -35,6 +35,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         option(PLANETS3D_QT_USE_SDL_GAMEPAD "Use SDL library for gamepad support in Qt executable." OFF)
     endif(PLANETS3D_QT5)
 
+    if(PLANETS3D_SDL)
+        option(PLANETS3D_SDL_USE_NATIVEFILEDIALOG "Use NativeFileDialog for load/save dialogs in SDL executable." OFF)
+    endif(PLANETS3D_SDL)
+
     option(PLANETS3D_BUILD_TINYXML "Look for TinyXML source files in \"tinyxml\" folder, and build as a static library." OFF)
     option(PLANETS3D_BENCHMARK "Build a command-line program to test simulation performance without any graphics." OFF)
 
@@ -183,6 +187,13 @@ if(PLANETS3D_SDL)
         include_directories(${GLEW_INCLUDE_DIR})
         target_link_libraries(${PROJECT_NAME}_sdl ${GLEW_LIBRARIES})
     endif(PLANETS3D_WITH_GLEW)
+
+    if(PLANETS3D_SDL_USE_NATIVEFILEDIALOG)
+        find_package(NFD REQUIRED)
+        include_directories(${NFD_INCLUDE_DIR})
+        add_definitions(-DPLANETS3D_WITH_NFD)
+        target_link_libraries(${PROJECT_NAME}_sdl ${NFD_LIBRARIES})
+    endif(PLANETS3D_SDL_USE_NATIVEFILEDIALOG)
 
     find_package(OpenGL REQUIRED)
     include_directories(${OPENGL_INCLUDE_DIRS})

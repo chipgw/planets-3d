@@ -75,6 +75,11 @@ class PlanetsWindow {
     void initBuffers();
     void initUI();
 
+#ifdef PLANETS3D_WITH_NFD
+    void openFile();
+    void saveFile();
+#endif
+
     /* Load a texture from a file. */
     unsigned int loadTexture(const char *file);
 
