@@ -77,6 +77,7 @@ class PlanetsWindow {
 
 #ifdef PLANETS3D_WITH_NFD
     void openFile();
+    void appendFile();
     void saveFile();
 #endif
 

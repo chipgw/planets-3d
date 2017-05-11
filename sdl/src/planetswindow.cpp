@@ -388,6 +388,20 @@ void PlanetsWindow::openFile() {
     }
 }
 
+void PlanetsWindow::appendFile() {
+    nfdchar_t* outPath = NULL;
+    nfdresult_t result = NFD_OpenDialog("xml", NULL, &outPath);
+
+    if (result == NFD_OKAY) {
+        universe.load(outPath, false);
+        free(outPath);
+    } else if (result == NFD_CANCEL) {
+        puts("User pressed cancel.");
+    } else {
+        printf("Error: %s\n", NFD_GetError());
+    }
+}
+
 void PlanetsWindow::saveFile() {
     nfdchar_t* outPath = NULL;
     nfdresult_t result = NFD_SaveDialog("xml", NULL, &outPath);
@@ -732,6 +746,8 @@ void PlanetsWindow::paintUI(const float delay) {
 #ifdef PLANETS3D_WITH_NFD
             if (ImGui::MenuItem("Open", "Ctrl+O"))
                 openFile();
+            if (ImGui::MenuItem("Append", "Ctrl+A"))
+                appendFile();
 
             if (ImGui::MenuItem("Save", "Ctrl+S"))
                 saveFile();
@@ -774,10 +790,10 @@ void PlanetsWindow::paintUI(const float delay) {
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Create")) {
-            if (ImGui::MenuItem("Interactive Creation", "Ctrl+P"))
+            if (ImGui::MenuItem("Interactive Creation", "Alt+P"))
                 placing.beginInteractiveCreation();
 
-            if (ImGui::MenuItem("Interactive Orbital", "Ctrl+O", false, universe.isSelectedValid()))
+            if (ImGui::MenuItem("Interactive Orbital", "Alt+O", false, universe.isSelectedValid()))
                 placing.beginOrbitalCreation();
 
             ImGui::EndMenu();
@@ -1129,12 +1145,24 @@ void PlanetsWindow::doKeyPress(const SDL_Keysym& key) {
         onClose();
         break;
     case SDLK_p:
-        if (key.mod & KMOD_CTRL)
+        if (key.mod & KMOD_ALT)
             placing.beginInteractiveCreation();
         break;
     case SDLK_o:
-        if (key.mod & KMOD_CTRL)
+        if (key.mod & KMOD_ALT)
             placing.beginOrbitalCreation();
+#ifdef PLANETS3D_WITH_NFD
+        if (key.mod & KMOD_CTRL)
+            openFile();
+        break;
+    case SDLK_s:
+        if (key.mod & KMOD_CTRL)
+            saveFile();
+        break;
+    case SDLK_a:
+        if (key.mod & KMOD_CTRL)
+            appendFile();
+#endif
         break;
     case SDLK_c:
         if (key.mod & KMOD_ALT)
