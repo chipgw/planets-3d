@@ -115,7 +115,7 @@ void PlanetsUniverse::save(const std::string& filename) {
 #endif /* Done with IO stuff that's excluded from Emscripten builds. */
 
 /* Basically the Quake method, tweaked for as much performance as I could get. */
-static float fastInverseSqrt(float x) {
+inline float fastInverseSqrt(float x) {
     float halfx = x * 0.5f;
     int32_t& i = reinterpret_cast<int32_t&>(x);
     i = 0x5f3759df - (i >> 1);
