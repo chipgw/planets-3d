@@ -10,22 +10,25 @@ function loadFile(filename) {
 
 function loadUrl(url) {
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", url, false);
+    xmlHttp.onload = function (e) {
+        if (xmlHttp.readyState === 4 && xmlHttp.status === 200)
+            loadDOM(xmlHttp.responseXML);
+    };
+    xmlHttp.open("GET", url);
     xmlHttp.send(null);
-    loadDOM(xmlHttp.responseXML);
 }
 
 function loadDOM(parsed) {
     var planetsXML = parsed.getElementsByTagName("planet");
 
-    if(planetsXML.length === 0){
+    if (planetsXML.length === 0){
         alert("Error loading simulation: no planets found!\nIs the file a valid universe file?");
         return;
     }
 
     universe.deleteAll();
 
-    for(var i = 0; i < planetsXML.length; ++i) {
+    for (var i = 0; i < planetsXML.length; ++i) {
         var planet = planetsXML[i];
 
         var position = [parseFloat(planet.getElementsByTagName("position")[0].getAttribute("x")),
@@ -105,13 +108,10 @@ function loadLocalStorage(name) {
 function getBase64() {
     var json = [];
 
-    for (var i = 0; i < universe.size(); ++i) {
+    for (var i = 0; i < universe.size(); ++i)
         json.push([universe.getPlanetPosition(i),
                    universe.getPlanetVelocity(i),
                    universe.getPlanetMass(i)])
-
-        curKey = universe.nextKey(i);
-    }
 
     return LZString.compressToEncodedURIComponent(JSON.stringify(json));
 }
@@ -121,7 +121,6 @@ function loadBase64(enc) {
 
     universe.deleteAll();
 
-    for (var i = 0; i < arr.length; i++) {
+    for (var i = 0; i < arr.length; i++)
         universe.addPlanet(arr[i][0], arr[i][1], arr[i][2]);
-    }
 }

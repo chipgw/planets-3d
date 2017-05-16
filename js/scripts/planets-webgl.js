@@ -18,9 +18,9 @@ function initShader(element) {
         return null;
 
     var shader;
-    if (element.type == "x-shader/x-vertex")
+    if (element.type === "x-shader/x-vertex")
         shader = GLctx.createShader(GLctx.VERTEX_SHADER);
-    else if (element.type == "x-shader/x-fragment")
+    else if (element.type === "x-shader/x-fragment")
         shader = GLctx.createShader(GLctx.FRAGMENT_SHADER);
     else
         return null;
@@ -28,8 +28,9 @@ function initShader(element) {
     var source = "";
     var child = element.firstChild;
 
+    /* Join al element children to get the full shader source code. */
     while (child) {
-        if (child.nodeType == 3)
+        if (child.nodeType === 3)
             source += child.textContent;
         child = child.nextSibling;
     }
@@ -214,6 +215,7 @@ function paint() {
 
         grid.bind();
 
+        /* Don't write to depth buffer. */
         GLctx.depthMask(false);
 
         var color = grid.color;
@@ -225,6 +227,7 @@ function paint() {
 
         GLctx.uniform4fv(colorColor, color);
 
+        /* Draw the large grid. */
         grid.draw();
 
         /* Modify the matrix to be half the size. */
@@ -234,12 +237,14 @@ function paint() {
         color[3] = grid.color[3] - color[3];
         GLctx.uniform4fv(colorColor, color);
 
+        /* Draw the small grid. */
         grid.draw();
 
         GLctx.depthMask(true);
     }
 
     if (document.getElementById("drawTrails").checked) {
+        /* Trails are in world space. */
         GLctx.uniformMatrix4fv(colorModelMat, false, IDENTITY_MATRIX);
         GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
 

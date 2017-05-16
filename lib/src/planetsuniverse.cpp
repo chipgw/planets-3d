@@ -9,10 +9,6 @@
 #include <functional>
 #include <array>
 
-#ifndef EMSCRIPTEN
-#include <tinyxml.h>
-#endif
-
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
 
@@ -30,6 +26,7 @@ PlanetsUniverse::PlanetsUniverse() {
 
 /* Emscripten does IO from javascript. */
 #ifndef EMSCRIPTEN
+#include <tinyxml.h>
 
 int PlanetsUniverse::load(const std::string& filename, bool clear) {
     TiXmlDocument doc(filename);
@@ -302,7 +299,7 @@ void PlanetsUniverse::centerAll() {
 
     const float epsilon = glm::epsilon<float>();
 
-    /* Don't bother centering if we're already reasonably centered. */
+    /* Don't bother centering if it's already reasonably centered. */
     if (!glm::isNull(averagePosition, epsilon) || !glm::isNull(averageVelocity, epsilon)) {
         for (auto& planet : planets) {
             planet.position -= averagePosition;

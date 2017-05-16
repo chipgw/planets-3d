@@ -371,7 +371,6 @@ void PlanetsWindow::initUI() {
 }
 
 #ifdef PLANETS3D_WITH_NFD
-
 #include <nfd.h>
 
 void PlanetsWindow::openFile() {
@@ -381,11 +380,8 @@ void PlanetsWindow::openFile() {
     if (result == NFD_OKAY) {
         universe.load(outPath);
         free(outPath);
-    } else if (result == NFD_CANCEL) {
-        puts("User pressed cancel.");
-    } else {
+    } else if (result == NFD_ERROR)
         printf("Error: %s\n", NFD_GetError());
-    }
 }
 
 void PlanetsWindow::appendFile() {
@@ -395,11 +391,8 @@ void PlanetsWindow::appendFile() {
     if (result == NFD_OKAY) {
         universe.load(outPath, false);
         free(outPath);
-    } else if (result == NFD_CANCEL) {
-        puts("User pressed cancel.");
-    } else {
+    } else if (result == NFD_ERROR)
         printf("Error: %s\n", NFD_GetError());
-    }
 }
 
 void PlanetsWindow::saveFile() {
@@ -409,13 +402,10 @@ void PlanetsWindow::saveFile() {
     if (result == NFD_OKAY) {
         universe.save(outPath);
         free(outPath);
-    } else if (result == NFD_CANCEL) {
-        puts("User pressed cancel.");
-    } else {
+    } else if (result == NFD_ERROR)
         printf("Error: %s\n", NFD_GetError());
-    }
 }
-#endif
+#endif /* PLANETS3D_WITH_NFD */
 
 void PlanetsWindow::run() {
     /* Remains true from here until application closes. */
