@@ -345,7 +345,7 @@ var Module = {
     onRuntimeInitialized: function() {
         var canvas = document.getElementById("canvas");
 
-        initGL();
+        var initGLPromise = initGL();
 
         window.onresize = function(e) {
             canvas.width = window.innerWidth;
@@ -467,8 +467,14 @@ var Module = {
             } catch (e) { }
         }
 
-        document.body.removeChild(document.getElementById("loading"));
+        function startAnimating() {
+            document.body.removeChild(document.getElementById("loading"));
 
-        requestAnimationFrame(animate);
+            requestAnimationFrame(animate);
+        }
+
+        /* Don't start animating until the textures finish loading.
+         * Even if one fails we carry on, an error message has already been shown. */
+        initGLPromise.then(startAnimating, startAnimating);
     }
 }
