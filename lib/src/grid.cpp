@@ -13,10 +13,12 @@ uint32_t highBit(uint32_t n) {
     return n - (n >> 1);
 }
 
-void Grid::update(const Camera& camera) {
+bool Grid::update(const Camera& camera) {
     /* The resulting amount of vertecies is (range + 1) * 4
      * because there are 4 vertecies for every range value, plus for center lines at 0.  */
-    if (points.size() != (range * 2 + 1) * 4) {
+    bool updatePoints = points.size() != (range * 2 + 1) * 4;
+
+    if (updatePoints) {
         points.clear();
 
         float bounds = range;
@@ -37,4 +39,7 @@ void Grid::update(const Camera& camera) {
 
     /* How much of a difference is there between the distance value and the scale value? */
     alphafac = distance / scale - 1.0f;
+
+    /* Let the interface know that the vertex array changed so it can update the VBO if one is used. */
+    return updatePoints;
 }

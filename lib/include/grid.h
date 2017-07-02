@@ -16,8 +16,8 @@ public:
     float scale;
     float alphafac;
 
-    /* Update all contained generated data. */
-    EXPORT void update(const Camera& camera);
+    /* Update all contained generated data. Returns true if the points array was regenerated. */
+    EXPORT bool update(const Camera& camera);
 
     /* Toggle drawing the grid. */
     inline void toggle() { draw = !draw; }
