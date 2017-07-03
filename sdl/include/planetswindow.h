@@ -61,6 +61,7 @@ class PlanetsWindow {
     unsigned int highResVBO, highResTriIBO, highResTriCount;
     unsigned int lowResVBO, lowResLineIBO, lowResLineCount;
     unsigned int circleVBO, circleLineIBO, circleLineCount;
+    unsigned int gridVBO;
 
     void updateGrid();
 

@@ -273,6 +273,10 @@ void PlanetsWindow::initBuffers() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, circle.lineCount * sizeof(uint32_t), circle.lines, GL_STATIC_DRAW);
 
+    glGenBuffers(1, &gridVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+    glBufferData(GL_ARRAY_BUFFER, 0, 0, GL_DYNAMIC_DRAW);
+
     highResTriCount = highResSphere.triangleCount;
     lowResLineCount = lowResSphere.lineCount;
     circleLineCount = circle.lineCount;
@@ -611,13 +615,17 @@ void PlanetsWindow::paint() {
     }
 
     if (grid.draw) {
-        /* Update the grid's scale and alphafac based on the camera. */
-        grid.update(camera);
-
         glDepthMask(GL_FALSE);
 
-        /* TODO - Store in VBO. */
-        glVertexAttribPointer(vertex, 2, GL_FLOAT, GL_FALSE, 0, grid.points.data());
+        /* Bind the grid buffer for drawing and (optionally) updating. */
+        glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+
+        /* Update the grid's scale, alphafac, and possibly point data. */
+        if (grid.update(camera))
+            /* Only update the buffer when the point data changes. */
+            glBufferData(GL_ARRAY_BUFFER, grid.points.size() * sizeof(glm::vec2), grid.points.data(), GL_DYNAMIC_DRAW);
+
+        glVertexAttribPointer(vertex, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
         glm::vec4 color = grid.color;
         /* The alphafac value is for the larger of the two grids. */
@@ -634,6 +642,9 @@ void PlanetsWindow::paint() {
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
 
         glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
+
+        /* No more buffer. */
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         /* Draw to the depth buffer again. */
         glDepthMask(GL_TRUE);
@@ -886,7 +897,6 @@ void PlanetsWindow::paintUI(const float delay) {
             /* The materialID is a uint8_t, so it won't work directly with SliderInt(),
              * but SliderInt() just converts to a float and calls SliderFloat(), so why bother with an int in between? */
             float mat = p.materialID;
-            /* TODO - Perhaps there would be a better place to put this than the information window? */
             if (ImGui::SliderFloat("Material", &mat, 0, NUM_PLANET_TEXTURES-1, "%.0f"))
                 p.materialID = static_cast<uint8_t>(mat);
         }
@@ -902,8 +912,6 @@ void PlanetsWindow::paintUI(const float delay) {
                              [](void* data, int idx) { return 1000.0f / reinterpret_cast<float*>(data)[idx]; },
                              frameTimes.data(), static_cast<int>(frameTimes.size()),
                              static_cast<int>(frameTimeOffset), nullptr, 0.0f, FLT_MAX, ImVec2(0.0f, 120.0f));
-
-            /* TODO - Perhaps add more stats... */
         }
 
         if (ImGui::CollapsingHeader("OpenGL Info"))
