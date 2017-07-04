@@ -140,6 +140,9 @@ void PlanetsWidget::initializeGL() {
     circleLines.allocate(circle.lines, circle.lineCount * sizeof(unsigned int));
     circleLineCount = circle.lineCount;
 
+    gridBuffer.create();
+    gridBuffer.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
     QOpenGLBuffer::release(QOpenGLBuffer::VertexBuffer);
     QOpenGLBuffer::release(QOpenGLBuffer::IndexBuffer);
 
@@ -381,12 +384,18 @@ void PlanetsWidget::render() {
     }
 
     if (grid.draw) {
-        grid.update(camera);
-
         /* The grid doesn't write to the depth buffer. */
         glDepthMask(GL_FALSE);
 
-        shaderColor.setAttributeArray(vertex, GL_FLOAT, grid.points.data(), 2);
+        /* Bind the grid buffer for drawing and (optionally) updating. */
+        gridBuffer.bind();
+
+        /* Update the grid's scale, alphafac, and possibly point data. */
+        if (grid.update(camera))
+            /* Only update the buffer when the point data changes. */
+            gridBuffer.allocate(grid.points.data(), grid.points.size() * sizeof(glm::vec2));
+
+        shaderColor.setAttributeArray(vertex, GL_FLOAT, 0, 2);
 
         glm::vec4 color = grid.color;
         color.a *= grid.alphafac;
@@ -404,6 +413,8 @@ void PlanetsWidget::render() {
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(color));
 
         glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
+
+        gridBuffer.release();
 
         glDepthMask(GL_TRUE);
     }

@@ -64,6 +64,8 @@ private:
     QOpenGLBuffer circleLines;
     unsigned int circleLineCount;
 
+    QOpenGLBuffer gridBuffer;
+
     const static QColor trailColor;
 
 #ifdef PLANETS3D_QT_USE_SDL_GAMEPAD
