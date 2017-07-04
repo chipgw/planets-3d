@@ -178,9 +178,12 @@ unsigned int PlanetsWindow::loadTexture(const char* file) {
     SDL_Surface* image = IMG_Load(file);
 
     if (image == nullptr) {
-        /* Qt Creator's output panel doesn't seem to like the '\r' character for some reason... */
         std::string err(IMG_GetError());
-        err.erase(err.find('\r'));
+
+        /* Qt Creator's output panel doesn't seem to like the '\r' character for some reason... */
+        auto ret = err.find('\r');
+        if (ret > -1)
+            err.erase(ret);
 
         printf("Failed to load texture! Error: %s\n", err.c_str());
 
