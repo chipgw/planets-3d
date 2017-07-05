@@ -38,6 +38,7 @@ PlanetsWindow::~PlanetsWindow() {
     glDeleteBuffers(1, &lowResLineIBO);
     glDeleteBuffers(1, &circleVBO);
     glDeleteBuffers(1, &circleLineIBO);
+    glDeleteBuffers(1, &gridBuffer);
 
     /* No more shaders. */
     glDeleteProgram(shaderTexture);
