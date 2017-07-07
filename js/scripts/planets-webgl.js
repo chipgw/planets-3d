@@ -3,6 +3,7 @@ var spheres, context, grid;
 var colorShader, colorCameraMat, colorModelMat, colorColor;
 var textureShader, textureCameraMat, textureViewMat, textureModelMat, textureLightDir;
 var planetTextureDiff, planetTextureNrm;
+var gridBuf;
 
 /* Convinience function to create a matrix with a position and scale value. */
 function makeMat(pos, scale) {
@@ -117,6 +118,10 @@ function initGL() {
 
     grid = new Module.Grid();
 
+    gridBuf = GLctx.createBuffer();
+    GLctx.bindBuffer(GLctx.ARRAY_BUFFER, gridBuf);
+    GLctx.bufferData(GLctx.ARRAY_BUFFER, 0, GLctx.DYNAMIC_DRAW);
+
     return Promise.all([planetTextureDiffPromise, planetTextureNrmPromise]);
 }
 
@@ -225,9 +230,8 @@ function paint() {
     }
 
     if (grid.enabled) {
-        grid.update(camera);
-
-        grid.bind();
+        GLctx.bindBuffer(GLctx.ARRAY_BUFFER, gridBuf);
+        grid.bind(grid.update(camera));
 
         /* Don't write to depth buffer. */
         GLctx.depthMask(false);

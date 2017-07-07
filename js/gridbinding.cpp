@@ -3,11 +3,14 @@
 #include <camera.h>
 #include "glbindings.h"
 
-void bindGrid(Grid& grid) {
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+void bindGrid(Grid& grid, bool update) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    glVertexAttribPointer(vertex, 2, GL_FLOAT, GL_FALSE, 0, grid.points.data());
+    if (update)
+        /* Only update the buffer when the point data changes. */
+        glBufferData(GL_ARRAY_BUFFER, grid.points.size() * sizeof(glm::vec2), grid.points.data(), GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(vertex, 2, GL_FLOAT, GL_FALSE, 0, 0);
 }
 void drawGrid(Grid& grid) {
     glDrawArrays(GL_LINES, 0, GLsizei(grid.points.size()));
