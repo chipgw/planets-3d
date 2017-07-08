@@ -231,7 +231,9 @@ function paint() {
 
     if (grid.enabled) {
         GLctx.bindBuffer(GLctx.ARRAY_BUFFER, gridBuf);
-        grid.bind(grid.update(camera));
+        grid.update(camera);
+
+        GLctx.vertexAttribPointer(0, 2, GLctx.FLOAT, 0, 0, 0);
 
         /* Don't write to depth buffer. */
         GLctx.depthMask(false);
@@ -246,7 +248,7 @@ function paint() {
         GLctx.uniform4fv(colorColor, color);
 
         /* Draw the large grid. */
-        grid.draw();
+        GLctx.drawArrays(GLctx.LINES, 0, grid.numPoints());
 
         /* Modify the matrix to be half the size. */
         gridMat[0] *= 0.5; gridMat[5] *= 0.5; gridMat[10] *= 0.5;
@@ -256,7 +258,7 @@ function paint() {
         GLctx.uniform4fv(colorColor, color);
 
         /* Draw the small grid. */
-        grid.draw();
+        GLctx.drawArrays(GLctx.LINES, 0, grid.numPoints());
 
         GLctx.depthMask(true);
     }
