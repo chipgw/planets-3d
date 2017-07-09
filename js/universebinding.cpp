@@ -57,6 +57,12 @@ float getVelocityFac(PlanetsUniverse&) {
     return PlanetsUniverse::velocityFactor;
 }
 
+/* Wrap to avoid problems with the optional replacement parameter.
+ * (Emscripten requires it to be passed, and we can't pass -1 due to type differences between JS and C++.) */
+void removePlanet(PlanetsUniverse& universe, key_type planet) {
+    universe.remove(planet);
+}
+
 EMSCRIPTEN_BINDINGS(planets_universe) {
     emscripten::class_<PlanetsUniverse>("PlanetsUniverse")
             .constructor()
@@ -84,7 +90,7 @@ EMSCRIPTEN_BINDINGS(planets_universe) {
             .function("isEmpty",                &PlanetsUniverse::isEmpty)
             .function("isSelectedValid",        &PlanetsUniverse::isSelectedValid)
             .function("isValid",                &PlanetsUniverse::isValid)
-            .function("remove",                 &PlanetsUniverse::remove)
+            .function("remove",                 &removePlanet)
             .function("resetSelected",          &PlanetsUniverse::resetSelected)
             .function("size",                   &PlanetsUniverse::size)
             .function("velocityfac",            &getVelocityFac)
