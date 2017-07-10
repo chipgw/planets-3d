@@ -6,8 +6,8 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-PlacingInterface::PlacingInterface(PlanetsUniverse& u) : universe(u), firingSpeed(universe.velocityFactor * 10.0f) {
-    planet.velocity.y = universe.velocityFactor;
+PlacingInterface::PlacingInterface(PlanetsUniverse& u) : universe(u), firingSpeed(PlanetsUniverse::velocityFactor * 10.0f) {
+    planet.velocity.y = PlanetsUniverse::velocityFactor;
 }
 
 bool PlacingInterface::handleMouseMove(const glm::ivec2& pos, const glm::ivec2& delta, const Camera& camera, bool& holdMouse) {
@@ -121,10 +121,10 @@ bool PlacingInterface::handleMouseWheel(float delta) {
     case FreePositionZ:
     case OrbitalPlanet:
     case OrbitalPlane:
-        planet.setMass(glm::clamp(planet.mass() + delta * planet.mass(), universe.minimumMass, universe.maximumMass));
+        planet.setMass(glm::clamp(planet.mass() + delta * planet.mass(), PlanetsUniverse::minimumMass, PlanetsUniverse::maximumMass));
         return true;
     case FreeVelocity:
-        planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) + delta * universe.velocityFactor);
+        planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) + delta * PlanetsUniverse::velocityFactor);
         return true;
     }
     return false;
@@ -138,10 +138,10 @@ bool PlacingInterface::handleAnalogStick(const glm::vec2& pos, const bool& modif
         case FreePositionZ:
         case OrbitalPlanet:
         case OrbitalPlane:
-            planet.setMass(glm::clamp(planet.mass() - y * planet.mass(), universe.minimumMass, universe.maximumMass));
+            planet.setMass(glm::clamp(planet.mass() - y * planet.mass(), PlanetsUniverse::minimumMass, PlanetsUniverse::maximumMass));
             return true;
         case FreeVelocity:
-            planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) - y * universe.velocityFactor);
+            planet.velocity = glm::vec3(rotation[2]) * glm::max(0.0f, glm::length(planet.velocity) - y * PlanetsUniverse::velocityFactor);
             return true;
         }
     }
