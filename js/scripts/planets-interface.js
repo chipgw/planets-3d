@@ -432,7 +432,6 @@ var Module = {
             /* TODO - If possible, keep mouse from moving when hidden. */
             canvas.style.cursor = placingBools[1] ? 'none' : 'auto';
 
-
             /* Keep track of these values for the next event. */
             lastMouseX = e.clientX;
             lastMouseY = e.clientY;

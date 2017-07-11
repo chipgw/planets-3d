@@ -37,8 +37,6 @@ template<int x, int y> void setMatElement(glm::mat4& mat, float val) {
     mat[x][y] = val;
 }
 
-glm::mat4 getIdentityMatrix() { return glm::mat4(); }
-
 /* TODO - This seems like it wouldn't be the best way to do this,
  * plus I don't know if matrix manipulation functions will need to be called in JS... */
 EMSCRIPTEN_BINDINGS(mat4) {
@@ -60,7 +58,6 @@ EMSCRIPTEN_BINDINGS(mat4) {
             .element(&getMatElement<3, 2>, &setMatElement<3, 2>)
             .element(&getMatElement<3, 3>, &setMatElement<3, 3>)
             ;
-    emscripten::function("getIdentityMatrix", &getIdentityMatrix);
 }
 
 glm::vec3 getLightDir(Camera& camera) {

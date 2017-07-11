@@ -1,8 +1,11 @@
-var spheres, context, grid;
+var context, grid;
 
 var colorShader, colorCameraMat, colorModelMat, colorColor;
 var textureShader, textureCameraMat, textureViewMat, textureModelMat, textureLightDir;
 var planetTextureDiff, planetTextureNrm;
+var highResVBO, highResTriIBO, highResTriCount;
+var lowResVBO, lowResLineIBO, lowResLineCount;
+var circleVBO, circleLineIBO, circleLineCount;
 var gridBuf;
 
 /* Convinience function to create a matrix with a position and scale value. */
@@ -114,13 +117,32 @@ function initGL() {
     GLctx.uniform1i(GLctx.getUniformLocation(textureShader, "texture_diff"), 0);
     GLctx.uniform1i(GLctx.getUniformLocation(textureShader, "texture_nrm"), 1);
 
-    spheres = new Module.Spheres();
-
     grid = new Module.Grid();
 
     gridBuf = GLctx.createBuffer();
     GLctx.bindBuffer(GLctx.ARRAY_BUFFER, gridBuf);
     GLctx.bufferData(GLctx.ARRAY_BUFFER, 0, GLctx.DYNAMIC_DRAW);
+
+    highResVBO = GLctx.createBuffer();
+    highResTriIBO = GLctx.createBuffer();
+    GLctx.bindBuffer(GLctx.ARRAY_BUFFER, highResVBO);
+    GLctx.bindBuffer(GLctx.ELEMENT_ARRAY_BUFFER, highResTriIBO);
+
+    highResTriCount = Module.genSolidSphere();
+
+    lowResVBO = GLctx.createBuffer();
+    lowResLineIBO = GLctx.createBuffer();
+    GLctx.bindBuffer(GLctx.ARRAY_BUFFER, lowResVBO);
+    GLctx.bindBuffer(GLctx.ELEMENT_ARRAY_BUFFER, lowResLineIBO);
+
+    lowResLineCount = Module.genWireSphere();
+
+    circleVBO = GLctx.createBuffer();
+    circleLineIBO = GLctx.createBuffer();
+    GLctx.bindBuffer(GLctx.ARRAY_BUFFER, circleVBO);
+    GLctx.bindBuffer(GLctx.ELEMENT_ARRAY_BUFFER, circleLineIBO);
+
+    circleLineCount = Module.genCircle();
 
     return Promise.all([planetTextureDiffPromise, planetTextureNrmPromise]);
 }
@@ -165,7 +187,17 @@ function paint() {
     GLctx.activeTexture(GLctx.TEXTURE1);
     GLctx.bindTexture(GLctx.TEXTURE_2D, planetTextureNrm)
 
-    spheres.bindSolid()
+    GLctx.bindBuffer(GLctx.ARRAY_BUFFER, highResVBO);
+    GLctx.bindBuffer(GLctx.ELEMENT_ARRAY_BUFFER, highResTriIBO);
+
+    GLctx.enableVertexAttribArray(0);
+    GLctx.enableVertexAttribArray(1);
+    GLctx.enableVertexAttribArray(2);
+    GLctx.enableVertexAttribArray(3);
+    GLctx.vertexAttribPointer(0, 3, GLctx.FLOAT, GLctx.FALSE, 48, 0);
+    GLctx.vertexAttribPointer(1, 2, GLctx.FLOAT, GLctx.FALSE, 48, 36);
+    GLctx.vertexAttribPointer(2, 3, GLctx.FLOAT, GLctx.FALSE, 48, 12);
+    GLctx.vertexAttribPointer(3, 3, GLctx.FLOAT, GLctx.FALSE, 48, 24);
 
     /* Update the view-space light vector. */
     GLctx.uniform3fv(textureLightDir, camera.getLightDir());
@@ -173,33 +205,42 @@ function paint() {
     for (var i = 0; i < universe.size(); ++i) {
         GLctx.uniformMatrix4fv(textureModelMat, false, makeMat(universe.getPlanetPosition(i), universe.getPlanetRadius(i)));
 
-        spheres.drawSolid()
+        GLctx.drawElements(GLctx.TRIANGLES, highResTriCount, GLctx.UNSIGNED_INT, 0);
     }
+
+    GLctx.disableVertexAttribArray(1);
+    GLctx.disableVertexAttribArray(2);
+    GLctx.disableVertexAttribArray(3);
 
     GLctx.useProgram(colorShader);
 
     GLctx.uniformMatrix4fv(colorCameraMat, false, cameraMat);
 
-    spheres.bindWire()
+    GLctx.bindBuffer(GLctx.ARRAY_BUFFER, lowResVBO);
+    GLctx.bindBuffer(GLctx.ELEMENT_ARRAY_BUFFER, lowResLineIBO);
+    GLctx.vertexAttribPointer(0, 3, GLctx.FLOAT, GLctx.FALSE, 48, 0);
 
     GLctx.uniform4fv(colorColor, [0.0, 1.0, 0.0, 1.0]);
 
     if (placing.step !== Module.PlacingStep.NotPlacing && placing.step !== Module.PlacingStep.Firing) {
         GLctx.uniformMatrix4fv(colorModelMat, false, makeMat(placing.getPosition(),  placing.getRadius()));
 
-        spheres.drawWire()
+        GLctx.drawElements(GLctx.LINES, lowResLineCount, GLctx.UNSIGNED_INT, 0);
 
         GLctx.uniform4fv(colorColor, [1.0, 1.0, 1.0, 1.0]);
 
         /* Draw two circles to show the relative orbits of both the planets. */
         if ((placing.step === Module.PlacingStep.OrbitalPlane || placing.step === Module.PlacingStep.OrbitalPlanet) && universe.isSelectedValid()) {
-            spheres.bindCircle();
+            GLctx.bindBuffer(GLctx.ARRAY_BUFFER, circleVBO);
+            GLctx.bindBuffer(GLctx.ELEMENT_ARRAY_BUFFER, circleLineIBO);
+
+            GLctx.vertexAttribPointer(0, 3, GLctx.FLOAT, 0, 12, 0);
 
             GLctx.uniformMatrix4fv(colorModelMat, false, placing.getOrbitalCircleMat());
-            spheres.drawCircle();
+            GLctx.drawElements(GLctx.LINES, circleLineCount, GLctx.UNSIGNED_INT, 0);
 
             GLctx.uniformMatrix4fv(colorModelMat, false, placing.getOrbitedCircleMat());
-            spheres.drawCircle();
+            GLctx.drawElements(GLctx.LINES, circleLineCount, GLctx.UNSIGNED_INT, 0);
         }
 
         if (placing.step === Module.PlacingStep.FreeVelocity) {
@@ -207,13 +248,13 @@ function paint() {
 
             GLctx.uniformMatrix4fv(colorModelMat, false, placing.getArrowMat());
 
-            spheres.drawArrow(length);
+            Module.drawArrow(length);
         }
     } else if (universe.isSelectedValid()) {
         GLctx.uniformMatrix4fv(colorModelMat, false, makeMat(universe.getPlanetPosition(universe.selected),
                                                              universe.getPlanetRadius(universe.selected) * 1.02));
 
-        spheres.drawWire();
+        GLctx.drawElements(GLctx.LINES, lowResLineCount, GLctx.UNSIGNED_INT, 0);
     }
 
     /* A circle in the center of the view to show where the gamepad is focused.
@@ -225,7 +266,7 @@ function paint() {
 
         GLctx.uniformMatrix4fv(colorModelMat, false, makeMat(camera.position, camera.distance * 4.0e-3));
 
-        spheres.drawCircle();
+        GLctx.drawElements(GLctx.LINES, circleLineCount, GLctx.UNSIGNED_INT, 0);
         GLctx.enable(GLctx.DEPTH_TEST);
     }
 

@@ -46,6 +46,7 @@ void setPlanetMass(PlanetsUniverse& universe, key_type key, float mass) {
 void drawTrails(PlanetsUniverse& universe) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glEnableVertexAttribArray(vertex);
 
     for (const auto& i : universe) {
         glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, i.path.data());

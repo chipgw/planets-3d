@@ -3,106 +3,28 @@
 #include <camera.h>
 #include "glbindings.h"
 
-class Spheres {
-    GLuint highResVBO, highResTriIBO, highResTriCount;
-    GLuint lowResVBO, lowResLineIBO, lowResLineCount;
-    GLuint circleVBO, circleLineIBO, circleLineCount;
-
-public:
-    Spheres();
-
-    void bindSolid();
-    void bindWire();
-    void bindCircle();
-
-    void drawSolid();
-    void drawWire();
-    void drawCircle();
-    void drawArrow(float length);
-};
-
-Spheres::Spheres() {
+int genSolid() {
     Sphere<64, 32> highResSphere;
-    Sphere<32, 16> lowResSphere;
-    Circle<64> circle;
-
-    glGenBuffers(1, &highResVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
     glBufferData(GL_ARRAY_BUFFER, highResSphere.vertexCount * sizeof(Vertex), highResSphere.verts, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &highResTriIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, highResSphere.triangleCount * sizeof(uint32_t), highResSphere.triangles, GL_STATIC_DRAW);
+    return highResSphere.triangleCount;
+}
 
-    glGenBuffers(1, &lowResVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, lowResVBO);
+int genWire() {
+    Sphere<32, 16> lowResSphere;
     glBufferData(GL_ARRAY_BUFFER, lowResSphere.vertexCount * sizeof(Vertex), lowResSphere.verts, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &lowResLineIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lowResLineIBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, lowResSphere.lineCount * sizeof(uint32_t), lowResSphere.lines, GL_STATIC_DRAW);
+    return lowResSphere.lineCount;
+}
 
-    glGenBuffers(1, &circleVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
+int genCircle() {
+    Circle<64> circle;
     glBufferData(GL_ARRAY_BUFFER, circle.vertexCount * sizeof(glm::vec3), circle.verts, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &circleLineIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, circle.lineCount * sizeof(uint32_t), circle.lines, GL_STATIC_DRAW);
-
-    highResTriCount = highResSphere.triangleCount;
-    lowResLineCount = lowResSphere.lineCount;
-    circleLineCount = circle.lineCount;
-
-    glEnableVertexAttribArray(vertex);
+    return circle.lineCount;
 }
 
-void Spheres::bindSolid() {
-    glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
-
-    glEnableVertexAttribArray(uv);
-    glEnableVertexAttribArray(normal);
-    glEnableVertexAttribArray(tangent);
-    glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
-    glVertexAttribPointer(normal,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-    glVertexAttribPointer(tangent,  3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
-}
-
-void Spheres::bindWire() {
-    glBindBuffer(GL_ARRAY_BUFFER, lowResVBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lowResLineIBO);
-
-    glDisableVertexAttribArray(uv);
-    glDisableVertexAttribArray(normal);
-    glDisableVertexAttribArray(tangent);
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-}
-
-void Spheres::bindCircle() {
-    glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
-
-    glDisableVertexAttribArray(uv);
-    glDisableVertexAttribArray(normal);
-    glDisableVertexAttribArray(tangent);
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
-}
-
-void Spheres::drawSolid() {
-    glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
-}
-
-void Spheres::drawWire() {
-    glDrawElements(GL_LINES, lowResLineCount, GL_UNSIGNED_INT, 0);
-}
-
-void Spheres::drawCircle() {
-    glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, 0);
-}
-
-void Spheres::drawArrow(float length) {
+void drawArrow(float length) {
     float verts[] = {  0.1f, 0.1f, 0.0f,
                        0.1f,-0.1f, 0.0f,
                       -0.1f,-0.1f, 0.0f,
@@ -137,23 +59,17 @@ void Spheres::drawArrow(float length) {
                                        11, 10, 12,
                                         8, 11, 12 };
 
-
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glEnableVertexAttribArray(vertex);
 
     glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, verts);
     glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
 }
 
 EMSCRIPTEN_BINDINGS(sphere) {
-    emscripten::class_<Spheres>("Spheres")
-            .constructor()
-            .function("bindSolid",  &Spheres::bindSolid)
-            .function("bindWire",   &Spheres::bindWire)
-            .function("bindCircle", &Spheres::bindCircle)
-            .function("drawSolid",  &Spheres::drawSolid)
-            .function("drawWire",   &Spheres::drawWire)
-            .function("drawCircle", &Spheres::drawCircle)
-            .function("drawArrow",  &Spheres::drawArrow)
-            ;
+    emscripten::function("genSolidSphere",  &genSolid);
+    emscripten::function("genWireSphere",   &genWire);
+    emscripten::function("genCircle",       &genCircle);
+    emscripten::function("drawArrow",       &drawArrow);
 }
