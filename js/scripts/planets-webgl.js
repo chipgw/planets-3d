@@ -6,6 +6,7 @@ var planetTextureDiff, planetTextureNrm;
 var highResVBO, highResTriIBO, highResTriCount;
 var lowResVBO, lowResLineIBO, lowResLineCount;
 var circleVBO, circleLineIBO, circleLineCount;
+var arrowVBO, arrowIBO;
 var gridBuf;
 
 /* Convinience function to create a matrix with a position and scale value. */
@@ -144,6 +145,45 @@ function initGL() {
 
     circleLineCount = Module.genCircle();
 
+    arrowVBO = GLctx.createBuffer();
+    arrowIBO = GLctx.createBuffer();
+    GLctx.bindBuffer(GLctx.ARRAY_BUFFER, arrowVBO);
+    GLctx.bindBuffer(GLctx.ELEMENT_ARRAY_BUFFER, arrowIBO);
+
+    GLctx.bufferData(GLctx.ARRAY_BUFFER, new Float32Array([0.1, 0.1, 0.0,
+                                                           0.1,-0.1, 0.0,
+                                                          -0.1,-0.1, 0.0,
+                                                          -0.1, 0.1, 0.0,
+
+                                                           0.1, 0.1, 1.0,
+                                                           0.1,-0.1, 1.0,
+                                                          -0.1,-0.1, 1.0,
+                                                          -0.1, 0.1, 1.0,
+
+                                                           0.2, 0.2, 1.0,
+                                                           0.2,-0.2, 1.0,
+                                                          -0.2,-0.2, 1.0,
+                                                          -0.2, 0.2, 1.0,
+
+                                                           0.0, 0.0, 1.4 ]), GLctx.DYNAMIC_DRAW);
+
+    GLctx.bufferData(GLctx.ELEMENT_ARRAY_BUFFER, new Uint8Array([0,  1,  2,       2,  3,  0,
+
+                                                                 1,  0,  5,       4,  5,  0,
+                                                                 2,  1,  6,       5,  6,  1,
+                                                                 3,  2,  7,       6,  7,  2,
+                                                                 0,  3,  4,       7,  4,  3,
+
+                                                                 5,  4,  9,       8,  9,  4,
+                                                                 6,  5, 10,       9, 10,  5,
+                                                                 7,  6, 11,      10, 11,  6,
+                                                                 4,  7,  8,      11,  8,  7,
+
+                                                                 9,  8, 12,
+                                                                10,  9, 12,
+                                                                11, 10, 12,
+                                                                 8, 11, 12 ]), GLctx.STATIC_DRAW);
+
     return Promise.all([planetTextureDiffPromise, planetTextureNrmPromise]);
 }
 
@@ -248,7 +288,14 @@ function paint() {
 
             GLctx.uniformMatrix4fv(colorModelMat, false, placing.getArrowMat());
 
-            Module.drawArrow(length);
+            GLctx.bindBuffer(GLctx.ARRAY_BUFFER, arrowVBO);
+            GLctx.bindBuffer(GLctx.ELEMENT_ARRAY_BUFFER, arrowIBO);
+
+            /* Keep the tip of the arrow from stretching. */
+            GLctx.bufferSubData(GLctx.ARRAY_BUFFER, 152, new Float32Array([ 1.0 + 0.4 / length]));
+
+            GLctx.vertexAttribPointer(0, 3, GLctx.FLOAT, 0, 0, 0);
+            GLctx.drawElements(GLctx.TRIANGLES, 66, GLctx.UNSIGNED_BYTE, 0);
         }
     } else if (universe.isSelectedValid()) {
         GLctx.uniformMatrix4fv(colorModelMat, false, makeMat(universe.getPlanetPosition(universe.selected),

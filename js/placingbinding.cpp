@@ -33,6 +33,7 @@ glm::mat4 getArrowMat(PlacingInterface& placing) {
     glm::mat4 matrix = glm::translate(placing.planet.position);
     matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
     matrix *= placing.rotation;
+    matrix = glm::scale(matrix, glm::vec3(1.0f, 1.0f, glm::length(placing.planet.velocity / PlanetsUniverse::velocityFactor)));
     return matrix;
 }
 
