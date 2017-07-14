@@ -24,7 +24,7 @@
      <x>0</x>
      <y>0</y>
      <width>1200</width>
-     <height>20</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -83,7 +83,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="newPlanet_DockWidget">
    <property name="windowTitle">
-    <string>New Planet</string>
+    <string>&amp;New Planet</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -281,7 +281,7 @@
   </widget>
   <widget class="QDockWidget" name="speedControl_DockWidget">
    <property name="windowTitle">
-    <string>Speed Control</string>
+    <string>Speed Contro&amp;l</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -365,7 +365,7 @@
   </widget>
   <widget class="QDockWidget" name="viewSettings_DockWidget">
    <property name="windowTitle">
-    <string>View Settings</string>
+    <string>&amp;View Settings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -483,7 +483,7 @@
   </widget>
   <widget class="QDockWidget" name="firingSettings_DockWidget">
    <property name="windowTitle">
-    <string>Firing Mode Settings</string>
+    <string>Firing &amp;Mode Settings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -542,7 +542,7 @@
   </widget>
   <widget class="QDockWidget" name="randomSettings_DockWidget">
    <property name="windowTitle">
-    <string>Random Planet Generator</string>
+    <string>&amp;Random Planet Generator</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -689,7 +689,7 @@
   </widget>
   <widget class="QDockWidget" name="info_DockWidget">
    <property name="windowTitle">
-    <string>Info</string>
+    <string>&amp;Info</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -830,6 +830,9 @@
    <property name="toolTip">
     <string>Center all planets.</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+C</string>
+   </property>
   </action>
   <action name="actionInteractive_Planet_Placement">
    <property name="icon">
@@ -840,7 +843,7 @@
     <string>Interactive Planet Placement</string>
    </property>
    <property name="shortcut">
-    <string>P</string>
+    <string>Alt+P</string>
    </property>
   </action>
   <action name="actionDraw_Paths">
@@ -849,6 +852,9 @@
    </property>
    <property name="text">
     <string>&amp;Draw Paths</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
   <action name="actionOpen_Simulation">
@@ -907,7 +913,7 @@
     <string>Interactive Orbital Placement</string>
    </property>
    <property name="shortcut">
-    <string>O</string>
+    <string>Alt+O</string>
    </property>
   </action>
   <action name="actionGrid">
@@ -916,6 +922,9 @@
    </property>
    <property name="text">
     <string>&amp;Grid</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
    </property>
   </action>
   <action name="actionDelete_Escapees">
@@ -983,7 +992,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Draw Planar Circles</string>
+    <string>Draw &amp;Planar Circles</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
    </property>
   </action>
  </widget>
