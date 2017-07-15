@@ -49,6 +49,7 @@ PlanetsWindow::~PlanetsWindow() {
     for (int i = 0; i < NUM_PLANET_TEXTURES; ++i) {
         glDeleteTextures(1, &planetTextures_diff[i]);
         glDeleteTextures(1, &planetTextures_nrm[i]);
+        glDeleteTextures(1, &planetTextures_height[i]);
     }
 
     GLuint fontTexture = static_cast<GLuint>(reinterpret_cast<intptr_t>(ImGui::GetIO().Fonts->TexID));
@@ -157,20 +158,27 @@ void PlanetsWindow::initGL() {
     /* This attribute array is always on. */
     glEnableVertexAttribArray(vertex);
 
-    planetTextures_diff[0]  = loadTexture("textures/planet_diffuse.png");
-    planetTextures_nrm[0]   = loadTexture("textures/planet_nrm.png");
-    planetTextures_diff[1]  = loadTexture("textures/planet_diffuse_01.png");
-    planetTextures_nrm[1]   = loadTexture("textures/planet_nrm_01.png");
-    planetTextures_diff[2]  = loadTexture("textures/planet_diffuse_02.png");
-    planetTextures_nrm[2]   = loadTexture("textures/planet_nrm_02.png");
-    planetTextures_diff[3]  = loadTexture("textures/planet_diffuse_03.png");
-    planetTextures_nrm[3]   = loadTexture("textures/planet_nrm_03.png");
-    planetTextures_diff[4]  = loadTexture("textures/planet_diffuse_04.png");
-    planetTextures_nrm[4]   = loadTexture("textures/planet_nrm_04.png");
-    planetTextures_diff[5]  = loadTexture("textures/planet_diffuse_05.png");
-    planetTextures_nrm[5]   = loadTexture("textures/planet_nrm_05.png");
-    planetTextures_diff[6]  = loadTexture("textures/planet_diffuse_06.png");
-    planetTextures_nrm[6]   = loadTexture("textures/planet_nrm_06.png");
+    planetTextures_diff[0]      = loadTexture("textures/planet_diffuse.png");
+    planetTextures_nrm[0]       = loadTexture("textures/planet_nrm.png");
+    planetTextures_height[0]    = loadTexture("textures/planet_height.png");
+    planetTextures_diff[1]      = loadTexture("textures/planet_diffuse_01.png");
+    planetTextures_nrm[1]       = loadTexture("textures/planet_nrm_01.png");
+    planetTextures_height[1]    = loadTexture("textures/planet_height_01.png");
+    planetTextures_diff[2]      = loadTexture("textures/planet_diffuse_02.png");
+    planetTextures_nrm[2]       = loadTexture("textures/planet_nrm_02.png");
+    planetTextures_height[2]    = loadTexture("textures/planet_height_02.png");
+    planetTextures_diff[3]      = loadTexture("textures/planet_diffuse_03.png");
+    planetTextures_nrm[3]       = loadTexture("textures/planet_nrm_03.png");
+    planetTextures_height[3]    = loadTexture("textures/planet_height_03.png");
+    planetTextures_diff[4]      = loadTexture("textures/planet_diffuse_04.png");
+    planetTextures_nrm[4]       = loadTexture("textures/planet_nrm_04.png");
+    planetTextures_height[4]    = loadTexture("textures/planet_height_04.png");
+    planetTextures_diff[5]      = loadTexture("textures/planet_diffuse_05.png");
+    planetTextures_nrm[5]       = loadTexture("textures/planet_nrm_05.png");
+    planetTextures_height[5]    = loadTexture("textures/planet_height_05.png");
+    planetTextures_diff[6]      = loadTexture("textures/planet_diffuse_06.png");
+    planetTextures_nrm[6]       = loadTexture("textures/planet_nrm_06.png");
+    planetTextures_height[6]    = loadTexture("textures/planet_height_06.png");
 
     initBuffers();
 }
@@ -236,6 +244,7 @@ void PlanetsWindow::initShaders() {
 
     glUniform1i(glGetUniformLocation(shaderTexture, "texture_diff"), 0);
     glUniform1i(glGetUniformLocation(shaderTexture, "texture_nrm"), 1);
+    glUniform1i(glGetUniformLocation(shaderTexture, "texture_height"), 2);
 
     /* Compile the UI shader included in res.h as const char*. */
     GLuint shaderUI_vsh = compileShader(ui_vsh, GL_VERTEX_SHADER);
@@ -249,7 +258,7 @@ void PlanetsWindow::initShaders() {
 }
 
 void PlanetsWindow::initBuffers() {
-    Sphere<64, 32> highResSphere;
+    Sphere<256, 128> highResSphere;
     Sphere<32, 16> lowResSphere;
     Circle<64> circle;
 
@@ -506,6 +515,8 @@ void PlanetsWindow::paint() {
         glBindTexture(GL_TEXTURE_2D, planetTextures_diff[i]);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, planetTextures_nrm[i]);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, planetTextures_height[i]);
 
         for (Planet& planet : universe) {
             /* If the materialis invalid, generate a valid one. */

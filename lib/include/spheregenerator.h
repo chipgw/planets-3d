@@ -48,14 +48,19 @@ public:
     static const uint32_t triangleCount = slices * stacks * 6;
     static const uint32_t lineCount = slices * stacks * 4;
 
-    Vertex verts[vertexCount];
-    uint32_t triangles[triangleCount];
-    uint32_t lines[lineCount];
+    Vertex* verts;
+    uint32_t* triangles;
+    uint32_t* lines;
 
     Sphere();
+    ~Sphere();
 };
 
 template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::Sphere() {
+    verts = new Vertex[vertexCount];
+    triangles = new uint32_t[triangleCount];
+    lines = new uint32_t[lineCount];
+
     /* The amount of rotation needed for each stack, ranging from pole to pole. */
     float vstep = glm::pi<float>() / stacks;
     /* The amount of rotation needed for each slice, ranging all the way around the sphere. */
@@ -116,4 +121,10 @@ template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::Sphere() {
             }
         }
     }
+}
+
+template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::~Sphere() {
+    delete[] verts;
+    delete[] triangles;
+    delete[] lines;
 }

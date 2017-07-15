@@ -57,6 +57,7 @@ class PlanetsWindow {
     /* The diffuse and normalmap textures for planets. */
     unsigned int planetTextures_diff[NUM_PLANET_TEXTURES];
     unsigned int planetTextures_nrm[NUM_PLANET_TEXTURES];
+    unsigned int planetTextures_height[NUM_PLANET_TEXTURES];
 
     unsigned int highResVBO, highResTriIBO, highResTriCount;
     unsigned int lowResVBO, lowResLineIBO, lowResLineCount;
