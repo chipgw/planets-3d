@@ -1,5 +1,4 @@
 attribute highp vec4 vertex;
-attribute highp vec3 normal;
 attribute highp vec3 tangent;
 attribute highp vec2 uv;
 
@@ -16,7 +15,7 @@ void main() {
     texCoord = uv;
 
     /* Create the view-space normal matrix. */
-    vec3 n = normalize(viewMatrix * vec4(normal, 0.0)).xyz;
+    vec3 n = normalize(viewMatrix * vec4(vertex.xyz, 0.0)).xyz;
     vec3 t = normalize(viewMatrix * vec4(tangent, 0.0)).xyz;
     N = mat3(t, -cross(n, t), n);
 }

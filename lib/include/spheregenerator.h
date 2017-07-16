@@ -5,10 +5,8 @@
 
 struct Vertex {
     glm::vec3 position;
-    glm::vec3 normal;
     glm::vec3 tangent;
     glm::vec2 uv;
-    float padding;
 };
 
 template <uint32_t slices> class Circle {
@@ -87,9 +85,6 @@ template <uint32_t slices, uint32_t stacks> Sphere<slices, stacks>::Sphere() {
             verts[current].position.y = glm::sin(h * hstep) * r;
             /* Well this is easy... */
             verts[current].position.z = z;
-
-            /* The vertex normal is the same as the position, which is already normalized. */
-            verts[current].normal = verts[current].position;
 
             /* Tangents are 90 degrees off from the circle coordinate with no z. */
             verts[current].tangent.x = -glm::sin(h * hstep);

@@ -9,7 +9,6 @@
 
 enum VertexAttrib {
     vertex,
-    normal,
     tangent,
     uv
 };

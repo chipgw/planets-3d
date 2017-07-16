@@ -51,7 +51,6 @@ GLuint linkShaderProgram(GLuint vsh, GLuint fsh) {
     /* It doesn't matter if the attributes don't exist in given shaders,
      * but if they do make sure they are bound to the correct location. */
     glBindAttribLocation(program, vertex,   "vertex");
-    glBindAttribLocation(program, normal,   "normal");
     glBindAttribLocation(program, tangent,  "tangent");
     glBindAttribLocation(program, uv,       "uv");
 

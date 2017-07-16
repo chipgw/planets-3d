@@ -313,7 +313,7 @@ static void interfaceRenderFunc(ImDrawData* drawData) {
 
         glVertexAttribPointer(vertex,   2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().pos);
         glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().uv);
-        glVertexAttribPointer(normal,   4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().col);
+        glVertexAttribPointer(tangent,  4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().col);
 
         for (const ImDrawCmd* pcmd = cmdList->CmdBuffer.begin(); pcmd != cmdList->CmdBuffer.end(); ++pcmd) {
             if (pcmd->UserCallback) {
@@ -485,7 +485,6 @@ void PlanetsWindow::paint() {
 
     /* We only use the texture shader, normals, tangents, and uvs for drawing the shaded planets. */
     glUseProgram(shaderTexture);
-    glEnableVertexAttribArray(normal);
     glEnableVertexAttribArray(tangent);
     glEnableVertexAttribArray(uv);
 
@@ -504,7 +503,6 @@ void PlanetsWindow::paint() {
 
     /* Bind all the vertex attributes for the fully lit sphere. */
     glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(normal,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->normal));
     glVertexAttribPointer(tangent,  3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->tangent));
     glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->uv));
 
@@ -538,7 +536,6 @@ void PlanetsWindow::paint() {
     }
 
     /* Now the texture shader, normals, tangents, and uvs don't get used until next frame. */
-    glDisableVertexAttribArray(normal);
     glDisableVertexAttribArray(tangent);
     glDisableVertexAttribArray(uv);
 
@@ -999,7 +996,7 @@ void PlanetsWindow::paintUI(const float delay) {
     glUniformMatrix4fv(shaderUI_matrix, 1, GL_FALSE, glm::value_ptr(projection));
 
     glEnableVertexAttribArray(uv);
-    glEnableVertexAttribArray(normal);
+    glEnableVertexAttribArray(tangent);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

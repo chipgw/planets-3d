@@ -202,7 +202,6 @@ void PlanetsWidget::render() {
         light = glm::vec3(camera.view * glm::vec4(light, 0.0f));
         glUniform3fv(shaderTexture_lightDir, 1, glm::value_ptr(light));
 
-        shaderTexture.enableAttributeArray(normal);
         shaderTexture.enableAttributeArray(tangent);
         shaderTexture.enableAttributeArray(uv);
 
@@ -211,7 +210,6 @@ void PlanetsWidget::render() {
 
         /* Set up the attribute buffers once for all planets. */
         shaderTexture.setAttributeBuffer(vertex,    GL_FLOAT, 0,                            3, sizeof(Vertex));
-        shaderTexture.setAttributeBuffer(normal,    GL_FLOAT, offsetof(Vertex, normal),     3, sizeof(Vertex));
         shaderTexture.setAttributeBuffer(tangent,   GL_FLOAT, offsetof(Vertex, tangent),    3, sizeof(Vertex));
         shaderTexture.setAttributeBuffer(uv,        GL_FLOAT, offsetof(Vertex, uv),         2, sizeof(Vertex));
 
