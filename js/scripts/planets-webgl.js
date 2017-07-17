@@ -233,11 +233,9 @@ function paint() {
     GLctx.enableVertexAttribArray(0);
     GLctx.enableVertexAttribArray(1);
     GLctx.enableVertexAttribArray(2);
-    GLctx.enableVertexAttribArray(3);
-    GLctx.vertexAttribPointer(0, 3, GLctx.FLOAT, GLctx.FALSE, 48, 0);
-    GLctx.vertexAttribPointer(1, 2, GLctx.FLOAT, GLctx.FALSE, 48, 36);
-    GLctx.vertexAttribPointer(2, 3, GLctx.FLOAT, GLctx.FALSE, 48, 12);
-    GLctx.vertexAttribPointer(3, 3, GLctx.FLOAT, GLctx.FALSE, 48, 24);
+    GLctx.vertexAttribPointer(0, 3, GLctx.FLOAT, GLctx.FALSE, 32, 0);
+    GLctx.vertexAttribPointer(1, 2, GLctx.FLOAT, GLctx.FALSE, 32, 24);
+    GLctx.vertexAttribPointer(2, 3, GLctx.FLOAT, GLctx.FALSE, 32, 12);
 
     /* Update the view-space light vector. */
     GLctx.uniform3fv(textureLightDir, camera.getLightDir());
@@ -250,7 +248,6 @@ function paint() {
 
     GLctx.disableVertexAttribArray(1);
     GLctx.disableVertexAttribArray(2);
-    GLctx.disableVertexAttribArray(3);
 
     GLctx.useProgram(colorShader);
 
@@ -258,7 +255,7 @@ function paint() {
 
     GLctx.bindBuffer(GLctx.ARRAY_BUFFER, lowResVBO);
     GLctx.bindBuffer(GLctx.ELEMENT_ARRAY_BUFFER, lowResLineIBO);
-    GLctx.vertexAttribPointer(0, 3, GLctx.FLOAT, GLctx.FALSE, 48, 0);
+    GLctx.vertexAttribPointer(0, 3, GLctx.FLOAT, GLctx.FALSE, 32, 0);
 
     GLctx.uniform4fv(colorColor, [0.0, 1.0, 0.0, 1.0]);
 

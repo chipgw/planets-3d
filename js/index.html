@@ -199,7 +199,6 @@
 
     <script id="texture-vertex" type="x-shader/x-vertex">
     attribute vec4 vertex;
-    attribute vec3 normal;
     attribute vec3 tangent;
     attribute vec2 uv;
 
@@ -216,7 +215,7 @@
         texCoord = uv;
 
         /* Create the view-space normal matrix. */
-        vec3 n = normalize(viewMatrix * vec4(normal, 0.0)).xyz;
+        vec3 n = normalize(viewMatrix * vec4(vertex.xyz, 0.0)).xyz;
         vec3 t = normalize(viewMatrix * vec4(tangent, 0.0)).xyz;
         N = mat3(t, -cross(n, t), n);
     }
