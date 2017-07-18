@@ -15,7 +15,7 @@ out vec2 texCoord;
 out mat3 N;
 
 void main() {
-    vec4 V = vertex + vertex * 0.4 * vec4(texture(texture_height, uv).rgb - vec3(0.5), 0.0);
+    vec4 V = vertex + vertex * 0.2 * vec4(texture(texture_height, uv).rgb - vec3(0.5), 0.0);
     gl_Position = cameraMatrix * modelMatrix * V;
     texCoord = uv;
 
