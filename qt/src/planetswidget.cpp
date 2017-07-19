@@ -109,9 +109,9 @@ void PlanetsWidget::initializeGL() {
 
     /* Begin vertex/index buffer allocation. */
 
-    const static Sphere<64, 32> highResSphere;
-    const static Sphere<32, 16> lowResSphere;
-    const static Circle<64> circle;
+    Sphere highResSphere(64, 32);
+    Sphere lowResSphere(32, 16);
+    Circle circle(64);
 
     highResSphereVerts.create();
     highResSphereVerts.bind();

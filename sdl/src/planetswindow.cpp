@@ -258,9 +258,9 @@ void PlanetsWindow::initShaders() {
 }
 
 void PlanetsWindow::initBuffers() {
-    Sphere<256, 128> highResSphere;
-    Sphere<32, 16> lowResSphere;
-    Circle<64> circle;
+    Sphere highResSphere(256, 128);
+    Sphere lowResSphere(32, 16);
+    Circle circle(64);
 
     glGenBuffers(1, &highResVBO);
     glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
