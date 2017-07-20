@@ -34,3 +34,20 @@ public:
     Sphere(uint32_t slices, uint32_t stacks);
     ~Sphere();
 };
+
+class IcoSphere {
+    void subdivide(uint8_t divisions);
+    void initNoSubdiv();
+
+public:
+    const uint32_t vertexCount;
+    const uint32_t triangleCount;
+    const uint32_t lineCount;
+
+    Vertex* verts;
+    uint32_t* triangles;
+    uint32_t* lines;
+
+    IcoSphere(uint8_t divisions);
+    ~IcoSphere();
+};
