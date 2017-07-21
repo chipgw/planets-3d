@@ -1,5 +1,6 @@
 #pragma once
 
+#include "types.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
@@ -17,8 +18,8 @@ public:
     glm::vec3* verts;
     uint32_t* lines;
 
-    Circle(uint32_t slices);
-    ~Circle();
+    EXPORT Circle(uint32_t slices);
+    EXPORT ~Circle();
 };
 
 class Sphere {
@@ -31,8 +32,8 @@ public:
     uint32_t* triangles;
     uint32_t* lines;
 
-    Sphere(uint32_t slices, uint32_t stacks);
-    ~Sphere();
+    EXPORT Sphere(uint32_t slices, uint32_t stacks);
+    EXPORT ~Sphere();
 };
 
 class IcoSphere {
@@ -48,6 +49,6 @@ public:
     uint32_t* triangles;
     uint32_t* lines;
 
-    IcoSphere(uint8_t divisions);
-    ~IcoSphere();
+    EXPORT IcoSphere(uint8_t divisions);
+    EXPORT ~IcoSphere();
 };

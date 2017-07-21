@@ -134,7 +134,7 @@ static const uint32_t lines[] {
 
 }
 
-IcoSphere::IcoSphere(uint8_t divisions) : vertexCount(pow(4, divisions) * 10 + 2), triangleCount((vertexCount - 2) * 6), lineCount(triangleCount) {
+IcoSphere::IcoSphere(uint8_t divisions) : vertexCount(glm::pow(4, divisions) * 10 + 2), triangleCount((vertexCount - 2) * 6), lineCount(triangleCount) {
     verts = new Vertex[vertexCount];
     triangles = new uint32_t[triangleCount];
     lines = new uint32_t[lineCount];
@@ -157,7 +157,8 @@ typedef std::map<Edge, uint32_t> DivisionCache;
 
 /* Convert a spherical coordinate into a spheremaped UV coordinate. */
 glm::vec2 posToUV(glm::vec3 pos) {
-    return { atan2(pos.x, pos.y) / (2.0*M_PI) + 0.5, 0.5 - asin(pos.z) / M_PI};
+    return { glm::atan(pos.x, pos.y) / (2.0f*glm::pi<float>()) + 0.5f,
+             0.5f - glm::asin(pos.z) / glm::pi<float>() };
 }
 
 /* Generate a tangent from the spherical coordinate. */
@@ -202,8 +203,10 @@ void IcoSphere::subdivide(uint8_t divisions) {
 
     DivisionCache cache;
 
+    /* t is the current triangle being read, the others are the index of the next element to insert. */
     uint32_t t = 0, currentTri = 0, currentLine = 0, currentVert = parent.vertexCount;
 
+    /* Iterate over the parent sphere's triangles and subdivide them. */
     while (t < parent.triangleCount) {
         uint32_t triangle[3] = { parent.triangles[t++],
                                  parent.triangles[t++],
