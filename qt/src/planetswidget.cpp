@@ -276,7 +276,7 @@ void PlanetsWidget::render() {
         }
     }
 
-    if (placing.step == PlacingInterface::FreeVelocity && !glm::equal(placing.planet.velocity, glm::vec3())[0]) {
+    if (placing.step == PlacingInterface::FreeVelocity && !glm::all(glm::equal(placing.planet.velocity, glm::vec3()))) {
         float length = glm::length(placing.planet.velocity) / universe.velocityFactor;
 
         glm::mat4 matrix = glm::translate(placing.planet.position);

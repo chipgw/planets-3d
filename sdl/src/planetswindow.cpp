@@ -575,55 +575,52 @@ void PlanetsWindow::paint() {
         }
     }
 
-    if (placing.step == PlacingInterface::FreeVelocity) {
+    if (placing.step == PlacingInterface::FreeVelocity && !glm::all(glm::equal(placing.planet.velocity, glm::vec3()))) {
         /* How long does the velocity arrow need to be? */
         float length = glm::length(placing.planet.velocity) / universe.velocityFactor;
 
-        /* If it's zero don't render it. */
-        if (length > 0.0f) {
-            glm::mat4 matrix = glm::translate(placing.planet.position);
-            /* Scale the arrow by the template's radius. */
-            matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
-            matrix *= placing.rotation;
-            glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+        glm::mat4 matrix = glm::translate(placing.planet.position);
+        /* Scale the arrow by the template's radius. */
+        matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
+        matrix *= placing.rotation;
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-            float verts[] = {  0.1f, 0.1f, 0.0f,
-                               0.1f,-0.1f, 0.0f,
-                              -0.1f,-0.1f, 0.0f,
-                              -0.1f, 0.1f, 0.0f,
+        float verts[] = {  0.1f, 0.1f, 0.0f,
+                           0.1f,-0.1f, 0.0f,
+                          -0.1f,-0.1f, 0.0f,
+                          -0.1f, 0.1f, 0.0f,
 
-                               0.1f, 0.1f, length,
-                               0.1f,-0.1f, length,
-                              -0.1f,-0.1f, length,
-                              -0.1f, 0.1f, length,
+                           0.1f, 0.1f, length,
+                           0.1f,-0.1f, length,
+                          -0.1f,-0.1f, length,
+                          -0.1f, 0.1f, length,
 
-                               0.2f, 0.2f, length,
-                               0.2f,-0.2f, length,
-                              -0.2f,-0.2f, length,
-                              -0.2f, 0.2f, length,
+                           0.2f, 0.2f, length,
+                           0.2f,-0.2f, length,
+                          -0.2f,-0.2f, length,
+                          -0.2f, 0.2f, length,
 
-                               0.0f, 0.0f, length + 0.4f };
+                           0.0f, 0.0f, length + 0.4f };
 
-            static const GLubyte indexes[] = {  0,  1,  2,       2,  3,  0,
+        static const GLubyte indexes[] = {  0,  1,  2,       2,  3,  0,
 
-                                                1,  0,  5,       4,  5,  0,
-                                                2,  1,  6,       5,  6,  1,
-                                                3,  2,  7,       6,  7,  2,
-                                                0,  3,  4,       7,  4,  3,
+                                            1,  0,  5,       4,  5,  0,
+                                            2,  1,  6,       5,  6,  1,
+                                            3,  2,  7,       6,  7,  2,
+                                            0,  3,  4,       7,  4,  3,
 
-                                                5,  4,  9,       8,  9,  4,
-                                                6,  5, 10,       9, 10,  5,
-                                                7,  6, 11,      10, 11,  6,
-                                                4,  7,  8,      11,  8,  7,
+                                            5,  4,  9,       8,  9,  4,
+                                            6,  5, 10,       9, 10,  5,
+                                            7,  6, 11,      10, 11,  6,
+                                            4,  7,  8,      11,  8,  7,
 
-                                                9,  8, 12,
-                                               10,  9, 12,
-                                               11, 10, 12,
-                                                8, 11, 12 };
+                                            9,  8, 12,
+                                           10,  9, 12,
+                                           11, 10, 12,
+                                            8, 11, 12 };
 
-            glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, verts);
-            glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
-        }
+        glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, verts);
+        glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
     }
 
     if (grid.draw) {
