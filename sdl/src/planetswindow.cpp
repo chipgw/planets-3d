@@ -13,6 +13,8 @@
 
 #include "res.hpp"
 
+#define NUM_PLANET_TEXTURES 7
+
 PlanetsWindow::PlanetsWindow(int argc, char* argv[]) : placing(universe), camera(universe), gamepad(universe, camera, placing) {
     initSDL();
     initGL();
@@ -46,11 +48,9 @@ PlanetsWindow::~PlanetsWindow() {
     glDeleteProgram(shaderUI);
 
     /* Die textures. */
-    for (int i = 0; i < NUM_PLANET_TEXTURES; ++i) {
-        glDeleteTextures(1, &planetTextures_diff[i]);
-        glDeleteTextures(1, &planetTextures_nrm[i]);
-        glDeleteTextures(1, &planetTextures_height[i]);
-    }
+    glDeleteTextures(1, &planetTextures_diff);
+    glDeleteTextures(1, &planetTextures_nrm);
+    glDeleteTextures(1, &planetTextures_height);
 
     GLuint fontTexture = static_cast<GLuint>(reinterpret_cast<intptr_t>(ImGui::GetIO().Fonts->TexID));
     glDeleteTextures(1, &fontTexture);
@@ -158,61 +158,52 @@ void PlanetsWindow::initGL() {
     /* This attribute array is always on. */
     glEnableVertexAttribArray(vertex);
 
-    planetTextures_diff[0]      = loadTexture("textures/planet_diffuse.png");
-    planetTextures_nrm[0]       = loadTexture("textures/planet_nrm.png");
-    planetTextures_height[0]    = loadTexture("textures/planet_height.png");
-    planetTextures_diff[1]      = loadTexture("textures/planet_diffuse_01.png");
-    planetTextures_nrm[1]       = loadTexture("textures/planet_nrm_01.png");
-    planetTextures_height[1]    = loadTexture("textures/planet_height_01.png");
-    planetTextures_diff[2]      = loadTexture("textures/planet_diffuse_02.png");
-    planetTextures_nrm[2]       = loadTexture("textures/planet_nrm_02.png");
-    planetTextures_height[2]    = loadTexture("textures/planet_height_02.png");
-    planetTextures_diff[3]      = loadTexture("textures/planet_diffuse_03.png");
-    planetTextures_nrm[3]       = loadTexture("textures/planet_nrm_03.png");
-    planetTextures_height[3]    = loadTexture("textures/planet_height_03.png");
-    planetTextures_diff[4]      = loadTexture("textures/planet_diffuse_04.png");
-    planetTextures_nrm[4]       = loadTexture("textures/planet_nrm_04.png");
-    planetTextures_height[4]    = loadTexture("textures/planet_height_04.png");
-    planetTextures_diff[5]      = loadTexture("textures/planet_diffuse_05.png");
-    planetTextures_nrm[5]       = loadTexture("textures/planet_nrm_05.png");
-    planetTextures_height[5]    = loadTexture("textures/planet_height_05.png");
-    planetTextures_diff[6]      = loadTexture("textures/planet_diffuse_06.png");
-    planetTextures_nrm[6]       = loadTexture("textures/planet_nrm_06.png");
-    planetTextures_height[6]    = loadTexture("textures/planet_height_06.png");
+    planetTextures_diff = loadTextures({"planet_diffuse.png",  "planet_diffuse_01.png", "planet_diffuse_02.png", "planet_diffuse_03.png",
+                                        "planet_diffuse_04.png", "planet_diffuse_05.png", "planet_diffuse_06.png"});
+    planetTextures_nrm = loadTextures({"planet_nrm.png", "planet_nrm_01.png", "planet_nrm_02.png", "planet_nrm_03.png",
+                                       "planet_nrm_04.png", "planet_nrm_05.png", "planet_nrm_06.png"});
+    planetTextures_height = loadTextures({"planet_height.png", "planet_height_01.png", "planet_height_02.png", "planet_height_03.png",
+                                          "planet_height_04.png", "planet_height_05.png", "planet_height_06.png"});
 
     initBuffers();
 }
 
-unsigned int PlanetsWindow::loadTexture(const char* file) {
-    SDL_Surface* image = IMG_Load(file);
-
-    if (image == nullptr) {
-        std::string err(IMG_GetError());
-
-        /* Qt Creator's output panel doesn't seem to like the '\r' character for some reason... */
-        auto ret = err.find('\r');
-        if (ret > -1)
-            err.erase(ret);
-
-        printf("Failed to load texture! Error: %s\n", err.c_str());
-
-        return 0;
-    }
-
-    /* We need the format to be R8G8B8A8 for upload to GPU. */
-    SDL_Surface* converted = SDL_ConvertSurface(image, SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 0);
-    SDL_FreeSurface(image);
-
+unsigned int PlanetsWindow::loadTextures(std::vector<std::string> files) {
     GLuint texture;
     glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, converted->w, converted->h, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, converted->pixels);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
+    /* TODO - Unhardcode texture size. */
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 4, GL_RGBA8, 2048, 2048, GLsizei(files.size()));
 
-    glGenerateMipmap(GL_TEXTURE_2D);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    SDL_FreeSurface(converted);
+    for (int i = 0; i < files.size(); ++i) {
+        SDL_Surface* image = IMG_Load(("textures/" + files[i]).c_str());
+
+        if (image == nullptr) {
+            std::string err(IMG_GetError());
+
+            /* Qt Creator's output panel doesn't seem to like the '\r' character for some reason... */
+            auto ret = err.find('\r');
+            if (ret > -1)
+                err.erase(ret);
+
+            printf("Failed to load texture! Error: %s\n", err.c_str());
+
+            continue;
+        }
+
+        /* We need the format to be R8G8B8A8 for upload to GPU. */
+        SDL_Surface* converted = SDL_ConvertSurface(image, SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 0);
+        SDL_FreeSurface(image);
+
+        glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, converted->w, converted->h, 1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, converted->pixels);
+
+        SDL_FreeSurface(converted);
+    }
+
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     return texture;
 }
@@ -241,6 +232,7 @@ void PlanetsWindow::initShaders() {
     shaderTexture_viewMatrix    = glGetUniformLocation(shaderTexture, "viewMatrix");
     shaderTexture_modelMatrix   = glGetUniformLocation(shaderTexture, "modelMatrix");
     shaderTexture_lightDir      = glGetUniformLocation(shaderTexture, "lightDir");
+    shaderTexture_material      = glGetUniformLocation(shaderTexture, "materialID");
 
     glUniform1i(glGetUniformLocation(shaderTexture, "texture_diff"), 0);
     glUniform1i(glGetUniformLocation(shaderTexture, "texture_nrm"), 1);
@@ -508,31 +500,27 @@ void PlanetsWindow::paint() {
 
     std::uniform_int_distribution<int> material(0, NUM_PLANET_TEXTURES-1);
 
-    for (int i = 0; i < NUM_PLANET_TEXTURES; ++i) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, planetTextures_diff[i]);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, planetTextures_nrm[i]);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, planetTextures_height[i]);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, planetTextures_diff);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, planetTextures_nrm);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, planetTextures_height);
 
-        for (Planet& planet : universe) {
-            /* If the materialis invalid, generate a valid one. */
-            if (planet.materialID > NUM_PLANET_TEXTURES)
-                planet.materialID = material(universe.generator);
+    for (Planet& planet : universe) {
+        /* If the materialis invalid, generate a valid one. */
+        if (planet.materialID > NUM_PLANET_TEXTURES)
+            planet.materialID = material(universe.generator);
 
-            /* If it isn't the current material, skip it. We've either already rendered it or will render it later. */
-            if (planet.materialID != i)
-                continue;
+        glUniform1i(shaderTexture_material, planet.materialID);
 
-            /* Create a matrix translated by the position and scaled by the radius. */
-            glm::mat4 matrix = glm::translate(planet.position);
-            matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
-            glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+        /* Create a matrix translated by the position and scaled by the radius. */
+        glm::mat4 matrix = glm::translate(planet.position);
+        matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale));
+        glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-            /* Render all the triangles... */
-            glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
-        }
+        /* Render all the triangles... */
+        glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
     }
 
     /* Now the texture shader, normals, tangents, and uvs don't get used until next frame. */

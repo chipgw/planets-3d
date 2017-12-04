@@ -12,8 +12,6 @@
 #include <SDL.h>
 #include <array>
 
-#define NUM_PLANET_TEXTURES 7
-
 class PlanetsWindow {
     /* Universe and basic interface classes. */
     PlanetsUniverse universe;
@@ -46,7 +44,7 @@ class PlanetsWindow {
     glm::ivec2 windowSize;
 
     /* GL shader and uniform handles for texture shader. */
-    unsigned int shaderTexture, shaderTexture_cameraMatrix, shaderTexture_viewMatrix, shaderTexture_modelMatrix, shaderTexture_lightDir;
+    unsigned int shaderTexture, shaderTexture_cameraMatrix, shaderTexture_viewMatrix, shaderTexture_modelMatrix, shaderTexture_lightDir, shaderTexture_material;
 
     /* GL shader and uniform handles for flat color shader. */
     unsigned int shaderColor, shaderColor_cameraMatrix, shaderColor_modelMatrix, shaderColor_color;
@@ -54,10 +52,10 @@ class PlanetsWindow {
     /* GL shader and uniform handles for dear imgui. */
     unsigned int shaderUI, shaderUI_matrix;
 
-    /* The diffuse and normalmap textures for planets. */
-    unsigned int planetTextures_diff[NUM_PLANET_TEXTURES];
-    unsigned int planetTextures_nrm[NUM_PLANET_TEXTURES];
-    unsigned int planetTextures_height[NUM_PLANET_TEXTURES];
+    /* The handles for planet texture arrays. */
+    unsigned int planetTextures_diff;
+    unsigned int planetTextures_nrm;
+    unsigned int planetTextures_height;
 
     unsigned int highResVBO, highResTriIBO, highResTriCount;
     unsigned int lowResVBO, lowResLineIBO, lowResLineCount;
@@ -83,8 +81,8 @@ class PlanetsWindow {
     void saveFile();
 #endif
 
-    /* Load a texture from a file. */
-    unsigned int loadTexture(const char *file);
+    /* Load textures into a 2d texture array (assumes textures are in "texture/" relative to program). */
+    unsigned int loadTextures(std::vector<std::string> files);
 
     /* Render all the stuffs. */
     void paint();
