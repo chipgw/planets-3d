@@ -34,12 +34,8 @@ PlanetsWindow::~PlanetsWindow() {
     ImGui::Shutdown();
 
     /* Delete vertex & index buffers. */
-    glDeleteBuffers(1, &highResVBO);
-    glDeleteBuffers(1, &highResTriIBO);
-    glDeleteBuffers(1, &lowResVBO);
-    glDeleteBuffers(1, &lowResLineIBO);
-    glDeleteBuffers(1, &circleVBO);
-    glDeleteBuffers(1, &circleLineIBO);
+    glDeleteBuffers(1, &staticDataVBO);
+    glDeleteBuffers(1, &staticDataIBO);
     glDeleteBuffers(1, &gridVBO);
 
     /* No more shaders. */
@@ -175,7 +171,6 @@ unsigned int PlanetsWindow::loadTextures(std::vector<std::string> files) {
     /* TODO - Unhardcode texture size. */
     glTexStorage3D(GL_TEXTURE_2D_ARRAY, 4, GL_RGBA8, 2048, 2048, GLsizei(files.size()));
 
-
     for (int i = 0; i < files.size(); ++i) {
         SDL_Surface* image = IMG_Load(("textures/" + files[i]).c_str());
 
@@ -250,41 +245,72 @@ void PlanetsWindow::initShaders() {
 }
 
 void PlanetsWindow::initBuffers() {
-    IcoSphere highResSphere(6);
+    IcoSphere highResSphere(5);
     IcoSphere lowResSphere(2);
     Circle circle(64);
 
-    glGenBuffers(1, &highResVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
-    glBufferData(GL_ARRAY_BUFFER, highResSphere.vertexCount * sizeof(Vertex), highResSphere.verts, GL_STATIC_DRAW);
+    /* We actually just ignore the low res vertex data, because it's identical to the same range on the high res sphere. */
+    intptr_t highResVertBufSize = highResSphere.vertexCount * sizeof(Vertex);
+    intptr_t circleVertBufSize = circle.vertexCount * sizeof(glm::vec3);
 
-    glGenBuffers(1, &highResTriIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, highResSphere.triangleCount * sizeof(uint32_t), highResSphere.triangles, GL_STATIC_DRAW);
+    intptr_t highResIndexBufSize = highResSphere.triangleCount * sizeof(uint32_t);
+    intptr_t lowResIndexBufSize = lowResSphere.lineCount * sizeof(uint32_t);
+    intptr_t circleIndexBufSize = circle.lineCount * sizeof(uint32_t);
 
-    glGenBuffers(1, &lowResVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, lowResVBO);
-    glBufferData(GL_ARRAY_BUFFER, lowResSphere.vertexCount * sizeof(Vertex), lowResSphere.verts, GL_STATIC_DRAW);
+    glGenBuffers(1, &staticDataVBO); glBindBuffer(GL_ARRAY_BUFFER, staticDataVBO);
+    glGenBuffers(1, &staticDataIBO); glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticDataIBO);
 
-    glGenBuffers(1, &lowResLineIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lowResLineIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, lowResSphere.lineCount * sizeof(uint32_t), lowResSphere.lines, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, highResVertBufSize + circleVertBufSize, 0, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0,                     highResVertBufSize, highResSphere.verts);
+    glBufferSubData(GL_ARRAY_BUFFER, highResVertBufSize,    circleVertBufSize,  circle.verts);
 
-    glGenBuffers(1, &circleVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
-    glBufferData(GL_ARRAY_BUFFER, circle.vertexCount * sizeof(glm::vec3), circle.verts, GL_STATIC_DRAW);
+    highResTriStart = 0;
+    lowResLineStart = highResIndexBufSize;
+    circleLineStart = highResIndexBufSize + lowResIndexBufSize;
 
-    glGenBuffers(1, &circleLineIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, circle.lineCount * sizeof(uint32_t), circle.lines, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &gridVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
-    glBufferData(GL_ARRAY_BUFFER, 0, 0, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, highResIndexBufSize + lowResIndexBufSize + circleIndexBufSize, 0, GL_STATIC_DRAW);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, highResTriStart, highResIndexBufSize,  highResSphere.triangles);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, lowResLineStart, lowResIndexBufSize,   lowResSphere.lines);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, circleLineStart, circleIndexBufSize,   circle.lines);
 
     highResTriCount = highResSphere.triangleCount;
     lowResLineCount = lowResSphere.lineCount;
     circleLineCount = circle.lineCount;
+
+    /* Set up the vertex array object for the high res sphere. */
+    glGenVertexArrays(1, &highResSphereVAO); glBindVertexArray(highResSphereVAO);
+
+    glEnableVertexAttribArray(vertex);
+    glEnableVertexAttribArray(tangent);
+    glEnableVertexAttribArray(uv);
+
+    /* Bind all the vertex attributes for the fully lit sphere. */
+    glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glVertexAttribPointer(tangent,  3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->tangent));
+    glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->uv));
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticDataIBO);
+
+    /* Set up the vertex array object for the low res sphere. */
+    glGenVertexArrays(1, &lowResSphereVAO); glBindVertexArray(lowResSphereVAO);
+
+    /* Bind only the vertex position attribute for the sphere. */
+    glEnableVertexAttribArray(vertex);
+    glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticDataIBO);
+
+    /* Set up the vertex array object for the circle. */
+    glGenVertexArrays(1, &circleVAO); glBindVertexArray(circleVAO);
+
+    /* Bind only the vertex position attribute for the circle. */
+    glEnableVertexAttribArray(vertex);
+    glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)highResVertBufSize);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticDataIBO);
+
+    glBindVertexArray(0);
+
+    glGenBuffers(1, &gridVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+    glBufferData(GL_ARRAY_BUFFER, 0, 0, GL_DYNAMIC_DRAW);
 }
 
 static void interfaceRenderFunc(ImDrawData* drawData) {
@@ -477,8 +503,6 @@ void PlanetsWindow::paint() {
 
     /* We only use the texture shader, normals, tangents, and uvs for drawing the shaded planets. */
     glUseProgram(shaderTexture);
-    glEnableVertexAttribArray(tangent);
-    glEnableVertexAttribArray(uv);
 
     /* This is just vec3(1.0) normalized. */
     glm::vec3 light = glm::vec3(0.57735f);
@@ -490,13 +514,7 @@ void PlanetsWindow::paint() {
     glUniformMatrix4fv(shaderTexture_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
     glUniformMatrix4fv(shaderTexture_viewMatrix, 1, GL_FALSE, glm::value_ptr(camera.view));
 
-    glBindBuffer(GL_ARRAY_BUFFER, highResVBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, highResTriIBO);
-
-    /* Bind all the vertex attributes for the fully lit sphere. */
-    glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(tangent,  3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->tangent));
-    glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->uv));
+    glBindVertexArray(highResSphereVAO);
 
     std::uniform_int_distribution<int> material(0, NUM_PLANET_TEXTURES-1);
 
@@ -508,7 +526,7 @@ void PlanetsWindow::paint() {
     glBindTexture(GL_TEXTURE_2D_ARRAY, planetTextures_height);
 
     for (Planet& planet : universe) {
-        /* If the materialis invalid, generate a valid one. */
+        /* If the material is invalid, generate a valid one. */
         if (planet.materialID > NUM_PLANET_TEXTURES)
             planet.materialID = material(universe.generator);
 
@@ -520,12 +538,8 @@ void PlanetsWindow::paint() {
         glUniformMatrix4fv(shaderTexture_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
         /* Render all the triangles... */
-        glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, highResTriCount, GL_UNSIGNED_INT, (GLvoid*)highResTriStart);
     }
-
-    /* Now the texture shader, normals, tangents, and uvs don't get used until next frame. */
-    glDisableVertexAttribArray(tangent);
-    glDisableVertexAttribArray(uv);
 
     /* Everything else (other than UI) uses the flat color shader. */
     glUseProgram(shaderColor);
@@ -534,9 +548,7 @@ void PlanetsWindow::paint() {
     glUniformMatrix4fv(shaderColor_cameraMatrix, 1, GL_FALSE, glm::value_ptr(camera.camera));
 
     /* Bind the low resolution wireframe sphere. */
-    glBindBuffer(GL_ARRAY_BUFFER, lowResVBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lowResLineIBO);
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glBindVertexArray(lowResSphereVAO);
 
     /* Draw a green wireframe sphere around the selected planet if there is one. */
     if (universe.isSelectedValid())
@@ -547,8 +559,7 @@ void PlanetsWindow::paint() {
         drawPlanetWireframe(placing.planet);
 
     /* Don't use the spheres any more. */
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 
     /* This color is used for trails, the velocity arrow when free placing, and the orbit circle when placing orbital. */
     glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
@@ -663,10 +674,7 @@ void PlanetsWindow::paint() {
     }
 
     /* Binding the circle is used for planar circles, the orbital circle, and the controller center. */
-    glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, circleLineIBO);
-
-    glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
+    glBindVertexArray(circleVAO);
 
     if (drawPlanarCircles) {
         /* Then we draw a circle at the XY position of every planet. */
@@ -679,7 +687,7 @@ void PlanetsWindow::paint() {
             matrix = glm::scale(matrix, glm::vec3(i.radius() * drawScale + camera.distance * 0.02f));
 
             glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
-            glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, (GLvoid*)circleLineStart);
         }
     }
 
@@ -692,10 +700,10 @@ void PlanetsWindow::paint() {
 
         /* Draw both circles. */
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(newRadiusMatrix));
-        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, (GLvoid*)circleLineStart);
 
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(oldRadiusMatrix));
-        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, (GLvoid*)circleLineStart);
     }
 
     /* If there is a controller attached, we aren't placing, and we aren't following anything, draw a little circle in the center of the screen. */
@@ -708,10 +716,12 @@ void PlanetsWindow::paint() {
         matrix = glm::scale(matrix, glm::vec3(camera.distance * 4.0e-3f));
         glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINES, circleLineCount, GL_UNSIGNED_INT, (GLvoid*)circleLineStart);
 
         glEnable(GL_DEPTH_TEST);
     }
+
+    glBindVertexArray(0);
 }
 
 void PlanetsWindow::paintUI(const float delay) {
@@ -1247,5 +1257,5 @@ void PlanetsWindow::drawPlanetWireframe(const Planet& planet, const glm::vec4& c
     matrix = glm::scale(matrix, glm::vec3(planet.radius() * drawScale * 1.05f));
     glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-    glDrawElements(GL_LINES, lowResLineCount, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_LINES, lowResLineCount, GL_UNSIGNED_INT, (GLvoid*)lowResLineStart);
 }

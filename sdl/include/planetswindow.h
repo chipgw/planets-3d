@@ -57,10 +57,15 @@ class PlanetsWindow {
     unsigned int planetTextures_nrm;
     unsigned int planetTextures_height;
 
-    unsigned int highResVBO, highResTriIBO, highResTriCount;
-    unsigned int lowResVBO, lowResLineIBO, lowResLineCount;
-    unsigned int circleVBO, circleLineIBO, circleLineCount;
+    /* One VBO that stores the sphere and circle data. */
+    unsigned int staticDataVBO, staticDataIBO;
+    intptr_t highResTriStart, lowResLineStart, circleLineStart;
+    unsigned int highResTriCount, lowResLineCount, circleLineCount;
+
     unsigned int gridVBO;
+
+    /* VAOs to set up spheres and circles. */
+    unsigned int highResSphereVAO, lowResSphereVAO, circleVAO;
 
     void updateGrid();
 
