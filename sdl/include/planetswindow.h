@@ -59,13 +59,13 @@ class PlanetsWindow {
 
     /* One VBO that stores the sphere and circle data. */
     unsigned int staticDataVBO, staticDataIBO;
-    intptr_t highResTriStart, lowResLineStart, circleLineStart;
-    unsigned int highResTriCount, lowResLineCount, circleLineCount;
+    intptr_t highResTriStart, lowResLineStart, circleLineStart, arrowTriStart;
+    unsigned int highResTriCount, lowResLineCount, circleLineCount, arrowTriCount;
 
     unsigned int gridVBO;
 
     /* VAOs to set up spheres and circles. */
-    unsigned int highResSphereVAO, lowResSphereVAO, circleVAO;
+    unsigned int highResSphereVAO, lowResSphereVAO, circleVAO, arrowVAO;
 
     void updateGrid();
 

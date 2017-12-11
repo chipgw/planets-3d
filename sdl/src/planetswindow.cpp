@@ -244,7 +244,52 @@ void PlanetsWindow::initShaders() {
     shaderUI_matrix = glGetUniformLocation(shaderUI, "matrix");
 }
 
+void setupVertexArray(GLuint& vao, GLuint ibo, GLint stride, std::initializer_list<std::tuple<VertexAttrib, GLint, intptr_t>> attribs) {
+    glGenVertexArrays(1, &vao); glBindVertexArray(vao);
+
+    for (const auto& i : attribs) {
+        glEnableVertexAttribArray(std::get<0>(i));
+        glVertexAttribPointer(std::get<0>(i), std::get<1>(i), GL_FLOAT, GL_FALSE, stride, (GLvoid*)std::get<2>(i));
+    }
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+}
+
 void PlanetsWindow::initBuffers() {
+    const float verts[] = {  0.1f, 0.1f, 0.0f,
+                             0.1f,-0.1f, 0.0f,
+                            -0.1f,-0.1f, 0.0f,
+                            -0.1f, 0.1f, 0.0f,
+
+                             0.1f, 0.1f, 1.0f,
+                             0.1f,-0.1f, 1.0f,
+                            -0.1f,-0.1f, 1.0f,
+                            -0.1f, 0.1f, 1.0f,
+
+                             0.2f, 0.2f, 1.0f,
+                             0.2f,-0.2f, 1.0f,
+                            -0.2f,-0.2f, 1.0f,
+                            -0.2f, 0.2f, 1.0f,
+
+                             0.0f, 0.0f, 1.3f };
+
+    static const GLubyte indexes[] = {  0,  1,  2,       2,  3,  0,
+
+                                        1,  0,  5,       4,  5,  0,
+                                        2,  1,  6,       5,  6,  1,
+                                        3,  2,  7,       6,  7,  2,
+                                        0,  3,  4,       7,  4,  3,
+
+                                        5,  4,  9,       8,  9,  4,
+                                        6,  5, 10,       9, 10,  5,
+                                        7,  6, 11,      10, 11,  6,
+                                        4,  7,  8,      11,  8,  7,
+
+                                        9,  8, 12,
+                                       10,  9, 12,
+                                       11, 10, 12,
+                                        8, 11, 12 };
+
     IcoSphere highResSphere(5);
     IcoSphere lowResSphere(2);
     Circle circle(64);
@@ -252,64 +297,47 @@ void PlanetsWindow::initBuffers() {
     /* We actually just ignore the low res vertex data, because it's identical to the same range on the high res sphere. */
     intptr_t highResVertBufSize = highResSphere.vertexCount * sizeof(Vertex);
     intptr_t circleVertBufSize = circle.vertexCount * sizeof(glm::vec3);
+    intptr_t arrowVertBufSize = sizeof(verts);
 
     intptr_t highResIndexBufSize = highResSphere.triangleCount * sizeof(uint32_t);
     intptr_t lowResIndexBufSize = lowResSphere.lineCount * sizeof(uint32_t);
     intptr_t circleIndexBufSize = circle.lineCount * sizeof(uint32_t);
+    intptr_t arrowIndexBufSize = sizeof(indexes);
 
     glGenBuffers(1, &staticDataVBO); glBindBuffer(GL_ARRAY_BUFFER, staticDataVBO);
     glGenBuffers(1, &staticDataIBO); glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticDataIBO);
 
-    glBufferData(GL_ARRAY_BUFFER, highResVertBufSize + circleVertBufSize, 0, GL_STATIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0,                     highResVertBufSize, highResSphere.verts);
-    glBufferSubData(GL_ARRAY_BUFFER, highResVertBufSize,    circleVertBufSize,  circle.verts);
+    glBufferData(GL_ARRAY_BUFFER, highResVertBufSize + circleVertBufSize + arrowVertBufSize, 0, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0,                                         highResVertBufSize, highResSphere.verts);
+    glBufferSubData(GL_ARRAY_BUFFER, highResVertBufSize,                        circleVertBufSize,  circle.verts);
+    glBufferSubData(GL_ARRAY_BUFFER, highResVertBufSize + circleVertBufSize,    arrowVertBufSize,   verts);
 
     highResTriStart = 0;
     lowResLineStart = highResIndexBufSize;
     circleLineStart = highResIndexBufSize + lowResIndexBufSize;
+    arrowTriStart = circleLineStart + circleIndexBufSize;
 
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, highResIndexBufSize + lowResIndexBufSize + circleIndexBufSize, 0, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, highResIndexBufSize + lowResIndexBufSize + circleIndexBufSize + arrowIndexBufSize, 0, GL_STATIC_DRAW);
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, highResTriStart, highResIndexBufSize,  highResSphere.triangles);
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, lowResLineStart, lowResIndexBufSize,   lowResSphere.lines);
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, circleLineStart, circleIndexBufSize,   circle.lines);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, arrowTriStart,   arrowIndexBufSize,    indexes);
 
     highResTriCount = highResSphere.triangleCount;
     lowResLineCount = lowResSphere.lineCount;
     circleLineCount = circle.lineCount;
+    arrowTriCount = arrowIndexBufSize;
 
     /* Set up the vertex array object for the high res sphere. */
-    glGenVertexArrays(1, &highResSphereVAO); glBindVertexArray(highResSphereVAO);
-
-    glEnableVertexAttribArray(vertex);
-    glEnableVertexAttribArray(tangent);
-    glEnableVertexAttribArray(uv);
-
-    /* Bind all the vertex attributes for the fully lit sphere. */
-    glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(tangent,  3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->tangent));
-    glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(((Vertex*)(0))->uv));
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticDataIBO);
-
-    /* Set up the vertex array object for the low res sphere. */
-    glGenVertexArrays(1, &lowResSphereVAO); glBindVertexArray(lowResSphereVAO);
-
-    /* Bind only the vertex position attribute for the sphere. */
-    glEnableVertexAttribArray(vertex);
-    glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticDataIBO);
-
-    /* Set up the vertex array object for the circle. */
-    glGenVertexArrays(1, &circleVAO); glBindVertexArray(circleVAO);
-
-    /* Bind only the vertex position attribute for the circle. */
-    glEnableVertexAttribArray(vertex);
-    glVertexAttribPointer(vertex,   3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)highResVertBufSize);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticDataIBO);
+    setupVertexArray(highResSphereVAO, staticDataIBO, sizeof(Vertex), { {vertex, 3, 0}, {tangent, 3, offsetof(Vertex, tangent)}, {uv, 2, offsetof(Vertex, uv)} });
+    setupVertexArray(lowResSphereVAO, staticDataIBO, sizeof(Vertex), {{vertex, 3, 0}});
+    setupVertexArray(circleVAO, staticDataIBO, 0, {{vertex, 3, highResVertBufSize}});
+    setupVertexArray(arrowVAO, staticDataIBO, 0, {{vertex, 3, highResVertBufSize + circleVertBufSize}});
 
     glBindVertexArray(0);
 
-    glGenBuffers(1, &gridVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+    /* Set up an ampty buffer for the grid. */
+    glGenBuffers(1, &gridVBO); glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
     glBufferData(GL_ARRAY_BUFFER, 0, 0, GL_DYNAMIC_DRAW);
 }
 
@@ -558,11 +586,25 @@ void PlanetsWindow::paint() {
     if (placing.step != PlacingInterface::NotPlacing && placing.step != PlacingInterface::Firing)
         drawPlanetWireframe(placing.planet);
 
-    /* Don't use the spheres any more. */
-    glBindVertexArray(0);
-
     /* This color is used for trails, the velocity arrow when free placing, and the orbit circle when placing orbital. */
     glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(1.0f)));
+
+    if (placing.step == PlacingInterface::FreeVelocity && !glm::all(glm::equal(placing.planet.velocity, glm::vec3()))) {
+        glBindVertexArray(arrowVAO);
+
+        /* How long does the velocity arrow need to be? */
+        float length = glm::length(placing.planet.velocity) / universe.velocityFactor;
+
+        glm::mat4 matrix = glm::translate(placing.planet.position);
+        matrix *= placing.rotation;
+        matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()) * glm::vec3(1.0f, 1.0f, length));
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+
+        glDrawElements(GL_TRIANGLES, arrowTriCount, GL_UNSIGNED_BYTE, (GLvoid*)arrowTriStart);
+    }
+
+    /* Back to no VAO. */
+    glBindVertexArray(0);
 
     if (drawTrails) {
         /* There is no model matrix for drawing trails, they're in world space, just use identity. */
@@ -572,54 +614,6 @@ void PlanetsWindow::paint() {
             glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, i.path.data());
             glDrawArrays(GL_LINE_STRIP, 0, GLsizei(i.path.size()));
         }
-    }
-
-    if (placing.step == PlacingInterface::FreeVelocity && !glm::all(glm::equal(placing.planet.velocity, glm::vec3()))) {
-        /* How long does the velocity arrow need to be? */
-        float length = glm::length(placing.planet.velocity) / universe.velocityFactor;
-
-        glm::mat4 matrix = glm::translate(placing.planet.position);
-        /* Scale the arrow by the template's radius. */
-        matrix = glm::scale(matrix, glm::vec3(placing.planet.radius()));
-        matrix *= placing.rotation;
-        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
-
-        float verts[] = {  0.1f, 0.1f, 0.0f,
-                           0.1f,-0.1f, 0.0f,
-                          -0.1f,-0.1f, 0.0f,
-                          -0.1f, 0.1f, 0.0f,
-
-                           0.1f, 0.1f, length,
-                           0.1f,-0.1f, length,
-                          -0.1f,-0.1f, length,
-                          -0.1f, 0.1f, length,
-
-                           0.2f, 0.2f, length,
-                           0.2f,-0.2f, length,
-                          -0.2f,-0.2f, length,
-                          -0.2f, 0.2f, length,
-
-                           0.0f, 0.0f, length + 0.4f };
-
-        static const GLubyte indexes[] = {  0,  1,  2,       2,  3,  0,
-
-                                            1,  0,  5,       4,  5,  0,
-                                            2,  1,  6,       5,  6,  1,
-                                            3,  2,  7,       6,  7,  2,
-                                            0,  3,  4,       7,  4,  3,
-
-                                            5,  4,  9,       8,  9,  4,
-                                            6,  5, 10,       9, 10,  5,
-                                            7,  6, 11,      10, 11,  6,
-                                            4,  7,  8,      11,  8,  7,
-
-                                            9,  8, 12,
-                                           10,  9, 12,
-                                           11, 10, 12,
-                                            8, 11, 12 };
-
-        glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, verts);
-        glDrawElements(GL_TRIANGLES, sizeof(indexes), GL_UNSIGNED_BYTE, indexes);
     }
 
     if (grid.draw) {
