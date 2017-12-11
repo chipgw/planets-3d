@@ -155,7 +155,7 @@ void PlanetsUniverse::advance(float time) {
                     i->path.clear();
 
                     /* This function checks selected and following to make sure they remain valid. */
-                    remove(o - begin(), i - begin());
+                    o = remove(o - begin(), i - begin());
 
                     /* Update the stored list end value. */
                     e = planets.end();
@@ -179,9 +179,9 @@ void PlanetsUniverse::advance(float time) {
     }
 }
 
-void PlanetsUniverse::remove(const key_type key, const key_type replacement) {
+PlanetsUniverse::iterator PlanetsUniverse::remove(const key_type key, const key_type replacement) {
     if (!isValid(key))
-        return;
+        return planets.end();
 
     /* If the one we're deleting happens to be selected, select the remaining planet. */
     if (key == selected)
@@ -197,7 +197,7 @@ void PlanetsUniverse::remove(const key_type key, const key_type replacement) {
     else if (key < following)
         --following;
 
-    planets.erase(begin() + key);
+    return planets.erase(begin() + key);
 }
 
 void PlanetsUniverse::generateRandom(const size_t& count, const float& positionRange, const float& maxVelocity, const float& maxMass) {

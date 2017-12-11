@@ -61,7 +61,7 @@ public:
     /* As size_t is unsigned, any keys less than the universe size are valid and any others are not. */
     inline bool isValid(const key_type& key) const { return key < planets.size(); }
     inline Planet& operator [] (const key_type& key) { return planets.at(key); }
-    EXPORT void remove(const key_type key, const key_type replacement = -1);
+    EXPORT iterator remove(const key_type key, const key_type replacement = -1);
 
     /* Is a planet selected? */
     inline bool isSelectedValid() const { return isValid(selected); }
