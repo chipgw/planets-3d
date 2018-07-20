@@ -3,6 +3,7 @@
 #include "planetsuniverse.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/gtx/norm.hpp>
 
 Camera::Camera(PlanetsUniverse& u) : universe(u) {
@@ -67,7 +68,7 @@ const glm::mat4& Camera::setup() {
     }
 
     /* First move the camera the distance amount back on Z. */
-    view = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -distance));
+    view = glm::translate(glm::vec3(0.0f, 0.0f, -distance));
     /* Rotate camera around x axis, subtract pi/2 to make the rotation origin be the camera on the y axis. */
     view = glm::rotate(view, xrotation - glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
     /* Rotate the camera on the z axis. */
@@ -86,7 +87,7 @@ Ray Camera::getRay(const glm::ivec2& pos, float startDepth, float endDepth) cons
     Ray ray;
 
     /* There is no model matrix, just use identity. */
-    glm::mat4 model;
+    glm::mat4 model(1.0f);
     /* viewport.z = width and viewport.w = height. */
     glm::vec3 windowCoord(pos.x, viewport.w - pos.y, startDepth);
 

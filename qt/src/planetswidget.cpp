@@ -348,7 +348,7 @@ void PlanetsWidget::render() {
 
     if (drawPlanarCircles) {
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(0.8f)));
-        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 
         /* Draw a line from the planet's 3D position to the 2D circle's center. */
         for (const auto& i : universe) {

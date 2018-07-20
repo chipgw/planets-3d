@@ -50,6 +50,7 @@ endif(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
 find_package(GLM REQUIRED)
 include_directories(${GLM_INCLUDE_DIR})
+add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 
 #---------------------------------------------
 # Library
@@ -88,9 +89,9 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     endif(PLANETS3D_BENCHMARK)
 
     # Both interfaces use the textures folder, so copy it if either one is enabled.
-    if(PLANETS3D_SDL OR PLANETS3D_QT)
+    if(PLANETS3D_SDL OR PLANETS3D_QT5)
         copy_to_bin(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/textures/*" "textures/")
-    endif(PLANETS3D_SDL OR PLANETS3D_QT)
+    endif(PLANETS3D_SDL OR PLANETS3D_QT5)
 
     # The SDL gamepad support works with both interfaces from the same source code,
     # but it doesn't go in the library because that doesn't require SDL.
@@ -206,7 +207,7 @@ if(PLANETS3D_SDL)
 
     find_package(OpenGL REQUIRED)
     include_directories(${OPENGL_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_LIBRARY} ${PROJECT_NAME}_gamepad ${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
+    target_link_libraries(${PROJECT_NAME}_sdl ${SDL2_LIBRARY} ${PROJECT_NAME}_gamepad ${PROJECT_NAME} OpenGL::GL)
 endif(PLANETS3D_SDL)
 
 #---------------------------------------------

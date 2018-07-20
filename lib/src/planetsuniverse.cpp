@@ -243,7 +243,7 @@ void PlanetsUniverse::generateRandomOrbital(const size_t& count, key_type target
         uniform_real_distribution<float> mass(minimumMass, around.mass() * 0.2f);
 
         for (int i = 0; i < count; ++i) {
-            glm::mat4 plane;
+            glm::mat4 plane(1.0f);
             /* This is sort of a cheap way of making a random orbit plane. */
             plane *= glm::rotate(angle(generator), glm::sphericalRand(1.0f));
             plane *= glm::rotate(angle(generator), glm::sphericalRand(1.0f));

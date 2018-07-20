@@ -31,8 +31,6 @@ PlanetsWindow::PlanetsWindow(int argc, char* argv[]) : placing(universe), camera
 }
 
 PlanetsWindow::~PlanetsWindow() {
-    ImGui::Shutdown();
-
     /* Delete vertex & index buffers. */
     glDeleteBuffers(1, &staticDataVBO);
     glDeleteBuffers(1, &staticDataIBO);
@@ -50,6 +48,8 @@ PlanetsWindow::~PlanetsWindow() {
 
     GLuint fontTexture = static_cast<GLuint>(reinterpret_cast<intptr_t>(ImGui::GetIO().Fonts->TexID));
     glDeleteTextures(1, &fontTexture);
+
+    ImGui::DestroyContext();
 
     for (SDL_Cursor* c : cursors)
         SDL_FreeCursor(c);
@@ -376,6 +376,8 @@ static void interfaceRenderFunc(ImDrawData* drawData) {
 }
 
 void PlanetsWindow::initUI() {
+    ImGui::CreateContext();
+
     GLuint fontTexture;
 
     ImGuiIO& io = ImGui::GetIO();
@@ -421,8 +423,8 @@ void PlanetsWindow::initUI() {
     /* The function to render ImDrawData. */
     io.RenderDrawListsFn = interfaceRenderFunc;
 
-    io.SetClipboardTextFn = [](const char* text) { SDL_SetClipboardText(text); };
-    io.GetClipboardTextFn = []() { return static_cast<const char*>(SDL_GetClipboardText()); };
+    io.SetClipboardTextFn = [](void*, const char* text) { SDL_SetClipboardText(text); };
+    io.GetClipboardTextFn = [](void*) { return static_cast<const char*>(SDL_GetClipboardText()); };
 
     ImGuiStyle& style = ImGui::GetStyle();
 
@@ -608,7 +610,7 @@ void PlanetsWindow::paint() {
 
     if (drawTrails) {
         /* There is no model matrix for drawing trails, they're in world space, just use identity. */
-        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 
         for (const auto& i : universe) {
             glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, i.path.data());
@@ -655,7 +657,7 @@ void PlanetsWindow::paint() {
     if (drawPlanarCircles) {
         /* First draw the lines from the circle center to the planet location. */
         glUniform4fv(shaderColor_color, 1, glm::value_ptr(glm::vec4(0.8f)));
-        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+        glUniformMatrix4fv(shaderColor_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 
         for (const auto& i : universe) {
             float verts[] = {
@@ -962,7 +964,7 @@ void PlanetsWindow::paintUI(const float delay) {
 #ifndef NDEBUG
     if (showTestWindow) {
         ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-        ImGui::ShowTestWindow(&showTestWindow);
+        ImGui::ShowTestWindow();
     }
 #endif
     /* End UI code. */

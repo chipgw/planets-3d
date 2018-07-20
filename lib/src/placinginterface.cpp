@@ -6,7 +6,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-PlacingInterface::PlacingInterface(PlanetsUniverse& u) : universe(u), firingSpeed(PlanetsUniverse::velocityFactor * 10.0f) {
+PlacingInterface::PlacingInterface(PlanetsUniverse& u) : universe(u), firingSpeed(PlanetsUniverse::velocityFactor * 10.0f), rotation(1.0f) {
     planet.velocity.y = PlanetsUniverse::velocityFactor;
 }
 
