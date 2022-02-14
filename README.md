@@ -15,7 +15,7 @@ For Qt interface:
 For SDL interface:
 * [SDL] 2.0 or greater.
 * [SDL_image] 2.0 or greater.
-* [ImGui] 1.49 or greater. Place source code in `<project root>/imgui`.
+* [ImGui] 1.87 or compatible. Place source code in `<project root>/imgui`.
 * [NativeFileDialog] Optional for open/save dialogs, use `-DPLANETS3D_WITH_NFD=ON` to enable.
 
 Building

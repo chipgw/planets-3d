@@ -25,7 +25,7 @@ public:
     /* Only call if SDL isn't inited already. */
     void initSDL();
 
-    /* Call if event SDL system not handled elsewhere. */
+    /* Call if SDL event system not handled elsewhere. */
     void pollGamepad();
 
     /* Call for SDL events in existing event handling loop. */

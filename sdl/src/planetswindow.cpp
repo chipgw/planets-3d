@@ -341,40 +341,6 @@ void PlanetsWindow::initBuffers() {
     glBufferData(GL_ARRAY_BUFFER, 0, 0, GL_DYNAMIC_DRAW);
 }
 
-static void interfaceRenderFunc(ImDrawData* drawData) {
-    ImGuiIO& io = ImGui::GetIO();
-    drawData->ScaleClipRects(io.DisplayFramebufferScale);
-
-    int fb_width = static_cast<int>(io.DisplaySize.x * io.DisplayFramebufferScale.x);
-    int fb_height = static_cast<int>(io.DisplaySize.y * io.DisplayFramebufferScale.y);
-    if (fb_width == 0 || fb_height == 0)
-        return;
-    glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
-
-    constexpr GLenum indexType = sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-
-    for (int n = 0; n < drawData->CmdListsCount; ++n) {
-        const ImDrawList* cmdList = drawData->CmdLists[n];
-        int idxBufferOffset = 0;
-
-        glVertexAttribPointer(vertex,   2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().pos);
-        glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().uv);
-        glVertexAttribPointer(tangent,  4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().col);
-
-        for (const ImDrawCmd* pcmd = cmdList->CmdBuffer.begin(); pcmd != cmdList->CmdBuffer.end(); ++pcmd) {
-            if (pcmd->UserCallback) {
-                pcmd->UserCallback(cmdList, pcmd);
-            } else {
-                glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(reinterpret_cast<intptr_t>(pcmd->TextureId)));
-                glScissor(static_cast<int>(pcmd->ClipRect.x), static_cast<int>(fb_height - pcmd->ClipRect.w),
-                          static_cast<int>(pcmd->ClipRect.z - pcmd->ClipRect.x), static_cast<int>(pcmd->ClipRect.w - pcmd->ClipRect.y));
-                glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(pcmd->ElemCount), indexType, &cmdList->IdxBuffer[idxBufferOffset]);
-            }
-            idxBufferOffset += pcmd->ElemCount;
-        }
-    }
-}
-
 void PlanetsWindow::initUI() {
     ImGui::CreateContext();
 
@@ -419,9 +385,6 @@ void PlanetsWindow::initUI() {
     io.KeyMap[ImGuiKey_X] = SDLK_x;
     io.KeyMap[ImGuiKey_Y] = SDLK_y;
     io.KeyMap[ImGuiKey_Z] = SDLK_z;
-
-    /* The function to render ImDrawData. */
-    io.RenderDrawListsFn = interfaceRenderFunc;
 
     io.SetClipboardTextFn = [](void*, const char* text) { SDL_SetClipboardText(text); };
     io.GetClipboardTextFn = [](void*) { return static_cast<const char*>(SDL_GetClipboardText()); };
@@ -811,8 +774,9 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showPlanetGenWindow) {
-        ImGui::SetNextWindowPos(ImVec2(10, 30), ImGuiSetCond_FirstUseEver);
-        ImGui::Begin("Random Planet Generator", &showPlanetGenWindow, ImVec2(360, 160));
+        ImGui::SetNextWindowPos(ImVec2(10, 30), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(360, 160), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Random Planet Generator", &showPlanetGenWindow);
 
         ImGui::Checkbox("Orbital", &planetGenOrbital);
 
@@ -820,7 +784,7 @@ void PlanetsWindow::paintUI(const float delay) {
             planetGenAmount = std::max(1, planetGenAmount);
 
         if (!planetGenOrbital) {
-            ImGui::SliderFloat("Maximum Position", &planetGenMaxPos, 1.0f, 1.0e4f, "%.3f", 2.0f);
+            ImGui::SliderFloat("Maximum Position", &planetGenMaxPos, 1.0f, 1.0e4f, "%.3f", ImGuiSliderFlags_Logarithmic);
             ImGui::SliderFloat("Maximum Speed", &planetGenMaxSpeed, 0.0f, 200.0f);
             ImGui::SliderFloat("Maximum Mass", &planetGenMaxMass, 10.0f, 1.0e4f);
         }
@@ -836,8 +800,9 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showSpeedWindow) {
-        ImGui::SetNextWindowPos(ImVec2(10, 200), ImGuiSetCond_FirstUseEver);
-        ImGui::Begin("Speed Controls", &showSpeedWindow, ImVec2(360, 100));
+        ImGui::SetNextWindowPos(ImVec2(10, 200), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(360, 100), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Speed Controls", &showSpeedWindow);
 
         ImGui::SliderFloat("Speed", &universe.simulationSpeed, 0.0f, 64.0f, "%.3fx");
 
@@ -868,8 +833,9 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showViewSettingsWindow) {
-        ImGui::SetNextWindowPos(ImVec2(10, 310), ImGuiSetCond_FirstUseEver);
-        ImGui::Begin("View Settings", &showViewSettingsWindow, ImVec2(360, 120));
+        ImGui::SetNextWindowPos(ImVec2(10, 310), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(360, 120), ImGuiCond_FirstUseEver);
+        ImGui::Begin("View Settings", &showViewSettingsWindow);
 
         ImGui::SliderInt("Path Length", (int*)&universe.pathLength, 100, 4000);
 
@@ -887,8 +853,9 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showInfoWindow) {
-        ImGui::SetNextWindowPos(ImVec2(10, 440), ImGuiSetCond_FirstUseEver);
-        ImGui::Begin("Information", &showInfoWindow, ImVec2(360, 320));
+        ImGui::SetNextWindowPos(ImVec2(10, 440), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(360, 320), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Information", &showInfoWindow);
 
         if (universe.isSelectedValid() && ImGui::CollapsingHeader("Selected Planet")) {
             Planet& p = universe.getSelected();
@@ -924,8 +891,9 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showFiringWindow) {
-        ImGui::SetNextWindowPos(ImVec2(10, 770), ImGuiSetCond_FirstUseEver);
-        ImGui::Begin("Firing Settings", &showFiringWindow, ImVec2(360, 160));
+        ImGui::SetNextWindowPos(ImVec2(10, 770), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(360, 160), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Firing Settings", &showFiringWindow);
 
         bool firingMode = placing.step == PlacingInterface::Firing;
 
@@ -934,7 +902,7 @@ void PlanetsWindow::paintUI(const float delay) {
 
         /* Show the speed in UI velocity. */
         float speed = placing.firingSpeed / universe.velocityFactor;
-        if (ImGui::SliderFloat("Speed", &speed, 0.0f, 1.0e3f, "%.3f", 4.0f))
+        if (ImGui::SliderFloat("Speed", &speed, 0.0f, 1.0e3f, "%.3f", ImGuiSliderFlags_Logarithmic))
             placing.firingSpeed = speed * universe.velocityFactor;
 
         ImGui::SliderFloat("Mass", &placing.firingMass, 1.0f, 1.0e3f);
@@ -943,7 +911,7 @@ void PlanetsWindow::paintUI(const float delay) {
     }
 
     if (showAboutWindow) {
-        ImGui::SetNextWindowPosCenter();
+        ImGui::SetNextWindowPos(ImVec2(windowSize.x / 2, windowSize.y / 2), 0, ImVec2(0.5f, 0.5f));
         ImGui::SetNextWindowSize(ImVec2(400, 200));
         ImGui::Begin("About", &showAboutWindow, ImGuiWindowFlags_NoResize| ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
 
@@ -963,8 +931,8 @@ void PlanetsWindow::paintUI(const float delay) {
 
 #ifndef NDEBUG
     if (showTestWindow) {
-        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-        ImGui::ShowTestWindow();
+        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
+        ImGui::ShowDemoWindow();
     }
 #endif
     /* End UI code. */
@@ -992,8 +960,41 @@ void PlanetsWindow::paintUI(const float delay) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    /* Pass the rendering on to ImGui and interfaceRenderFunc(). */
+    /* Let ImGui take all the info above and make the draw data. */
     ImGui::Render();
+
+    ImDrawData* drawData = ImGui::GetDrawData();
+    
+    drawData->ScaleClipRects(io.DisplayFramebufferScale);
+
+    int fb_width = static_cast<int>(io.DisplaySize.x * io.DisplayFramebufferScale.x);
+    int fb_height = static_cast<int>(io.DisplaySize.y * io.DisplayFramebufferScale.y);
+    if (fb_width == 0 || fb_height == 0)
+        return;
+    glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
+
+    constexpr GLenum indexType = sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+
+    for (int n = 0; n < drawData->CmdListsCount; ++n) {
+        const ImDrawList* cmdList = drawData->CmdLists[n];
+        int idxBufferOffset = 0;
+
+        glVertexAttribPointer(vertex,   2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().pos);
+        glVertexAttribPointer(uv,       2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().uv);
+        glVertexAttribPointer(tangent,  4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), &cmdList->VtxBuffer.front().col);
+
+        for (const ImDrawCmd* pcmd = cmdList->CmdBuffer.begin(); pcmd != cmdList->CmdBuffer.end(); ++pcmd) {
+            if (pcmd->UserCallback) {
+                pcmd->UserCallback(cmdList, pcmd);
+            } else {
+                glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(reinterpret_cast<intptr_t>(pcmd->TextureId)));
+                glScissor(static_cast<int>(pcmd->ClipRect.x), static_cast<int>(fb_height - pcmd->ClipRect.w),
+                          static_cast<int>(pcmd->ClipRect.z - pcmd->ClipRect.x), static_cast<int>(pcmd->ClipRect.w - pcmd->ClipRect.y));
+                glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(pcmd->ElemCount), indexType, &cmdList->IdxBuffer[idxBufferOffset]);
+            }
+            idxBufferOffset += pcmd->ElemCount;
+        }
+    }
 
     /* End rendering code. */
 
